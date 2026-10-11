@@ -19,6 +19,20 @@ MEDIA = os.path.join(ADDON, 'resources', 'media')
 
 
 class RasterTest(unittest.TestCase):
+    def test_resize_and_underlay(self):
+        # 4x2 image, each pixel a distinct red value, halved to 2x1 by nearest neighbour.
+        img = raster.Raster(4, 2, 4, bytes(b for i in range(8) for b in (i, 0, 0, 255)))
+        small = raster.resize(img, 2, 1)
+        self.assertEqual((small.w, small.h), (2, 1))
+        self.assertEqual(bytes(small.data), bytes([0, 0, 0, 255, 2, 0, 0, 255]))
+        # Transparent shows the background, opaque keeps the foreground, half blends.
+        fg = bytes([200, 0, 0, 0, 200, 0, 0, 255, 200, 0, 0, 128])
+        bg = bytes([0, 0, 100, 255] * 3)
+        out = raster.underlay(fg, bg)
+        self.assertEqual(bytes(out[0:4]), bytes([0, 0, 100, 255]))
+        self.assertEqual(bytes(out[4:8]), bytes([200, 0, 0, 255]))
+        self.assertTrue(95 <= out[8] <= 105 and 45 <= out[10] <= 55)
+
     def test_png_round_trip(self):
         data = bytearray(range(256)) * 4
         img = raster.decode(raster.encode_rgba(16, 16, bytes(data)))

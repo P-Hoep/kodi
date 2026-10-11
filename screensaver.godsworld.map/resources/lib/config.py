@@ -7,8 +7,10 @@ from . import ascii, projections, sources
 ADDON_ID = 'screensaver.godsworld.map'
 
 # Looks that style cycling can choose from: a base map, or one of the ASCII modes.
-STYLES = [(b[0], b[1]) for b in sources.BASEMAPS] + [('ascii_geo', 'ASCII: geographic'),
-                                                     ('ascii_image', 'ASCII: from imagery')]
+_BASE_STYLES = [(b[0], b[1]) for b in sources.BASEMAPS]
+STYLES = (_BASE_STYLES[:sources.ORIGINAL_BASEMAPS] + [('ascii_geo', 'ASCII: geographic'),
+                                                      ('ascii_image', 'ASCII: from imagery')]
+          + _BASE_STYLES[sources.ORIGINAL_BASEMAPS:])
 STYLE_IDS = [s[0] for s in STYLES]
 RENDER_MODES = ['Map', 'ASCII: geographic', 'ASCII: from imagery', 'ASCII: alternate both']
 
@@ -28,6 +30,8 @@ def S(sid, label, default, lo, hi, step=1, **kw):
 CATEGORIES = [
     ('Base map', [
         O('basemap', 'Base map', 0, [b[1] for b in sources.BASEMAPS]),
+        dict(id='custom_basemap_url', type='string', label='Custom base map address (ftp:// or https://)',
+             default=''),
         B('borders', 'Draw country borders and coastlines', False),
     ]),
     ('Projection', [

@@ -40,509 +40,521 @@ msgid "Dark atlas"
 msgstr ""
 
 msgctxt "#30108"
-msgid "Draw country borders and coastlines"
+msgid "Vegetation (NOAA)"
 msgstr ""
 
 msgctxt "#30109"
-msgid "Projection"
+msgid "Custom (FTP or web address)"
 msgstr ""
 
 msgctxt "#30110"
-msgid "Mercator"
+msgid "Custom base map address (ftp:// or https://)"
 msgstr ""
 
 msgctxt "#30111"
-msgid "Robinson"
+msgid "Draw country borders and coastlines"
 msgstr ""
 
 msgctxt "#30112"
-msgid "Dymaxion (Fuller)"
+msgid "Projection"
 msgstr ""
 
 msgctxt "#30113"
-msgid "Gall–Peters"
+msgid "Mercator"
 msgstr ""
 
 msgctxt "#30114"
-msgid "Equal Earth"
+msgid "Robinson"
 msgstr ""
 
 msgctxt "#30115"
-msgid "Sinu-Mollweide (interrupted)"
+msgid "Dymaxion (Fuller)"
 msgstr ""
 
 msgctxt "#30116"
-msgid "Goode homolosine (interrupted)"
+msgid "Gall–Peters"
 msgstr ""
 
 msgctxt "#30117"
-msgid "Cylindrical equal-area"
+msgid "Equal Earth"
 msgstr ""
 
 msgctxt "#30118"
-msgid "Peirce quincuncial"
+msgid "Sinu-Mollweide (interrupted)"
 msgstr ""
 
 msgctxt "#30119"
-msgid "Winkel tripel"
+msgid "Goode homolosine (interrupted)"
 msgstr ""
 
 msgctxt "#30120"
-msgid "Waterman butterfly"
+msgid "Cylindrical equal-area"
 msgstr ""
 
 msgctxt "#30121"
-msgid "Orthographic globe"
+msgid "Peirce quincuncial"
 msgstr ""
 
 msgctxt "#30122"
-msgid "Centre latitude"
+msgid "Winkel tripel"
 msgstr ""
 
 msgctxt "#30123"
-msgid "Centre longitude"
+msgid "Waterman butterfly"
 msgstr ""
 
 msgctxt "#30124"
-msgid "Movement"
+msgid "Orthographic globe"
 msgstr ""
 
 msgctxt "#30125"
-msgid "Static"
+msgid "Centre latitude"
 msgstr ""
 
 msgctxt "#30126"
-msgid "Pan across the map"
+msgid "Centre longitude"
 msgstr ""
 
 msgctxt "#30127"
-msgid "Rotate"
+msgid "Movement"
 msgstr ""
 
 msgctxt "#30128"
-msgid "Automatic"
+msgid "Static"
 msgstr ""
 
 msgctxt "#30129"
-msgid "Speed"
+msgid "Pan across the map"
 msgstr ""
 
 msgctxt "#30130"
-msgid "Rotation direction"
+msgid "Rotate"
 msgstr ""
 
 msgctxt "#30131"
-msgid "West to east (like the Earth)"
+msgid "Automatic"
 msgstr ""
 
 msgctxt "#30132"
-msgid "East to west"
+msgid "Speed"
 msgstr ""
 
 msgctxt "#30133"
-msgid "Pan pattern"
+msgid "Rotation direction"
 msgstr ""
 
 msgctxt "#30134"
-msgid "Wander"
+msgid "West to east (like the Earth)"
 msgstr ""
 
 msgctxt "#30135"
-msgid "Sweep side to side"
+msgid "East to west"
 msgstr ""
 
 msgctxt "#30136"
-msgid "Orbit"
+msgid "Pan pattern"
 msgstr ""
 
 msgctxt "#30137"
-msgid "Zoom (%)"
+msgid "Wander"
 msgstr ""
 
 msgctxt "#30138"
-msgid "Vary the zoom automatically"
+msgid "Sweep side to side"
 msgstr ""
 
 msgctxt "#30139"
-msgid "Cycling"
+msgid "Orbit"
 msgstr ""
 
 msgctxt "#30140"
-msgid "Cycle through projections"
+msgid "Zoom (%)"
 msgstr ""
 
 msgctxt "#30141"
-msgid "Projections to cycle through"
+msgid "Vary the zoom automatically"
 msgstr ""
 
 msgctxt "#30142"
-msgid "Cycle through visual styles"
+msgid "Cycling"
 msgstr ""
 
 msgctxt "#30143"
-msgid "Styles to cycle through"
+msgid "Cycle through projections"
 msgstr ""
 
 msgctxt "#30144"
-msgid "ASCII: geographic"
+msgid "Projections to cycle through"
 msgstr ""
 
 msgctxt "#30145"
-msgid "ASCII: from imagery"
+msgid "Cycle through visual styles"
 msgstr ""
 
 msgctxt "#30146"
-msgid "Minutes between changes"
+msgid "Styles to cycle through"
 msgstr ""
 
 msgctxt "#30147"
-msgid "Order"
+msgid "ASCII: geographic"
 msgstr ""
 
 msgctxt "#30148"
-msgid "Fixed sequence (as listed)"
+msgid "ASCII: from imagery"
 msgstr ""
 
 msgctxt "#30149"
-msgid "Random (no quick repeats)"
+msgid "Minutes between changes"
 msgstr ""
 
 msgctxt "#30150"
-msgid "Transition"
+msgid "Order"
 msgstr ""
 
 msgctxt "#30151"
-msgid "Fade"
+msgid "Fixed sequence (as listed)"
 msgstr ""
 
 msgctxt "#30152"
-msgid "Cut"
+msgid "Random (no quick repeats)"
 msgstr ""
 
 msgctxt "#30153"
-msgid "Rendering style"
+msgid "Transition"
 msgstr ""
 
 msgctxt "#30154"
-msgid "Map"
+msgid "Fade"
 msgstr ""
 
 msgctxt "#30155"
-msgid "ASCII: alternate both"
+msgid "Cut"
 msgstr ""
 
 msgctxt "#30156"
-msgid "ASCII appearance"
+msgid "Rendering style"
 msgstr ""
 
 msgctxt "#30157"
-msgid "Colours"
+msgid "Map"
 msgstr ""
 
 msgctxt "#30158"
-msgid "Colour"
+msgid "ASCII: alternate both"
 msgstr ""
 
 msgctxt "#30159"
-msgid "Monochrome"
+msgid "ASCII appearance"
 msgstr ""
 
 msgctxt "#30160"
-msgid "Colour palette"
+msgid "Colours"
 msgstr ""
 
 msgctxt "#30161"
-msgid "Natural"
+msgid "Colour"
 msgstr ""
 
 msgctxt "#30162"
-msgid "Classic 16 colours"
+msgid "Monochrome"
 msgstr ""
 
 msgctxt "#30163"
-msgid "Neon"
+msgid "Colour palette"
 msgstr ""
 
 msgctxt "#30164"
-msgid "Sepia"
+msgid "Natural"
 msgstr ""
 
 msgctxt "#30165"
-msgid "Monochrome colour"
+msgid "Classic 16 colours"
 msgstr ""
 
 msgctxt "#30166"
-msgid "Green phosphor"
+msgid "Neon"
 msgstr ""
 
 msgctxt "#30167"
-msgid "Amber"
+msgid "Sepia"
 msgstr ""
 
 msgctxt "#30168"
-msgid "White"
+msgid "Monochrome colour"
 msgstr ""
 
 msgctxt "#30169"
-msgid "Blue"
+msgid "Green phosphor"
 msgstr ""
 
 msgctxt "#30170"
-msgid "Character density"
+msgid "Amber"
 msgstr ""
 
 msgctxt "#30171"
-msgid "Low (120 columns)"
+msgid "White"
 msgstr ""
 
 msgctxt "#30172"
-msgid "Medium (160 columns)"
+msgid "Blue"
 msgstr ""
 
 msgctxt "#30173"
-msgid "High (240 columns)"
+msgid "Character density"
 msgstr ""
 
 msgctxt "#30174"
-msgid "Characters"
+msgid "Low (120 columns)"
 msgstr ""
 
 msgctxt "#30175"
-msgid "Symbols (≈ ♣ ▲)"
+msgid "Medium (160 columns)"
 msgstr ""
 
 msgctxt "#30176"
-msgid "Plain ASCII"
+msgid "High (240 columns)"
 msgstr ""
 
 msgctxt "#30177"
-msgid "Brightness to character (imagery mode)"
+msgid "Characters"
 msgstr ""
 
 msgctxt "#30178"
-msgid "Classic  .:-=+*#%@"
+msgid "Symbols (≈ ♣ ▲)"
 msgstr ""
 
 msgctxt "#30179"
-msgid "Blocks  ░▒▓█"
+msgid "Plain ASCII"
 msgstr ""
 
 msgctxt "#30180"
-msgid "Detailed (70 steps)"
+msgid "Brightness to character (imagery mode)"
 msgstr ""
 
 msgctxt "#30181"
-msgid "Show country borders"
+msgid "Classic  .:-=+*#%@"
 msgstr ""
 
 msgctxt "#30182"
-msgid "Show cities"
+msgid "Blocks  ░▒▓█"
 msgstr ""
 
 msgctxt "#30183"
-msgid "Weather"
+msgid "Detailed (70 steps)"
 msgstr ""
 
 msgctxt "#30184"
-msgid "Clouds (infrared satellite)"
+msgid "Show country borders"
 msgstr ""
 
 msgctxt "#30185"
-msgid "Precipitation"
+msgid "Show cities"
 msgstr ""
 
 msgctxt "#30186"
-msgid "Temperature"
+msgid "Weather"
 msgstr ""
 
 msgctxt "#30187"
-msgid "Wind (moving particles)"
+msgid "Clouds (infrared satellite)"
 msgstr ""
 
 msgctxt "#30188"
-msgid "Tropical storms"
+msgid "Precipitation"
 msgstr ""
 
 msgctxt "#30189"
-msgid "Overlay opacity (%)"
+msgid "Temperature"
 msgstr ""
 
 msgctxt "#30190"
-msgid "Wind particles"
+msgid "Wind (moving particles)"
 msgstr ""
 
 msgctxt "#30191"
-msgid "Hazards and space"
+msgid "Tropical storms"
 msgstr ""
 
 msgctxt "#30192"
-msgid "Earthquakes"
+msgid "Overlay opacity (%)"
 msgstr ""
 
 msgctxt "#30193"
-msgid "Which earthquakes"
+msgid "Wind particles"
 msgstr ""
 
 msgctxt "#30194"
-msgid "Past day, magnitude 2.5+"
+msgid "Hazards and space"
 msgstr ""
 
 msgctxt "#30195"
-msgid "Past week, magnitude 4.5+"
+msgid "Earthquakes"
 msgstr ""
 
 msgctxt "#30196"
-msgid "Significant, past month"
+msgid "Which earthquakes"
 msgstr ""
 
 msgctxt "#30197"
-msgid "Erupting volcanoes"
+msgid "Past day, magnitude 2.5+"
 msgstr ""
 
 msgctxt "#30198"
-msgid "Wildfires (yesterday's satellite detections)"
+msgid "Past week, magnitude 4.5+"
 msgstr ""
 
 msgctxt "#30199"
-msgid "Lightning (mostly the Americas)"
+msgid "Significant, past month"
 msgstr ""
 
 msgctxt "#30200"
-msgid "International Space Station"
+msgid "Erupting volcanoes"
 msgstr ""
 
 msgctxt "#30201"
-msgid "Animate quakes, volcanoes and hazards"
+msgid "Wildfires (yesterday's satellite detections)"
 msgstr ""
 
 msgctxt "#30202"
-msgid "Day and night"
+msgid "Lightning (mostly the Americas)"
 msgstr ""
 
 msgctxt "#30203"
-msgid "Show day and night"
+msgid "International Space Station"
 msgstr ""
 
 msgctxt "#30204"
-msgid "Night shading (%)"
+msgid "Animate quakes, volcanoes and hazards"
 msgstr ""
 
 msgctxt "#30205"
-msgid "City lights"
+msgid "Day and night"
 msgstr ""
 
 msgctxt "#30206"
-msgid "Show city lights"
+msgid "Show day and night"
 msgstr ""
 
 msgctxt "#30207"
-msgid "Brightness (%)"
+msgid "Night shading (%)"
 msgstr ""
 
 msgctxt "#30208"
-msgid "Only on the night side"
+msgid "City lights"
 msgstr ""
 
 msgctxt "#30209"
-msgid "Display"
+msgid "Show city lights"
 msgstr ""
 
 msgctxt "#30210"
-msgid "Background"
+msgid "Brightness (%)"
 msgstr ""
 
 msgctxt "#30211"
-msgid "Stars"
+msgid "Only on the night side"
 msgstr ""
 
 msgctxt "#30212"
-msgid "Plain black"
+msgid "Display"
 msgstr ""
 
 msgctxt "#30213"
-msgid "Show projection, style and clock"
+msgid "Background"
 msgstr ""
 
 msgctxt "#30214"
-msgid "Show weather data age"
+msgid "Stars"
 msgstr ""
 
 msgctxt "#30215"
-msgid "Show temperature scale"
+msgid "Plain black"
 msgstr ""
 
 msgctxt "#30216"
-msgid "Show data credits"
+msgid "Show projection, style and clock"
 msgstr ""
 
 msgctxt "#30217"
-msgid "Dim everything (%)"
+msgid "Show weather data age"
 msgstr ""
 
 msgctxt "#30218"
-msgid "Performance"
+msgid "Show temperature scale"
 msgstr ""
 
 msgctxt "#30219"
-msgid "Rendering quality"
+msgid "Show data credits"
 msgstr ""
 
 msgctxt "#30220"
-msgid "High"
+msgid "Dim everything (%)"
 msgstr ""
 
 msgctxt "#30221"
-msgid "Medium"
+msgid "Performance"
 msgstr ""
 
 msgctxt "#30222"
-msgid "Low"
+msgid "Rendering quality"
 msgstr ""
 
 msgctxt "#30223"
-msgid "Frame limit for rotating views (frames per second)"
+msgid "High"
 msgstr ""
 
 msgctxt "#30224"
-msgid "Blend between frames of rotating views"
+msgid "Medium"
 msgstr ""
 
 msgctxt "#30225"
-msgid "Show performance figures"
+msgid "Low"
 msgstr ""
 
 msgctxt "#30226"
-msgid "Data and cache"
+msgid "Frame limit for rotating views (frames per second)"
 msgstr ""
 
 msgctxt "#30227"
-msgid "Check clouds and precipitation every (minutes)"
+msgid "Blend between frames of rotating views"
 msgstr ""
 
 msgctxt "#30228"
-msgid "Hide weather older than"
+msgid "Show performance figures"
 msgstr ""
 
 msgctxt "#30229"
-msgid "3 hours"
+msgid "Data and cache"
 msgstr ""
 
 msgctxt "#30230"
-msgid "6 hours"
+msgid "Check clouds and precipitation every (minutes)"
 msgstr ""
 
 msgctxt "#30231"
-msgid "12 hours"
+msgid "Hide weather older than"
 msgstr ""
 
 msgctxt "#30232"
-msgid "24 hours"
+msgid "3 hours"
 msgstr ""
 
 msgctxt "#30233"
-msgid "Never hide"
+msgid "6 hours"
 msgstr ""
 
 msgctxt "#30234"
+msgid "12 hours"
+msgstr ""
+
+msgctxt "#30235"
+msgid "24 hours"
+msgstr ""
+
+msgctxt "#30236"
+msgid "Never hide"
+msgstr ""
+
+msgctxt "#30237"
 msgid "Clear downloaded data and cached projections"
 msgstr ""

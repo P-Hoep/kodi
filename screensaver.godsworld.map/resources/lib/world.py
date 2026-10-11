@@ -151,7 +151,8 @@ class World(object):
                 try:
                     img = raster.decode(data, want=4)
                     if (img.w, img.h) == (SW, SH):
-                        return img, True
+                        # Shown as downloaded: transparent parts are black, not another map.
+                        return raster.Raster(SW, SH, 4, raster.underlay(img.data, bytes(len(img.data)))), True
                     self.log('base map %s has size %dx%d' % (base_id, img.w, img.h))
                 except Exception as error:
                     self.log('base map %s unreadable: %s' % (base_id, error))

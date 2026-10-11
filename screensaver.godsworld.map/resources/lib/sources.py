@@ -6,6 +6,7 @@ fetched, and retries failures with a growing delay (2 minutes doubling up to an 
 a dead network is never hammered and the map keeps showing the last good data."""
 
 import calendar
+import hashlib
 import json
 import math
 import os
@@ -34,6 +35,8 @@ NOWCOAST_LIGHTNING = ('https://nowcoast.noaa.gov/geoserver/observations/lightnin
 ISS_TLE = 'https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=tle'
 OSM_TILE = 'https://tile.openstreetmap.org/%d/%d/%d.png'
 CARTO_TILE = 'https://a.basemaps.cartocdn.com/dark_nolabels/%d/%d/%d.png'
+NOAA_VEGETATION = 'ftp://public.sos.noaa.gov/overlays/land_mask/veg/4096.png'
+BASE_W, BASE_H = 2048, 1024   # world.SW, world.SH
 
 RETRY_MIN, RETRY_MAX = 120.0, 3600.0
 HOUR = 3600.0
@@ -72,8 +75,11 @@ class Store(object):
             return None, None
 
     def put(self, name, data, meta):
-        data_path, meta_path = self._paths(name)
-        raster.write(data_path, data)
+        raster.write(self._paths(name)[0], data)
+        self.put_meta(name, meta)
+
+    def put_meta(self, name, meta):
+        meta_path = self._paths(name)[1]
         with open(meta_path + '.tmp', 'w') as handle:
             json.dump(meta, handle)
         os.replace(meta_path + '.tmp', meta_path)
@@ -83,8 +89,14 @@ class Store(object):
 class Feed(object):
     """One remote resource with a refresh interval, a disk copy and failure backoff."""
 
-    def __init__(self, name, label, refresh, download, attribution):
+    def __init__(self, name, label, refresh, download, attribution, source=None, every_start=False):
         self.name = name
+        self.source = source   # when set, a cached copy fetched from elsewhere is out of date
+        # every_start: fetched once whenever the screensaver starts, however fresh the copy is;
+        # download then takes the last meta and returns (None, None, meta) when nothing changed.
+        self.every_start = every_start
+        self.fetched = False
+        self.unchanged = False
         self.label = label
         self.refresh = refresh
         self.download = download
@@ -97,18 +109,32 @@ class Feed(object):
         if now < self.next_try:
             return False
         meta = store.meta(self.name)
-        return meta is None or now - meta.get('fetched', 0) >= self.refresh
+        if meta is None or (self.source and meta.get('source') != self.source):
+            return True
+        if self.every_start and not self.fetched:
+            return True
+        return now - meta.get('fetched', 0) >= self.refresh
 
     def run(self, store, now=None):
         """Download now; returns True when new data was stored."""
         now = now or time.time()
+        self.unchanged = False
         try:
-            data, valid = self.download()
-            store.put(self.name, data, {'fetched': now, 'valid': valid})
+            if self.every_start:
+                data, valid, extra = self.download(store.meta(self.name) or {})
+            else:
+                (data, valid), extra = self.download(), {}
+            meta = dict(extra, fetched=now, valid=valid, source=self.source)
+            self.fetched = True
+            if data is None:   # same as the copy on disk
+                store.put_meta(self.name, meta)
+                self.unchanged = True
+            else:
+                store.put(self.name, data, meta)
             self.error = None
             self.delay = RETRY_MIN
             self.next_try = now + self.refresh
-            return True
+            return not self.unchanged
         except Exception as error:
             self.error = str(error)
             self.next_try = now + self.delay
@@ -236,6 +262,21 @@ def download_carto_dark():
     return _mercator_world(CARTO_TILE, 3)
 
 
+def download_image(url, previous):
+    """A whole-world equirectangular PNG from an http(s):// or ftp:// address (ftp://user:password@host/
+    also works), resized to the base map size. Decoding a big PNG takes minutes on a Fire TV
+    Stick, so a download identical to the last one (by MD5) is not decoded again."""
+    url = url.strip()
+    if not url.lower().startswith(('ftp://', 'http://', 'https://')):
+        raise net.HttpError('base map address must start with ftp://, http:// or https://')
+    body = net.fetch(url, timeout=180, max_bytes=64 * 1024 * 1024)
+    digest = hashlib.md5(body).hexdigest()
+    if previous.get('md5') == digest and previous.get('source') == url:
+        return None, None, {'md5': digest}
+    img = raster.resize(raster.decode(body, want=4), BASE_W, BASE_H)
+    return raster.encode_rgba(img.w, img.h, bytes(img.data), level=6), None, {'md5': digest}
+
+
 def download_relief():
     return gibs('BlueMarble_ShadedRelief_Bathymetry', 2048, 1024), None
 
@@ -256,18 +297,28 @@ WEATHER_FEEDS = {
     'iss': lambda: Feed('iss', 'ISS', 12 * HOUR, download_iss, 'CelesTrak'),
 }
 
-# Base maps: (id, name, feed factory or None when bundled/generated, attribution)
+# Base maps: (id, name, feed factory(settings) or None when bundled/generated, attribution)
 BASEMAPS = [
     ('bluemarble', 'Satellite (Blue Marble)', None, 'NASA Blue Marble'),
-    ('relief', 'Relief and ocean floor', lambda: Feed('relief', 'Relief', 90 * 24 * HOUR, download_relief, ''),
+    ('relief', 'Relief and ocean floor', lambda s: Feed('relief', 'Relief', 90 * 24 * HOUR, download_relief, ''),
      'NASA Blue Marble shaded relief'),
-    ('viirs', "Satellite, yesterday's image", lambda: Feed('viirs', 'Satellite', 24 * HOUR, download_viirs, ''),
+    ('viirs', "Satellite, yesterday's image", lambda s: Feed('viirs', 'Satellite', 24 * HOUR, download_viirs, ''),
      'NASA GIBS / VIIRS NOAA-20'),
-    ('osm', 'OpenStreetMap', lambda: Feed('osm', 'OSM', 30 * 24 * HOUR, download_osm, ''),
+    ('osm', 'OpenStreetMap', lambda s: Feed('osm', 'OSM', 30 * 24 * HOUR, download_osm, ''),
      '© OpenStreetMap contributors'),
-    ('dark', 'Dark (CARTO)', lambda: Feed('dark', 'Dark', 30 * 24 * HOUR, download_carto_dark, ''),
+    ('dark', 'Dark (CARTO)', lambda s: Feed('dark', 'Dark', 30 * 24 * HOUR, download_carto_dark, ''),
      '© OpenStreetMap contributors, © CARTO'),
     ('atlas', 'Atlas (flat colours)', None, 'Land cover from NASA and Mapzen data'),
     ('atlas_dark', 'Dark atlas', None, 'Land cover from NASA and Mapzen data'),
+    # Added later: config.STYLES lists these after the ASCII modes so saved choices keep their numbers.
+    ('vegetation', 'Vegetation (NOAA)',
+     lambda s: Feed('vegetation', 'Vegetation', 24 * HOUR, lambda prev: download_image(NOAA_VEGETATION, prev),
+                    '', NOAA_VEGETATION, every_start=True),
+     'NOAA Science On a Sphere, vegetation'),
+    ('custom', 'Custom (FTP or web address)',
+     lambda s: Feed('custom', 'Custom map', 24 * HOUR, lambda prev: download_image(s['custom_basemap_url'], prev),
+                    '', s['custom_basemap_url'].strip(), every_start=True),
+     'Custom base map'),
 ]
+ORIGINAL_BASEMAPS = 7
 BASEMAP_IDS = [b[0] for b in BASEMAPS]

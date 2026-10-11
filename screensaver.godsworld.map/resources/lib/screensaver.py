@@ -549,7 +549,7 @@ class Screensaver(object):
     def _ensure_base_feed(self, base_id):
         for bid, _name, factory, _attr in sources.BASEMAPS:
             if bid == base_id and factory is not None and bid not in self.feeds:
-                self.feeds[bid] = factory()
+                self.feeds[bid] = factory(self.s)
 
     # ------------------------------------------------------------ engine thread
 
@@ -647,8 +647,11 @@ class Screensaver(object):
     def fetch(self, name, feed):
         started = time.time()
         ok = feed.run(self.store)
-        log('%s: %s in %.1fs%s' % (name, 'updated' if ok else 'failed', time.time() - started,
-                                    '' if ok else ' (%s)' % feed.error), xbmc.LOGINFO if ok else xbmc.LOGWARNING)
+        if feed.unchanged:
+            log('%s: unchanged, checked in %.1fs' % (name, time.time() - started))
+        else:
+            log('%s: %s in %.1fs%s' % (name, 'updated' if ok else 'failed', time.time() - started,
+                                        '' if ok else ' (%s)' % feed.error), xbmc.LOGINFO if ok else xbmc.LOGWARNING)
         self.inflight.discard(name)
         if ok:
             with self.lock:

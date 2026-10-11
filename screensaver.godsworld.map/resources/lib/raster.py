@@ -12,7 +12,7 @@ import sys
 import zlib
 from array import array
 from itertools import accumulate, repeat
-from operator import add
+from operator import add, itemgetter
 
 SIGNATURE = b'\x89PNG\r\n\x1a\n'
 CHANNELS = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}  # colour type -> samples per pixel
@@ -231,6 +231,35 @@ def upsample2(data, w, h, channels):
             row_out[channels + c::2 * channels] = row[c::channels]
         out += row_out
         out += row_out
+    return out
+
+
+def resize(img, w, h):
+    """Nearest-neighbour resize of an RGBA Raster to w x h."""
+    if (img.w, img.h) == (w, h):
+        return img
+    src = array('I')
+    src.frombytes(bytes(img.data))
+    pick = itemgetter(*[x * img.w // w for x in range(w)])
+    out = array('I')
+    for y in range(h):
+        start = (y * img.h // h) * img.w
+        out.extend(pick(src[start:start + img.w]))
+    return Raster(w, h, 4, out.tobytes())
+
+
+def underlay(fg, bg):
+    """RGBA bytes: fg over an opaque bg of the same size, blended by fg's alpha."""
+    alpha = bytes(fg[3::4])
+    if alpha.count(255) == len(alpha):
+        return fg
+    over = pair_table(lambda f, a: f * a / 255.0 + 0.5)
+    under = pair_table(lambda b, a: b * (255 - a) / 255.0 + 0.5)
+    add = pair_table(lambda x, y: x + y)
+    out = bytearray(len(fg))
+    for c in range(3):
+        out[c::4] = pair_map(pair_map(bytes(fg[c::4]), alpha, over), pair_map(bytes(bg[c::4]), alpha, under), add)
+    out[3::4] = b'\xff' * len(alpha)
     return out
 
 
