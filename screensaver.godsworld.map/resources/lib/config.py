@@ -92,6 +92,9 @@ CATEGORIES = [
         B('layer_fires', "Wildfires (yesterday's satellite detections)", True),
         B('layer_lightning', 'Lightning (mostly the Americas)', True),
         B('layer_iss', 'International Space Station', True),
+        B('layer_flights', 'Flights (live ADS-B from OpenSky)', False),
+        S('max_flights', 'Most flights shown at once', 80, 10, 300, 10, visible='layer_flights'),
+        S('flight_refresh', 'Fetch flights every (minutes)', 30, 15, 120, 5, visible='layer_flights'),
         B('animate_events', 'Animate quakes, volcanoes and hazards', True),
     ]),
     ('Day and night', [

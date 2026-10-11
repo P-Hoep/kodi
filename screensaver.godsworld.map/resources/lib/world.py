@@ -17,7 +17,7 @@ import os
 import re
 from array import array
 
-from . import events, landclass, overlays, raster, sources, sun
+from . import events, flights, landclass, overlays, raster, sources, sun
 
 SW, SH = 2048, 1024          # base map size
 CW, CH = 1024, 512           # land class / overlay / ASCII sampling size
@@ -75,6 +75,7 @@ class World(object):
         self.volcanoes = []
         self.masks = {}          # 'fires' / 'lightning' -> CW x CH bytes (+ sentinel), for ASCII
         self.iss = None
+        self.flights = []
         self._tables = None
         self.options = {}
 
@@ -298,6 +299,8 @@ class World(object):
             self.volcanoes = events.parse_volcanoes(data)
         elif name == 'iss':
             self.iss = events.Orbit(data.decode('ascii', 'replace'))
+        elif name == 'flights':
+            self.flights = flights.decode(data)
         elif name == 'storms':
             self.storms = [s for s in json.loads(data.decode('utf-8'))
                            if s.get('lat') is not None and s.get('lon') is not None]

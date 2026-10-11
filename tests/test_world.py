@@ -18,6 +18,62 @@ from resources.lib import (ascii, config, events, motion, overlays, projections,
 MEDIA = os.path.join(ADDON, 'resources', 'media')
 
 
+class WatermanW5Test(unittest.TestCase):
+    def test_faces_cover_globe_and_round_trip(self):
+        w = projections.get('waterman_w5')
+        self.assertEqual(len(w.faces), 32)   # 8 hexagons + 24 corner triangles
+        for lon in range(-180, 180, 7):
+            for lat in range(-89, 90, 7):
+                self.assertIsNotNone(w.forward(lon, lat), (lon, lat))
+        # Inside a face, the inverse (mesh) and forward projections agree.
+        for f in range(len(w.faces)):
+            centre = sum(w.local(f, v) for v in w.faces[f]) / len(w.faces[f])
+            for k in range(len(w.faces[f])):
+                z = centre + 0.8 * (w.local(f, w.faces[f][k]) - centre)
+                lon, lat = w.sphere(f, z)
+                a, b = w.transforms[f]
+                x, y = w.forward(lon, lat)
+                self.assertAlmostEqual(x, (a * z + b).real, places=6)
+                self.assertAlmostEqual(y, (a * z + b).imag, places=6)
+
+
+class FlightsTest(unittest.TestCase):
+    def test_select_caps_spreads_and_keeps(self):
+        from resources.lib import flights
+        # 300 aircraft over the US, 10 over the Pacific, one squawking 7700 in Europe.
+        busy = [['a%05x' % i, 'X', -100 + i % 20, 35 + i % 10, 90.0, 230.0, 10000, 1000, ''] for i in range(300)]
+        quiet = [['b%05x' % i, 'Y', -150.0, 0.0 + i, 0.0, 230.0, 10000, 1000, ''] for i in range(10)]
+        sos = [['c00001', 'Z', 10.0, 50.0, 0.0, 200.0, 3000, 1000, '7700']]
+        sel = flights.select(busy + quiet + sos, 40)
+        self.assertEqual(len(sel), 40)
+        self.assertIn('c00001', [ac[0] for ac in sel])
+        self.assertTrue(any(ac[0].startswith('b') for ac in sel))
+        self.assertGreater(sum(1 for ac in sel if ac[0].startswith('a')), 20)
+        again = flights.select(busy + quiet + sos, 40, keep=[ac[0] for ac in sel])
+        self.assertEqual(set(ac[0] for ac in again), set(ac[0] for ac in sel))
+
+    def test_dead_reckoning(self):
+        from resources.lib import flights
+        ac = ['abc123', 'T', 0.0, 0.0, 90.0, 250.0, 10000, 1000, '']
+        lon, lat = flights.position(ac, 1000 + 3600)   # an hour east along the equator: 900 km
+        self.assertAlmostEqual(lon, 900000.0 / 6371000.0 * 180 / 3.141592653589793, places=3)
+        self.assertAlmostEqual(lat, 0.0, places=6)
+        self.assertAlmostEqual(flights.heading(ac, lon, lat, 1000 + 3600), 90.0, places=3)
+
+
+class SosMapTest(unittest.TestCase):
+    def test_dated_files(self):
+        from resources.lib import sources
+        jan27 = time.mktime((2026, 1, 27, 12, 0, 0, 0, 0, -1))
+        self.assertTrue(sources.sos_surface_temperature(jan27).endswith('_01.png'))
+        self.assertTrue(sources.sos_vegetation_index(jan27).endswith('2013week05.png'))
+        self.assertTrue(sources.sos_koppen_now(jan27).endswith('2026-2050.png'))
+        # 2025-01-23 to 02-05 are missing upstream: step back to the 22nd.
+        self.assertTrue(sources.sos_land_temperature(jan27).endswith('20250122.png'))
+        oct11 = time.mktime((2026, 10, 11, 12, 0, 0, 0, 0, -1))
+        self.assertTrue(sources.sos_land_temperature(oct11).endswith('20241011.png'))
+
+
 class RasterTest(unittest.TestCase):
     def test_resize_and_underlay(self):
         # 4x2 image, each pixel a distinct red value, halved to 2x1 by nearest neighbour.
@@ -72,8 +128,8 @@ class SunTest(unittest.TestCase):
 
 
 class ProjectionTest(unittest.TestCase):
-    def test_all_twelve(self):
-        self.assertEqual(len(projections.ALL), 12)
+    def test_all_thirteen(self):
+        self.assertEqual(len(projections.ALL), 13)
 
     def test_forward_lands_inside_bounds(self):
         for p in projections.ALL:

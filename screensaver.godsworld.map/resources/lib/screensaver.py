@@ -25,7 +25,7 @@ import xbmcaddon
 import xbmcgui
 import xbmcvfs
 
-from . import config, motion, overlays, projections, render, reproject, sources
+from . import config, flights, motion, overlays, projections, render, reproject, sources
 from . import world as world_mod
 from .workers import Workers
 
@@ -45,6 +45,10 @@ ISS_PX = 44
 MAX_STORMS = 12
 PARTICLE_PX = 9
 STORM_PX = 56
+FLIGHT_PX = 28             # rotated plane images are padded so wingtips survive the turn
+FLIGHT_STATIC_SECONDS = 15.0   # a still map: aircraft barely move a pixel in this time
+FLIGHT_MAX_AGE = 5400.0    # stop flying an aircraft on after this long without a report
+HEADING_STEP = 5           # media/rot/plane_<heading>.png exist every 5 degrees
 LEGEND_W = 420
 
 
@@ -160,18 +164,22 @@ class Screensaver(object):
                          ('weather', s['layer_temp'] or s['layer_wind'] or s['layer_precip']),
                          ('storms', s['layer_storms']), ('quakes', s['layer_quakes']),
                          ('volcanoes', s['layer_volcanoes']), ('fires', s['layer_fires']),
-                         ('lightning', s['layer_lightning']), ('iss', s['layer_iss'])):
+                         ('lightning', s['layer_lightning']), ('iss', s['layer_iss']),
+                         ('flights', s['layer_flights'])):
             if on:
                 self.feeds[name] = sources.WEATHER_FEEDS[name]()
         refresh = s['refresh_minutes'] * 60.0
         for name in ('clouds', 'precip'):
             if name in self.feeds:
                 self.feeds[name].refresh = refresh
+        if 'flights' in self.feeds:
+            self.feeds['flights'].refresh = s['flight_refresh'] * 60.0
         self.layers = set()
         for layer, key in (('clouds', 'layer_clouds'), ('precip', 'layer_precip'), ('temp', 'layer_temp'),
                            ('wind', 'layer_wind'), ('storms', 'layer_storms'), ('quakes', 'layer_quakes'),
                            ('volcanoes', 'layer_volcanoes'), ('fires', 'layer_fires'),
-                           ('lightning', 'layer_lightning'), ('iss', 'layer_iss')):
+                           ('lightning', 'layer_lightning'), ('iss', 'layer_iss'),
+                           ('flights', 'layer_flights')):
             if s[key]:
                 self.layers.add(layer)
         if 'quakes' in self.feeds:
@@ -344,6 +352,14 @@ class Screensaver(object):
         self.iss_label = self.label(0, 0, 200, 30, 'ISS', font='font10', color='FFFFFFFF')
         self.iss_state = None
         self.storm_state = [None] * MAX_STORMS
+        # Flights: one control per aircraft up to the cap, chosen afresh with each fetch.
+        n = s['max_flights'] if 'flights' in self.layers else 0
+        self.flight_icons = [self.image(0, 0, FLIGHT_PX, FLIGHT_PX, 'rot/plane_000.png', 'E0FFFFFF')
+                             for _ in range(n)]
+        self.flight_state = [None] * n
+        self.flight_sel = []
+        self.flight_src = None
+        self.flight_next = 0.0
         self.fader = self.image(-50, -50, W + 100, H + 100, 'white.png', 'FF000000')
         dim = int(s['dim'] * 255 / 100)
         self.dimmer = self.image(-50, -50, W + 100, H + 100, 'white.png', '%02X000000' % dim)
@@ -371,13 +387,14 @@ class Screensaver(object):
         for b in range(2):
             for layer in self.plane[b]:
                 controls += layer
-        controls += [self.globe_shade] + self.particle_controls + self.storm_icons + self.storm_labels
+        controls += [self.globe_shade] + self.particle_controls + self.flight_icons + self.storm_icons
+        controls += self.storm_labels
         controls += [self.iss_icon, self.iss_label]
         controls += [self.fader, self.dimmer, self.bottom_shade, self.card_bg, self.card_accent, self.clock, self.date, self.title,
                      self.status, self.credits, self.legend, self.legend_lo, self.legend_hi, self.perf, self.loading]
         window.addControls(controls)
         hidden = [self.globe_shade, self.legend, self.legend_lo, self.legend_hi] + self.particle_controls
-        hidden += self.storm_icons + self.storm_labels + [self.iss_icon, self.iss_label]
+        hidden += self.storm_icons + self.storm_labels + [self.iss_icon, self.iss_label] + self.flight_icons
         for b in range(2):
             for layer in self.plane[b]:
                 hidden += layer
@@ -690,7 +707,8 @@ class Screensaver(object):
         # Markers start afresh in the new scene: hide what the old one showed, or icons
         # would linger (an ASCII scene draws its storms as characters, not icons).
         for state, groups in ((self.particle_state, [self.particle_controls]),
-                              (self.storm_state, [self.storm_icons, self.storm_labels])):
+                              (self.storm_state, [self.storm_icons, self.storm_labels]),
+                              (self.flight_state, [self.flight_icons])):
             for i in range(len(state)):
                 if state[i] is not None:
                     for controls in groups:
@@ -700,6 +718,7 @@ class Screensaver(object):
             self.iss_icon.setVisible(False)
             self.iss_label.setVisible(False)
             self.iss_state = None
+        self.flight_next = 0.0
         self.update_markers(time.time(), step=True)
         self.update_hud(time.time())
         if old is None:
@@ -870,6 +889,7 @@ class Screensaver(object):
         self.update_storms(pos, shown.rotation, ascii_mode)
         if step:
             self.update_iss(now, pos, shown.rotation)
+            self.update_flights(now, shown.rotation)
 
     def update_particles(self, pos, rotation, ascii_mode, seconds):
         weather = self.world.weather if self.world else None
@@ -928,6 +948,62 @@ class Screensaver(object):
             self.iss_icon.setVisible(True)
             self.iss_label.setVisible(True)
         self.iss_state = (x, y)
+
+    def update_flights(self, now, rotation):
+        """Aircraft icons, flown on from their last report. On a still map they move every
+        few seconds (a pixel or so); on a moving one they slide with it like the particles."""
+        if not self.flight_icons or now < self.flight_next:
+            return
+        shown = self.shown
+        moving = shown.motion.mode in ('pan', 'scroll', 'spin')
+        step = TICK * self.particle_every if moving else FLIGHT_STATIC_SECONDS
+        self.flight_next = now + step
+        src = self.world.flights if self.world else []
+        if src is not self.flight_src:
+            self.flight_src = src
+            keep = [ac[flights.ICAO] for ac in self.flight_sel]
+            fresh = [ac for ac in src if now - ac[flights.AT] < FLIGHT_MAX_AGE]
+            self.flight_sel = flights.select(fresh, len(self.flight_icons), keep)
+        # Where the map and the aircraft will be when this step's slide ends.
+        until = now + step if moving else now
+        pos = self.plane_position(shown, until) if moving else (shown.pos or self.plane_position(shown, now))
+        for i, ctrl in enumerate(self.flight_icons):
+            old = self.flight_state[i]
+            pt = ac = None
+            if i < len(self.flight_sel) and until - self.flight_sel[i][flights.AT] < FLIGHT_MAX_AGE:
+                ac = self.flight_sel[i]
+                lon, lat = flights.position(ac, until)
+                pt = self.screen_point(lon, lat, pos, rotation)
+            if pt is None or not (-FLIGHT_PX <= pt[0] <= W + FLIGHT_PX and -FLIGHT_PX <= pt[1] <= H + FLIGHT_PX):
+                if old is not None:
+                    ctrl.setVisible(False)
+                    self.flight_state[i] = None
+                continue
+            # The icon points the way the aircraft moves on screen, which on an interrupted map
+            # or the globe need not be its compass track: project a point a little ahead.
+            track = flights.heading(ac, lon, lat, until)
+            nxt = self.screen_point(*(flights.ahead(lon, lat, track, 50000.0) + (pos, rotation)))
+            if nxt is not None and abs(nxt[0] - pt[0]) + abs(nxt[1] - pt[1]) > 0.01:
+                track = math.degrees(math.atan2(nxt[0] - pt[0], pt[1] - nxt[1]))
+            hd = int(round(track / HEADING_STEP) * HEADING_STEP) % 360
+            x, y = int(pt[0]) - FLIGHT_PX // 2, int(pt[1]) - FLIGHT_PX // 2
+            color = flights.color(ac)
+            state = (x, y, hd, color, ac[flights.ICAO])
+            if old == state:
+                continue
+            same = old is not None and old[4] == state[4]
+            if not same or old[2] != hd:
+                ctrl.setImage(self.media_path('rot/plane_%03d.png' % hd))
+            ctrl.setPosition(x, y)
+            if same and moving and abs(old[0] - x) < 200 and abs(old[1] - y) < 200:
+                ctrl.setAnimations([anim_slide(old[0] - x, old[1] - y, int(step * 1000))])
+            elif not same:
+                ctrl.setAnimations([anim_fade(0, 100, 600)])
+            if not same or old[3] != color:
+                ctrl.setColorDiffuse(color)
+            if old is None:
+                ctrl.setVisible(True)
+            self.flight_state[i] = state
 
     def update_storms(self, pos, rotation, ascii_mode):
         storms = (self.world.storms if self.world and 'storms' in self.layers and not ascii_mode else [])

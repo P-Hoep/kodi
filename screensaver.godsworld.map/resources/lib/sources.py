@@ -12,7 +12,7 @@ import math
 import os
 import time
 
-from . import net, overlays, raster
+from . import flights, net, overlays, raster
 
 GIBS = ('https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap'
         '&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&FORMAT=image/png&TRANSPARENT=TRUE'
@@ -33,9 +33,16 @@ NOWCOAST_LIGHTNING = ('https://nowcoast.noaa.gov/geoserver/observations/lightnin
                       '&version=1.1.1&request=GetMap&layers=ldn_lightning_strike_density&styles=lightning_density'
                       '&srs=EPSG:4326&bbox=-180,-90,180,90&width=%d&height=%d&format=image/png&transparent=true')
 ISS_TLE = 'https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=tle'
+# Every aircraft in the world in one request. Anonymous use allows about 400 credits a day per
+# IP address and this request costs 4, so the default refresh is half an hour.
+OPENSKY_ALL = 'https://opensky-network.org/api/states/all'
 OSM_TILE = 'https://tile.openstreetmap.org/%d/%d/%d.png'
 CARTO_TILE = 'https://a.basemaps.cartocdn.com/dark_nolabels/%d/%d/%d.png'
 NOAA_VEGETATION = 'ftp://public.sos.noaa.gov/overlays/land_mask/veg/4096.png'
+SOS_LAND = 'ftp://public.sos.noaa.gov/land/'
+# Days missing from NOAA's daily land temperature series (2024-03-31 to 2025-04-07).
+LAND_TEMP_GAPS = {'20240514', '20240627', '20240628', '20240629'} | {'202501%02d' % d for d in range(23, 32)} \
+    | {'202502%02d' % d for d in range(1, 6)}
 BASE_W, BASE_H = 2048, 1024   # world.SW, world.SH
 
 RETRY_MIN, RETRY_MAX = 120.0, 3600.0
@@ -225,6 +232,14 @@ def download_lightning():
     return net.fetch(NOWCOAST_LIGHTNING % (overlays.OW, overlays.OH), timeout=60), None
 
 
+def download_flights():
+    data = net.fetch_json(OPENSKY_ALL, timeout=60)
+    aircraft = flights.parse_opensky(data)
+    if not aircraft:
+        raise net.HttpError('OpenSky returned no aircraft')
+    return flights.encode(aircraft, data.get('time') or time.time()), None
+
+
 def download_iss():
     text = net.fetch(ISS_TLE, timeout=30)
     if b'\n1 25544' not in text:
@@ -295,7 +310,44 @@ WEATHER_FEEDS = {
     'fires': lambda: Feed('fires', 'Fires', 3 * HOUR, download_fires, 'NASA FIRMS / VIIRS'),
     'lightning': lambda: Feed('lightning', 'Lightning', HOUR / 6, download_lightning, 'NOAA nowCOAST'),
     'iss': lambda: Feed('iss', 'ISS', 12 * HOUR, download_iss, 'CelesTrak'),
+    'flights': lambda: Feed('flights', 'Flights', HOUR / 2, download_flights, 'OpenSky Network'),
 }
+
+def sos_surface_temperature(now):
+    """Average land and sea surface temperature for this calendar month."""
+    return 'surface_temperature/4096/surface_temps_4096_%02d.png' % time.localtime(now).tm_mon
+
+
+def sos_vegetation_index(now):
+    """NDVI for this week of the year; NOAA's year runs from 2012 week 14 to 2013 week 14."""
+    week = min(52, int(time.strftime('%V', time.localtime(now))))
+    return 'global_vegetation/4096/%dweek%02d.png' % (2012 if week >= 14 else 2013, week)
+
+
+def sos_koppen_now(now):
+    """Köppen climate zones for the 25-year period containing this year."""
+    start = 1901 + (max(1901, min(2100, time.localtime(now).tm_year)) - 1901) // 25 * 25
+    return 'koppen_climate/koppen_1901-2100/4096/%d-%d.png' % (start, start + 24)
+
+
+def sos_land_temperature(now):
+    """Daytime land surface temperature on this calendar day (from 2024-25), or the nearest earlier day."""
+    day = time.localtime(now)
+    year = 2024 if (day.tm_mon, day.tm_mday) >= (3, 31) else 2025
+    t = calendar.timegm((year, day.tm_mon, min(day.tm_mday, 28 if day.tm_mon == 2 else 31), 12, 0, 0))
+    while time.strftime('%Y%m%d', time.gmtime(t)) in LAND_TEMP_GAPS:
+        t -= 86400
+    return 'land_temp/4096/land_temp_%s.png' % time.strftime('%Y%m%d', time.gmtime(t))
+
+
+def sos_map(bid, name, path, attribution):
+    """A base map from NOAA Science On a Sphere's public FTP site, fetched at every start.
+    path is a file under /land, or a function of the time giving one (maps that change by date)."""
+    def factory(_settings):
+        url = SOS_LAND + (path(time.time()) if callable(path) else path)
+        return Feed(bid, name, 24 * HOUR, lambda prev: download_image(url, prev), '', url, every_start=True)
+    return (bid, name, factory, 'NOAA Science On a Sphere: ' + attribution)
+
 
 # Base maps: (id, name, feed factory(settings) or None when bundled/generated, attribution)
 BASEMAPS = [
@@ -319,6 +371,25 @@ BASEMAPS = [
      lambda s: Feed('custom', 'Custom map', 24 * HOUR, lambda prev: download_image(s['custom_basemap_url'], prev),
                     '', s['custom_basemap_url'].strip(), every_start=True),
      'Custom base map'),
+    sos_map('sos_gray', 'Gray relief (NOAA)', 'gray_earth/4096.png', 'gray Earth'),
+    sos_map('sos_seafloor', 'Age of the sea floor (NOAA)', 'sea_floor_age/topo/seafloor_4096.png', 'sea floor age'),
+    sos_map('sos_plates', 'Plates and sea floor age (NOAA)', 'sea_floor_age/shaded_veg/4096.png',
+            'sea floor age, plate boundaries'),
+    sos_map('sos_birds', 'Bird species richness (NOAA)', 'species_richness/birds/4096-background.png',
+            'bird species richness'),
+    sos_map('sos_mammals', 'Mammal species richness (NOAA)', 'species_richness/mammals/4096-background.png',
+            'mammal species richness'),
+    sos_map('sos_amphibians', 'Amphibian species richness (NOAA)',
+            'species_richness/amphibians/4096-background.png', 'amphibian species richness'),
+    sos_map('sos_pasture', 'Pastureland (NOAA)', 'agriculture/pastureland/4096.png', 'pastureland'),
+    sos_map('sos_food_feed', 'Crops for food or feed (NOAA)', 'food_v_feed/4096.png', 'food versus feed'),
+    sos_map('sos_surface_temp', 'Surface temperature, this month (NOAA)', sos_surface_temperature,
+            'surface temperature'),
+    sos_map('sos_land_temp', 'Land temperature, this day (NOAA)', sos_land_temperature, 'land surface temperature'),
+    sos_map('sos_ndvi', 'Vegetation index, this week (NOAA)', sos_vegetation_index, 'global vegetation (NDVI)'),
+    sos_map('sos_koppen', 'Climate zones, today (NOAA)', sos_koppen_now, 'Köppen climate'),
+    sos_map('sos_koppen_2100', 'Climate zones, 2076-2100 (NOAA)', 'koppen_climate/koppen_1901-2100/4096/2076-2100.png',
+            'Köppen climate projection'),
 ]
 ORIGINAL_BASEMAPS = 7
 BASEMAP_IDS = [b[0] for b in BASEMAPS]

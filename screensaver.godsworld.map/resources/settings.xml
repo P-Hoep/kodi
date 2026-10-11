@@ -17,50 +17,64 @@
             <option label="30107">6</option>
             <option label="30108">7</option>
             <option label="30109">8</option>
+            <option label="30110">9</option>
+            <option label="30111">10</option>
+            <option label="30112">11</option>
+            <option label="30113">12</option>
+            <option label="30114">13</option>
+            <option label="30115">14</option>
+            <option label="30116">15</option>
+            <option label="30117">16</option>
+            <option label="30118">17</option>
+            <option label="30119">18</option>
+            <option label="30120">19</option>
+            <option label="30121">20</option>
+            <option label="30122">21</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="custom_basemap_url" type="string" label="30110">
+        <setting id="custom_basemap_url" type="string" label="30123">
           <level>0</level>
           <default></default>
           <constraints><allowempty>true</allowempty></constraints>
-          <control type="edit" format="string"><heading>30110</heading></control>
+          <control type="edit" format="string"><heading>30123</heading></control>
         </setting>
-        <setting id="borders" type="boolean" label="30111">
+        <setting id="borders" type="boolean" label="30124">
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
         </setting>
       </group>
     </category>
-    <category id="c1" label="30112">
+    <category id="c1" label="30125">
       <group id="1">
-        <setting id="projection" type="integer" label="30112">
+        <setting id="projection" type="integer" label="30125">
           <level>0</level>
           <default>1</default>
           <constraints><options>
-            <option label="30113">0</option>
-            <option label="30114">1</option>
-            <option label="30115">2</option>
-            <option label="30116">3</option>
-            <option label="30117">4</option>
-            <option label="30118">5</option>
-            <option label="30119">6</option>
-            <option label="30120">7</option>
-            <option label="30121">8</option>
-            <option label="30122">9</option>
-            <option label="30123">10</option>
-            <option label="30124">11</option>
+            <option label="30126">0</option>
+            <option label="30127">1</option>
+            <option label="30128">2</option>
+            <option label="30129">3</option>
+            <option label="30130">4</option>
+            <option label="30131">5</option>
+            <option label="30132">6</option>
+            <option label="30133">7</option>
+            <option label="30134">8</option>
+            <option label="30135">9</option>
+            <option label="30136">10</option>
+            <option label="30137">11</option>
+            <option label="30138">12</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="tilt" type="integer" label="30125">
+        <setting id="tilt" type="integer" label="30139">
           <level>0</level>
           <default>20</default>
           <constraints><minimum>-60</minimum><step>5</step><maximum>60</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="center_lon" type="integer" label="30126">
+        <setting id="center_lon" type="integer" label="30140">
           <level>0</level>
           <default>0</default>
           <constraints><minimum>-180</minimum><step>5</step><maximum>180</maximum></constraints>
@@ -68,93 +82,94 @@
         </setting>
       </group>
     </category>
-    <category id="c2" label="30127">
+    <category id="c2" label="30141">
       <group id="1">
-        <setting id="movement" type="integer" label="30127">
+        <setting id="movement" type="integer" label="30141">
           <level>0</level>
           <default>3</default>
           <constraints><options>
-            <option label="30128">0</option>
-            <option label="30129">1</option>
-            <option label="30130">2</option>
-            <option label="30131">3</option>
+            <option label="30142">0</option>
+            <option label="30143">1</option>
+            <option label="30144">2</option>
+            <option label="30145">3</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="speed" type="integer" label="30132">
+        <setting id="speed" type="integer" label="30146">
           <level>0</level>
           <default>3</default>
           <constraints><minimum>1</minimum><step>1</step><maximum>10</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="direction" type="integer" label="30133">
+        <setting id="direction" type="integer" label="30147">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30134">0</option>
-            <option label="30135">1</option>
+            <option label="30148">0</option>
+            <option label="30149">1</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="pan_pattern" type="integer" label="30136">
+        <setting id="pan_pattern" type="integer" label="30150">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30137">0</option>
-            <option label="30138">1</option>
-            <option label="30139">2</option>
+            <option label="30151">0</option>
+            <option label="30152">1</option>
+            <option label="30153">2</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="zoom" type="integer" label="30140">
+        <setting id="zoom" type="integer" label="30154">
           <level>0</level>
           <default>100</default>
           <constraints><minimum>100</minimum><step>10</step><maximum>250</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="auto_zoom" type="boolean" label="30141">
+        <setting id="auto_zoom" type="boolean" label="30155">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
       </group>
     </category>
-    <category id="c3" label="30142">
+    <category id="c3" label="30156">
       <group id="1">
-        <setting id="cycle_projections" type="boolean" label="30143">
+        <setting id="cycle_projections" type="boolean" label="30157">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="projection_list" type="list[integer]" label="30144">
+        <setting id="projection_list" type="list[integer]" label="30158">
           <level>0</level>
-          <default>0,1,2,3,4,5,6,7,8,9,10,11</default>
+          <default>0,1,2,3,4,5,6,7,8,9,10,11,12</default>
           <constraints>
             <options>
-              <option label="30113">0</option>
-              <option label="30114">1</option>
-              <option label="30115">2</option>
-              <option label="30116">3</option>
-              <option label="30117">4</option>
-              <option label="30118">5</option>
-              <option label="30119">6</option>
-              <option label="30120">7</option>
-              <option label="30121">8</option>
-              <option label="30122">9</option>
-              <option label="30123">10</option>
-              <option label="30124">11</option>
+              <option label="30126">0</option>
+              <option label="30127">1</option>
+              <option label="30128">2</option>
+              <option label="30129">3</option>
+              <option label="30130">4</option>
+              <option label="30131">5</option>
+              <option label="30132">6</option>
+              <option label="30133">7</option>
+              <option label="30134">8</option>
+              <option label="30135">9</option>
+              <option label="30136">10</option>
+              <option label="30137">11</option>
+              <option label="30138">12</option>
             </options>
             <delimiter>,</delimiter>
             <minimumitems>1</minimumitems>
           </constraints>
           <control type="list" format="string"><multiselect>true</multiselect></control>
         </setting>
-        <setting id="cycle_styles" type="boolean" label="30145">
+        <setting id="cycle_styles" type="boolean" label="30159">
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
         </setting>
-        <setting id="style_list" type="list[integer]" label="30146">
+        <setting id="style_list" type="list[integer]" label="30160">
           <level>0</level>
           <default>0,1,5,7,8</default>
           <constraints>
@@ -166,167 +181,180 @@
               <option label="30105">4</option>
               <option label="30106">5</option>
               <option label="30107">6</option>
-              <option label="30147">7</option>
-              <option label="30148">8</option>
+              <option label="30161">7</option>
+              <option label="30162">8</option>
               <option label="30108">9</option>
               <option label="30109">10</option>
+              <option label="30110">11</option>
+              <option label="30111">12</option>
+              <option label="30112">13</option>
+              <option label="30113">14</option>
+              <option label="30114">15</option>
+              <option label="30115">16</option>
+              <option label="30116">17</option>
+              <option label="30117">18</option>
+              <option label="30118">19</option>
+              <option label="30119">20</option>
+              <option label="30120">21</option>
+              <option label="30121">22</option>
+              <option label="30122">23</option>
             </options>
             <delimiter>,</delimiter>
             <minimumitems>1</minimumitems>
           </constraints>
           <control type="list" format="string"><multiselect>true</multiselect></control>
         </setting>
-        <setting id="cycle_minutes" type="integer" label="30149">
+        <setting id="cycle_minutes" type="integer" label="30163">
           <level>0</level>
           <default>5</default>
           <constraints><minimum>1</minimum><step>1</step><maximum>60</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="cycle_order" type="integer" label="30150">
+        <setting id="cycle_order" type="integer" label="30164">
           <level>0</level>
           <default>1</default>
           <constraints><options>
-            <option label="30151">0</option>
-            <option label="30152">1</option>
+            <option label="30165">0</option>
+            <option label="30166">1</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="transition" type="integer" label="30153">
+        <setting id="transition" type="integer" label="30167">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30154">0</option>
-            <option label="30155">1</option>
-          </options></constraints>
-          <control type="spinner" format="string"/>
-        </setting>
-      </group>
-    </category>
-    <category id="c4" label="30156">
-      <group id="1">
-        <setting id="render_mode" type="integer" label="30156">
-          <level>0</level>
-          <default>0</default>
-          <constraints><options>
-            <option label="30157">0</option>
-            <option label="30147">1</option>
-            <option label="30148">2</option>
-            <option label="30158">3</option>
+            <option label="30168">0</option>
+            <option label="30169">1</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
       </group>
     </category>
-    <category id="c5" label="30159">
+    <category id="c4" label="30170">
       <group id="1">
-        <setting id="ascii_color" type="integer" label="30160">
+        <setting id="render_mode" type="integer" label="30170">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30161">0</option>
-            <option label="30162">1</option>
-          </options></constraints>
-          <control type="spinner" format="string"/>
-        </setting>
-        <setting id="ascii_palette" type="integer" label="30163">
-          <level>0</level>
-          <default>0</default>
-          <constraints><options>
-            <option label="30164">0</option>
-            <option label="30165">1</option>
-            <option label="30166">2</option>
-            <option label="30167">3</option>
-          </options></constraints>
-          <control type="spinner" format="string"/>
-          <dependencies><dependency type="visible" setting="ascii_color">0</dependency></dependencies>
-        </setting>
-        <setting id="ascii_mono" type="integer" label="30168">
-          <level>0</level>
-          <default>0</default>
-          <constraints><options>
-            <option label="30169">0</option>
-            <option label="30170">1</option>
-            <option label="30171">2</option>
+            <option label="30171">0</option>
+            <option label="30161">1</option>
+            <option label="30162">2</option>
             <option label="30172">3</option>
           </options></constraints>
           <control type="spinner" format="string"/>
-          <dependencies><dependency type="visible" setting="ascii_color">1</dependency></dependencies>
         </setting>
-        <setting id="ascii_density" type="integer" label="30173">
+      </group>
+    </category>
+    <category id="c5" label="30173">
+      <group id="1">
+        <setting id="ascii_color" type="integer" label="30174">
           <level>0</level>
-          <default>1</default>
+          <default>0</default>
           <constraints><options>
-            <option label="30174">0</option>
-            <option label="30175">1</option>
-            <option label="30176">2</option>
+            <option label="30175">0</option>
+            <option label="30176">1</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="ascii_charset" type="integer" label="30177">
+        <setting id="ascii_palette" type="integer" label="30177">
           <level>0</level>
           <default>0</default>
           <constraints><options>
             <option label="30178">0</option>
             <option label="30179">1</option>
+            <option label="30180">2</option>
+            <option label="30181">3</option>
           </options></constraints>
           <control type="spinner" format="string"/>
+          <dependencies><dependency type="visible" setting="ascii_color">0</dependency></dependencies>
         </setting>
-        <setting id="ascii_ramp" type="integer" label="30180">
+        <setting id="ascii_mono" type="integer" label="30182">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30181">0</option>
-            <option label="30182">1</option>
-            <option label="30183">2</option>
+            <option label="30183">0</option>
+            <option label="30184">1</option>
+            <option label="30185">2</option>
+            <option label="30186">3</option>
+          </options></constraints>
+          <control type="spinner" format="string"/>
+          <dependencies><dependency type="visible" setting="ascii_color">1</dependency></dependencies>
+        </setting>
+        <setting id="ascii_density" type="integer" label="30187">
+          <level>0</level>
+          <default>1</default>
+          <constraints><options>
+            <option label="30188">0</option>
+            <option label="30189">1</option>
+            <option label="30190">2</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="ascii_borders" type="boolean" label="30184">
+        <setting id="ascii_charset" type="integer" label="30191">
+          <level>0</level>
+          <default>0</default>
+          <constraints><options>
+            <option label="30192">0</option>
+            <option label="30193">1</option>
+          </options></constraints>
+          <control type="spinner" format="string"/>
+        </setting>
+        <setting id="ascii_ramp" type="integer" label="30194">
+          <level>0</level>
+          <default>0</default>
+          <constraints><options>
+            <option label="30195">0</option>
+            <option label="30196">1</option>
+            <option label="30197">2</option>
+          </options></constraints>
+          <control type="spinner" format="string"/>
+        </setting>
+        <setting id="ascii_borders" type="boolean" label="30198">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="ascii_urban" type="boolean" label="30185">
+        <setting id="ascii_urban" type="boolean" label="30199">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
       </group>
     </category>
-    <category id="c6" label="30186">
+    <category id="c6" label="30200">
       <group id="1">
-        <setting id="layer_clouds" type="boolean" label="30187">
+        <setting id="layer_clouds" type="boolean" label="30201">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="layer_precip" type="boolean" label="30188">
+        <setting id="layer_precip" type="boolean" label="30202">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="layer_temp" type="boolean" label="30189">
+        <setting id="layer_temp" type="boolean" label="30203">
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
         </setting>
-        <setting id="layer_wind" type="boolean" label="30190">
+        <setting id="layer_wind" type="boolean" label="30204">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="layer_storms" type="boolean" label="30191">
+        <setting id="layer_storms" type="boolean" label="30205">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="weather_opacity" type="integer" label="30192">
+        <setting id="weather_opacity" type="integer" label="30206">
           <level>0</level>
           <default>70</default>
           <constraints><minimum>20</minimum><step>10</step><maximum>100</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="wind_particles" type="integer" label="30193">
+        <setting id="wind_particles" type="integer" label="30207">
           <level>0</level>
           <default>200</default>
           <constraints><minimum>50</minimum><step>50</step><maximum>400</maximum></constraints>
@@ -335,59 +363,78 @@
         </setting>
       </group>
     </category>
-    <category id="c7" label="30194">
+    <category id="c7" label="30208">
       <group id="1">
-        <setting id="layer_quakes" type="boolean" label="30195">
+        <setting id="layer_quakes" type="boolean" label="30209">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="quake_feed" type="integer" label="30196">
+        <setting id="quake_feed" type="integer" label="30210">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30197">0</option>
-            <option label="30198">1</option>
-            <option label="30199">2</option>
+            <option label="30211">0</option>
+            <option label="30212">1</option>
+            <option label="30213">2</option>
           </options></constraints>
           <control type="spinner" format="string"/>
           <dependencies><dependency type="visible" setting="layer_quakes">true</dependency></dependencies>
         </setting>
-        <setting id="layer_volcanoes" type="boolean" label="30200">
+        <setting id="layer_volcanoes" type="boolean" label="30214">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="layer_fires" type="boolean" label="30201">
+        <setting id="layer_fires" type="boolean" label="30215">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="layer_lightning" type="boolean" label="30202">
+        <setting id="layer_lightning" type="boolean" label="30216">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="layer_iss" type="boolean" label="30203">
+        <setting id="layer_iss" type="boolean" label="30217">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="animate_events" type="boolean" label="30204">
+        <setting id="layer_flights" type="boolean" label="30218">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="max_flights" type="integer" label="30219">
+          <level>0</level>
+          <default>80</default>
+          <constraints><minimum>10</minimum><step>10</step><maximum>300</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="layer_flights">true</dependency></dependencies>
+        </setting>
+        <setting id="flight_refresh" type="integer" label="30220">
+          <level>0</level>
+          <default>30</default>
+          <constraints><minimum>15</minimum><step>5</step><maximum>120</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="layer_flights">true</dependency></dependencies>
+        </setting>
+        <setting id="animate_events" type="boolean" label="30221">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
       </group>
     </category>
-    <category id="c8" label="30205">
+    <category id="c8" label="30222">
       <group id="1">
-        <setting id="daynight" type="boolean" label="30206">
+        <setting id="daynight" type="boolean" label="30223">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="night_darkness" type="integer" label="30207">
+        <setting id="night_darkness" type="integer" label="30224">
           <level>0</level>
           <default>75</default>
           <constraints><minimum>20</minimum><step>5</step><maximum>95</maximum></constraints>
@@ -396,21 +443,21 @@
         </setting>
       </group>
     </category>
-    <category id="c9" label="30208">
+    <category id="c9" label="30225">
       <group id="1">
-        <setting id="lights" type="boolean" label="30209">
+        <setting id="lights" type="boolean" label="30226">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="lights_brightness" type="integer" label="30210">
+        <setting id="lights_brightness" type="integer" label="30227">
           <level>0</level>
           <default>70</default>
           <constraints><minimum>10</minimum><step>10</step><maximum>100</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
           <dependencies><dependency type="visible" setting="lights">true</dependency></dependencies>
         </setting>
-        <setting id="lights_night_only" type="boolean" label="30211">
+        <setting id="lights_night_only" type="boolean" label="30228">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
@@ -418,38 +465,38 @@
         </setting>
       </group>
     </category>
-    <category id="c10" label="30212">
+    <category id="c10" label="30229">
       <group id="1">
-        <setting id="background" type="integer" label="30213">
+        <setting id="background" type="integer" label="30230">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30214">0</option>
-            <option label="30215">1</option>
+            <option label="30231">0</option>
+            <option label="30232">1</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="show_info" type="boolean" label="30216">
+        <setting id="show_info" type="boolean" label="30233">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="show_status" type="boolean" label="30217">
+        <setting id="show_status" type="boolean" label="30234">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="show_legend" type="boolean" label="30218">
+        <setting id="show_legend" type="boolean" label="30235">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="show_credits" type="boolean" label="30219">
+        <setting id="show_credits" type="boolean" label="30236">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="dim" type="integer" label="30220">
+        <setting id="dim" type="integer" label="30237">
           <level>0</level>
           <default>0</default>
           <constraints><minimum>0</minimum><step>10</step><maximum>80</maximum></constraints>
@@ -457,58 +504,58 @@
         </setting>
       </group>
     </category>
-    <category id="c11" label="30221">
+    <category id="c11" label="30238">
       <group id="1">
-        <setting id="quality" type="integer" label="30222">
+        <setting id="quality" type="integer" label="30239">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30131">0</option>
-            <option label="30223">1</option>
-            <option label="30224">2</option>
-            <option label="30225">3</option>
+            <option label="30145">0</option>
+            <option label="30240">1</option>
+            <option label="30241">2</option>
+            <option label="30242">3</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="max_fps" type="integer" label="30226">
+        <setting id="max_fps" type="integer" label="30243">
           <level>0</level>
           <default>12</default>
           <constraints><minimum>1</minimum><step>1</step><maximum>30</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="crossfade" type="boolean" label="30227">
+        <setting id="crossfade" type="boolean" label="30244">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="show_perf" type="boolean" label="30228">
+        <setting id="show_perf" type="boolean" label="30245">
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
         </setting>
       </group>
     </category>
-    <category id="c12" label="30229">
+    <category id="c12" label="30246">
       <group id="1">
-        <setting id="refresh_minutes" type="integer" label="30230">
+        <setting id="refresh_minutes" type="integer" label="30247">
           <level>0</level>
           <default>60</default>
           <constraints><minimum>30</minimum><step>30</step><maximum>360</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="max_age" type="integer" label="30231">
+        <setting id="max_age" type="integer" label="30248">
           <level>0</level>
           <default>2</default>
           <constraints><options>
-            <option label="30232">0</option>
-            <option label="30233">1</option>
-            <option label="30234">2</option>
-            <option label="30235">3</option>
-            <option label="30236">4</option>
+            <option label="30249">0</option>
+            <option label="30250">1</option>
+            <option label="30251">2</option>
+            <option label="30252">3</option>
+            <option label="30253">4</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="clear_cache" type="action" label="30237">
+        <setting id="clear_cache" type="action" label="30254">
           <level>0</level>
           <data>RunScript(special://home/addons/screensaver.godsworld.map/default.py,clear_cache)</data>
           <control type="button" format="action"><close>true</close></control>

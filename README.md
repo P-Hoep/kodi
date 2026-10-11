@@ -14,9 +14,9 @@ including Android / Fire TV. Tested on Kodi 21.1 (macOS) and 21.2 / 21.3 (Fire T
 
 A second screensaver in this repo, `screensaver.godsworld.map`, built from
 [docs/godsworld-screensaver.md](docs/godsworld-screensaver.md): the whole Earth in
-twelve projections (Mercator, Robinson, Dymaxion, Gall–Peters, Equal Earth,
+thirteen projections (Mercator, Robinson, Dymaxion, Gall–Peters, Equal Earth,
 Sinu-Mollweide, Goode, cylindrical equal-area, Peirce quincuncial, Winkel tripel,
-Waterman butterfly, globe), with clouds, precipitation, temperature, wind and
+an octahedral butterfly, globe, and Waterman's butterfly on his W5 polyhedron), with clouds, precipitation, temperature, wind and
 storms, the day/night line and city lights, and Dwarf Fortress-style ASCII modes.
 
 ```bash

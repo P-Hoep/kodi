@@ -6,8 +6,8 @@
   </requires>
   <extension point="xbmc.ui.screensaver" library="default.py"/>
   <extension point="xbmc.addon.metadata">
-    <summary lang="en_GB">The whole Earth: twelve projections, live weather, day and night, and ASCII modes</summary>
-    <description lang="en_GB">An ambient world-map screensaver. Shows the Earth in twelve projections, from Mercator and Robinson to Fuller's Dymaxion, Peirce's quincuncial square, Waterman's butterfly and a spinning globe, with satellite, relief, OpenStreetMap or atlas base maps. Layers: infrared clouds, precipitation, temperature, flowing wind and tropical storms, the moving day/night line and city lights. Also draws the world as Dwarf Fortress-style ASCII art. Cycles projections and styles on a timer. Keeps working from cached data when the network drops.</description>
+    <summary lang="en_GB">The whole Earth: thirteen projections, live weather, day and night, and ASCII modes</summary>
+    <description lang="en_GB">An ambient world-map screensaver. Shows the Earth in thirteen projections, from Mercator and Robinson to Fuller's Dymaxion, Peirce's quincuncial square, Waterman's butterfly (on his W5 polyhedron) and a spinning globe, with satellite, relief, OpenStreetMap or atlas base maps. Layers: infrared clouds, precipitation, temperature, flowing wind and tropical storms, the moving day/night line and city lights. Also draws the world as Dwarf Fortress-style ASCII art. Cycles projections and styles on a timer. Keeps working from cached data when the network drops.</description>
     <disclaimer lang="en_GB">Data from NASA (Blue Marble, GIBS, GPM IMERG), NOAA (nowCOAST, NHC), GDACS, Open-Meteo.com (CC BY 4.0), Natural Earth and Mapzen terrain tiles. Map tiles © OpenStreetMap contributors, © CARTO. For personal use; follow each provider's terms.</disclaimer>
     <platform>all</platform>
     <license>MIT</license>

@@ -433,9 +433,154 @@ def waterman_butterfly():
         faces.append(((north, e0, e1), (pole, q[k], q[k + 1])))
         tip = (q[k][0] + q[k + 1][0] - pole[0], q[k][1] + q[k + 1][1] - pole[1])
         faces.append(((south, e0, e1), (tip, q[k], q[k + 1])))
-    proj = Octahedral('waterman', 'Waterman butterfly', faces)
+    proj = Octahedral('waterman', 'Butterfly (octahedral, Waterman cuts)', faces)
     proj.subdivide = 20
     return proj
+
+
+def _cross(a, b):
+    return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
+
+
+def _dot(a, b):
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+
+
+def _norm(a):
+    n = math.sqrt(_dot(a, a))
+    return (a[0] / n, a[1] / n, a[2] / n)
+
+
+class WatermanW5(Projection):
+    """Waterman's butterfly on his W5 polyhedron, a truncated octahedron, built as d3-geo's
+    reference implementation (geoPolyhedralWaterman) builds it.
+
+    Each octant becomes a hexagon by cutting its corners where the octant's edges are split
+    1:3 (18.43 degrees from each octahedron vertex); each corner cut off is a triangle hung
+    on its own hexagon. Every face is a gnomonic projection about its centre (great circles
+    stay straight), and the faces are unfolded in d3's tree, each joined to its parent along
+    their shared edge. The globe is turned 20 degrees so the cuts fall on 20 W, 70 E, 160 E and
+    110 W, as on Waterman's map."""
+
+    interrupted = True
+    rotatable = False
+    ROTATE = 20.0                         # d3 example: .rotate([20, 0])
+    ANGLE = -30.0                         # d3: .angle(-30)
+    PARENTS = [-1, 0, 0, 1, 0, 1, 4, 5]   # hexagons; corner triangles follow their hexagon
+    subdivide = 10
+
+    def __init__(self, pid='waterman_w5', name='Waterman butterfly (W5)'):
+        Projection.__init__(self, pid, name)
+        octa = [unit(*v) for v in ((0, 90), (-90, 0), (0, 0), (90, 0), (180, 0), (0, -90))]
+        octa_faces = [(0, 2, 1), (0, 3, 2), (5, 1, 2), (5, 2, 3), (0, 1, 4), (0, 4, 3), (5, 4, 1), (5, 3, 4)]
+        k1, k2 = 3 / math.sqrt(10), 1 / math.sqrt(10)   # 18.43 degrees along a 90-degree edge
+        faces, parents, centres = [], list(self.PARENTS), []
+        hexagons = []
+        for tri in octa_faces:
+            pts = [octa[i] for i in tri]
+            hexagon = []
+            a = pts[-1]
+            for b in pts:
+                hexagon.append(tuple(a[i] * k1 + b[i] * k2 for i in range(3)))
+                hexagon.append(tuple(b[i] * k1 + a[i] * k2 for i in range(3)))
+                a = b
+            hexagons.append(hexagon)
+            faces.append(hexagon)
+            centres.append(_norm(tuple(sum(p[i] for p in hexagon) for i in range(3))))
+        for j, tri in enumerate(octa_faces):
+            hexagon = hexagons[j]
+            for i in range(3):
+                faces.append([octa[tri[i]], hexagon[(2 * i + 2) % 6], hexagon[(2 * i + 1) % 6]])
+                parents.append(j)
+                centres.append(octa[tri[i]])
+        self.faces = faces
+        # Each face's tangent-plane basis: centre c, east e, north n (right-handed from outside).
+        self.bases = []
+        for c in centres:
+            e = _cross((0.0, 0.0, 1.0), c)
+            e = _norm(e) if _dot(e, e) > 1e-12 else (0.0, 1.0, 0.0)
+            self.bases.append((c, e, _cross(c, e)))
+        # Edge planes for "is this point on the face" (each face is a convex spherical polygon).
+        self.edges = []
+        for f, poly in enumerate(faces):
+            c = self.bases[f][0]
+            planes = []
+            for k in range(len(poly)):
+                nrm = _cross(poly[k], poly[(k + 1) % len(poly)])
+                planes.append(nrm if _dot(nrm, c) > 0 else tuple(-v for v in nrm))
+            self.edges.append(planes)
+        # Unfold: a complex similarity z -> a * z + b per face, joining shared edges.
+        self.transforms = [None] * len(faces)
+        self.transforms[0] = (complex(1, 0), complex(0, 0))
+        for f in range(1, len(faces)):
+            self._place(f, parents)
+        turn = complex(math.cos(self.ANGLE * D2R), math.sin(self.ANGLE * D2R))
+        self.transforms = [(a * turn, b * turn) for a, b in self.transforms]
+
+    def _place(self, f, parents):
+        p = parents[f]
+        if self.transforms[p] is None:
+            self._place(p, parents)
+        shared = [v for v in self.faces[f] if any(_dot(v, w) > 1 - 1e-9 for w in self.faces[p])]
+        s0, s1 = shared[0], shared[1]
+        pa, pb = self.transforms[p]
+        P0, P1 = pa * self.local(p, s0) + pb, pa * self.local(p, s1) + pb
+        C0, C1 = self.local(f, s0), self.local(f, s1)
+        a = (P1 - P0) / (C1 - C0)
+        self.transforms[f] = (a, P0 - a * C0)
+
+    def local(self, f, p):
+        """Unit vector -> gnomonic plane coordinates of face f, as a complex number."""
+        c, e, n = self.bases[f]
+        d = _dot(p, c)
+        return complex(_dot(p, e) / d, _dot(p, n) / d)
+
+    def sphere(self, f, z):
+        """Gnomonic plane point of face f -> (lon, lat) on the real globe."""
+        c, e, n = self.bases[f]
+        q = _norm(tuple(c[i] + z.real * e[i] + z.imag * n[i] for i in range(3)))
+        lon, lat = lonlat(q)
+        return ((lon - self.ROTATE + 540.0) % 360.0) - 180.0, lat
+
+    def face_of(self, p):
+        for f, planes in enumerate(self.edges):
+            if all(_dot(nrm, p) >= -1e-12 for nrm in planes):
+                return f
+        return None
+
+    def forward(self, lon, lat):
+        p = unit(lon + self.ROTATE, lat)
+        f = self.face_of(p)
+        if f is None:
+            return None
+        a, b = self.transforms[f]
+        z = a * self.local(f, p) + b
+        return z.real, z.imag
+
+    def build_mesh(self):
+        verts, tris = [], []
+        n = self.subdivide
+        for f, poly in enumerate(self.faces):
+            a_t, b_t = self.transforms[f]
+            corners = [self.local(f, v) for v in poly]
+            # Hexagons are fanned from their centre (local 0); triangles are used as they are.
+            fans = ([(0j, corners[k], corners[(k + 1) % 6]) for k in range(6)] if len(poly) == 6
+                    else [tuple(corners)])
+            for z0, z1, z2 in fans:
+                index = {}
+                for i in range(n + 1):
+                    for j in range(n + 1 - i):
+                        z = z0 + (z1 - z0) * (i / float(n)) + (z2 - z0) * (j / float(n))
+                        w = a_t * z + b_t
+                        lon, lat = self.sphere(f, z)
+                        index[(i, j)] = len(verts)
+                        verts.append((w.real, w.imag, lon, lat))
+                for i in range(n):
+                    for j in range(n - i):
+                        tris.append((index[(i, j)], index[(i + 1, j)], index[(i, j + 1)]))
+                        if i + j < n - 1:
+                            tris.append((index[(i + 1, j)], index[(i + 1, j + 1)], index[(i, j + 1)]))
+        return verts, tris
 
 
 # Buckminster Fuller's icosahedron orientation (R. W. Gray's coordinates): every vertex
@@ -604,6 +749,7 @@ def _build():
         Graticule('winkel_tripel', 'Winkel tripel', winkel_tripel),
         waterman_butterfly(),
         Orthographic(),
+        WatermanW5(),   # added later: last, so saved projection choices keep their numbers
     ]
 
 
