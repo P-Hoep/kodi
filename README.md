@@ -34,6 +34,41 @@ table lookup plus a PNG write, all in pure Python. Kodi itself animates panning,
 cross-fades and the wind particles at display rate. Spinning views (the globe)
 are re-rendered frames, about 3–10 a second on a Mac.
 
+## Math Clock (new, v0.1)
+
+A third screensaver, `screensaver.math.clock`, built from
+[docs/math-clock.md](docs/math-clock.md) and the old web clock in `mathclock-old/`
+(themathclock.com). The year, month, day, hours, minutes and seconds each show as an
+equation whose answer is the current value, typeset in Computer Modern like LaTeX.
+
+- **Equation sets:** *Classic* (the original 17 puzzles, ported one for one), *Advanced*
+  (fractions, powers, logs, sums, binomials, floors) and **Algebra 2** (the default),
+  which mixes the classic and advanced puzzles with Algebra 2 ones: quadratics by
+  factoring and by the quadratic formula, linear systems, exponential and
+  log equations, log rules, rational exponents and nth roots, radical, rational and
+  absolute-value equations, f(x) evaluation, composition and inverses, complex numbers,
+  arithmetic and geometric sequences and series, 2×2 determinants, permutations and
+  combinations. Every puzzle has exactly one answer; a quadratic with
+  two roots says which one, e.g. `h² − 13h + 36 = 0, h > 4`.
+- **The original's settings:** seconds, 24-hour clock (with a 24h badge), date, labels,
+  inverted colours, day/night mode. **Extras:** date order, distinct M for month, refresh
+  rate, text size, separators, fade or cut, dimming, OLED drift.
+
+No TeX at run time: `tools/make_mathclock_media.py` renders each glyph once from the
+BaKoMa Computer Modern fonts that ship with matplotlib, `texmath.py` is a small TeX
+math layout engine (scripts, radicals, fractions, big operators, delimiters,
+matrices), and Kodi positions and fades the glyph images. Kodi uses about 10–20 % CPU
+on a Mac while it runs.
+
+```bash
+python3 tools/make_mathclock_media.py      # glyphs, metrics, icon (needs Pillow, matplotlib)
+python3 tools/make_settings_mathclock.py   # settings.xml + strings.po from resources/lib/config.py
+python3 tools/preview_mathclock.py out.png equation_set=3 colours=0   # draw the face with Pillow
+python3 tools/build_zip.py screensaver.math.clock
+KODI_ADDON=screensaver.math.clock python3 tools/kodi.py install       # then select / run / shot
+python3 -m unittest tests.test_mathclock   # solves every generated puzzle from its LaTeX
+```
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full

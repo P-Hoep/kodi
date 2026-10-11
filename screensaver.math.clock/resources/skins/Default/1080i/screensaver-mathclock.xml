@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Empty full-screen window; the background and the glyphs are added from Python. -->
+<window>
+  <backgroundcolor>0xff000000</backgroundcolor>
+  <controls/>
+</window>

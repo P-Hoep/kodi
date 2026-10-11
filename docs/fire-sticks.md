@@ -11,12 +11,12 @@ Home LAN: `192.168.1.0/24`, gateway `192.168.1.1`. The Mac was `192.168.1.29`
 at the time. IPs come from DHCP and can change, so the **MAC address** is the
 reliable identifier. Consider DHCP reservations on the router.
 
-| IP | MAC | Model | Fire OS / Android | Kodi | adb | God's Eye Map | God's World Map |
-|---|---|---|---|---|---|---|---|
-| **192.168.1.78** | `48:78:5e:42:d6:da` | AFTKA: Fire TV Stick 4K Max (2nd gen) | Fire OS 7.7.1.3 / Android 9 | 21.3 | ✅ authorized | ✅ v0.2.0 | ✅ v0.1.0, installed 2026-10-11, active screensaver |
-| **192.168.1.15** | `2c:71:ff:8c:40:bd` | AFTMM: Fire TV Stick 4K (1st gen) | Fire OS 6.7.1.1 / Android 7.1.2 | 21.2 | ✅ authorized | ✅ v0.2.0, installed 2026-10-10, replaced `screensaver.rsxs.lorenz` | ✅ v0.1.0, installed 2026-10-11, active screensaver (was God's Eye) |
-| **192.168.1.128** | `60:6d:3c:23:10:df` | unknown (Fire TV, by its adb port) | ? | ? | ❌ **unauthorized**: approve the prompt on its TV | not installed | not installed |
-| 192.168.1.254 | `bc:5f:f4:1d:d0:3f` | probably the ISP gateway (also has 8080 open) | - | - | goes offline at once | n/a, ignore | n/a |
+| IP | MAC | Model | Fire OS / Android | Kodi | adb | God's Eye Map | God's World Map | Math Clock |
+|---|---|---|---|---|---|---|---|---|
+| **192.168.1.78** | `48:78:5e:42:d6:da` | AFTKA: Fire TV Stick 4K Max (2nd gen) | Fire OS 7.7.1.3 / Android 9 | 21.3 | ✅ authorized | ✅ v0.2.0 | ✅ v0.1.0 + centre lat/lon settings, updated 2026-10-11, active screensaver | ✅ v0.1.0 (Algebra 2 build), installed 2026-10-11; previewed from the TV, not the active screensaver |
+| **192.168.1.15** | `2c:71:ff:8c:40:bd` | AFTMM: Fire TV Stick 4K (1st gen) | Fire OS 6.7.1.1 / Android 7.1.2 | 21.2 | ✅ authorized | ✅ v0.2.0, installed 2026-10-10, replaced `screensaver.rsxs.lorenz` | ⚠️ v0.1.0, installed 2026-10-11, active screensaver (was God's Eye); centre lat/lon update pending, the stick was offline | ⚠️ v0.1.0 first build (classic sets only), installed 2026-10-11; update pending, the stick was offline |
+| **192.168.1.128** | `60:6d:3c:23:10:df` | unknown (Fire TV, by its adb port) | ? | ? | ❌ **unauthorized**: approve the prompt on its TV | not installed | not installed | not installed |
+| 192.168.1.254 | `bc:5f:f4:1d:d0:3f` | probably the ISP gateway (also has 8080 open) | - | - | goes offline at once | n/a, ignore | n/a | n/a |
 
 Notes:
 - **.15** also has Kodi repositories `repository.jenrepo` and
@@ -225,6 +225,16 @@ The same steps with `screensaver.godsworld.map` in place of `screensaver.godseye
   CPU summary once a minute (`last minute: Kodi process CPU ...`).
 - `adb exec-out screencap` does not wake the screensaver (Kodi's own TakeScreenshot via
   the EventServer, as `tools/kodi.py shot` uses on the Mac, does).
+
+### Deploying Math Clock
+
+The same steps with `screensaver.math.clock`. It has no dependencies at all. Notes:
+
+- Kodi refuses `Addons.ExecuteAddon` for a screensaver add-on, so to see it without
+  waiting for the idle timeout use **Settings → Interface → Screensaver → Preview** on
+  the TV.
+- An older, unrelated `screensaver.mathclock` (2024, v1.0.0) is installed in the Mac's
+  Kodi; the new add-on's id is different so both can coexist.
 
 ### Reverting a stick
 
