@@ -32,7 +32,8 @@ CATEGORIES = [
     ]),
     ('Projection', [
         O('projection', 'Projection', 1, [p.name for p in projections.ALL]),
-        S('tilt', 'Globe: latitude facing the viewer', 20, -60, 60, 5),
+        S('tilt', 'Centre latitude', 20, -60, 60, 5),
+        S('center_lon', 'Centre longitude', 0, -180, 180, 5),
     ]),
     ('Movement', [
         O('movement', 'Movement', 3, ['Static', 'Pan across the map', 'Rotate', 'Automatic']),

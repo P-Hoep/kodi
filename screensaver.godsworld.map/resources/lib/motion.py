@@ -53,8 +53,13 @@ class Motion(object):
     meridian), 'scroll' (a cylindrical map sliding sideways and wrapping), 'pan' (the
     camera wandering over a map larger than the screen) or 'static'."""
 
-    def __init__(self, kind, rotatable, setting, speed, eastward, pattern, disp_w, disp_h, screen_w, screen_h):
+    def __init__(self, kind, rotatable, setting, speed, eastward, pattern, disp_w, disp_h, screen_w, screen_h,
+                 lon0=0.0, focus=None):
         self.disp_w, self.disp_h = disp_w, disp_h
+        # The chosen centre: a rotatable map is drawn with lon0 as its central meridian;
+        # a static flat map slides so focus (map pixel x, y of the centre point) is mid-screen.
+        self.lon0 = lon0 if rotatable or kind == 'globe' else 0.0
+        self.focus = focus
         self.screen_w, self.screen_h = screen_w, screen_h
         self.speed = max(1, min(10, speed))
         self.sign = -1.0 if eastward else 1.0   # eastward: the surface moves east (to the right)
@@ -76,8 +81,8 @@ class Motion(object):
     def rotation(self, t):
         """Central meridian in degrees (spin), for time t in seconds since the scene began."""
         if self.mode != 'spin':
-            return 0.0
-        return (self.sign * self.deg_per_s * t) % 360.0
+            return self.lon0 % 360.0
+        return (self.lon0 + self.sign * self.deg_per_s * t) % 360.0
 
     def offset(self, t):
         """Top-left screen position of the map image at time t (floats)."""
@@ -89,6 +94,14 @@ class Motion(object):
             ay = max(0.0, (self.disp_h - self.screen_h) / 2.0)
             y = cy + ay * math.sin(t * self.px_per_s / max(ay, 200.0) * 0.5) if ay else cy
             return cx + x, y
+        if self.mode == 'static' and self.focus is not None:
+            # Bring the focus to mid-screen, but never past an edge of a map larger than the
+            # screen; a map that fits stays centred in that direction.
+            if self.disp_w > self.screen_w:
+                cx = min(0.0, max(self.screen_w - self.disp_w, self.screen_w / 2.0 - self.focus[0]))
+            if self.disp_h > self.screen_h:
+                cy = min(0.0, max(self.screen_h - self.disp_h, self.screen_h / 2.0 - self.focus[1]))
+            return cx, cy
         if self.mode != 'pan':
             return cx, cy
         ax = max(DRIFT_PX, (self.disp_w - self.screen_w) / 2.0)

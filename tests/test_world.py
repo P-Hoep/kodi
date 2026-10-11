@@ -109,6 +109,19 @@ class MotionTest(unittest.TestCase):
         self.assertEqual(m.mode, 'pan')   # interrupted maps can't rotate: pan instead
         self.assertEqual(motion.Motion('globe', True, motion.AUTO, 3, True, 0, 900, 900, 1920, 1080).mode, 'spin')
 
+    def test_static_centre(self):
+        # A rotatable map takes the centre longitude as its central meridian.
+        m = motion.Motion('flat', True, motion.STATIC, 3, True, 0, 3000, 1600, 1920, 1080, -90.0)
+        self.assertEqual(m.rotation(10.0), 270.0)
+        # The focus point goes to mid-screen, clamped so the map still covers the screen.
+        m.focus = (1500.0, 500.0)
+        self.assertEqual(m.offset(0.0), (960.0 - 1500.0, 0.0))
+        m.focus = (2000.0, 1000.0)
+        self.assertEqual(m.offset(0.0), (960.0 - 2000.0, 540.0 - 1000.0))
+        # Interrupted maps keep their meridian and only slide.
+        m = motion.Motion('flat', False, motion.STATIC, 3, True, 0, 3000, 1600, 1920, 1080, -90.0)
+        self.assertEqual(m.rotation(0.0), 0.0)
+
 
 class RenderTest(unittest.TestCase):
     def setUp(self):

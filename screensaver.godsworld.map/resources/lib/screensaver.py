@@ -132,7 +132,7 @@ class Shown(object):
         self.copies = 1
         if mov.mode == 'scroll':
             self.copies = min(MAX_COPIES, int(math.ceil(W / float(geo.show_w))) + 1)
-        self.rotation = 0.0
+        self.rotation = mov.rotation(0.0)
         self.pos = None
 
 
@@ -449,11 +449,15 @@ class Screensaver(object):
                     break
                 prep = time.time() - t
                 mov = motion.Motion(scene.proj.kind, scene.proj.rotatable, self.s['movement'], self.s['speed'],
-                                    self.s['direction'] == 0, self.s['pan_pattern'], geo.show_w, geo.show_h, W, H)
+                                    self.s['direction'] == 0, self.s['pan_pattern'], geo.show_w, geo.show_h, W, H,
+                                    float(self.s['center_lon']))
+                if scene.proj.kind != 'globe':
+                    mov.focus = self.renderer.forward(geo, float(self.s['center_lon']), float(self.s['tilt']),
+                                                      mov.rotation(0.0))
                 shown = Shown(scene, geo, mov, time.time(), style_id)
                 self.world.update_composite(time.time())
                 next_composite = time.time() + COMPOSITE_SECONDS
-                frames, secs = self._render(shown, 0.0)
+                frames, secs = self._render(shown, shown.rotation)
                 self.frame_seconds = secs
                 log('scene %s / %s: %dx%d, motion %s, prepared in %.1fs, frame %.2fs'
                     % (scene.proj.id, style_id, geo.show_w, geo.show_h, mov.mode, prep, secs))
