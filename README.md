@@ -10,6 +10,30 @@ optional sensor looks (night vision, FLIR, CRT…).
 Pure Python, no compiled dependencies: runs on Kodi 20 (Nexus) and 21 (Omega),
 including Android / Fire TV. Tested on Kodi 21.1 (macOS) and 21.2 / 21.3 (Fire TV Stick).
 
+## God's World Map (new, v0.1)
+
+A second screensaver in this repo, `screensaver.godsworld.map`, built from
+[docs/godsworld-screensaver.md](docs/godsworld-screensaver.md): the whole Earth in
+twelve projections (Mercator, Robinson, Dymaxion, Gall–Peters, Equal Earth,
+Sinu-Mollweide, Goode, cylindrical equal-area, Peirce quincuncial, Winkel tripel,
+Waterman butterfly, globe), with clouds, precipitation, temperature, wind and
+storms, the day/night line and city lights, and Dwarf Fortress-style ASCII modes.
+
+```bash
+python3 tools/make_world_data.py              # bundled world data (needs Pillow, numpy)
+python3 tools/make_settings_godsworld.py      # settings.xml + strings.po from resources/lib/config.py
+python3 tools/build_zip.py screensaver.godsworld.map
+KODI_ADDON=screensaver.godsworld.map python3 tools/kodi.py install   # then select / run / shot
+python3 -m unittest tests.test_world
+```
+
+Design in one paragraph: all layers are composed in longitude/latitude
+(`world.py`), every projection is a triangle mesh rasterised once into a cached
+lookup table (`projections.py`, `reproject.py`), and each frame is one C-level
+table lookup plus a PNG write, all in pure Python. Kodi itself animates panning,
+cross-fades and the wind particles at display rate. Spinning views (the globe)
+are re-rendered frames, about 3–10 a second on a Mac.
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full

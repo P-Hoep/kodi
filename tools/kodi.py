@@ -9,6 +9,7 @@
   python3 tools/kodi.py log         # tail Kodi's log for this add-on
 
 Uses JSON-RPC on TCP 9090 and the EventServer on UDP 9777 (both on by default for local apps).
+Set KODI_ADDON=screensaver.godsworld.map to work on God's World Map instead.
 """
 
 import json
@@ -18,7 +19,7 @@ import struct
 import sys
 import time
 
-ADDON_ID = 'screensaver.godseye.map'
+ADDON_ID = os.environ.get('KODI_ADDON', 'screensaver.godseye.map')
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.normpath(os.path.join(HERE, '..', ADDON_ID))
 if sys.platform == 'darwin':
@@ -78,7 +79,7 @@ def main():
         print('previous screensaver:', before)
         print(rpc('Settings.SetSettingValue', {'setting': 'screensaver.mode', 'value': ADDON_ID}))
     elif cmd == 'set':
-        builtin('RunScript(%s,%s)' % (os.path.join(HERE, 'kodi_set.py'), ','.join(sys.argv[2:])))
+        builtin('RunScript(%s,addon=%s,%s)' % (os.path.join(HERE, 'kodi_set.py'), ADDON_ID, ','.join(sys.argv[2:])))
         time.sleep(1.5)
     elif cmd == 'run':
         builtin('ActivateScreensaver')

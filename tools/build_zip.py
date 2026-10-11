@@ -1,12 +1,17 @@
-"""Build dist/screensaver.godseye.map-<version>.zip for Kodi's "Install from zip file"."""
+"""Build dist/<add-on>-<version>.zip for Kodi's "Install from zip file".
+
+  python3 tools/build_zip.py                              # God's Eye Map
+  python3 tools/build_zip.py screensaver.godsworld.map    # God's World Map
+"""
 
 import os
 import re
+import sys
 import zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..'))
-ADDON = 'screensaver.godseye.map'
+ADDON = sys.argv[1].strip('/') if len(sys.argv) > 1 else 'screensaver.godseye.map'
 
 
 def main():

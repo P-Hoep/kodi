@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 dist/
 .DS_Store
+tools/.world-cache/
