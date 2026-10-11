@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.godseye.map" name="God's Eye Map" version="0.2.0" provider-name="P-Hoep">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+    <import addon="script.module.certifi" version="2019.0.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library="default.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Live map screensaver: flights, satellites, weather, traffic and transit</summary>
+    <description lang="en_GB">A screensaver that shows a live map of a place you choose, inspired by God's Eye View. Pick the location, zoom and base map (street, dark, satellite or NASA's daily satellite image), then turn on layers: flights, military aircraft, satellites overhead, earthquakes, tropical storms, rain radar, infrared clouds, lightning, rail and subway lines, live transit vehicles and traffic (free TomTom key). No account needed for most layers.</description>
+    <disclaimer lang="en_GB">Data comes from public sources (adsb.lol, OpenSky Network, CelesTrak, USGS, NOAA, NASA GIBS, OpenRailwayMap, transit agencies, TomTom). Map tiles © OpenStreetMap contributors / CARTO / Esri. For personal use; follow each provider's terms.</disclaimer>
+    <platform>all</platform>
+    <license>MIT</license>
+    <assets>
+      <icon>icon.png</icon>
+    </assets>
+  </extension>
+</addon>
