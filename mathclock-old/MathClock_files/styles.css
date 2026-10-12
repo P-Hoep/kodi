@@ -1,0 +1,109 @@
+        html,
+        body {
+            height: 80%;
+        }
+
+        .inverted {
+            background-color: black !important;
+        }
+
+        .inverted>.pageContent,
+        .inverted>#dateDisplay {
+            color: #eee !important;
+
+        }
+
+        .inverted hr {
+            border-top: none;
+        }
+
+        #question {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 36px;
+        }
+
+        #military {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 60px;
+            color: #4B5320;
+        }
+
+        #dateDisplay {
+            font-size: 42px;
+        }
+
+        .pageContent {
+            font-size: 90px !important;
+            line-height: 50px;
+        }
+
+        .timeLabel {
+            font-size: 18px;
+            float: right;
+            margin-top: 15px;
+            color: #B22222 !important;
+        }
+
+        .vertical-center {
+            min-height: 100%;
+            /* Fallback for browsers do NOT support vh unit */
+            min-height: 100vh;
+            /* These two lines are counted as one :-)       */
+
+            display: flex;
+            align-items: center;
+        }
+
+        .mjx-chtml,
+        .MathJax_CHTML {
+            font-size: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+
+        }
+
+        .mathSmallSpecial {
+            font-size: 30% !important;
+        }
+
+        .hiddenSecond {
+            display: none;
+        }
+
+        .hiddenMinute {
+            display: none;
+        }
+
+        .hiddenHour {
+            display: none;
+        }
+
+        .hiddenMonth {
+            display: none;
+        }
+
+        .hiddenDay {
+            display: none;
+        }
+
+        .hiddenYear {
+            display: none;
+        }
+
+        .pageContent p {
+            text-align: center;
+            margin: 0 !important;
+        }
+
+        .row {
+            margin: 20px;
+            max-height: 60px;
+        }
+
+        .row p {
+            height: 60px;
+        }

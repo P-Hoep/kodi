@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Empty full-screen window; the map and HUD controls are added from Python. -->
+<window>
+  <backgroundcolor>0xff04070e</backgroundcolor>
+  <controls/>
+</window>
