@@ -69,6 +69,51 @@ KODI_ADDON=screensaver.math.clock python3 tools/kodi.py install       # then sel
 python3 -m unittest tests.test_mathclock   # solves every generated puzzle from its LaTeX
 ```
 
+## Couchstronomy (new, v0.1)
+
+A fourth screensaver, `screensaver.couchstronomy`, built from
+[docs/couchstronomy.md](docs/couchstronomy.md): the TV becomes a window onto the real
+sky. Enter where the TV is and which way it faces (compass heading, tilt, field of view,
+or screen width and viewing distance), and it shows the sky outside that window right now:
+41,000 stars to magnitude 8 (HYG/Hipparcos), the Sun, the Moon with its phase and
+earthshine, the planets with phases and Saturn's rings, the Milky Way, Messier and bright
+NGC objects, constellation lines and boundaries, and live satellites from CelesTrak.
+Twilight, daylight, moonlight, light pollution, extinction and refraction are modelled.
+
+- **Labels** are independent of the sky: *Natural* (none), *Named objects* or *Explorer*
+  (names, constellations, deep sky, an object spotlight every 30 s with distance,
+  magnitude, altitude and azimuth). Clock, compass and a data-status line are optional.
+- **Realistic vs Enhanced:** realistic is the default and shows only what the eye could
+  see (the limiting magnitude drops in twilight and moonlight). Enhanced brightens faint
+  stars and enlarges the Moon and planets, and the status line says so.
+- **Satellites** are propagated on the device with SGP4 and hidden when their orbital
+  data is older than the chosen limit (7 days by default); the status line gives the data
+  age. Time-lapse and time-offset settings exist for previews, and are shown on screen.
+
+Accuracy (checked by `tests/test_couch.py` against Skyfield/JPL DE421 for both
+hemispheres, day and night): stars, Sun and planets within 5″, the Moon within 10″, the ISS
+within 0.02° of SGP4, for 2020–2030. Beyond that, the unknown future difference between
+UT1 and UTC adds up to 15″ per second of drift. One screen pixel is about 110″ at a 60°
+field, so on screen the error is the TV's own calibration (a 1° heading error moves the
+whole sky 32 pixels), not the astronomy.
+
+```bash
+python3 tools/make_couch_data.py       # bundled catalogues and textures (needs Pillow, numpy)
+python3 tools/make_couch_media.py      # icon, fanart, sprites
+python3 tools/make_settings_couch.py   # settings.xml + strings.po from resources/lib/config.py
+python3 tools/preview_couch.py out.png time=2026-10-12T04:00 tilt=25 labels=2   # draw without Kodi
+python3 tools/build_zip.py screensaver.couchstronomy
+KODI_ADDON=screensaver.couchstronomy python3 tools/kodi.py install   # then select / run / shot
+python3 -m unittest tests.test_couch   # acceptance tests (pip install skyfield for the accuracy ones)
+```
+
+Design: pure Python, no compiled code. For a fixed TV each screen pixel looks at a fixed
+altitude and azimuth, so the Milky Way layer is the bundled RA/Dec map shifted by sidereal
+time through precomputed lookup tables, and the sky colour is a small image Kodi
+stretches. Stars, planets and lines are drawn into a transparent full-HD PNG with cached
+sprites, re-rendered as often as the sky moves half a pixel (about every 4 s at 60°).
+Satellites are Kodi controls that slide between positions at display rate.
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full

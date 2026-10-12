@@ -3,3 +3,4 @@ __pycache__/
 dist/
 .DS_Store
 tools/.world-cache/
+tools/.couch-cache/

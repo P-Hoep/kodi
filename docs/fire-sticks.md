@@ -236,6 +236,29 @@ The same steps with `screensaver.math.clock`. It has no dependencies at all. Not
 - An older, unrelated `screensaver.mathclock` (2024, v1.0.0) is installed in the Mac's
   Kodi; the new add-on's id is different so both can coexist.
 
+### Deploying Couchstronomy
+
+The same steps with `screensaver.couchstronomy`. It needs only `script.module.certifi`.
+Notes:
+
+- Installed on **.78** and **.15** 2026-10-11 (v0.1.0, enabled, not the active
+  screensaver on either; .15 runs Kodi 21.2 and keeps Math Clock as its saved screensaver).
+  Not yet run on .15, the older and slower stick.
+- Measured on .78 (4K Max): ready 6.4-6.7 s after the screensaver starts; each star frame
+  takes about 630 ms and is redrawn every 4.1 s at a 60° field, so the Kodi process uses
+  about 38 % of a core. The log prints `last minute: ... star frames, ... ms each` once a
+  minute.
+- To test at night by day, put a time offset in
+  `addon_data/screensaver.couchstronomy/settings.xml` while Kodi is closed, e.g.
+  `<settings version="2"><setting id="time_offset">8</setting></settings>`, and delete
+  the file afterwards.
+
+**Settings are only saved when Kodi exits cleanly.** `am force-stop` discards anything
+changed since the last clean exit, including `screensaver.mode` set over JSON-RPC (that
+is how .78 lost God's World Map as its screensaver: guisettings.xml still said Math
+Clock). After changing settings, quit with `python3 rpc.py Application.Quit` rather than
+`force-stop`, then relaunch.
+
 ### Reverting a stick
 
 ```bash

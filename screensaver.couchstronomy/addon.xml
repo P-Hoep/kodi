@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.couchstronomy" name="Couchstronomy" version="0.1.0" provider-name="P-Hoep">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+    <import addon="script.module.certifi" version="2019.0.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library="default.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Your TV as a calibrated window onto the real night sky</summary>
+    <description lang="en_GB">Tell Couchstronomy where your TV is and which way it faces, and it shows the patch of sky that would be outside that window right now: stars from the Hipparcos-based HYG catalogue, the Sun, the Moon with its phase, the planets, the Milky Way, Messier objects and live satellites, all computed for the real time. Stars drift as the Earth turns; satellites cross the screen when they really pass. Labels, constellation lines, the clock and an Explorer mode with object details can each be turned on or off. Works offline from bundled catalogues; satellite orbits are refreshed from CelesTrak when online.</description>
+    <disclaimer lang="en_GB">Positions are calculated, not observed: satellite positions are predictions from orbital elements, and what you can really see also depends on clouds, light pollution and your eyes. Data: HYG database (CC BY-SA 4.0), d3-celestial (BSD), VSOP87 via astronomia (MIT), NASA SVS Moon imagery, CelesTrak.</disclaimer>
+    <platform>all</platform>
+    <license>MIT (code); see LICENSE.txt for the bundled data</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>
