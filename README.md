@@ -17,7 +17,7 @@ A second screensaver in this repo, `screensaver.godsworld.map`, built from
 thirteen projections (Mercator, Robinson, Dymaxion, Gall–Peters, Equal Earth,
 Sinu-Mollweide, Goode, cylindrical equal-area, Peirce quincuncial, Winkel tripel,
 an octahedral butterfly, globe, and Waterman's butterfly on his W5 polyhedron), with clouds, precipitation, temperature, wind and
-storms, the day/night line and city lights, and Dwarf Fortress-style ASCII modes.
+storms, the day/night line and city lights, and Dwarf Fortress-style ASCII modes. 
 
 ```bash
 python3 tools/make_world_data.py              # bundled world data (needs Pillow, numpy)
