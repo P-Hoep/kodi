@@ -209,61 +209,55 @@
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="milky_way" type="boolean" label="30162">
-          <level>0</level>
-          <default>true</default>
-          <control type="toggle"/>
-        </setting>
-        <setting id="mw_brightness" type="integer" label="30163">
-          <level>0</level>
-          <default>100</default>
-          <constraints><minimum>20</minimum><step>10</step><maximum>200</maximum></constraints>
-          <control type="slider" format="integer"><popup>false</popup></control>
-          <dependencies><dependency type="visible" setting="milky_way">true</dependency></dependencies>
-        </setting>
       </group>
     </category>
-    <category id="c3" label="30164">
+    <category id="c3" label="30162">
       <group id="1">
-        <setting id="show_sun_moon" type="boolean" label="30165">
+        <setting id="show_sun_moon" type="boolean" label="30163">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="show_planets" type="boolean" label="30166">
+        <setting id="show_planets" type="boolean" label="30164">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="show_dsos" type="boolean" label="30167">
+        <setting id="show_dsos" type="boolean" label="30165">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="show_lines" type="boolean" label="30168">
+        <setting id="messier_photos" type="boolean" label="30166">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+          <dependencies><dependency type="visible" setting="show_dsos">true</dependency></dependencies>
+        </setting>
+        <setting id="show_lines" type="boolean" label="30167">
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
         </setting>
-        <setting id="show_borders" type="boolean" label="30169">
+        <setting id="show_borders" type="boolean" label="30168">
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
         </setting>
-        <setting id="show_satellites" type="boolean" label="30170">
+        <setting id="show_satellites" type="boolean" label="30169">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="sat_groups" type="list[integer]" label="30171">
+        <setting id="sat_groups" type="list[integer]" label="30170">
           <level>0</level>
           <default>0,1,2</default>
           <constraints>
             <options>
-              <option label="30172">0</option>
-              <option label="30173">1</option>
-              <option label="30174">2</option>
-              <option label="30175">3</option>
+              <option label="30171">0</option>
+              <option label="30172">1</option>
+              <option label="30173">2</option>
+              <option label="30174">3</option>
             </options>
             <delimiter>,</delimiter>
             <minimumitems>1</minimumitems>
@@ -271,71 +265,71 @@
           <control type="list" format="string"><multiselect>true</multiselect></control>
           <dependencies><dependency type="visible" setting="show_satellites">true</dependency></dependencies>
         </setting>
-        <setting id="sat_shadowed" type="boolean" label="30176">
+        <setting id="sat_shadowed" type="boolean" label="30175">
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
           <dependencies><dependency type="visible" setting="show_satellites">true</dependency></dependencies>
         </setting>
-        <setting id="sat_rate" type="integer" label="30177">
+        <setting id="sat_rate" type="integer" label="30176">
           <level>0</level>
           <default>1</default>
           <constraints><options>
-            <option label="30178">0</option>
-            <option label="30179">1</option>
-            <option label="30180">2</option>
+            <option label="30177">0</option>
+            <option label="30178">1</option>
+            <option label="30179">2</option>
           </options></constraints>
           <control type="spinner" format="string"/>
           <dependencies><dependency type="visible" setting="show_satellites">true</dependency></dependencies>
         </setting>
       </group>
     </category>
-    <category id="c4" label="30181">
+    <category id="c4" label="30180">
       <group id="1">
-        <setting id="labels" type="integer" label="30182">
+        <setting id="labels" type="integer" label="30181">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30183">0</option>
-            <option label="30184">1</option>
-            <option label="30185">2</option>
+            <option label="30182">0</option>
+            <option label="30183">1</option>
+            <option label="30184">2</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="constellation_names" type="boolean" label="30186">
+        <setting id="constellation_names" type="boolean" label="30185">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
           <dependencies><dependency type="visible" setting="labels" operator="!is">0</dependency></dependencies>
         </setting>
-        <setting id="satellite_labels" type="boolean" label="30187">
+        <setting id="satellite_labels" type="boolean" label="30186">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
           <dependencies><dependency type="visible" setting="labels" operator="!is">0</dependency></dependencies>
         </setting>
-        <setting id="spotlight" type="boolean" label="30188">
+        <setting id="spotlight" type="boolean" label="30187">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
           <dependencies><dependency type="visible" setting="labels">2</dependency></dependencies>
         </setting>
-        <setting id="show_clock" type="boolean" label="30189">
+        <setting id="show_clock" type="boolean" label="30188">
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
         </setting>
-        <setting id="show_compass" type="boolean" label="30190">
+        <setting id="show_compass" type="boolean" label="30189">
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
         </setting>
-        <setting id="show_status" type="boolean" label="30191">
+        <setting id="show_status" type="boolean" label="30190">
           <level>0</level>
-          <default>true</default>
+          <default>false</default>
           <control type="toggle"/>
         </setting>
-        <setting id="dim" type="integer" label="30192">
+        <setting id="dim" type="integer" label="30191">
           <level>0</level>
           <default>0</default>
           <constraints><minimum>0</minimum><step>10</step><maximum>80</maximum></constraints>
@@ -343,89 +337,89 @@
         </setting>
       </group>
     </category>
-    <category id="c5" label="30193">
+    <category id="c5" label="30192">
       <group id="1">
-        <setting id="auto_update" type="boolean" label="30194">
+        <setting id="auto_update" type="boolean" label="30193">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="sat_refresh" type="integer" label="30195">
+        <setting id="sat_refresh" type="integer" label="30194">
           <level>0</level>
           <default>1</default>
           <constraints><options>
-            <option label="30196">0</option>
-            <option label="30197">1</option>
-            <option label="30198">2</option>
-            <option label="30199">3</option>
+            <option label="30195">0</option>
+            <option label="30196">1</option>
+            <option label="30197">2</option>
+            <option label="30198">3</option>
           </options></constraints>
           <control type="spinner" format="string"/>
           <dependencies><dependency type="visible" setting="auto_update">true</dependency></dependencies>
         </setting>
-        <setting id="sat_max_age" type="integer" label="30200">
+        <setting id="sat_max_age" type="integer" label="30199">
           <level>0</level>
           <default>1</default>
           <constraints><options>
-            <option label="30201">0</option>
-            <option label="30202">1</option>
-            <option label="30203">2</option>
-            <option label="30204">3</option>
+            <option label="30200">0</option>
+            <option label="30201">1</option>
+            <option label="30202">2</option>
+            <option label="30203">3</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="update_now" type="action" label="30205">
+        <setting id="update_now" type="action" label="30204">
           <level>0</level>
           <data>RunScript(special://home/addons/screensaver.couchstronomy/default.py,update_satellites)</data>
           <control type="button" format="action"><close>true</close></control>
         </setting>
-        <setting id="clear_cache" type="action" label="30206">
+        <setting id="clear_cache" type="action" label="30205">
           <level>0</level>
           <data>RunScript(special://home/addons/screensaver.couchstronomy/default.py,clear_cache)</data>
           <control type="button" format="action"><close>true</close></control>
         </setting>
       </group>
     </category>
-    <category id="c6" label="30207">
+    <category id="c6" label="30206">
       <group id="1">
-        <setting id="update" type="integer" label="30208">
+        <setting id="update" type="integer" label="30207">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30209">0</option>
-            <option label="30210">1</option>
-            <option label="30211">2</option>
-            <option label="30212">3</option>
-            <option label="30213">4</option>
+            <option label="30208">0</option>
+            <option label="30209">1</option>
+            <option label="30210">2</option>
+            <option label="30211">3</option>
+            <option label="30212">4</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="quality" type="integer" label="30214">
+        <setting id="quality" type="integer" label="30213">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30215">0</option>
-            <option label="30216">1</option>
+            <option label="30214">0</option>
+            <option label="30215">1</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="time_offset" type="integer" label="30217">
+        <setting id="time_offset" type="integer" label="30216">
           <level>0</level>
           <default>0</default>
           <constraints><minimum>-48</minimum><step>1</step><maximum>48</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="time_speed" type="integer" label="30218">
+        <setting id="time_speed" type="integer" label="30217">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30219">0</option>
-            <option label="30220">1</option>
-            <option label="30221">2</option>
-            <option label="30222">3</option>
+            <option label="30218">0</option>
+            <option label="30219">1</option>
+            <option label="30220">2</option>
+            <option label="30221">3</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="show_perf" type="boolean" label="30223">
+        <setting id="show_perf" type="boolean" label="30222">
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>

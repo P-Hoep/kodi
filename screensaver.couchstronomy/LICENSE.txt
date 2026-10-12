@@ -32,9 +32,9 @@ resources/data/stars.bin, stars.json
   (https://creativecommons.org/licenses/by-sa/4.0/). These derived files are likewise
   shared under CC BY-SA 4.0.
 
-resources/data/sky.json, milkyway.bin
+resources/data/sky.json
   Derived from d3-celestial by Olaf Frohn (github.com/ofrohn/d3-celestial): constellation
-  lines, boundaries and name positions, the Milky Way outline, Messier and bright deep-sky
+  lines, boundaries and name positions, Messier and bright deep-sky
   objects. Copyright (c) 2015, Olaf Frohn. All rights reserved. BSD 3-Clause License:
   Redistribution and use in source and binary forms, with or without modification, are
   permitted provided that the following conditions are met: (1) Redistributions of source
@@ -67,6 +67,12 @@ resources/data/moon.bin
   Rendered from the CGI Moon Kit colour map (Lunar Reconnaissance Orbiter LROC), NASA's
   Scientific Visualization Studio, svs.gsfc.nasa.gov/4720. NASA imagery is not
   copyrighted; credit NASA's Scientific Visualization Studio.
+
+resources/media/messier/
+  Messier photographs copyright Fred Espenak, AstroPixels.com (www.astropixels.com),
+  used with his permission. All rights reserved: they are not covered by this add-on's
+  MIT License and may not be reused outside it without his written permission. Each was
+  resized and given a transparent background and soft edge (tools/make_couch_media.py).
 
 resources/lib/sgp4/
   python-sgp4 2.24 by Brandon Rhodes, MIT License (see resources/lib/sgp4/LICENSE).

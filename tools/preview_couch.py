@@ -65,23 +65,27 @@ def render(s, when, width=1920, height=1080, timings=None):
     bg = skylayer.Background(view.camera)
     png_bg = bg.render(light)
     t5 = time.time()
-    mw = skylayer.MilkyWay(view.camera, view.lat, s['horizon'], s['extinction'])
+    ground = skylayer.Ground(view.camera, s['horizon'])
     t6 = time.time()
-    gain = sc.mw_visibility * s['mw_brightness'] / 100.0 * 0.55
-    png_mw = mw.render(sc.frame.lst, gain, light.ground(), s['milky_way'])
+    png_ground = ground.render(light.ground())
     t7 = time.time()
     if timings is not None:
         timings.update(load=t1 - t0, scene=t2 - t1, stars=t3 - t2, encode=t4 - t3, background=t5 - t4,
-                       mw_tables=t6 - t5, mw_frame=t7 - t6, points=len(sc.points), considered=sc.stars_considered)
-    return sc, view, png_bg, png_mw, png_stars
+                       ground_mask=t6 - t5, ground_frame=t7 - t6, points=len(sc.points), considered=sc.stars_considered)
+    return sc, view, png_bg, png_ground, png_stars
 
 
-def composite(sc, view, png_bg, png_mw, png_stars, width, height):
+def composite(sc, view, png_bg, png_ground, png_stars, width, height):
     import io
     img = Image.open(io.BytesIO(png_bg)).convert('RGBA').resize((width, height), Image.BILINEAR)
-    img = Image.alpha_composite(img, Image.open(io.BytesIO(png_mw)).convert('RGBA').resize((width, height),
+    img = Image.alpha_composite(img, Image.open(io.BytesIO(png_ground)).convert('RGBA').resize((width, height),
                                                                                             Image.BILINEAR))
     img = Image.alpha_composite(img, Image.open(io.BytesIO(png_stars)).convert('RGBA'))
+    for key, x, y, size, angle, alpha in sc.photos:
+        ph = Image.open(os.path.join(scene.PHOTO_DIR, key + '.png')).convert('RGBA')
+        ph = ph.resize((max(1, int(size)), max(1, int(size))), Image.BILINEAR).rotate(-angle, Image.BILINEAR)
+        ph.putalpha(ph.getchannel('A').point(lambda v: int(v * alpha)))
+        img.alpha_composite(ph, (int(x - ph.width / 2), int(y - ph.height / 2)))
     if view.labels != config.NATURAL:
         d = ImageDraw.Draw(img)
         try:
@@ -101,8 +105,8 @@ def main():
     sc, view, a, b, c = render(s, when, timings=timings)
     composite(sc, view, a, b, c, 1920, 1080).save(out)
     print(out, view.camera.describe(), time.strftime('%Y-%m-%d %H:%M UTC', time.gmtime(when)))
-    print('sun alt %.1f, moon alt %.1f (%.0f%% lit), limit %.1f, milky way %.2f' % (
-        sc.sun_alt, sc.moon_alt, sc.moon_illum * 100, sc.limit, sc.mw_visibility))
+    print('sun alt %.1f, moon alt %.1f (%.0f%% lit), limit %.1f, diffuse visibility %.2f' % (
+        sc.sun_alt, sc.moon_alt, sc.moon_illum * 100, sc.limit, sc.diffuse_visibility))
     print(', '.join('%s %s' % (k, ('%.0f ms' % (v * 1000)) if isinstance(v, float) else v)
                     for k, v in timings.items()))
 

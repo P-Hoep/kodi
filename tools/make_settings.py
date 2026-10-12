@@ -47,7 +47,7 @@ CATEGORIES = [
         B('layer_cyclones', 'Tropical storms & hurricanes', True),
     ]),
     ('Traffic & transit', [
-        dict(id='tomtom_key', type='string', label='TomTom API key (blank = built-in key)', default=''),
+        dict(id='tomtom_key', type='string', label='TomTom API key', default=''),
         B('layer_traffic', 'Traffic flow (needs TomTom key)', True),
         B('layer_incidents', 'Traffic incidents (needs TomTom key)', False),
         dict(id='traffic_refresh', type='slider', label='Traffic refresh (seconds)', default=600, min=300, max=1800, step=60),
@@ -99,9 +99,18 @@ def write(root, addon, addon_name, categories, generator='tools/make_settings.py
     for c, (title, settings) in enumerate(categories):
         out.append('    <category id="c%d" label="%d">' % (c, sid(title)))
         out.append('      <group id="1">')
+        group = 1
         for s in settings:
             label = sid(s['label'])
             kind = s['type']
+            if kind == 'group':  # starts a new labelled group within the category
+                if out[-1].startswith('      <group'):  # nothing in the open group yet
+                    out.pop()
+                else:
+                    out.append('      </group>')
+                    group += 1
+                out.append('      <group id="%d" label="%d">' % (group, label))
+                continue
             xtype = {'slider': 'integer', 'options': 'integer', 'multi': 'list[integer]'}.get(kind, kind)
             out.append('        <setting id="%s" type="%s" label="%d">' % (s['id'], xtype, label))
             out.append('          <level>0</level>')
@@ -115,6 +124,15 @@ def write(root, addon, addon_name, categories, generator='tools/make_settings.py
                 out.append('          <default>%s</default>' % escape(s['default']))
                 out.append('          <constraints><allowempty>true</allowempty></constraints>')
                 out.append('          <control type="edit" format="string"><heading>%d</heading></control>' % label)
+            elif kind == 'time':
+                out.append('          <default>%s</default>' % s['default'])
+                out.append('          <control type="button" format="time"><heading>%d</heading></control>' % label)
+            elif kind == 'addon':
+                out.append('          <default>%s</default>' % s['default'])
+                out.append('          <constraints><addontype>%s</addontype><allowempty>true</allowempty></constraints>'
+                           % s['addontype'])
+                out.append('          <control type="button" format="addon"><show more="true" details="true">installed</show>'
+                           '</control>')
             elif kind == 'number':
                 out.append('          <default>%s</default>' % s['default'])
                 out.append('          <control type="edit" format="number"><heading>%d</heading></control>' % label)
@@ -160,7 +178,8 @@ def write(root, addon, addon_name, categories, generator='tools/make_settings.py
         os.makedirs(folder)
     with open(os.path.join(folder, 'strings.po'), 'w') as handle:
         handle.write('\n'.join(po))
-    print('settings: %d, strings: %d' % (sum(len(s) for _c, s in categories), len(strings)))
+    print('settings: %d, strings: %d' % (sum(1 for _c, ss in categories for s in ss if s['type'] != 'group'),
+                                         len(strings)))
 
 
 def main():

@@ -2,7 +2,7 @@
 
 Three threads besides Kodi's:
   render  - owns the scene Model: computes the sky for a moment just ahead, draws the
-            star layer (full resolution), the Milky Way and ground layer and the sky-colour
+            star layer (full resolution), the ground layer and the sky-colour
             layer to PNG files, places labels, and posts all of it to the engine.
   engine  - owns the Kodi controls: swaps posted images in (double-buffered, so there is
             never a gap while Kodi loads one), moves satellites once a tick with a slide
@@ -26,7 +26,7 @@ import xbmcaddon
 import xbmcgui
 import xbmcvfs
 
-from . import astro, camera, config, draw, satellites, scene, skylayer
+from . import astro, camera, config, draw, satellites, scene, skylayer, splash
 
 ADDON_ID = config.ADDON_ID
 W, H = 1920, 1080              # skin coordinates (1080i)
@@ -36,9 +36,13 @@ MAX_TWINKLES = 10
 SAT_PX = 18
 SPOT_PX = 84
 SIDEREAL_RATE = 7.2921159e-5   # rad/s
+KODI_ROTATE = -1.0             # Kodi's rotate effect turns counter-clockwise for positive angles
+PHOTO_CARD_PX = 150
+PHOTO_CREDIT = '© Fred Espenak'
 LABEL_COLOURS = {'star': 'D8E4F0FF', 'planet': 'F0FFE2A0', 'moon': 'E8F0F0F0', 'sun': 'F0FFE6AA',
                  'dso': 'C0A0D0B0', 'const': '9078A0E0', 'compass': 'D0F0C080', 'sat': 'D0B8F0D0'}
 BACKGROUND_SECONDS = 30.0      # sky colour refresh while the Sun or Moon affects it
+SPLASH_MAX_SECONDS = 30.0      # the first sky normally takes 1-7 s on a stick
 
 
 def log(message, level=xbmc.LOGINFO):
@@ -157,10 +161,11 @@ class Posted(object):
     """What the render thread hands the engine."""
 
     def __init__(self):
-        self.stars = self.mw = self.bg = None
+        self.stars = self.ground = self.bg = None
         self.labels = []
         self.spotlight = []
         self.twinkles = []
+        self.photos = []
         self.limit = 6.0
         self.sun_alt = -90.0
         self.render_ms = 0.0
@@ -190,6 +195,7 @@ class Screensaver(object):
         self.lock = threading.Lock()
         self.monitor = ExitMonitor(self)
         self.window = None
+        self.splash = None
         self.threads = []
         self.posted = None
         self.counter = 0
@@ -209,6 +215,8 @@ class Screensaver(object):
             self.window.doModal()
         finally:
             self.stop.set()
+            if self.splash:
+                self.splash.close()
             self.wake_render.set()
             self.wake_orbits.set()
             for t in self.threads:
@@ -219,6 +227,7 @@ class Screensaver(object):
 
     def attach(self, window):
         self.build_controls(window)
+        self.splash = splash.Splash(window, self.media, 'FFFFE6B0', SPLASH_MAX_SECONDS, log)
         targets = [(self.render_loop, 'couch-render'), (self.engine_loop, 'couch-engine')]
         if self.sats_on:
             targets.append((self.orbits_loop, 'couch-orbits'))
@@ -264,11 +273,10 @@ class Screensaver(object):
         s = self.s
         full = lambda: xbmcgui.ControlImage(0, 0, W, H, '', aspectRatio=0)  # noqa: E731
         self.bg = [full(), full()]
-        self.mw = [full(), full()]
+        self.gr = [full(), full()]
         self.st = [full(), full()]
-        self.front = {'bg': 0, 'mw': 0, 'st': 0}
-        self.shown = {'bg': None, 'mw': None, 'st': None}
-        self.hide_later = []
+        self.front = {'bg': 0, 'gr': 0, 'st': 0}
+        self.shown = {'bg': None, 'gr': None, 'st': None}
         self.twinkle_controls = [self.image(0, 0, 8, 8, 'glow.png', 'A0FFFFFF') for _ in range(MAX_TWINKLES if s['twinkle'] else 0)]
         self.twinkle_state = [None] * len(self.twinkle_controls)
         n = MAX_SATS if self.sats_on else 0
@@ -278,25 +286,30 @@ class Screensaver(object):
         self.sat_pos = [None] * n     # (x, y) the dot is drawn at now
         self.sky_labels = [self.label(0, 0, 400, 30, font='font10') for _ in range(MAX_LABELS)]
         self.sky_label_state = [None] * MAX_LABELS
+        self.photo_controls = [self.image(0, 0, 64, 64) for _ in range(scene.MAX_PHOTOS if self.view.photos else 0)]
+        self.photo_state = [None] * len(self.photo_controls)
+        self.card_rect = None
         self.reticle = self.image(0, 0, SPOT_PX, SPOT_PX, 'reticle.png', 'C0FFE0A0')
         self.card = self.image(40, H - 250, 620, 200, 'white.png', 'A0050810')
         self.card_title = self.label(64, H - 236, 580, 40, font='font13', color='FFFFE6B0')
         self.card_lines = [self.label(64, H - 192 + 34 * i, 580, 30, font='font10', color='D8E0E8F0') for i in range(4)]
+        self.card_photo = self.image(0, 0, PHOTO_CARD_PX, PHOTO_CARD_PX)
+        self.card_credit = self.label(0, 0, 200, 24, PHOTO_CREDIT, font='font10', color='90B8C4D4')
         self.clock = self.label(48, 36, 600, 50, font='font13', color='C8E8ECF4')
         self.date = self.label(48, 80, 600, 34, font='font10', color='90C8D0DC')
         self.compass = self.label(48, H - 52, 760, 32, font='font10', color='A0D8D0B0')
         self.status = self.label(W - 1140, H - 52, 1100, 32, font='font10', color='90B8C4D4', align=1)
         self.perf = self.label(W - 1240, 36, 1200, 30, font='font10', color='C0A0FFA0', align=1)
-        self.loading = self.label(0, H // 2 - 20, W, 40, 'Calculating the sky…', font='font13',
-                                  color='A0FFFFFF', align=2)
         dim = int(s['dim'] * 255 / 100)
         self.dimmer = self.image(-50, -50, W + 100, H + 100, 'white.png', '%02X000000' % dim)
-        controls = self.bg + self.mw + self.st + self.twinkle_controls + self.sat_dots + self.sat_labels
-        controls += self.sky_labels + [self.reticle, self.card, self.card_title] + self.card_lines
-        controls += [self.clock, self.date, self.compass, self.status, self.perf, self.loading, self.dimmer]
+        controls = self.bg + self.gr + self.st + self.photo_controls + self.twinkle_controls + self.sat_dots
+        controls += self.sat_labels + self.sky_labels + [self.reticle, self.card, self.card_title] + self.card_lines
+        controls += [self.card_photo, self.card_credit]
+        controls += [self.clock, self.date, self.compass, self.status, self.perf, self.dimmer]
         window.addControls(controls)
-        hidden = self.bg + self.mw + self.st + self.twinkle_controls + self.sat_dots + self.sat_labels
-        hidden += self.sky_labels + [self.reticle, self.card, self.card_title] + self.card_lines
+        hidden = self.bg + self.gr + self.st + self.photo_controls + self.twinkle_controls + self.sat_dots
+        hidden += self.sat_labels + self.sky_labels + [self.reticle, self.card, self.card_title] + self.card_lines
+        hidden += [self.card_photo, self.card_credit]
         if not s['show_clock']:
             hidden += [self.clock, self.date]
         if not s['show_compass']:
@@ -361,18 +374,15 @@ class Screensaver(object):
         look = draw.Appearance(view.enhance, s['star_brightness'] / 100.0, scale=self.rw / 1920.0 * 0.5 + 0.5)
         layer = draw.StarLayer(self.rw, self.rh, look)
         moon_tex = draw.MoonTexture(os.path.join(self.data, 'moon.bin'))
-        mw_w, mw_h = (480, 270) if not self.is_android else (384, 216)
-        mw = skylayer.MilkyWay(cam, view.lat, s['horizon'], s['extinction'], mw_w, mw_h)
+        ground = skylayer.Ground(cam, s['horizon'], *((480, 270) if not self.is_android else (384, 216)))
         bg = skylayer.Background(cam, *((256, 144) if not self.is_android else (192, 108)))
         log('ready in %.1f s (%d stars in the catalogue)' % (time.time() - started, model.stars.count))
         # How long until the sky moves half a pixel at the centre of the screen.
         px_per_s = cam.f * SIDEREAL_RATE * view.time_speed
         fixed = config.UPDATE_SECONDS[s['update']]
         interval = fixed or max(0.3 if view.time_speed > 1 else 1.0, min(10.0, 0.5 / px_per_s))
-        mw_interval = max(2.0 if view.time_speed > 1 else 4.0,
-                          min(60.0, 0.5 / (mw_w / float(self.rw) * px_per_s)))
-        log('star layer every %.1f s, Milky Way every %.1f s' % (interval, mw_interval))
-        last_mw = last_bg = -1e9
+        log('star layer every %.1f s' % interval)
+        last_bg = -1e9
         bg_key = None
         render_ema = 0.3
         minute = {'start': time.time(), 'frames': 0, 'secs': 0.0, 'cpu': _process_cpu()}
@@ -391,15 +401,13 @@ class Screensaver(object):
             light = skylayer.SkyLight(sc.sun_alt, sc.sun_hor, sc.moon_alt, sc.moon_hor, sc.moon_illum,
                                       view.light_pollution, view.keep_dark)
             now = time.time()
-            if now - last_mw >= mw_interval:
-                gain = sc.mw_visibility * s['mw_brightness'] / 100.0 * 0.55
-                post.mw = self.write('mw', mw.render(sc.frame.lst, gain, light.ground(), s['milky_way']))
-                last_mw = now
             # The sky's colour changes only while the Sun or Moon is near or above the horizon.
             lit = (sc.sun_alt > -20 and not view.keep_dark) or sc.moon_alt > -3 or view.time_speed > 1
             key = 'lit' if lit else 'night'
             if bg_key != key or (lit and now - last_bg >= BACKGROUND_SECONDS / view.time_speed ** 0.5):
                 post.bg = self.write('bg', bg.render(light))
+                if ground.has_ground:
+                    post.ground = self.write('gr', ground.render(light.ground()))
                 last_bg, bg_key = now, key
             if view.labels != config.NATURAL:
                 post.labels = [(lab.text, lab.placed, lab.style) for lab in
@@ -409,6 +417,7 @@ class Screensaver(object):
                 bright = sorted((p for p in sc.points if p.mag < 1.2 and 0 <= p.x < self.rw and 0 <= p.y < self.rh),
                                 key=lambda p: p.mag)[:MAX_TWINKLES]
                 post.twinkles = [(p.x, p.y, p.mag, p.rgb) for p in bright]
+            post.photos = sc.photos
             post.limit, post.sun_alt = sc.limit, sc.sun_alt
             post.points = len(sc.points)
             secs = time.time() - t_start
@@ -506,9 +515,6 @@ class Screensaver(object):
                 log('clock jumped %.0f s (suspend?); recalculating' % (now - last))
                 self.on_wake()
             last = now
-            for c in self.hide_later:
-                c.setVisible(False)
-            self.hide_later = []
             with self.lock:
                 post, self.posted = self.posted, None
             if post is not None:
@@ -541,11 +547,13 @@ class Screensaver(object):
                 self.front[name] = 0
             self.shown[name] = path
             return
+        # Hide the old frame in the same step. Leaving both up for an engine tick drew every
+        # star twice (its soft edges add up) and made the sky pulse at each refresh.
         controls[b].setAnimations([])
         controls[b].setImage(path, False)
         controls[b].setVisible(True)
         if self.shown[name] is not None:
-            self.hide_later.append(controls[1 - b])
+            controls[1 - b].setVisible(False)
         self.front[name] = b
         self.shown[name] = path
 
@@ -553,13 +561,14 @@ class Screensaver(object):
         first = self.current is None
         if post.bg:
             self.swap('bg', self.bg, post.bg, 0 if first else 3000)
-        if post.mw:
-            self.swap('mw', self.mw, post.mw, 0 if first else 1500)
+        if post.ground:
+            self.swap('gr', self.gr, post.ground, 0 if first else 3000)
         if post.stars:
             self.swap('st', self.st, post.stars)
         if first:
-            self.loading.setVisible(False)
+            self.splash.done()
         self.current = post
+        self.place_photos(post.photos)
         self.place_sky_labels(post.labels)
         self.place_twinkles(post.twinkles)
         self.fps_note = 'frame %.0f ms  ·  %d objects drawn  ·  limiting magnitude %.1f' % (
@@ -567,6 +576,12 @@ class Screensaver(object):
 
     def place_sky_labels(self, labels):
         k = self.k
+        card = self.card_rect
+        if card:
+            # The spotlight card is placed here, after the labels were laid out: drop any it covers.
+            cx0, cy0, cx1, cy1 = card
+            labels = [lab for lab in labels if not (lab[1][0] * k < cx1 and (lab[1][0] + lab[1][2]) * k > cx0 and
+                                                    lab[1][1] * k < cy1 and (lab[1][1] + lab[1][3]) * k > cy0)]
         for i, ctrl in enumerate(self.sky_labels):
             if i < len(labels):
                 text, (x, y, w, h), style = labels[i]
@@ -582,6 +597,40 @@ class Screensaver(object):
             elif self.sky_label_state[i] is not None:
                 ctrl.setVisible(False)
                 self.sky_label_state[i] = None
+
+    def photo_path(self, key):
+        return self.media_path(os.path.join('messier', key + '.png'))
+
+    def place_photos(self, photos):
+        """Messier photos at their objects: placed with the star frame they belong to,
+        turned so the photo's north is the sky's north there."""
+        k = self.k
+        for i, ctrl in enumerate(self.photo_controls):
+            old = self.photo_state[i]
+            if i >= len(photos):
+                if old is not None:
+                    ctrl.setVisible(False)
+                    self.photo_state[i] = None
+                continue
+            key, x, y, size, angle, alpha = photos[i]
+            px = max(8, int(size * k))
+            if old is None or old[0] != key:
+                ctrl.setImage(self.photo_path(key), False)
+            if old is None or old[3] != px:
+                ctrl.setWidth(px)
+                ctrl.setHeight(px)
+            ctrl.setPosition(int(x * k - px / 2.0), int(y * k - px / 2.0))
+            a = int(alpha * 255)
+            if old is None or old[4] != a:
+                ctrl.setColorDiffuse('%02XFFFFFF' % a)
+            if old is None or abs(old[5] - angle) > 0.3:
+                ctrl.setAnimations([('conditional', 'effect=rotate end=%.1f center=auto time=0 condition=true'
+                                     % (KODI_ROTATE * angle))])
+            else:
+                angle = old[5]
+            if old is None:
+                ctrl.setVisible(True)
+            self.photo_state[i] = (key, x, y, px, a, angle)
 
     def place_twinkles(self, twinkles):
         k = self.k
@@ -703,23 +752,42 @@ class Screensaver(object):
             self.spot_until = now + 30.0
             title, lines = current[4], current[5]
             x = current[2] * k
-            cx = 40 if x > W / 2 else W - 660
+            photo = current[0] == 'dso' and self.view.photos and os.path.exists(self.photo_path(current[1]))
+            cw = 800 if photo else 620
+            cx = 40 if x > W / 2 else W - cw - 40
+            tx = cx + (196 if photo else 24)
             self.card.setPosition(cx, H - 270)
-            self.card_title.setPosition(cx + 24, H - 256)
+            self.card.setWidth(cw)
+            self.card_rect = (cx, H - 270, cx + cw, H - 70)
+            self.card_title.setPosition(tx, H - 256)
             for i, lab in enumerate(self.card_lines):
-                lab.setPosition(cx + 24, H - 212 + 34 * i)
+                lab.setPosition(tx, H - 212 + 34 * i)
                 self.set_text(lab, lines[i] if i < len(lines) else '')
                 lab.setVisible(i < len(lines))
             self.set_text(self.card_title, title)
-            for c in [self.card, self.card_title, self.reticle]:
+            shown = [self.card, self.card_title, self.reticle]
+            if photo:
+                self.card_photo.setImage(self.photo_path(current[1]), False)
+                self.card_photo.setPosition(cx + 22, H - 262)
+                self.card_credit.setPosition(cx + 24, H - 108)
+                shown += [self.card_photo, self.card_credit]
+            else:
+                self.card_photo.setVisible(False)
+                self.card_credit.setVisible(False)
+            for c in shown:
                 c.setAnimations([anim_fade(0, 100, 800)])
                 c.setVisible(True)
+            self.place_sky_labels(self.current.labels)
         self.reticle.setPosition(int(current[2] * k - SPOT_PX / 2), int(current[3] * k - SPOT_PX / 2))
 
     def hide_spotlight(self):
-        for c in [self.card, self.card_title, self.reticle] + self.card_lines:
+        for c in [self.card, self.card_title, self.reticle, self.card_photo, self.card_credit] + self.card_lines:
             c.setVisible(False)
         self.spot_key = None
+        if self.card_rect:
+            self.card_rect = None
+            if self.current:
+                self.place_sky_labels(self.current.labels)
 
     def update_hud(self, now):
         s = self.s

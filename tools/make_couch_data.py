@@ -5,7 +5,6 @@
 Sources (see the add-on's LICENSE.txt for the notices):
   stars           HYG database v4.1 (Hipparcos, Yale, Gliese), CC BY-SA 4.0, astronexus
   constellations  d3-celestial (lines, boundaries, name positions), BSD-3, Olaf Frohn
-  Milky Way       d3-celestial mw.json (five brightness contours), BSD-3
   deep sky        d3-celestial messier.json, dsos.bright.json, dsonames.json, BSD-3
   planets         VSOP87B (Bretagnon & Francou) as packaged by astronomia, MIT
   Moon texture    NASA Scientific Visualization Studio, CGI Moon Kit (LRO LROC colour map)
@@ -14,13 +13,11 @@ Outputs:
   stars.bin / stars.json   J2000 unit vectors, proper-motion vectors, V magnitude, B-V,
                            float32 columns, sorted brightest first; names and designations
   sky.json                 constellations, boundaries, deep-sky objects
-  milkyway.bin             greyscale equirectangular map in RA/Dec of equinox 2030.0
   vsop87.json              truncated VSOP87B series
   moon.bin                 256x256 orthographic near side, grey + alpha
 """
 
 import csv
-import io
 import json
 import math
 import os
@@ -32,7 +29,7 @@ import urllib.request
 from array import array
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, '..', 'screensaver.couchstronomy'))
@@ -48,7 +45,7 @@ SOURCES = {
     'hygdata_v41.csv': 'https://raw.githubusercontent.com/astronexus/HYG-Database/main/hyg/CURRENT/hygdata_v41.csv',
     'moon_color_1k.jpg': 'https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_poles_1k.jpg',
 }
-for _name in ('constellations.lines.json', 'constellations.json', 'constellations.borders.json', 'mw.json',
+for _name in ('constellations.lines.json', 'constellations.json', 'constellations.borders.json',
               'messier.json', 'dsos.bright.json', 'dsonames.json'):
     SOURCES[_name] = D3 + _name
 for _planet in ('mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune'):
@@ -56,8 +53,6 @@ for _planet in ('mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranu
 
 STAR_LIMIT = 8.0          # faintest magnitude bundled
 NAME_LIMIT = 6.5          # Bayer/Flamsteed designations kept down to this magnitude
-MW_EPOCH = 2030.0         # equinox of the Milky Way map; < 0.1 degree off for 2020-2040
-MW_W, MW_H = 2048, 1024
 MAS = math.pi / 180.0 / 3600.0 / 1000.0
 
 GREEK = {'Alp': 'α', 'Bet': 'β', 'Gam': 'γ', 'Del': 'δ', 'Eps': 'ε', 'Zet': 'ζ', 'Eta': 'η', 'The': 'θ',
@@ -208,67 +203,6 @@ def dso_entry(name, desig, alt, kind, mag, dim, lon, lat):
             'size': [major, minor], 'ra': r4(lon % 360.0), 'dec': r4(lat)}
 
 
-# ---------------------------------------------------------------- Milky Way
-
-GAL = np.array([[-0.0548755604, -0.8734370902, -0.4838350155],
-                [0.4941094279, -0.4448296300, 0.7469822445],
-                [-0.8676661490, -0.1980763734, 0.4559837762]])   # J2000 equatorial -> galactic
-AE = 1024   # azimuthal-equidistant canvas around the north galactic pole
-
-
-def ae_xy(lon_deg, lat_deg):
-    """J2000 RA/Dec (deg) -> pixel on an azimuthal-equidistant map centred on the north
-    galactic pole. The Milky Way's contours are closed curves there, so a plain polygon fill
-    (even-odd over all rings) reproduces d3's spherical polygons without wrap-around cuts."""
-    lon = np.radians(np.asarray(lon_deg, dtype=float))
-    lat = np.radians(np.asarray(lat_deg, dtype=float))
-    v = np.stack([np.cos(lat) * np.cos(lon), np.cos(lat) * np.sin(lon), np.sin(lat)])
-    g = GAL @ v.reshape(3, -1)
-    colat = np.arccos(np.clip(g[2], -1, 1))      # 0 at the NGP, pi at the SGP
-    gl = np.arctan2(g[1], g[0])
-    r = colat / math.pi * (AE / 2 - 2)
-    return AE / 2 + r * np.cos(gl), AE / 2 - r * np.sin(gl)
-
-
-def build_milkyway():
-    levels = []
-    for f in load_json('mw.json')['features']:
-        canvas = np.zeros((AE, AE), dtype=bool)
-        for polygon in f['geometry']['coordinates']:
-            for ring in polygon:
-                ring = np.array(ring)
-                x, y = ae_xy(ring[:, 0], ring[:, 1])
-                img = Image.new('1', (AE, AE), 0)
-                ImageDraw.Draw(img).polygon(list(zip(x.tolist(), y.tolist())), fill=1)
-                canvas ^= np.array(img, dtype=bool)
-        levels.append(canvas)
-    stack = sum(level.astype(np.float32) for level in levels)
-    ae = Image.fromarray(np.clip(stack * 51, 0, 255).astype(np.uint8))
-    # The contours are flat steps: a wide blur makes the glow, a narrow one keeps the rifts.
-    wide = np.asarray(ae.filter(ImageFilter.GaussianBlur(10)), dtype=np.float32)
-    narrow = np.asarray(ae.filter(ImageFilter.GaussianBlur(3)), dtype=np.float32)
-    aed = 0.55 * wide + 0.45 * narrow
-    # Sample on an RA/Dec grid of the equinox MW_EPOCH: precess each texel back to J2000.
-    jd = astro.J2000 + (MW_EPOCH - 2000.0) * 365.25
-    p = np.array(astro.precession_matrix(jd))
-    ra = (np.arange(MW_W) + 0.5) / MW_W * 2 * math.pi
-    dec = math.pi / 2 - (np.arange(MW_H) + 0.5) / MW_H * math.pi
-    rr, dd = np.meshgrid(ra, dec)
-    v = np.stack([np.cos(dd) * np.cos(rr), np.cos(dd) * np.sin(rr), np.sin(dd)]).reshape(3, -1)
-    v2000 = p.T @ v
-    lon = np.degrees(np.arctan2(v2000[1], v2000[0]))
-    lat = np.degrees(np.arcsin(np.clip(v2000[2], -1, 1)))
-    x, y = ae_xy(lon, lat)
-    xi = np.clip(np.round(x).astype(int), 0, AE - 1)
-    yi = np.clip(np.round(y).astype(int), 0, AE - 1)
-    val = aed[yi, xi].reshape(MW_H, MW_W)
-    val = np.clip(255 * (val / 255.0) ** 0.8, 0, 255).astype(np.uint8)
-    write_raw('milkyway.bin', MW_W, MW_H, 1, val)
-    Image.fromarray(val).save(os.path.join(CACHE, 'milkyway-preview.png'))
-    print('milky way: %dx%d, equinox %.1f, %.0f KB' % (MW_W, MW_H, MW_EPOCH,
-                                                      os.path.getsize(os.path.join(OUT, 'milkyway.bin')) / 1024.0))
-
-
 # ---------------------------------------------------------------- VSOP87
 
 def parse_vsop(name):
@@ -372,7 +306,6 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     build_stars()
     build_sky()
-    build_milkyway()
     full = build_vsop()
     check_vsop(full)
     build_moon()

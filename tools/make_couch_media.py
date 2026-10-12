@@ -1,6 +1,11 @@
-"""Generate Couchstronomy's images: control sprites, the add-on icon and fanart.
+"""Generate Couchstronomy's images: control sprites, Messier photos, the add-on icon and fanart.
 
-  python3 tools/make_couch_media.py      # needs Pillow; fanart uses tools/preview_couch.py
+  python3 tools/make_couch_media.py            # needs Pillow; fanart uses tools/preview_couch.py
+  python3 tools/make_couch_media.py messier    # only the Messier photos
+
+The Messier photos are Fred Espenak's (AstroPixels.com), used with his permission. The
+originals are in tools/couch-src/messier. Each becomes a 128 px PNG whose black sky is
+transparent and whose edge fades out, so it blends into the screensaver's sky.
 
 The fanart is the add-on's own rendering of Orion rising over Minneapolis.
 """
@@ -42,6 +47,46 @@ def sprites():
     for start in (15, 105, 195, 285):
         d.arc((6, 6, size - 7, size - 7), start, start + 60, fill=(255, 255, 255, 230), width=3)
     img.save(os.path.join(MEDIA, 'reticle.png'))
+
+
+def messier():
+    src = os.path.join(HERE, 'couch-src', 'messier')
+    out = os.path.join(MEDIA, 'messier')
+    os.makedirs(out, exist_ok=True)
+    size = 128
+    c = (size - 1) / 2.0
+    edge = []
+    for y in range(size):
+        for x in range(size):
+            d = math.hypot(x - c, y - c) / c
+            t = max(0.0, min(1.0, (1.0 - d) / 0.4))      # 1 inside 60 % of the radius, 0 at the rim
+            edge.append(t * t * (3 - 2 * t))
+    count = 0
+    for name in sorted(os.listdir(src)):
+        if not (name.startswith('M') and name.endswith('.jpg')):
+            continue
+        key = name.split('-')[0]                          # M51-02n.jpg -> M51
+        img = Image.open(os.path.join(src, name)).convert('RGB')
+        w, h = img.size
+        side = min(w, h)
+        img = img.crop(((w - side) // 2, (h - side) // 2, (w - side) // 2 + side, (h - side) // 2 + side))
+        img = img.resize((size, size), Image.LANCZOS)
+        rgba = Image.new('RGBA', (size, size))
+        px = []
+        for (r, g, b), e in zip(img.getdata(), edge):
+            # Alpha from brightness, colour un-premultiplied: blended over black it gives the
+            # photo back, over the sky it adds light like the object would.
+            lum = max(r, g, b) / 255.0
+            a = min(1.0, lum * 1.8) ** 0.85 * e
+            if a < 0.004:
+                px.append((0, 0, 0, 0))
+                continue
+            k = e / a
+            px.append((min(255, int(r * k)), min(255, int(g * k)), min(255, int(b * k)), int(a * 255)))
+        rgba.putdata(px)
+        rgba.save(os.path.join(out, key + '.png'), optimize=True)
+        count += 1
+    print('messier: %d photos' % count)
 
 
 def icon():
@@ -89,7 +134,11 @@ def fanart():
 
 def main():
     os.makedirs(MEDIA, exist_ok=True)
+    if sys.argv[1:] == ['messier']:
+        messier()
+        return
     sprites()
+    messier()
     icon()
     fanart()
     print('media written to', MEDIA)

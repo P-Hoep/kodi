@@ -25,7 +25,7 @@ import xbmcaddon
 import xbmcgui
 import xbmcvfs
 
-from . import config, flights, motion, overlays, projections, render, reproject, sources
+from . import config, flights, motion, overlays, projections, render, reproject, sources, splash
 from . import world as world_mod
 from .workers import Workers
 
@@ -49,6 +49,7 @@ FLIGHT_PX = 28             # rotated plane images are padded so wingtips survive
 FLIGHT_STATIC_SECONDS = 15.0   # a still map: aircraft barely move a pixel in this time
 FLIGHT_MAX_AGE = 5400.0    # stop flying an aircraft on after this long without a report
 HEADING_STEP = 5           # media/rot/plane_<heading>.png exist every 5 degrees
+SPLASH_MAX_SECONDS = 60.0  # the first run of a projection builds its lookup table (15-40 s on a stick)
 LEGEND_W = 420
 
 
@@ -153,6 +154,7 @@ class Screensaver(object):
         self.lock = threading.Lock()
         self.monitor = ExitMonitor(self.exit)
         self.window = None
+        self.splash = None
         self.threads = []
         self.store = sources.Store(os.path.join(self.profile, 'cache'))
         self.fetcher = Workers(2, 'godsworld-fetch', lambda e: log('fetch error: %s' % e, xbmc.LOGWARNING))
@@ -266,6 +268,8 @@ class Screensaver(object):
             self.window.doModal()
         finally:
             self.stop.set()
+            if self.splash:
+                self.splash.close()
             self.wake_engine.set()
             self.wake_render.set()
             for t in self.threads:
@@ -276,6 +280,7 @@ class Screensaver(object):
 
     def attach(self, window):
         self.build_controls(window)
+        self.splash = splash.Splash(window, self.media, 'FF4FC3F7', SPLASH_MAX_SECONDS, log)
         for target, name in ((self.render_loop, 'godsworld-render'), (self.engine_loop, 'godsworld-engine')):
             t = threading.Thread(target=target, name=name)
             t.daemon = True
@@ -380,8 +385,6 @@ class Screensaver(object):
         self.legend_hi = self.label(W - 240, H - 78, 200, 30, '%d°C' % overlays.TEMP_MAX,
                                     font='font10', color='C0FFFFFF', align=1)
         self.perf = self.label(W - 940, 44, 900, 30, font='font10', color='C0B0FFB0', align=1)
-        self.loading = self.label(0, H // 2 - 20, W, 40, 'Preparing the map…', font='font13',
-                                  color='C0FFFFFF', align=2)
 
         controls = [self.background]
         for b in range(2):
@@ -391,7 +394,7 @@ class Screensaver(object):
         controls += self.storm_labels
         controls += [self.iss_icon, self.iss_label]
         controls += [self.fader, self.dimmer, self.bottom_shade, self.card_bg, self.card_accent, self.clock, self.date, self.title,
-                     self.status, self.credits, self.legend, self.legend_lo, self.legend_hi, self.perf, self.loading]
+                     self.status, self.credits, self.legend, self.legend_lo, self.legend_hi, self.perf]
         window.addControls(controls)
         hidden = [self.globe_shade, self.legend, self.legend_lo, self.legend_hi] + self.particle_controls
         hidden += self.storm_icons + self.storm_labels + [self.iss_icon, self.iss_label] + self.flight_icons
@@ -679,7 +682,7 @@ class Screensaver(object):
 
     def show_scene(self, shown, frames):
         geo = shown.geo
-        self.loading.setVisible(False)
+        self.splash.done()
         old = self.shown
         self.shown = shown
         self.frames_shown = 0

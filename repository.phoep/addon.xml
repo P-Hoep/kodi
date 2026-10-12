@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="repository.phoep" name="P-Hoep Add-ons" version="1.0.0" provider-name="P-Hoep">
+  <extension point="xbmc.addon.repository" name="P-Hoep Add-ons">
+    <dir>
+      <info compressed="false">https://p-hoep.github.io/kodi/addons.xml</info>
+      <checksum>https://p-hoep.github.io/kodi/addons.xml.md5</checksum>
+      <datadir zip="true">https://p-hoep.github.io/kodi/</datadir>
+      <hashes>sha256</hashes>
+    </dir>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Screensavers and services by P-Hoep</summary>
+    <description lang="en_GB">Installs and keeps up to date God's Eye Map, God's World Map, Math Clock, Couchstronomy and Screensaver Switcher. Kodi checks this repository for new versions and updates the add-ons automatically.</description>
+    <platform>all</platform>
+    <license>MIT</license>
+    <assets>
+      <icon>icon.png</icon>
+    </assets>
+  </extension>
+</addon>

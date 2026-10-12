@@ -1,0 +1,3 @@
+This should a kodi program or application addon. It should allow the use to pick from specified screensavers during windows of time. It should then change the screensaver to the desired screensaver during those periods. It needs to reload the screensaver when the switch occurs.
+
+It should propulate a list of the currently installed screensavers and let the user select which ones should be visible during which times of the day.

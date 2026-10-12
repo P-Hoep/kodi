@@ -76,9 +76,12 @@ A fourth screensaver, `screensaver.couchstronomy`, built from
 sky. Enter where the TV is and which way it faces (compass heading, tilt, field of view,
 or screen width and viewing distance), and it shows the sky outside that window right now:
 41,000 stars to magnitude 8 (HYG/Hipparcos), the Sun, the Moon with its phase and
-earthshine, the planets with phases and Saturn's rings, the Milky Way, Messier and bright
+earthshine, the planets with phases and Saturn's rings, Messier and bright
 NGC objects, constellation lines and boundaries, and live satellites from CelesTrak.
 Twilight, daylight, moonlight, light pollution, extinction and refraction are modelled.
+Messier objects are shown as Fred Espenak's photos (AstroPixels.com, used with permission;
+not MIT-licensed), blended into the sky and turned so north matches the sky. The originals
+are in `tools/couch-src/messier`, and `python3 tools/make_couch_media.py messier` rebuilds them.
 
 - **Labels** are independent of the sky: *Natural* (none), *Named objects* or *Explorer*
   (names, constellations, deep sky, an object spotlight every 30 s with distance,
@@ -108,11 +111,39 @@ python3 -m unittest tests.test_couch   # acceptance tests (pip install skyfield 
 ```
 
 Design: pure Python, no compiled code. For a fixed TV each screen pixel looks at a fixed
-altitude and azimuth, so the Milky Way layer is the bundled RA/Dec map shifted by sidereal
-time through precomputed lookup tables, and the sky colour is a small image Kodi
-stretches. Stars, planets and lines are drawn into a transparent full-HD PNG with cached
+altitude and azimuth, so the ground mask is computed once and the sky colour is a small
+image Kodi stretches. Stars, planets and lines are drawn into a transparent full-HD PNG with cached
 sprites, re-rendered as often as the sky moves half a pixel (about every 4 s at 60°).
 Satellites are Kodi controls that slide between positions at display rate.
+
+## Screensaver Switcher (new, v0.1)
+
+`service.screensaver.switcher`, built from [docs/screensaver-switcher.md](docs/screensaver-switcher.md):
+a different screensaver for different times of day. Up to six time windows, each with a
+start, an end and a screensaver chosen from the ones installed (Kodi's own picker), plus a
+default for the times no window covers. A window can name a second screensaver to
+alternate with, every 5-240 minutes (30 by default) counted from the window's start. Windows can cross midnight (22:00-06:00); start =
+end means all day; when windows overlap the lowest-numbered one wins.
+
+- A background service checks at each minute and, when the scheduled choice changes, sets
+  Kodi's `screensaver.mode`. If a screensaver is running at that moment it wakes it and
+  starts it again, so the new one shows within 1-2 s (*Restart a running screensaver*, on
+  by default).
+- It only acts when the schedule's choice changes (or at start-up or after a settings
+  change), so a screensaver picked by hand in Kodi's settings stays until the next window
+  boundary.
+- **Programs → Screensaver Switcher** shows what is scheduled now, applies the schedule,
+  previews the screensaver or opens the settings.
+
+```bash
+python3 tools/make_settings_switcher.py      # settings.xml + strings.po from resources/lib/config.py
+python3 tools/build_zip.py service.screensaver.switcher
+KODI_ADDON=service.screensaver.switcher python3 tools/kodi.py install   # then restart Kodi (see below)
+python3 -m unittest tests.test_switcher
+```
+
+Kodi loads an add-on's strings only at start-up, so after a first install by symlink the
+settings show blank labels until Kodi restarts.
 
 ## Documentation
 
@@ -122,7 +153,31 @@ Satellites are Kodi controls that slide between positions at display rate.
 - **[docs/fire-sticks.md](docs/fire-sticks.md)**: the Fire TV Sticks on the home
   network (IPs, models, status) and how to connect with adb and deploy.
 
-## Install on a Fire TV Stick
+## Install from the repository (any Kodi 19+ device)
+
+All the add-ons are published as a Kodi repository at
+**https://p-hoep.github.io/kodi/**, so Kodi installs them and updates them itself.
+
+1. **Settings → System → Add-ons → Unknown sources → On**.
+2. **Settings → File manager → Add source →** `https://p-hoep.github.io/kodi/`, name it `phoep`.
+3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-<version>.zip`.
+4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons →** pick a screensaver.
+   Kodi pulls in `script.module.certifi` from its official repository automatically.
+
+### Publishing a new version
+
+Bump `version="…"` in the add-on's `addon.xml` and push to `main`. The
+[Kodi repository workflow](.github/workflows/kodi-repo.yml) runs `tools/make_repo.py`
+and deploys the result to GitHub Pages; installed copies update on Kodi's next
+repository check (or **Add-ons → … → Check for updates**). Without a version bump Kodi
+sees no update. Any new top-level folder with an `addon.xml` is picked up automatically.
+
+```bash
+python3 tools/make_repo.py      # build the same repository locally into dist/repo
+cd dist/repo && python3 -m http.server 8000   # browse it at http://localhost:8000
+```
+
+## Install a local build on a Fire TV Stick
 
 1. Build the zip on your computer: `python3 tools/build_zip.py`
    → `dist/screensaver.godseye.map-<version>.zip`
@@ -158,9 +213,8 @@ zoom 4, transit vehicles from zoom 8, rail lines from zoom 7.
 
 ### Layer notes
 
-- **Traffic** uses TomTom. A personal key is built in (`BUILTIN_TOMTOM_KEY`
-  in `screensaver.py`) for home use; the "TomTom API key" setting overrides
-  it. Don't publish this repository or the zip with the key in it. The free
+- **Traffic** uses TomTom and needs a free TomTom API key, entered in the
+  "TomTom API key" setting (nothing is built in). The free
   tier is 200,000 tiles/month; the default 10-minute refresh uses a few
   thousand a day.
 - **Live transit vehicles** come from the keyless GTFS-realtime feeds God's Eye
@@ -187,9 +241,13 @@ screensaver.godseye.map/        the add-on
   resources/lib/sgp4/           vendored python-sgp4 2.24 (MIT)
 tools/make_settings.py          generates settings.xml + strings.po from one table
 tools/make_media.py             generates the icons (needs Pillow)
+tools/make_splash.py            draws every screensaver's loading splash (SVG in tools/splash/,
+                                rendered to resources/media/splash.png with headless Chrome)
 tools/build_zip.py              builds the installable zip
+tools/make_repo.py              builds the Kodi repository (repository.phoep + every add-on)
 tools/kodi.py                   drives a local Kodi over JSON-RPC for testing
 tests/test_core.py              unit tests (LIVE=1 also hits the real feeds)
+tests/test_splash.py            the shared loading splash (resources/lib/splash.py in each add-on)
 ```
 
 ```bash

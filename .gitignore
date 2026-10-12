@@ -4,3 +4,4 @@ dist/
 .DS_Store
 tools/.world-cache/
 tools/.couch-cache/
+_site/

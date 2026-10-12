@@ -317,6 +317,8 @@ class StarLayer(object):
         for x0, y0, x1, y1 in scene.lines:
             self.line(x0, y0, x1, y1, self.line_rgb, self.line_alpha)
         for x, y, rx, ry, intensity, d in scene.dsos:
+            if d.name in scene.photo_keys:
+                continue          # its photo is drawn instead (a Kodi control above this layer)
             r = math.sqrt(rx * ry)
             if intensity > 0.01:
                 tint = (225, 228, 255) if d.is_galaxy() else ((255, 215, 225) if d.type in ('en', 'snr', 'sfr', 'bn') else (232, 240, 255))

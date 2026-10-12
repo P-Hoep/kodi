@@ -74,13 +74,12 @@ CATEGORIES = [
                                              'See through the Earth (planetarium mode)']),
         B('extinction', 'Atmospheric extinction (dimmer near the horizon)', True),
         B('refraction', 'Atmospheric refraction', True),
-        B('milky_way', 'Show the Milky Way', True),
-        S('mw_brightness', 'Milky Way brightness (%)', 100, 20, 200, 10, visible='milky_way'),
     ]),
     ('Objects', [
         B('show_sun_moon', 'Sun and Moon', True),
         B('show_planets', 'Planets', True),
         B('show_dsos', 'Deep-sky objects (Messier and bright NGC)', True),
+        B('messier_photos', "Messier photos (Fred Espenak, AstroPixels.com)", True, visible='show_dsos'),
         B('show_lines', 'Constellation lines', False),
         B('show_borders', 'Constellation boundaries', False),
         B('show_satellites', 'Satellites', True),
@@ -98,7 +97,7 @@ CATEGORIES = [
         B('spotlight', 'Spotlight an object every half minute (Explorer)', True, visible=('labels', 2)),
         B('show_clock', 'Local date and time', False),
         B('show_compass', 'Direction at the centre of the screen', False),
-        B('show_status', 'Data status (satellite data age, enhancement)', True),
+        B('show_status', 'Status text at the bottom (view mode, satellite data age)', False),
         S('dim', 'Dim everything (%)', 0, 0, 80, 10),
     ]),
     ('Data & updates', [

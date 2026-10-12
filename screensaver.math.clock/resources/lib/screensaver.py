@@ -16,7 +16,7 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 
-from . import clockface, config, texmath
+from . import clockface, config, splash, texmath
 
 ADDON_ID = config.ADDON_ID
 FADE_MS = 450           # rows that change once a minute
@@ -24,6 +24,7 @@ FADE_SECONDS_MS = 200   # the seconds row: Kodi redraws every frame while anythi
 POOL_START = 320
 POOL_GROW = 80
 REFRESH_SECONDS = [60, 30, 10]
+SPLASH_MAX_SECONDS = 15.0
 
 
 def log(message, level=xbmc.LOGINFO):
@@ -78,6 +79,7 @@ class Screensaver(object):
         self.monitor = ExitMonitor(self.exit)
         self.window = None
         self.thread = None
+        self.splash = None
         self.free = []
         self.shown = {}         # slot -> controls on screen
         self.fading = []        # controls fading out, released on the next tick
@@ -94,6 +96,8 @@ class Screensaver(object):
             self.window.doModal()
         finally:
             self.stop.set()
+            if self.splash:
+                self.splash.close()
             if self.thread:
                 self.thread.join(2.0)
             del self.window
@@ -103,6 +107,7 @@ class Screensaver(object):
         self.background = xbmcgui.ControlImage(0, 0, clockface.W, clockface.H, self.white, aspectRatio=0)
         window.addControl(self.background)
         self.grow(POOL_START)
+        self.splash = splash.Splash(window, self.media, 'FFFF8A65', SPLASH_MAX_SECONDS, log)
         self.thread = threading.Thread(target=self.clock_loop, name='mathclock')
         self.thread.daemon = True
         self.thread.start()
@@ -200,6 +205,7 @@ class Screensaver(object):
                     ms = (FADE_SECONDS_MS if kind == 'seconds' else FADE_MS) if fade and last_minute else 0
                     self.show(kind, self.geo.rects(texmath.typeset(latex), i), pal['text'], ms)
             last_minute = minute
+            self.splash.done()
             # Wake just after the next whole second.
             self.stop.wait(1.02 - (time.time() % 1.0))
 

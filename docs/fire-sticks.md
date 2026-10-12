@@ -13,8 +13,8 @@ reliable identifier. Consider DHCP reservations on the router.
 
 | IP | MAC | Model | Fire OS / Android | Kodi | adb | God's Eye Map | God's World Map | Math Clock |
 |---|---|---|---|---|---|---|---|---|
-| **192.168.1.78** | `48:78:5e:42:d6:da` | AFTKA: Fire TV Stick 4K Max (2nd gen) | Fire OS 7.7.1.3 / Android 9 | 21.3 | ✅ authorized | ✅ v0.2.0 | ✅ v0.1.0 + centre lat/lon settings, updated 2026-10-11, active screensaver | ✅ v0.1.0 (Algebra 2 build), installed 2026-10-11; previewed from the TV, not the active screensaver |
-| **192.168.1.15** | `2c:71:ff:8c:40:bd` | AFTMM: Fire TV Stick 4K (1st gen) | Fire OS 6.7.1.1 / Android 7.1.2 | 21.2 | ✅ authorized | ✅ v0.2.0, installed 2026-10-10, replaced `screensaver.rsxs.lorenz` | ⚠️ v0.1.0, installed 2026-10-11, active screensaver (was God's Eye); centre lat/lon update pending, the stick was offline | ⚠️ v0.1.0 first build (classic sets only), installed 2026-10-11; update pending, the stick was offline |
+| **192.168.1.78** | `48:78:5e:42:d6:da` | AFTKA: Fire TV Stick 4K Max (2nd gen) | Fire OS 7.7.1.3 / Android 9 | 21.3 | ✅ authorized | ✅ v0.2.1 (TomTom key entered in its settings 2026-10-12) | ✅ v0.1.0 + centre lat/lon settings, updated 2026-10-11; alternates with God's Eye by day via Screensaver Switcher (installed 2026-10-12) | ✅ v0.1.0 (Algebra 2 build), installed 2026-10-11; previewed from the TV, not the active screensaver |
+| **192.168.1.15** | `2c:71:ff:8c:40:bd` | AFTMM: Fire TV Stick 4K (1st gen) | Fire OS 6.7.1.1 / Android 7.1.2 | 21.2 | ✅ authorized | ⚠️ v0.2.0, installed 2026-10-10, replaced `screensaver.rsxs.lorenz`; v0.2.1 pending: it has the built-in TomTom key, and after updating, the key must be entered in its settings | ⚠️ v0.1.0, installed 2026-10-11, active screensaver (was God's Eye); centre lat/lon update pending, the stick was offline | ⚠️ v0.1.0 first build (classic sets only), installed 2026-10-11; update pending, the stick was offline |
 | **192.168.1.128** | `60:6d:3c:23:10:df` | unknown (Fire TV, by its adb port) | ? | ? | ❌ **unauthorized**: approve the prompt on its TV | not installed | not installed | not installed |
 | 192.168.1.254 | `bc:5f:f4:1d:d0:3f` | probably the ISP gateway (also has 8080 open) | - | - | goes offline at once | n/a, ignore | n/a | n/a |
 
@@ -241,13 +241,25 @@ The same steps with `screensaver.math.clock`. It has no dependencies at all. Not
 The same steps with `screensaver.couchstronomy`. It needs only `script.module.certifi`.
 Notes:
 
-- Installed on **.78** and **.15** 2026-10-11 (v0.1.0, enabled, not the active
-  screensaver on either; .15 runs Kodi 21.2 and keeps Math Clock as its saved screensaver).
-  Not yet run on .15, the older and slower stick.
-- Measured on .78 (4K Max): ready 6.4-6.7 s after the screensaver starts; each star frame
-  takes about 630 ms and is redrawn every 4.1 s at a 60° field, so the Kodi process uses
-  about 38 % of a core. The log prints `last minute: ... star frames, ... ms each` once a
-  minute.
+- Installed on **.78** and **.15** 2026-10-11 (v0.1.0). On 2026-10-12 it is .78's saved
+  screensaver; .15 runs Kodi 21.2, keeps Math Clock, and has not run it yet (it was asleep
+  with adb offline).
+- The Milky Way layer was removed 2026-10-12 (it looked glitchy on the TV). Only the
+  ground mask is left under the stars.
+- v0.1.2 (2026-10-12, adds Fred Espenak's Messier photos) is on .78; v0.1.1 came before it. Kodi keeps an add-on's strings in memory until the
+  version changes or Kodi restarts. After v0.1.0's settings were renumbered in place, the
+  stick showed shifted labels ("Show the Milky Way", "2"). When settings change, bump the
+  version, then quit and relaunch Kodi.
+- Measured on .78 (4K Max), without the Milky Way: ready 1.3 s after the screensaver
+  starts (6.4-6.7 s with it); each star frame takes 330-610 ms, depending on how many
+  objects are in view, and is redrawn every 4.1 s at a 60° field. The Kodi process uses
+  33-87 % of a core; the high end comes with many objects and satellites in view, and was
+  the same before the removal. The log prints
+  `last minute: ... star frames, ... ms each` once a minute.
+- The stick sleeps about 4 minutes after the last key press, so a key sent over adb
+  to stop the screensaver can put it to sleep before Kodi's 3-minute timer starts
+  the screensaver again. Bring Kodi back with
+  `adb shell monkey -p org.xbmc.kodi -c android.intent.category.LAUNCHER 1`.
 - To test at night by day, put a time offset in
   `addon_data/screensaver.couchstronomy/settings.xml` while Kodi is closed, e.g.
   `<settings version="2"><setting id="time_offset">8</setting></settings>`, and delete
@@ -258,6 +270,54 @@ changed since the last clean exit, including `screensaver.mode` set over JSON-RP
 is how .78 lost God's World Map as its screensaver: guisettings.xml still said Math
 Clock). After changing settings, quit with `python3 rpc.py Application.Quit` rather than
 `force-stop`, then relaunch.
+
+### Deploying Screensaver Switcher
+
+`service.screensaver.switcher` is a service add-on, not a screensaver: it sets
+`screensaver.mode` on a schedule. No dependencies. Steps as above (copy while Kodi is
+closed, start Kodi, `Addons.SetAddonEnabled`), then **quit with `Application.Quit` and
+relaunch once**: Kodi loads an add-on's strings only at start-up, so the settings show
+blank labels until then.
+
+- Installed on **.78** 2026-10-12 (v0.1.0). Schedule: window 1, 07:30-19:00, God's Eye Map
+  alternating with God's World Map every 5 minutes (changed from 30 the same day; God's
+  Eye at :00, :10, :20..., God's World at :05, :15...); window 2, 19:00-07:30,
+  Couchstronomy; no default. Not on .15 yet. After each swap God's World takes about 17 s
+  on .78 to show its first scene (6 s to load the world, then the first frame).
+- The schedule can be written as `addon_data/service.screensaver.switcher/settings.xml`
+  while Kodi is closed, e.g.
+  `<settings version="2"><setting id="w1_on">true</setting><setting id="w1_start">07:30</setting>...</settings>`
+  (ids in `resources/lib/config.py`).
+- Since the service owns `screensaver.mode`, set a different screensaver through the
+  schedule; a hand-picked one is replaced at the next switch (at most 5 minutes with the current schedule).
+- `Addons.ExecuteAddon {"addonid":"service.screensaver.switcher","params":["preview"]}`
+  starts the screensaver over JSON-RPC (Kodi refuses that for screensaver add-ons
+  themselves); `"params":["apply"]` applies the schedule now.
+- Tested on .78: with a screensaver running, each switch wakes it and starts the new one
+  within 1-2 s (`adb exec-out screencap` confirmed God's Eye -> Math Clock -> God's Eye,
+  and God's World -> God's Eye at a 30-minute alternation).
+- Waking God's Eye Map can keep a JSON-RPC `Input.ExecuteAction` call from answering for
+  over 10 s while it shuts down (seen on the Mac and on .78). The screensaver still closes;
+  the switcher just waits for it.
+- Remove: `Addons.SetAddonEnabled` false, or with Kodi closed
+  `rm -rf $K/addons/service.screensaver.switcher $K/userdata/addon_data/service.screensaver.switcher`.
+
+### Loading splash (all four screensavers)
+
+Since 2026-10-12 (God's Eye 0.2.2, God's World 0.1.1, Math Clock 0.1.1, Couchstronomy
+0.1.3) each screensaver opens on its own art on black, with pulsing dots, instead of a line
+of loading text. It fades out once the first real frame is up: at least 2.5 s, at most
+25 s (God's Eye), 60 s (God's World), 15 s (Math Clock) or 30 s (Couchstronomy). The log
+says `splash: shown for N s`. Measured on .78:
+
+- God's Eye with cached tiles, Math Clock: the 2.5 s minimum. Kodi loads the art image
+  asynchronously, so the first ~1 s on the stick is black with just the dots.
+- Couchstronomy: about 3 s, and Kodi takes about 1 s to open its window before that.
+- God's World: 12 s for an already-built projection. A projection's first run builds its
+  lookup table and can take over 30 s.
+
+Installed on **.78** 2026-10-12; **.15 still pending** (offline). Updating .15 also brings
+God's Eye 0.2.1+, whose TomTom key must then be entered in its settings.
 
 ### Reverting a stick
 

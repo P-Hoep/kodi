@@ -10,6 +10,7 @@ direction (astro, bodies) -> refraction -> horizon test -> extinction -> camera.
 """
 
 import math
+import os
 import time
 
 from . import astro, bodies, camera, catalog, config
@@ -18,6 +19,16 @@ DEG = astro.DEG
 SKY_DARK_LIMIT = 6.5          # naked-eye limit under a dark, moonless sky
 EXTINCTION_K = 0.2            # magnitudes per airmass (clear, sea-level-ish)
 LINE_GAP = 10.0               # constellation lines stop short of their stars (px)
+PHOTO_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'media', 'messier')
+MAX_PHOTOS = 16
+
+
+def photo_keys():
+    """Messier numbers with a bundled photo ('M42', ...)."""
+    try:
+        return frozenset(n[:-4] for n in os.listdir(PHOTO_DIR) if n.endswith('.png'))
+    except OSError:
+        return frozenset()
 
 
 class View(object):
@@ -41,6 +52,7 @@ class View(object):
             projection = (camera.PERSPECTIVE, camera.STEREOGRAPHIC, camera.EQUIDISTANT)[proj - 1]
         self.camera = camera.Camera(az, s['tilt'], hfov, width, height, s['rotation'], s['roll'], projection)
         self.realistic = s['look'] == 0
+        self.photos = s['show_dsos'] and s['messier_photos']
         self.enhance = 0 if self.realistic else 1 + s['enhance']     # 0 none, 1 mild, 2 strong
         self.mag_limit = config.MAG_LIMITS[s['mag_limit']]
         self.clip_horizon = s['horizon'] != 2
@@ -94,6 +106,8 @@ class Scene(object):
         self.points = []
         self.disks = []
         self.dsos = []       # (x, y, rx_px, ry_px, intensity, DeepSky)
+        self.photos = []     # (key, x, y, size_px, degrees clockwise from up to north, alpha)
+        self.photo_keys = set()
         self.lines = []      # (x0, y0, x1, y1)
         self.borders = []
         self.labels = []
@@ -103,7 +117,7 @@ class Scene(object):
         self.sun_hor = self.moon_hor = None
         self.moon_illum = 0.0
         self.limit = SKY_DARK_LIMIT
-        self.mw_visibility = 1.0
+        self.diffuse_visibility = 1.0
         self.stars_considered = 0
 
 
@@ -130,6 +144,7 @@ class Model(object):
         self.view = view
         self.stars = catalog.Stars(catalog.year_of(view.sky_time()))
         self.sky = catalog.Sky()
+        self.photo_keys = photo_keys() if view.photos else frozenset()
         self._colors = {}
         self._earth = None    # (jd_tt, state): the Earth's state, reused for a minute
 
@@ -201,13 +216,14 @@ class Model(object):
         sc.limit = limit
         dark = 1.0 if v.keep_dark else max(0.0, min(1.0, (-sc.sun_alt - 10.0) / 8.0))
         moon_wash = 0.0 if v.keep_dark or sc.moon_alt <= 0 else 0.75 * m.illum ** 1.5
-        sc.mw_visibility = dark * (1.0 - moon_wash) * (1.0 - 0.8 * v.light_pollution if v.realistic else 1.0)
+        sc.diffuse_visibility = dark * (1.0 - moon_wash) * (1.0 - 0.8 * v.light_pollution if v.realistic else 1.0)
 
         self._stars(sc, fr, cam, limit)
         if v.s['show_planets'] or v.s['show_sun_moon']:
             self._bodies(sc, fr, cam, limit)
         if v.s['show_dsos']:
             self._dsos(sc, fr, cam, limit)
+            self._thin_photos(sc)
         if v.s['show_lines'] or (v.labels == config.EXPLORER and v.s['constellation_names']) or \
                 (v.labels == config.NAMED and v.s['constellation_names']):
             self._constellations(sc, fr, cam)
@@ -429,16 +445,20 @@ class Model(object):
             surface = mag + 2.5 * math.log10(area)      # mag per arcmin^2, roughly
             intensity = 10 ** (-0.4 * (surface - 10.5))
             if v.realistic:
-                intensity *= sc.mw_visibility
+                intensity *= sc.diffuse_visibility
             else:
                 intensity = intensity ** 0.7 * 1.6
             if d.is_cluster():
                 intensity *= 0.35      # their stars are drawn individually
             sc.dsos.append((p[0], p[1], rx, ry, min(0.6, intensity), d))
             daylit = v.realistic and not v.keep_dark and sc.sun_alt > -6
+            photo_r = 0.0
+            if d.name in self.photo_keys and (v.keep_dark or sc.sun_alt <= -6):
+                photo_r = self._photo(sc, fr, cam, d, p, mag)
             if explorer and not daylit and mag <= 9.5 and 0 <= p[0] < cam.width and 0 <= p[1] < cam.height:
                 label = d.name if not d.alt else '%s  %s' % (d.name, d.alt)
-                sc.labels.append(Label(label, p[0], p[1], max(rx, ry) * 0.6 + 6, 20 - mag, 'dso', d.name))
+                sc.labels.append(Label(label, p[0], p[1], max(max(rx, ry) * 0.6, photo_r * 0.55) + 6, 20 - mag,
+                                       'dso', d.name))
                 details = [d.type_name().capitalize()]
                 if d.desig:
                     details.append(d.desig)
@@ -447,6 +467,37 @@ class Model(object):
                 details.append(_altaz(hor))
                 if d.name.startswith('M') and mag <= 7.5:
                     sc.spotlight.append(('dso', d.name, p[0], p[1], d.alt or d.name, details))
+
+    def _thin_photos(self, sc):
+        """Brightest first; drop a photo whose centre sits inside a bigger one (M43 in M42,
+        M32 and M110 in M31), and keep at most MAX_PHOTOS."""
+        kept = []
+        for ph in sorted(sc.photos, key=lambda ph: ph[6]):
+            if len(kept) >= MAX_PHOTOS:
+                break
+            if any(k[3] > ph[3] and math.hypot(k[1] - ph[1], k[2] - ph[2]) < k[3] * 0.45 for k in kept):
+                continue
+            kept.append(ph)
+        sc.photos = [ph[:6] for ph in kept]
+        sc.photo_keys = set(ph[0] for ph in kept)
+
+    def _photo(self, sc, fr, cam, d, p, mag):
+        """A Messier photo at the object, as big as the object (but never tiny), north
+        turned to where north is on screen."""
+        v = d.vec
+        k = v[2]
+        t = astro.norm((-k * v[0], -k * v[1], 1.0 - k * v[2]))       # towards the celestial pole
+        q = cam.project_camera(*cam.to_camera(self.apparent(fr.star_to_hor(astro.norm(
+            (v[0] + 0.01 * t[0], v[1] + 0.01 * t[1], v[2] + 0.01 * t[2]))))))
+        angle = math.degrees(math.atan2(q[0] - p[0], p[1] - q[1])) if q else 0.0
+        size = d.major / 60.0 * DEG * cam.f * 1.4
+        size = max(0.036 * cam.width, min(0.4 * cam.height, size))
+        alpha = 0.9 * (sc.diffuse_visibility if self.view.realistic else 1.0)
+        if alpha <= 0.05:
+            return 0.0
+        sc.photos.append((d.name, p[0], p[1], size, angle, alpha, mag))
+        sc.photo_keys.add(d.name)
+        return size / 2.0
 
     def _segment(self, cam, a, b):
         """Two apparent ENU unit vectors -> list of screen segments (clipped to the horizon
