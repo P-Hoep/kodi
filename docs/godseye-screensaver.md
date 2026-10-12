@@ -56,10 +56,9 @@ as the screensaver over JSON-RPC.
 `~/Library/Application Support/Kodi/addons/` and enables it, so code edits take
 effect the next time the screensaver starts.
 
-> ⚠️ **The TomTom key is hardcoded** (`BUILTIN_TOMTOM_KEY` in
-> `resources/lib/screensaver.py`) for home use. Don't push this repo or share
-> the zip publicly while it is there. Either blank the constant and enter the
-> key in settings, or keep the repo private.
+> The TomTom key is not in the code. Enter it under **Settings → Traffic &
+> transit → TomTom API key** on each Kodi install; it is stored in that install's
+> `addon_data/screensaver.godseye.map/settings.xml`.
 
 ---
 
@@ -103,7 +102,7 @@ Open them from **Settings → Interface → Screensaver → Settings**. Defaults
 
 | Setting | Default | Notes |
 |---|---|---|
-| TomTom API key | blank | Blank uses the built-in key. Free tier is 200k tiles/month. |
+| TomTom API key | blank | Needed for traffic; blank shows "Traffic needs key". Free tier is 200k tiles/month. |
 | Traffic flow | **On** | TomTom relative-speed flow lines. |
 | Traffic incidents | Off | TomTom incident tiles. The white arrows are road closures and incident directions. |
 | Traffic refresh | **600 s** (300-1800) | |

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Empty full-screen window; the sky layers, labels and overlays are added from Python. -->
+<window>
+  <backgroundcolor>0xff000000</backgroundcolor>
+  <controls/>
+</window>

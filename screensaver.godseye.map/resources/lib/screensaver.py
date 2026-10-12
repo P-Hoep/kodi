@@ -10,7 +10,7 @@ import xbmcaddon
 import xbmcgui
 import xbmcvfs
 
-from . import clouds, geo, layers, looks, motion, tiles, weather
+from . import clouds, geo, layers, looks, motion, splash, tiles, weather
 from .workers import Workers
 
 ADDON_ID = 'screensaver.godseye.map'
@@ -23,6 +23,8 @@ MAX_LABELS = 30
 TICK = 1.0                          # seconds between motion updates; Kodi animates in between
 SELECT_SECONDS = 4.0                # how often the set of drawn markers is re-chosen
 TILE_CHECK_SECONDS = 5.0            # how often tiles are re-checked when nothing signalled a change
+SPLASH_READY = 0.9                  # share of base-map tiles drawn before the splash fades
+SPLASH_MAX_SECONDS = 25.0           # ...or this long, if the tile server is slow or offline
 NO_SLIDE = [('conditional', 'effect=slide start=0,0 end=0,0 time=0 condition=true')]
 DRIFT_PX, DRIFT_PERIOD = 48, 900.0  # burn-in protection: a slow 48 px circle every 15 min
 
@@ -39,8 +41,6 @@ WEATHER_REFRESH = 900   # seconds; Open-Meteo is keyless and asks for fair use
 WEATHER_RETRY = 120
 NUMBERS = {'lat': 44.9031331, 'lon': -93.3096136}
 STRINGS = ['location_name', 'tomtom_key', 'transit_custom_url']
-# Personal home-use key; the TomTom API key setting overrides it.
-BUILTIN_TOMTOM_KEY = 'MtpWoLIzfM2z8gDDl0zBoewiwtvJ5quj'
 
 MARKER_LAYERS = [('flights', 'Flights'), ('military', 'Military'), ('satellites', 'Satellites'),
                  ('quakes', 'Quakes'), ('cyclones', 'Storms'), ('transit', 'Transit')]
@@ -85,7 +85,7 @@ def read_settings(addon):
             s[key] = default
     for key in STRINGS:
         s[key] = addon.getSettingString(key) or ''
-    s['tomtom_key'] = s['tomtom_key'].strip() or BUILTIN_TOMTOM_KEY
+    s['tomtom_key'] = s['tomtom_key'].strip()
     return s
 
 
@@ -156,6 +156,7 @@ class Screensaver(object):
         self.stop = threading.Event()
         self.monitor = ExitMonitor(self.exit)
         self.window = None
+        self.splash = None
         self.engine = None
         self.fetcher = Workers(3, 'fetch', lambda e: log('fetch error: %s' % e, xbmc.LOGWARNING))
         self.cache = tiles.TileCache(os.path.join(self.profile, 'tiles'), self.tile_ready,
@@ -184,6 +185,8 @@ class Screensaver(object):
             self.window.doModal()
         finally:
             self.stop.set()
+            if self.splash:
+                self.splash.close()
             self.wake.set()
             if self.engine:
                 self.engine.join(3)
@@ -194,6 +197,7 @@ class Screensaver(object):
 
     def attach(self, window):
         self.build_controls(window)
+        self.splash = splash.Splash(window, self.media, 'FF69F0AE', SPLASH_MAX_SECONDS, log)
         self.engine = threading.Thread(target=self.engine_loop, name='godseye-engine')
         self.engine.daemon = True
         self.engine.start()
@@ -543,6 +547,7 @@ class Screensaver(object):
             for z, tx, ty, _sx, _sy, _size in plan:
                 wanted.add((src.id, z, tx, ty))
         self.cache.want(wanted)
+        base_wanted = base_shown = 0
         for p, ((src, _alpha), plan) in enumerate(zip(self.sources, plans)):
             pool, state = self.pools[p], self.pool_state[p]
             for slot, ctrl in enumerate(pool):
@@ -568,6 +573,12 @@ class Screensaver(object):
                     if old is None:
                         ctrl.setVisible(True)
                 state[slot] = target
+            if p < self.base_count:
+                base_wanted += min(len(plan), len(pool))
+                base_shown += sum(1 for st in state[:len(plan)] if st is not None)
+        # The splash stays up until nearly all of the base map is drawn.
+        if self.splash and base_shown >= SPLASH_READY * base_wanted:
+            self.splash.done()
 
     def on_screen(self, view, items, when):
         cx, cy = W / 2.0, H / 2.0

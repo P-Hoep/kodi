@@ -172,7 +172,7 @@ msgid "Traffic & transit"
 msgstr ""
 
 msgctxt "#30141"
-msgid "TomTom API key (blank = built-in key)"
+msgid "TomTom API key"
 msgstr ""
 
 msgctxt "#30142"

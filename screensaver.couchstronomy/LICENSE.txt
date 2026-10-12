@@ -1,0 +1,81 @@
+Couchstronomy - Kodi screensaver
+================================
+
+Code: MIT License
+
+Copyright (c) 2026 P-Hoep
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+
+Bundled data and third-party code
+---------------------------------
+
+resources/data/stars.bin, stars.json
+  Derived from the HYG database v4.1 (Hipparcos, Yale Bright Star and Gliese catalogues),
+  github.com/astronexus/HYG-Database, by David Nash (astronexus).
+  Licensed under Creative Commons Attribution-ShareAlike 4.0 International
+  (https://creativecommons.org/licenses/by-sa/4.0/). These derived files are likewise
+  shared under CC BY-SA 4.0.
+
+resources/data/sky.json
+  Derived from d3-celestial by Olaf Frohn (github.com/ofrohn/d3-celestial): constellation
+  lines, boundaries and name positions, Messier and bright deep-sky
+  objects. Copyright (c) 2015, Olaf Frohn. All rights reserved. BSD 3-Clause License:
+  Redistribution and use in source and binary forms, with or without modification, are
+  permitted provided that the following conditions are met: (1) Redistributions of source
+  code must retain the above copyright notice, this list of conditions and the following
+  disclaimer. (2) Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution. (3) Neither the name of the
+  copyright holder nor the names of its contributors may be used to endorse or promote
+  products derived from this software without specific prior written permission.
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+  THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+resources/data/vsop87.json
+  Truncated VSOP87B series (P. Bretagnon and G. Francou, Bureau des Longitudes, 1988),
+  taken from the astronomia library (github.com/commenthol/astronomia),
+  Copyright (c) 2013 Sonia Keys, Copyright (c) 2016 commenthol, MIT License.
+
+resources/lib/moon.py
+  Lunar series from J. Meeus, Astronomical Algorithms (2nd ed.), chapter 47, as
+  transcribed in the astronomia library (MIT License, see above).
+
+resources/data/moon.bin
+  Rendered from the CGI Moon Kit colour map (Lunar Reconnaissance Orbiter LROC), NASA's
+  Scientific Visualization Studio, svs.gsfc.nasa.gov/4720. NASA imagery is not
+  copyrighted; credit NASA's Scientific Visualization Studio.
+
+resources/media/messier/
+  Messier photographs copyright Fred Espenak, AstroPixels.com (www.astropixels.com),
+  used with his permission. All rights reserved: they are not covered by this add-on's
+  MIT License and may not be reused outside it without his written permission. Each was
+  resized and given a transparent background and soft edge (tools/make_couch_media.py).
+
+resources/lib/sgp4/
+  python-sgp4 2.24 by Brandon Rhodes, MIT License (see resources/lib/sgp4/LICENSE).
+
+Satellite orbital elements are downloaded at run time from CelesTrak (celestrak.org) and
+are not bundled.
