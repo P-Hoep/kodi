@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Empty full-screen window; every control is added from Python (resources/lib/window.py). -->
+<window>
+  <backgroundcolor>0xff05080d</backgroundcolor>
+  <controls/>
+</window>

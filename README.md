@@ -116,6 +116,51 @@ image Kodi stretches. Stars, planets and lines are drawn into a transparent full
 sprites, re-rendered as often as the sky moves half a pixel (about every 4 s at 60°).
 Satellites are Kodi controls that slide between positions at display rate.
 
+## SkyWatch (new, v1.0)
+
+A fifth screensaver, `screensaver.skywatch`, built from
+[docs/skywatch-spec.md](docs/skywatch-spec.md): the TV becomes a live weather station. An
+animated radar loop over a map of your location runs into a future-radar extension, with a
+PAST / NOW / FUTURE timeline. After the radar comes a playlist of scenes you can switch on,
+reorder and time: regional radar with NWS warning polygons, a national mosaic, satellite +
+radar, "what's coming" (HRRR to 18 h), current conditions, the next 2 hours, a 48-hour graph,
+7 or 10 daily cards, today against the 1991–2020 normal, a year in temperature, a fishing
+score with solunar periods, sun and moon, air quality and pollen, marine and tides, the NWS
+forecast discussion, and an ambient clock. Active warnings pin a banner to every scene
+and put a warning scene at the front of the playlist.
+
+- **Data is keyless by default**: IEM NEXRAD and HRRR (via WMS), Open-Meteo (forecast,
+  ERA5 archive, air quality, marine, geocoding), NWS, NOAA CO-OPS, USGS, NASA GIBS and
+  Esri/OpenStreetMap base maps. Outside the US it uses RainViewer. A free Rainbow.ai key adds
+  a global nowcast, capped by a monthly tile budget that falls back to HRRR; a LibreWXR server
+  URL and a Stadia terrain key are optional extras.
+- **Degrades quietly**: each source is OK, Stale or Down. On HTTP 429 or a server error it
+  backs off from 1 minute, doubling to 60, and the radar chain falls back from Rainbow to
+  HRRR to past-only. A scene with no data is skipped. With no network at all it runs from
+  cache and the overlay shows "offline, data from …".
+- **A background service** warms data and radar frames in the 30 minutes before Kodi's
+  screensaver would start ("Smart" refresh), and sleeps during playback.
+- **Interactive mode** (optional): waking SkyWatch reopens it as a normal window, where
+  left/right skip scenes, up/down zoom the radar, OK pauses and Back exits.
+
+```bash
+python3 tools/make_skywatch_media.py     # Meteocons icons, Inter glyphs, backgrounds, icon (Pillow + Chrome)
+python3 tools/make_splash.py skywatch    # loading splash
+python3 tools/make_settings_skywatch.py  # settings.xml + strings.po from resources/lib/config.py
+python3 tools/preview_skywatch.py all /tmp/sw   # draw every panel scene with live data, no Kodi
+python3 tools/build_zip.py screensaver.skywatch
+KODI_ADDON=screensaver.skywatch python3 tools/kodi.py install   # then set lat=… lon=… / select / run / shot
+python3 -m unittest tests.test_skywatch  # offline: tile math, astronomy, fishing, climate, fallback, playlist
+```
+
+Design: the spec composites frames with Pillow, but Kodi on Android and Fire TV has no
+imaging library, so SkyWatch lets Kodi composite on the GPU instead. Each radar frame is one
+WMS image fetched at exactly the view's bounding box, so it lines up with the base-map tiles
+and the labels layer drawn above it. Frames are a fixed stack of image controls that playback
+only shows and hides, with a 120 ms fade. Charts are drawn by a small pure-Python rasteriser
+(`raster.py`, `charts.py`) with Kodi labels on top, and the big numbers are pre-rendered
+glyph images. Scenes are plain layouts, built and tested without Kodi.
+
 ## Screensaver Switcher (new, v0.1)
 
 `service.screensaver.switcher`, built from [docs/screensaver-switcher.md](docs/screensaver-switcher.md):

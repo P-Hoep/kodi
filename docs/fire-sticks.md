@@ -302,6 +302,27 @@ blank labels until then.
 - Remove: `Addons.SetAddonEnabled` false, or with Kodi closed
   `rm -rf $K/addons/service.screensaver.switcher $K/userdata/addon_data/service.screensaver.switcher`.
 
+### Deploying SkyWatch
+
+The same steps with `screensaver.skywatch`. It needs only `script.module.certifi`, and it also
+has a background service (`service.py`) that warms data before the screensaver starts.
+Notes:
+
+- Installed on **.78** 2026-10-12 (v1.0.0). Location was written before the first start as
+  `addon_data/screensaver.skywatch/settings.xml` (`lat`, `lon`, `location_name`,
+  `nws_email`), the same home point as God's Eye. Set as `screensaver.mode` over JSON-RPC
+  for testing. The Screensaver Switcher still owns that setting and will put its own
+  schedule back at the next switch; add SkyWatch to a switcher window to keep it.
+- Kodi on Android reports `System.Platform.Linux.RaspberryPi` as true, so the profile
+  check now tests `System.Platform.Android` first: sticks get the Balanced profile (radar
+  frames 960x540, up to 36 frames). The log line `built N controls ... (profile ...)`
+  shows which one ran.
+- Measured on .78 (4K Max): 1454 controls built in 0.56 s, splash 2.5-4.6 s, Kodi process
+  about 220 MB resident; 35-100 % of a core once the frames are cached, up to 155 % for
+  the first minute while about 90 frames download and decode.
+- Interactive mode reopens SkyWatch as a script window when it is woken; Kodi otherwise
+  kills a Python screensaver 5 s after a key press.
+
 ### Loading splash (all four screensavers)
 
 Since 2026-10-12 (God's Eye 0.2.2, God's World 0.1.1, Math Clock 0.1.1, Couchstronomy

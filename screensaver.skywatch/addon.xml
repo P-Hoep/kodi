@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.skywatch" name="SkyWatch" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+    <import addon="script.module.certifi" version="2019.0.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library="default.py"/>
+  <extension point="xbmc.service" library="service.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">A live weather station for your TV: radar loop, future radar, forecasts, climate and fishing</summary>
+    <description lang="en_GB">Turns an idle TV into a weather station. An animated radar loop over a map of your location, with a future-radar extension (HRRR in the US, Rainbow.ai with a free key), regional radar with NWS warning polygons, a national mosaic and satellite. Plus a rotating set of panels you switch on or off: current conditions, the next two hours, a 48-hour graph, daily forecast, today against the 1991-2020 normal, a year in temperature, a fishing forecast with solunar periods, sun and moon, air quality, tides and the NWS forecast discussion. Severe warnings show as a banner. Keyless data first; works offline from cache.</description>
+    <disclaimer lang="en_GB">Data: Open-Meteo.com (CC BY 4.0), Iowa Environmental Mesonet, NOAA (NWS, HRRR, CO-OPS, GOES via NASA GIBS), USGS, RainViewer, optional Rainbow.ai and LibreWXR. Maps © OpenStreetMap contributors © CARTO, Esri. Weather icons: Meteocons by Bas Milius (MIT). Not for life-safety decisions; follow official warnings.</disclaimer>
+    <platform>all</platform>
+    <license>MIT</license>
+    <assets>
+      <icon>icon.png</icon>
+    </assets>
+  </extension>
+</addon>

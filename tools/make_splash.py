@@ -432,12 +432,47 @@ def sparkle(x, y, size, colour):
             % (x, y, s, t, t, s, t, t, s, t, t, s, t, t, colour))
 
 
+# ---------------------------------------------------------------- SkyWatch
+
+def skywatch():
+    sky = '#4FC3F7'
+    random.seed(7)
+    parts = []
+    # A radar scope: range rings, a sweep and soft echoes, with a location pin in the middle.
+    for r in (90, 170, 250):
+        parts.append('<circle cx="%d" cy="%d" r="%d" fill="none" stroke="%s" stroke-opacity="%.2f" '
+                     'stroke-width="2"/>' % (CX, CY, r, sky, 0.12 + 0.06 * (250 - r) / 80.0))
+    for deg in range(0, 360, 30):
+        x1, y1 = polar(250, deg)
+        x2, y2 = polar(262, deg)
+        parts.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-opacity="0.4" '
+                     'stroke-width="2"/>' % (x1, y1, x2, y2, sky))
+    x1, y1 = polar(250, 20)
+    x2, y2 = polar(250, 70)
+    parts.append('<path d="M%d %d L%.1f %.1f A250 250 0 0 1 %.1f %.1f Z" fill="url(#sweep)"/>'
+                 % (CX, CY, x1, y1, x2, y2))
+    echoes = [(-90, 50, 110, 60, '#1FBF3F'), (-70, 44, 60, 34, '#F5E000'), (-62, 40, 26, 16, '#F53C00'),
+              (110, -70, 70, 40, '#1FBF3F'), (118, -74, 30, 18, '#F5E000'), (40, 150, 80, 34, '#1FBF3F')]
+    parts.append('<g filter="url(#soft)" opacity="0.9">')
+    for dx, dy, rx, ry, colour in echoes:
+        parts.append('<ellipse cx="%d" cy="%d" rx="%d" ry="%d" fill="%s"/>' % (CX + dx, CY + dy, rx, ry, colour))
+    parts.append('</g>')
+    parts.append('<circle cx="%d" cy="%d" r="22" fill="none" stroke="#FFFFFF" stroke-width="8"/>' % (CX, CY))
+    parts.append('<circle cx="%d" cy="%d" r="8" fill="#FFFFFF"/>' % (CX, CY))
+    parts.append(title('SKYWATCH', 'YOUR WEATHER STATION', sky))
+    defs = ('<linearGradient id="sweep" x1="0" y1="1" x2="1" y2="0">'
+            '<stop offset="0" stop-color="%s" stop-opacity="0"/><stop offset="1" stop-color="%s" '
+            'stop-opacity="0.5"/></linearGradient>' % (sky, sky))
+    return svg('\n'.join(parts), defs), sky
+
+
 DOTS = ('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="24" viewBox="0 0 120 24">'
         '<circle cx="28" cy="12" r="6" fill="#FFFFFF"/><circle cx="60" cy="12" r="6" fill="#FFFFFF"/>'
         '<circle cx="92" cy="12" r="6" fill="#FFFFFF"/></svg>')
 
 ADDONS = [('screensaver.godseye.map', godseye), ('screensaver.godsworld.map', godsworld),
-          ('screensaver.math.clock', mathclock), ('screensaver.couchstronomy', couchstronomy)]
+          ('screensaver.math.clock', mathclock), ('screensaver.couchstronomy', couchstronomy),
+          ('screensaver.skywatch', skywatch)]
 
 
 def render(svg_text, out_png, w, h):
