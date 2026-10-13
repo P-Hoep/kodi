@@ -18,9 +18,13 @@ SORTS = [
 CATEGORIES = [
     ('Server', [
         dict(id='server_url', type='string', label='Server address (e.g. http://192.168.1.10:13378)', default=''),
+        dict(id='auth_method', type='options', label='Sign in with', default=0,
+             options=['Username and password', 'API key']),
+        dict(id='username', type='string', label='Username', default='', visible=('auth_method', '0')),
+        dict(id='password', type='string', label='Password', default='', hidden=True, visible=('auth_method', '0')),
         dict(id='api_key', type='string', label='API key (Audiobookshelf: Settings > API Keys)', default='',
-             hidden=True),
-        dict(id='test_connection', type='action', label='Test connection...',
+             hidden=True, visible=('auth_method', '1')),
+        dict(id='test_connection', type='action', label='Sign in / test connection...',
              data='RunPlugin(%s?action=test)' % PLUGIN),
         dict(id='choose_library', type='action', label='Choose library...',
              data='RunPlugin(%s?action=choose_library)' % PLUGIN),
@@ -71,6 +75,8 @@ def read(getters):
         except Exception:
             out[s['id']] = s['default']
     out['server_url'] = normalise_url(out['server_url'])
+    # Installs from before 1.1 have only an API key: keep using it until a username is entered.
+    out['use_api_key'] = out['auth_method'] == 1 or (not out['username'] and bool(out['api_key']))
     return out
 
 

@@ -190,18 +190,24 @@ python3 -m unittest tests.test_switcher
 Kodi loads an add-on's strings only at start-up, so after a first install by symlink the
 settings show blank labels until Kodi restarts.
 
-## Audiobookshelf (new, v1.0)
+## Audiobookshelf (new, v1.1)
 
 `plugin.audio.audiobookshelf`, built from [docs/audiobookshelf.md](docs/audiobookshelf.md): not a
 screensaver but a music add-on that plays the audiobooks on an
 [Audiobookshelf](https://www.audiobookshelf.org/) server. It lives under **Add-ons → Music add-ons**
 and opens on Continue Listening, Recently Added, All Audiobooks (sorted by title, author or date
-added, paged), Series (in reading order), Authors and Search. Every book shows its cover and its
-progress: a blue percentage while in progress, greyed with a green "Finished" when done.
+added, paged), Series (in reading order), Authors, Genres and Search, plus **Play a random book**.
+Every book shows its cover and its progress: a blue percentage while in progress, greyed with a
+green "Finished" when done.
 
-- **Set up**: in the add-on's settings enter the server address and an API key (in Audiobookshelf:
-  **Settings → API Keys → Add API Key**), then **Test connection…**. Nothing about the server is
-  built in. With several audiobook libraries, **Choose library…** picks one.
+- **Sign in**: the first time it opens, **Sign in to your Audiobookshelf server…** asks for the
+  server address, your username and your password, one box at a time. The add-on keeps the
+  server's access and refresh tokens and renews them itself (signing in again when needed), so
+  you sign in once. An API key still works (**Sign in with → API key** in the settings), and an
+  install that already has a key keeps using it until a username is entered. Nothing about the
+  server is built in. With several audiobook libraries, **Choose library…** picks one.
+- **Random**: **Play a random book** picks one you haven't finished, and each genre starts with
+  **Play a random *genre* book**. The server does the shuffling; an in-progress pick resumes.
 - **Playback** uses Kodi's own player on the book's original files (no transcoding). A book's
   page offers Resume (with the time left), Play from start, Chapters and About this book. A
   finished book starts again from the beginning rather than from an old position.
@@ -219,7 +225,7 @@ progress: a blue percentage while in progress, greyed with a green "Finished" wh
 python3 tools/make_settings_audiobookshelf.py   # settings.xml + strings.po from resources/lib/config.py
 python3 tools/make_audiobookshelf_media.py      # icon.png, fanart.jpg (Pillow)
 python3 tools/build_zip.py plugin.audio.audiobookshelf
-KODI_ADDON=plugin.audio.audiobookshelf python3 tools/kodi.py install   # then set server_url=… api_key=…
+KODI_ADDON=plugin.audio.audiobookshelf python3 tools/kodi.py install   # then open it: Sign in to your server…
 python3 -m unittest tests.test_audiobookshelf   # offline; LIVE=1 ABS_URL=… ABS_KEY=… adds read-only server checks
 ```
 

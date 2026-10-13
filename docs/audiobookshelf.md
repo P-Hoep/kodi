@@ -183,9 +183,10 @@ Keep the scope focused on audiobook listening. Do not implement unrelated media 
 Include installation instructions, configuration instructions, diagnostic logging, and a list of any remaining limitations.
 ---
 
-# Implementation (plugin.audio.audiobookshelf 1.0.0)
+# Implementation (plugin.audio.audiobookshelf 1.1.0)
 
-Built 2026-10-13. Tested on Kodi 21.1 (macOS) against an Audiobookshelf 2.28.0 server with
+Built 2026-10-13; 1.1.0 the same day added sign-in with a username and password, Genres and
+random play. Tested on Kodi 21.1 (macOS) against an Audiobookshelf 2.28.0 server with
 666 books, including multi-file MP3 books. Targets Kodi 19+ (`xbmc.python` 3.0.0) and uses no
 modules beyond the standard library and `script.module.certifi` (for HTTPS on Android).
 
@@ -193,7 +194,7 @@ modules beyond the standard library and `script.module.certifi` (for HTTPS on An
 
 | Part | How |
 |---|---|
-| Authentication | An Audiobookshelf **API key** (Settings → API Keys, server 2.26+), sent as `Authorization: Bearer <key>`. No username/password login. |
+| Authentication | **Username and password** (`resources/lib/auth.py`): `/login` returns an access token (12 h) and a refresh token (7 d), kept in `tokens.json` in the profile folder and renewed automatically; if renewal fails the add-on signs in again with the stored password. An **API key** is the alternative, and stays in use on installs from 1.0 until a username is entered. Either way requests carry `Authorization: Bearer <token>`. |
 | Browsing | Plugin directories (`resources/lib/plugin.py`), one Kodi call per screen. |
 | Streaming | A playback session with direct play; Kodi plays the original files as a playlist, with the key sent as a header (`url\|Authorization=Bearer%20…`). |
 | Progress | A background service (`resources/lib/player.py`) follows Kodi's player and reports through the session's sync and close calls. |
@@ -209,10 +210,14 @@ Only the last three import Kodi modules, so the rest is covered by `tests/test_a
 | Call | Used for | Notes from checking |
 |---|---|---|
 | `GET /status` | Is it an Audiobookshelf server? | No auth needed. Returns `app`, `serverVersion`. |
-| `GET /api/me` | Validate the key; all progress | `mediaProgress[]` with `libraryItemId`, `currentTime`, `progress`, `isFinished`, `lastUpdate`. 401 for a bad key. |
+| `POST /login` + header `x-return-tokens: true` | Sign in | Body `{username, password}`. `user.accessToken` (JWT, 12 h), `user.refreshToken` (JWT, 7 d); also the deprecated non-expiring `user.token`, which is not used. 401 for a wrong password. |
+| `POST /auth/refresh` + header `x-refresh-token` | Renew tokens | Returns a new pair in `user`. Rotates: the old refresh token is rejected (401) once used. |
+| `GET /api/libraries/:id/filterdata` | Genres | `genres[]` (names only, 96 on the test server), also tags, narrators, series. |
+| `GET /api/me` | Validate the sign-in; all progress | `mediaProgress[]` with `libraryItemId`, `currentTime`, `progress`, `isFinished`, `lastUpdate`. 401 for a bad key. |
 | `GET /api/libraries` | Pick the book library | Podcast libraries (`mediaType: podcast`) are left out. |
 | `GET /api/me/items-in-progress` | Continue Listening | Items carry no progress, so it's merged from `/api/me`. Covers all libraries; filtered by `libraryId`. |
 | `GET /api/libraries/:id/items` | All books, Recently Added, a series, an author | `sort`, `desc`, `page`, `limit`, `minified`, `filter=series.<base64 id>` / `authors.<base64 id>`. The sorts honoured are `media.metadata.title`, `media.metadata.authorNameLF` and `addedAt`; `media.metadata.seriesName` is silently ignored, so series order comes from the Series view. Filtered by series and not minified, `media.metadata.series` is one `{id, name, sequence}` dict. |
+| `…/items?sort=random` | Random book | The server shuffles. Combined with `filter=progress.<base64 "not-finished">` (whole library) or `filter=genres.<base64 name>` (one genre); finished books and books with missing files are skipped client-side. Progress filter values: `finished`, `not-started`, `not-finished`, `in-progress`. |
 | `GET /api/libraries/:id/series` | Series list | `results[].books[]`, `total`. |
 | `GET /api/libraries/:id/authors` | Authors | `authors[]` with `numBooks`, `imagePath`. |
 | `GET /api/libraries/:id/search?q=` | Search | `book[].libraryItem`, `series[].series/books`, `authors[]`. Matches titles, authors and series. |
@@ -254,6 +259,11 @@ Only the last three import Kodi modules, so the rest is covered by `tests/test_a
 
 ## Install and configure
 
+**Sign in (1.1):** open the add-on and choose **Sign in to your Audiobookshelf server…**. It asks for
+the address, the username and the password (masked) in turn, then confirms the server version, user
+and libraries. The same fields are in the settings under **Sign in with → Username and password**.
+The steps below use an API key instead.
+
 1. Install from the P-Hoep repository (**Add-ons → Install from repository → P-Hoep Add-ons →
    Music add-ons → Audiobookshelf**), or from a zip built with
    `python3 tools/build_zip.py plugin.audio.audiobookshelf`.
@@ -281,11 +291,14 @@ log. The client never puts it in URLs or exception messages, and every log line 
 
 ## Remaining limitations
 
-- **API keys only:** username and password login (with its short-lived access tokens) is not
-  supported.
-- **Key storage:** the key is stored in plain text in Kodi's `addon_data/…/settings.xml`. Kodi
-  has no secure store; anyone with access to the device's files can read it. Use a key for a
-  non-admin user, and revoke it on the server if the device is lost.
+- **Password storage:** the password (or API key) is stored in plain text in Kodi's
+  `addon_data/…/settings.xml`, so the add-on can sign in again on its own after a week unused. Kodi
+  has no secure store; anyone with access to the device's files can read it. Use a non-admin
+  account, and change its password if the device is lost.
+- **Very long sessions:** Kodi fixes a playlist's URLs, token included, when playback starts. The
+  add-on starts playback with a token that has at least 8 of its 12 hours left, so one unbroken
+  session of over 8 hours can hit an expired token; stopping and resuming fixes it.
+- **Genres** show without book counts (the server's genre list has none).
 - **Podcast libraries** are not shown (out of scope).
 - **Now-playing title:** Kodi shows the file's own tags (for example "a. The Terror"), not the
   book or chapter name. The service tries to change the title to the chapter name (Kodi 20+),

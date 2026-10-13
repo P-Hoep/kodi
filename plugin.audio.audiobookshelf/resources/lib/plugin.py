@@ -16,6 +16,9 @@ from . import api, config, model, sync
 from .kodiutil import (SEEK_PROP, SESSION_PROP, addon, cache, client, device_info, error_dialog, explain,
                        get_json_prop, list_item, log, notify, profile, set_json_prop, settings)
 
+# Kodi keeps a playlist's URLs, token included, for the whole session: ask for one that
+# lasts this long (a signed-in token lives 12 hours; within this margin it is refreshed).
+STREAM_TOKEN_LIFE = 8 * 3600
 IN_PROGRESS = 'FF4FC3F7'
 FINISHED = 'FF81C784'
 DIM = 'FF9E9E9E'
@@ -129,8 +132,10 @@ class Screen(object):
 
     def home(self):
         if not self.api.configured():
-            li = list_item('Set up your Audiobookshelf server...',
-                           art={'icon': 'DefaultAddonService.png', 'thumb': 'DefaultAddonService.png'})
+            li = list_item('Sign in to your Audiobookshelf server...',
+                           art={'icon': 'DefaultUser.png', 'thumb': 'DefaultUser.png'})
+            self.add(li, url('setup'), folder=False)
+            li = list_item('Settings', art={'icon': 'DefaultAddonService.png', 'thumb': 'DefaultAddonService.png'})
             self.add(li, url('settings'), folder=False)
             return self.finish()
         entries = [('Continue Listening', 'continue', 'DefaultMusicRecentlyPlayed.png'),
@@ -138,9 +143,12 @@ class Screen(object):
                    ('All Audiobooks', 'books', 'DefaultMusicAlbums.png'),
                    ('Series', 'series', 'DefaultMusicCompilations.png'),
                    ('Authors', 'authors', 'DefaultMusicArtists.png'),
+                   ('Genres', 'genres', 'DefaultMusicGenres.png'),
                    ('Search', 'search', 'DefaultMusicSearch.png')]
         for label, action, icon in entries:
             self.add(list_item(label, art={'icon': icon, 'thumb': icon}), url(action))
+        li = list_item('Play a random book', art={'icon': 'DefaultMusicSongs.png', 'thumb': 'DefaultMusicSongs.png'})
+        self.add(li, url('random'), folder=False)
         try:
             libraries = self.cache.fetch('libraries', self.api.libraries)
             if len(libraries) > 1:
@@ -273,6 +281,60 @@ class Screen(object):
         if not books:
             self.message('No books by this author.')
         self.finish('albums', self.params.get('name') or 'Author')
+
+    def genres(self):
+        library_id = self.library_id()
+        data = self.cache.fetch('filterdata/%s' % library_id, lambda: self.api.filter_data(library_id))
+        genres = sorted((g for g in data.get('genres') or [] if isinstance(g, str) and g.strip()),
+                        key=lambda g: g.lower())
+        for g in genres:
+            self.add(list_item(g, art={'icon': 'DefaultMusicGenres.png', 'thumb': 'DefaultMusicGenres.png'}),
+                     url('genre_books', genre=g))
+        if not genres:
+            self.message('No genres in this library. Genres come from the books\' metadata on the server.')
+        self.finish('genres', 'Genres')
+
+    def genre_books(self):
+        library_id = self.library_id()
+        genre = self.params['genre']
+        page = int(self.params.get('page', 0))
+        limit = self.s['page_size']
+        if page == 0:
+            li = list_item('Play a random %s book' % genre,
+                           art={'icon': 'DefaultMusicSongs.png', 'thumb': 'DefaultMusicSongs.png'})
+            self.add(li, url('random', genre=genre), folder=False)
+        key = 'genre/%s/%s/%d/%d' % (library_id, genre, page, limit)
+        data = self.cache.fetch(key, lambda: self.api.items(library_id, page, limit, 'media.metadata.title', False,
+                                                            'genres.' + api.b64(genre)))
+        results = data.get('results') or []
+        self.books(results)
+        if not results:
+            self.message('No books in this genre.')
+        self.next_page('genre_books', page, int(data.get('total') or 0), limit, genre=genre)
+        self.finish('albums', genre)
+
+    def random(self):
+        """Play a random book: from a genre, or from the whole library. The server shuffles
+        (sort=random); finished books and books with missing files are skipped, so a pick
+        resumes where you left off or starts a new book."""
+        library_id = self.library_id()
+        genre = self.params.get('genre')
+        if genre:
+            filter_ = 'genres.' + api.b64(genre)
+        else:
+            filter_ = 'progress.' + api.b64('not-finished')
+        results = self.api.items(library_id, 0, 25, 'random', False, filter_).get('results') or []
+        progress = self.progress()
+        books = [model.book(i, progress.get(i.get('id'))) for i in results if isinstance(i, dict) and i.get('id')]
+        books = [b for b in books if not (b['missing'] or b['invalid'])]
+        unfinished = [b for b in books if b['progress']['state'] != 'finished']
+        if not books:
+            raise EmptyLibrary('No books to pick from%s.' % (' in %s' % genre if genre else ''))
+        pick = (unfinished or books)[0]
+        notify('%s%s' % (pick['title'], ' - %s' % pick['author'] if pick['author'] else ''))
+        log('random pick%s: %s' % (' in %s' % genre if genre else '', pick['id']))
+        self.params = {'id': pick['id'], 'mode': 'resume'}
+        self.play()
 
     # -- search --------------------------------------------------------------------------
 
@@ -457,7 +519,7 @@ class Screen(object):
             if t['mime']:
                 li.setMimeType(t['mime'])
                 li.setContentLookup(False)
-            playlist.add(self.api.stream_url(t['path']), li)
+            playlist.add(self.api.stream_url(t['path'], STREAM_TOKEN_LIFE), li)
 
         set_json_prop(SEEK_PROP, None)
         set_json_prop(SESSION_PROP, {
@@ -487,6 +549,8 @@ class Screen(object):
     def test(self):
         try:
             status = self.api.status()
+            if hasattr(self.api.auth, 'forget'):
+                self.api.auth.forget()  # sign in afresh with what's in the settings now
             user = self.api.me()
             libraries = self.api.libraries()
         except api.ApiError as error:
@@ -494,8 +558,31 @@ class Screen(object):
             xbmcgui.Dialog().ok(config.ADDON_NAME, 'Connection failed.\n' + explain(error))
             return
         names = ', '.join(lib.get('name', '?') for lib in libraries) or 'none'
-        xbmcgui.Dialog().ok(config.ADDON_NAME, 'Connected to Audiobookshelf %s as %s.\nAudiobook libraries: %s'
+        xbmcgui.Dialog().ok(config.ADDON_NAME, 'Signed in to Audiobookshelf %s as %s.\nAudiobook libraries: %s'
                             % (status.get('serverVersion', '?'), user.get('username', '?'), names))
+        xbmc.executebuiltin('Container.Refresh')
+
+    def setup(self):
+        """Sign in with the remote: server address, username, password, one box each."""
+        dialog = xbmcgui.Dialog()
+        server = dialog.input('Audiobookshelf server address (e.g. 192.168.1.10:13378)',
+                              self.s['server_url'] or 'http://')
+        server = config.normalise_url(server)
+        if not server or server == 'http:':
+            return
+        username = dialog.input('Username', self.s['username'])
+        if not username:
+            return
+        password = dialog.input('Password for %s' % username, option=xbmcgui.ALPHANUM_HIDE_INPUT)
+        a = addon()
+        a.setSettingString('server_url', server)
+        a.setSettingInt('auth_method', 0)
+        a.setSettingString('username', username)
+        a.setSettingString('password', password)
+        self.s = settings()
+        self.api = client(self.s)
+        self.cache = cache(self.s)
+        self.test()
 
     def choose_library(self):
         libraries = self.api.libraries()
@@ -554,11 +641,13 @@ ROUTES = {
     'continue': Screen.continue_listening, 'recent': Screen.recent, 'books': Screen.all_books,
     'choose_sort': Screen.choose_sort, 'series': Screen.series_list, 'series_books': Screen.series_books,
     'authors': Screen.authors, 'author_books': Screen.author_books, 'search': Screen.search,
+    'genres': Screen.genres, 'genre_books': Screen.genre_books, 'random': Screen.random,
     'search_prompt': Screen.search_prompt, 'search_results': Screen.search_results, 'book': Screen.book,
     'chapters': Screen.chapters, 'about': Screen.about, 'play': Screen.play, 'skip': Screen.skip,
-    'test': Screen.test, 'choose_library': Screen.choose_library, 'clear_cache': Screen.clear_cache,
+    'test': Screen.test, 'setup': Screen.setup, 'choose_library': Screen.choose_library, 'clear_cache': Screen.clear_cache,
 }
-DIRECTORIES = {'continue', 'recent', 'books', 'series', 'series_books', 'authors', 'author_books', 'search',
+DIRECTORIES = {'continue', 'recent', 'books', 'series', 'series_books', 'authors', 'author_books', 'genres',
+               'genre_books', 'search',
                'search_results', 'book', 'chapters'}
 
 

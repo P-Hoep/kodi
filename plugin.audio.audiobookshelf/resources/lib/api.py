@@ -1,8 +1,8 @@
 """Audiobookshelf REST client on urllib. No Kodi imports.
 
 Every endpoint used here was checked against a 2.28.0 server (see docs/audiobookshelf.md,
-"API used"). Authentication is an API key sent as "Authorization: Bearer <key>"; the
-key never appears in URLs, exceptions or log lines.
+"API used"). Requests carry "Authorization: Bearer <token>", where the token is an API key
+or a signed-in access token (auth.py); it never appears in URLs, exceptions or log lines.
 """
 
 import base64
@@ -13,7 +13,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
 
-VERSION = '1.0.0'
+VERSION = '1.1.0'
 
 # What Kodi's own player decodes. Sent with forceDirectPlay so the server hands back the
 # original files rather than starting an HLS transcode.
@@ -64,23 +64,37 @@ def b64(text):
 
 
 class Client(object):
-    def __init__(self, server, token, timeout=15):
+    def __init__(self, server, auth, timeout=15):
+        """auth: an auth.Login or auth.ApiKey, or a plain API key string."""
+        from .auth import ApiKey
         self.server = (server or '').rstrip('/')
-        self.token = token or ''
+        self.auth = ApiKey(auth) if isinstance(auth, str) or auth is None else auth
         self.timeout = timeout
 
     def configured(self):
-        return bool(self.server and self.token)
+        return bool(self.server and self.auth.configured())
 
     # -- transport -----------------------------------------------------------------
 
-    def auth_header(self):
-        return 'Bearer ' + self.token
+    def token(self, force=False, min_valid=0):
+        return self.auth.token(self, force=force, min_valid=min_valid)
 
-    def request(self, method, path, params=None, body=None, auth=True):
+    def auth_header(self, min_valid=0):
+        return 'Bearer ' + self.token(min_valid=min_valid)
+
+    def request(self, method, path, params=None, body=None, auth=True, headers=None):
+        if not self.server or (auth and not self.auth.configured()):
+            raise NotConfigured('The server address or sign-in details are not set')
+        try:
+            return self._request(method, path, params, body, self.token() if auth else None, headers)
+        except AuthError:
+            if not auth or not hasattr(self.auth, 'forget'):
+                raise
+            # A signed-in token can be revoked or expire early: get a new one, once.
+            return self._request(method, path, params, body, self.token(force=True), headers)
+
+    def _request(self, method, path, params, body, token, headers):
         global _CONTEXT
-        if not self.server or (auth and not self.token):
-            raise NotConfigured('The server address or API key is not set')
         url = self.server + path
         if params:
             url += '?' + urlencode([(k, v) for k, v in params.items() if v is not None])
@@ -91,13 +105,16 @@ class Client(object):
         req.add_header('Accept-Encoding', 'gzip')
         if data is not None:
             req.add_header('Content-Type', 'application/json')
-        if auth:
-            req.add_header('Authorization', self.auth_header())
+        if token:
+            req.add_header('Authorization', 'Bearer ' + token)
+        for key, value in (headers or {}).items():
+            req.add_header(key, value)
         if _CONTEXT is None and url.startswith('https'):
             _CONTEXT = _ssl_context()
         try:
             response = urlopen(req, timeout=self.timeout, context=_CONTEXT if url.startswith('https') else None)
         except HTTPError as error:
+            error.close()
             if error.code in (401, 403):
                 raise AuthError('%s %s: HTTP %d' % (method, path, error.code), error.code)
             if error.code == 404:
@@ -136,6 +153,19 @@ class Client(object):
             raise ApiError('%s does not look like an Audiobookshelf server' % self.server)
         return data
 
+    def login(self, username, password):
+        """POST /login; the user dict carries accessToken and refreshToken."""
+        try:
+            data = self.request('POST', '/login', body={'username': username, 'password': password}, auth=False,
+                                headers={'x-return-tokens': 'true'})
+        except AuthError:
+            raise AuthError('Wrong username or password', 401)
+        return expect(expect(data, dict, 'sign-in').get('user'), dict, 'sign-in')
+
+    def refresh(self, refresh_token):
+        data = self.request('POST', '/auth/refresh', auth=False, headers={'x-refresh-token': refresh_token})
+        return expect(expect(data, dict, 'token refresh').get('user'), dict, 'token refresh')
+
     def me(self):
         return expect(self.get('/api/me'), dict, 'user')
 
@@ -166,6 +196,10 @@ class Client(object):
     def search(self, library_id, query, limit=25):
         data = self.get('/api/libraries/%s/search' % quote(library_id), q=query, limit=limit)
         return expect(data, dict, 'search results')
+
+    def filter_data(self, library_id):
+        """Genres, tags, narrators... used in the library: {'genres': [names], ...}."""
+        return expect(self.get('/api/libraries/%s/filterdata' % quote(library_id)), dict, 'filter data')
 
     def item(self, item_id):
         data = self.get('/api/items/%s' % quote(item_id), expanded=1, include='progress')
@@ -215,10 +249,11 @@ class Client(object):
         url = '%s/api/authors/%s/image?width=%d&format=jpeg' % (self.server, quote(author_id), width)
         return url + ('&ts=%s' % updated_at if updated_at else '')
 
-    def stream_url(self, content_url):
-        """A track's file URL in Kodi's 'url|Header=value' form, so the key travels as a
-        header (files need authentication; HTTP Range requests work)."""
-        return '%s%s|Authorization=%s' % (self.server, content_url, quote(self.auth_header()))
+    def stream_url(self, content_url, min_valid=0):
+        """A track's file URL in Kodi's 'url|Header=value' form, so the token travels as a
+        header (files need authentication; HTTP Range requests work). Kodi keeps this URL
+        for the whole playlist, so playback asks for a token that lasts (min_valid)."""
+        return '%s%s|Authorization=%s' % (self.server, content_url, quote(self.auth_header(min_valid)))
 
 
 def expect(data, kind, what):

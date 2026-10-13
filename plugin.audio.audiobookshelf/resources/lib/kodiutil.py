@@ -11,7 +11,7 @@ import xbmcaddon
 import xbmcgui
 import xbmcvfs
 
-from . import api, config
+from . import api, auth, config
 from .cache import Cache
 
 ADDON = xbmcaddon.Addon(config.ADDON_ID)
@@ -36,8 +36,9 @@ def addon():
 def settings():
     a = addon()
     s = config.read({'boolean': a.getSettingBool, 'integer': a.getSettingInt, 'string': a.getSettingString})
-    if s['api_key'] not in _secrets:
-        _secrets.append(s['api_key'])
+    for secret in (s['api_key'], s['password']):
+        if secret and secret not in _secrets:
+            _secrets.append(secret)
     return s
 
 
@@ -53,7 +54,14 @@ def addon_path():
 
 def client(s=None):
     s = s or settings()
-    return api.Client(s['server_url'], s['api_key'], s['timeout'])
+    if s['use_api_key']:
+        method = auth.ApiKey(s['api_key'])
+    else:
+        method = auth.Login(s['username'], s['password'], os.path.join(profile(), 'tokens.json'))
+    for secret in method.secrets():
+        if secret and secret not in _secrets:
+            _secrets.append(secret)
+    return api.Client(s['server_url'], method, s['timeout'])
 
 
 def cache(s=None):
@@ -82,9 +90,11 @@ def device_info():
 def explain(error):
     """A short, useful message for an API error (no secrets, no tracebacks)."""
     if isinstance(error, api.NotConfigured):
-        return 'Set the server address and API key in the add-on settings.'
+        return 'Enter the server address and your username and password in the add-on settings.'
     if isinstance(error, api.AuthError):
-        return 'The server rejected the API key. It may be wrong, revoked or expired.'
+        if 'password' in str(error).lower() or 'signed out' in str(error).lower():
+            return str(error).split(': ', 1)[-1] + '.'
+        return 'The server rejected the sign-in. Check the username and password (or API key) in the settings.'
     if isinstance(error, api.Unreachable):
         return "Can't reach the server. Check the address and that the server is running."
     if isinstance(error, api.NotFound):

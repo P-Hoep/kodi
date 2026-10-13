@@ -14,12 +14,13 @@ import shutil
 import sys
 import tempfile
 import threading
+import time
 import unittest
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'plugin.audio.audiobookshelf'))
 
-from resources.lib import api, cache, config, model, sync  # noqa: E402
+from resources.lib import api, auth, cache, config, model, sync  # noqa: E402
 
 MINIFIED = {
     'id': 'li1', 'addedAt': 1, 'updatedAt': 2, 'isMissing': False, 'isInvalid': False,
@@ -243,7 +244,8 @@ class PendingQueue(unittest.TestCase):
 
 class Settings(unittest.TestCase):
     def test_defaults_and_bad_values(self):
-        values = {'server_url': '192.168.1.5:13378/', 'api_key': ' k ', 'timeout': 999, 'sort': 7}
+        values = {'server_url': '192.168.1.5:13378/', 'api_key': ' k ', 'timeout': 999, 'sort': 7,
+                  'auth_method': 0, 'username': ''}
         getter = lambda sid: values[sid] if sid in values else (_ for _ in ()).throw(KeyError(sid))
         s = config.read({'boolean': getter, 'integer': getter, 'string': getter})
         self.assertEqual(s['server_url'], 'http://192.168.1.5:13378')
@@ -251,6 +253,9 @@ class Settings(unittest.TestCase):
         self.assertEqual(s['timeout'], 60)
         self.assertEqual(s['sort'], len(config.SORTS) - 1)
         self.assertEqual(s['sync_interval'], 30)
+        self.assertTrue(s['use_api_key'])  # an install from 1.0 keeps its key until a username is set
+        values['username'] = 'me'
+        self.assertFalse(config.read({'boolean': getter, 'integer': getter, 'string': getter})['use_api_key'])
 
     def test_settings_file_is_current(self):
         root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'plugin.audio.audiobookshelf')
@@ -277,9 +282,36 @@ class Caching(unittest.TestCase):
             shutil.rmtree(folder, ignore_errors=True)
 
 
+def jwt(kind, lifetime, serial):
+    import base64
+
+    def part(data):
+        return base64.urlsafe_b64encode(json.dumps(data).encode()).decode().rstrip('=')
+    now = int(time.time())
+    return '%s.%s.sig' % (part({'alg': 'HS256'}), part({'type': kind, 'iat': now, 'exp': now + lifetime, 'n': serial}))
+
+
+class FakeAuthServer(object):
+    """Token state shared by the request handler: valid access and refresh tokens."""
+    access, refresh, logins, refreshes, serial = set(), set(), 0, 0, 0
+    access_life = 12 * 3600
+
+    @classmethod
+    def issue(cls):
+        cls.serial += 1
+        a, r = jwt('access', cls.access_life, cls.serial), jwt('refresh', 7 * 86400, cls.serial)
+        cls.access.add(a)
+        cls.refresh.add(r)
+        return {'user': {'username': 'reader', 'accessToken': a, 'refreshToken': r}}
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *args):
         pass
+
+    def authorised(self):
+        token = (self.headers.get('Authorization') or '')[len('Bearer '):]
+        return token == 'good' or token in FakeAuthServer.access
 
     def reply(self, code, body, kind='application/json'):
         data = body.encode() if isinstance(body, str) else json.dumps(body).encode()
@@ -290,10 +322,9 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_GET(self):
-        auth = self.headers.get('Authorization')
         if self.path == '/status':
             return self.reply(200, {'app': 'audiobookshelf', 'serverVersion': '2.28.0'})
-        if auth != 'Bearer good':
+        if not self.authorised():
             return self.reply(401, 'Unauthorized', 'text/plain')
         if self.path == '/api/me':
             return self.reply(200, {'username': 'u', 'mediaProgress': []})
@@ -309,6 +340,18 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         length = int(self.headers.get('Content-Length') or 0)
         body = json.loads(self.rfile.read(length) or b'{}')
+        if self.path == '/login':
+            if body == {'username': 'reader', 'password': 'pw'} and self.headers.get('x-return-tokens') == 'true':
+                FakeAuthServer.logins += 1
+                return self.reply(200, FakeAuthServer.issue())
+            return self.reply(401, 'Unauthorized', 'text/plain')
+        if self.path == '/auth/refresh':
+            token = self.headers.get('x-refresh-token')
+            if token in FakeAuthServer.refresh:
+                FakeAuthServer.refresh.discard(token)  # rotation: a refresh token works once
+                FakeAuthServer.refreshes += 1
+                return self.reply(200, FakeAuthServer.issue())
+            return self.reply(401, 'Unauthorized', 'text/plain')
         if self.path == '/api/session/s1/sync' and 'currentTime' in body and 'timeListened' in body:
             return self.reply(200, 'OK', 'text/plain')
         self.reply(404, 'Not Found', 'text/plain')
@@ -357,6 +400,76 @@ class Client(unittest.TestCase):
 
     def test_filter_encoding(self):
         self.assertEqual(api.b64('abc'), 'YWJj')
+
+
+class SignIn(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.server = HTTPServer(('127.0.0.1', 0), Handler)
+        cls.url = 'http://127.0.0.1:%d' % cls.server.server_port
+        threading.Thread(target=cls.server.serve_forever, daemon=True).start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.server.shutdown()
+        cls.server.server_close()
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.path = os.path.join(self.dir, 'tokens.json')
+        FakeAuthServer.access_life = 12 * 3600
+        FakeAuthServer.logins = FakeAuthServer.refreshes = 0
+
+    def tearDown(self):
+        shutil.rmtree(self.dir)
+
+    def read_tokens(self):
+        with open(self.path) as handle:
+            return handle.read()
+
+    def client(self, password='pw'):
+        return api.Client(self.url, auth.Login('reader', password, self.path), 5)
+
+    def test_signs_in_once_and_reuses_the_token(self):
+        c = self.client()
+        self.assertEqual(c.me()['username'], 'u')
+        self.client().me()  # a new process reads tokens.json
+        self.assertEqual((FakeAuthServer.logins, FakeAuthServer.refreshes), (1, 0))
+        self.assertNotIn('pw', self.read_tokens())  # the password is never written to the token file
+
+    def test_refreshes_a_token_that_is_about_to_expire(self):
+        FakeAuthServer.access_life = 60  # inside the refresh margin
+        self.client().me()
+        self.client().me()
+        self.assertEqual((FakeAuthServer.logins, FakeAuthServer.refreshes), (1, 1))
+
+    def test_playback_asks_for_a_token_that_lasts(self):
+        FakeAuthServer.access_life = 3600
+        c = self.client()
+        c.me()
+        c.stream_url('/f', min_valid=8 * 3600)
+        self.assertEqual(FakeAuthServer.refreshes, 1)
+
+    def test_used_refresh_token_falls_back_to_signing_in(self):
+        self.client().me()
+        saved = json.loads(self.read_tokens())
+        FakeAuthServer.refresh.discard(saved['refresh'])  # another process used it
+        FakeAuthServer.access.discard(saved['access'])    # and the access token was revoked
+        self.assertEqual(self.client().me()['username'], 'u')
+        self.assertEqual(FakeAuthServer.logins, 2)
+
+    def test_wrong_password(self):
+        with self.assertRaises(api.AuthError) as caught:
+            self.client(password='nope').me()
+        self.assertIn('Wrong username or password', str(caught.exception))
+
+    def test_signed_out_without_password(self):
+        with self.assertRaises(api.AuthError):
+            self.client(password='').me()
+
+    def test_jwt_expiry(self):
+        self.assertAlmostEqual(auth.jwt_expiry(jwt('access', 100, 0)), time.time() + 100, delta=2)
+        self.assertIsNone(auth.jwt_expiry('not-a-jwt'))
 
 
 @unittest.skipUnless(os.environ.get('LIVE') and os.environ.get('ABS_URL') and os.environ.get('ABS_KEY'),

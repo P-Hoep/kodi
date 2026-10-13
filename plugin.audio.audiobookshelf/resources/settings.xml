@@ -10,29 +10,53 @@
           <constraints><allowempty>true</allowempty></constraints>
           <control type="edit" format="string"><heading>30101</heading></control>
         </setting>
-        <setting id="api_key" type="string" label="30102">
+        <setting id="auth_method" type="integer" label="30102">
           <level>0</level>
-          <default></default>
-          <constraints><allowempty>true</allowempty></constraints>
-          <control type="edit" format="string"><heading>30102</heading><hidden>true</hidden></control>
+          <default>0</default>
+          <constraints><options>
+            <option label="30103">0</option>
+            <option label="30104">1</option>
+          </options></constraints>
+          <control type="spinner" format="string"/>
         </setting>
-        <setting id="test_connection" type="action" label="30103">
-          <level>0</level>
-          <data>RunPlugin(plugin://plugin.audio.audiobookshelf/?action=test)</data>
-          <control type="button" format="action"><close>true</close></control>
-        </setting>
-        <setting id="choose_library" type="action" label="30104">
-          <level>0</level>
-          <data>RunPlugin(plugin://plugin.audio.audiobookshelf/?action=choose_library)</data>
-          <control type="button" format="action"><close>true</close></control>
-        </setting>
-        <setting id="library_id" type="string" label="30105">
+        <setting id="username" type="string" label="30105">
           <level>0</level>
           <default></default>
           <constraints><allowempty>true</allowempty></constraints>
           <control type="edit" format="string"><heading>30105</heading></control>
+          <dependencies><dependency type="visible" setting="auth_method">0</dependency></dependencies>
         </setting>
-        <setting id="timeout" type="integer" label="30106">
+        <setting id="password" type="string" label="30106">
+          <level>0</level>
+          <default></default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"><heading>30106</heading><hidden>true</hidden></control>
+          <dependencies><dependency type="visible" setting="auth_method">0</dependency></dependencies>
+        </setting>
+        <setting id="api_key" type="string" label="30107">
+          <level>0</level>
+          <default></default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"><heading>30107</heading><hidden>true</hidden></control>
+          <dependencies><dependency type="visible" setting="auth_method">1</dependency></dependencies>
+        </setting>
+        <setting id="test_connection" type="action" label="30108">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.audio.audiobookshelf/?action=test)</data>
+          <control type="button" format="action"><close>true</close></control>
+        </setting>
+        <setting id="choose_library" type="action" label="30109">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.audio.audiobookshelf/?action=choose_library)</data>
+          <control type="button" format="action"><close>true</close></control>
+        </setting>
+        <setting id="library_id" type="string" label="30110">
+          <level>0</level>
+          <default></default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"><heading>30110</heading></control>
+        </setting>
+        <setting id="timeout" type="integer" label="30111">
           <level>0</level>
           <default>15</default>
           <constraints><minimum>5</minimum><step>5</step><maximum>60</maximum></constraints>
@@ -40,21 +64,21 @@
         </setting>
       </group>
     </category>
-    <category id="c1" label="30107">
+    <category id="c1" label="30112">
       <group id="1">
-        <setting id="skip_back" type="integer" label="30108">
+        <setting id="skip_back" type="integer" label="30113">
           <level>0</level>
           <default>15</default>
           <constraints><minimum>5</minimum><step>5</step><maximum>120</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="skip_forward" type="integer" label="30109">
+        <setting id="skip_forward" type="integer" label="30114">
           <level>0</level>
           <default>30</default>
           <constraints><minimum>5</minimum><step>5</step><maximum>300</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="resume_rewind" type="integer" label="30110">
+        <setting id="resume_rewind" type="integer" label="30115">
           <level>0</level>
           <default>0</default>
           <constraints><minimum>0</minimum><step>1</step><maximum>30</maximum></constraints>
@@ -62,37 +86,37 @@
         </setting>
       </group>
     </category>
-    <category id="c2" label="30111">
+    <category id="c2" label="30116">
       <group id="1">
-        <setting id="sync_interval" type="integer" label="30112">
+        <setting id="sync_interval" type="integer" label="30117">
           <level>0</level>
           <default>30</default>
           <constraints><minimum>10</minimum><step>5</step><maximum>120</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="page_size" type="integer" label="30113">
+        <setting id="page_size" type="integer" label="30118">
           <level>0</level>
           <default>50</default>
           <constraints><minimum>25</minimum><step>25</step><maximum>200</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="sort" type="integer" label="30114">
+        <setting id="sort" type="integer" label="30119">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30115">0</option>
-            <option label="30116">1</option>
-            <option label="30117">2</option>
+            <option label="30120">0</option>
+            <option label="30121">1</option>
+            <option label="30122">2</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="cache_minutes" type="integer" label="30118">
+        <setting id="cache_minutes" type="integer" label="30123">
           <level>0</level>
           <default>15</default>
           <constraints><minimum>0</minimum><step>5</step><maximum>240</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="clear_cache" type="action" label="30119">
+        <setting id="clear_cache" type="action" label="30124">
           <level>0</level>
           <data>RunPlugin(plugin://plugin.audio.audiobookshelf/?action=clear_cache)</data>
           <control type="button" format="action"><close>true</close></control>
