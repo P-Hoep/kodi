@@ -190,6 +190,39 @@ python3 -m unittest tests.test_switcher
 Kodi loads an add-on's strings only at start-up, so after a first install by symlink the
 settings show blank labels until Kodi restarts.
 
+## Audiobookshelf (new, v1.0)
+
+`plugin.audio.audiobookshelf`, built from [docs/audiobookshelf.md](docs/audiobookshelf.md): not a
+screensaver but a music add-on that plays the audiobooks on an
+[Audiobookshelf](https://www.audiobookshelf.org/) server. It lives under **Add-ons → Music add-ons**
+and opens on Continue Listening, Recently Added, All Audiobooks (sorted by title, author or date
+added, paged), Series (in reading order), Authors and Search. Every book shows its cover and its
+progress: a blue percentage while in progress, greyed with a green "Finished" when done.
+
+- **Set up**: in the add-on's settings enter the server address and an API key (in Audiobookshelf:
+  **Settings → API Keys → Add API Key**), then **Test connection…**. Nothing about the server is
+  built in. With several audiobook libraries, **Choose library…** picks one.
+- **Playback** uses Kodi's own player on the book's original files (no transcoding). A book's
+  page offers Resume (with the time left), Play from start, Chapters and About this book. A
+  finished book starts again from the beginning rather than from an old position.
+- **Progress** goes back to Audiobookshelf through a playback session, the same way the official
+  apps do it: every 30 s while playing (configurable), on pause, and on stop, from a small
+  background service. If the server has forgotten the session it opens a new one or writes the
+  position directly; if it can't be reached, the position is kept on the device and sent later.
+  Nothing is reported until playback has actually reached the point it was asked to start from,
+  so a failed seek can't wind your position back to the start of a file.
+- **Skip back / forward** by your own steps (15 s / 30 s by default) with
+  `RunPlugin(plugin://plugin.audio.audiobookshelf/?action=skip&dir=back)` (or `dir=forward`) in a
+  keymap; these work across a book's files. Kodi's own seek steps work too.
+
+```bash
+python3 tools/make_settings_audiobookshelf.py   # settings.xml + strings.po from resources/lib/config.py
+python3 tools/make_audiobookshelf_media.py      # icon.png, fanart.jpg (Pillow)
+python3 tools/build_zip.py plugin.audio.audiobookshelf
+KODI_ADDON=plugin.audio.audiobookshelf python3 tools/kodi.py install   # then set server_url=… api_key=…
+python3 -m unittest tests.test_audiobookshelf   # offline; LIVE=1 ABS_URL=… ABS_KEY=… adds read-only server checks
+```
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full

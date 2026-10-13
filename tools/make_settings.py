@@ -123,7 +123,8 @@ def write(root, addon, addon_name, categories, generator='tools/make_settings.py
             elif kind == 'string':
                 out.append('          <default>%s</default>' % escape(s['default']))
                 out.append('          <constraints><allowempty>true</allowempty></constraints>')
-                out.append('          <control type="edit" format="string"><heading>%d</heading></control>' % label)
+                out.append('          <control type="edit" format="string"><heading>%d</heading>%s</control>'
+                           % (label, '<hidden>true</hidden>' if s.get('hidden') else ''))
             elif kind == 'time':
                 out.append('          <default>%s</default>' % s['default'])
                 out.append('          <control type="button" format="time"><heading>%d</heading></control>' % label)
