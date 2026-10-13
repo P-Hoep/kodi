@@ -360,5 +360,6 @@ adb shell rm -rf $K/addons/screensaver.godseye.map $K/userdata/addon_data/screen
 | `failed to connect` / connection refused | ADB debugging got turned off (Fire OS updates sometimes do this), or the IP changed. Rescan. |
 | `failed to authenticate` on connect | Normal on first contact; it means the prompt is showing. |
 | JSON-RPC connection refused | Kodi not running yet, or the forward is missing. Check `adb forward --list`. |
+| "Could not connect to repository" right after installing `repository.phoep`; log shows `CRepository: failed read 'https://p-hoep.github.io/kodi/addons.xml.md5'` | Seen on .78 on 2026-10-12. The site and repo config were fine: the same file loaded from a Mac, and over plain HTTP from a local copy. Restarting Kodi (`am force-stop` + launch) cleared it. If it persists after a restart, stop Kodi, delete the `repository.phoep` rows from `repo` and `addonlinkrepo` in `userdata/Database/Addons33.db`, and start Kodi again to force a fresh fetch. |
 | `adb` hangs | `adb kill-server && adb start-server`, then reconnect each stick. |
 | Screensaver never starts | `screensaver.mode` not set, add-on disabled, or something is playing (Kodi doesn't run screensavers during playback by default). |
