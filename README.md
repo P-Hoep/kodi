@@ -190,15 +190,18 @@ python3 -m unittest tests.test_switcher
 Kodi loads an add-on's strings only at start-up, so after a first install by symlink the
 settings show blank labels until Kodi restarts.
 
-## Audiobookshelf (new, v1.1)
+## Audioshelf (new, v1.1)
 
-`plugin.audio.audiobookshelf`, built from [docs/audiobookshelf.md](docs/audiobookshelf.md): not a
+`plugin.audio.audioshelf`, built from [docs/audioshelf.md](docs/audioshelf.md): not a
 screensaver but a music add-on that plays the audiobooks on an
 [Audiobookshelf](https://www.audiobookshelf.org/) server. It lives under **Add-ons → Music add-ons**
 and opens on Continue Listening, Recently Added, All Audiobooks (sorted by title, author or date
 added, paged), Series (in reading order), Authors, Genres and Search, plus **Play a random book**.
 Every book shows its cover and its progress: a blue percentage while in progress, greyed with a
 green "Finished" when done.
+
+Renamed from `plugin.audio.audiobookshelf` (1.0–1.1.0) to avoid clashing with another add-on of that id.
+If the old one is installed, uninstall it and install **Audioshelf**; you will need to sign in again.
 
 - **Sign in**: the first time it opens, **Sign in to your Audiobookshelf server…** asks for the
   server address, your username and your password, one box at a time. The add-on keeps the
@@ -218,15 +221,15 @@ green "Finished" when done.
   Nothing is reported until playback has actually reached the point it was asked to start from,
   so a failed seek can't wind your position back to the start of a file.
 - **Skip back / forward** by your own steps (15 s / 30 s by default) with
-  `RunPlugin(plugin://plugin.audio.audiobookshelf/?action=skip&dir=back)` (or `dir=forward`) in a
+  `RunPlugin(plugin://plugin.audio.audioshelf/?action=skip&dir=back)` (or `dir=forward`) in a
   keymap; these work across a book's files. Kodi's own seek steps work too.
 
 ```bash
-python3 tools/make_settings_audiobookshelf.py   # settings.xml + strings.po from resources/lib/config.py
-python3 tools/make_audiobookshelf_media.py      # icon.png, fanart.jpg (Pillow)
-python3 tools/build_zip.py plugin.audio.audiobookshelf
-KODI_ADDON=plugin.audio.audiobookshelf python3 tools/kodi.py install   # then open it: Sign in to your server…
-python3 -m unittest tests.test_audiobookshelf   # offline; LIVE=1 ABS_URL=… ABS_KEY=… adds read-only server checks
+python3 tools/make_settings_audioshelf.py   # settings.xml + strings.po from resources/lib/config.py
+python3 tools/make_audioshelf_media.py      # icon.png, fanart.jpg (Pillow)
+python3 tools/build_zip.py plugin.audio.audioshelf
+KODI_ADDON=plugin.audio.audioshelf python3 tools/kodi.py install   # then open it: Sign in to your server…
+python3 -m unittest tests.test_audioshelf   # offline; LIVE=1 ABS_URL=… ABS_KEY=… adds read-only server checks
 ```
 
 ## Documentation

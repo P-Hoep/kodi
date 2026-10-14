@@ -1,10 +1,10 @@
-"""Every setting in one table: tools/make_settings_audiobookshelf.py turns it into
+"""Every setting in one table: tools/make_settings_audioshelf.py turns it into
 settings.xml and strings.po, and read() loads values with the right types and defaults.
 No Kodi imports.
 """
 
-ADDON_ID = 'plugin.audio.audiobookshelf'
-ADDON_NAME = 'Audiobookshelf'
+ADDON_ID = 'plugin.audio.audioshelf'
+ADDON_NAME = 'Audioshelf'
 PLUGIN = 'plugin://%s/' % ADDON_ID
 
 # Sort orders the library items endpoint honours (checked against a 2.28 server; it

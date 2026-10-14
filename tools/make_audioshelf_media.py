@@ -1,13 +1,13 @@
-"""Draw the Audiobookshelf add-on's icon.png and fanart.jpg (needs Pillow).
+"""Draw the Audioshelf add-on's icon.png and fanart.jpg (needs Pillow).
 
-Run: python3 tools/make_audiobookshelf_media.py
+Run: python3 tools/make_audioshelf_media.py
 """
 
 import os
 
 from PIL import Image, ImageDraw, ImageFilter
 
-ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'plugin.audio.audiobookshelf')
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'plugin.audio.audioshelf')
 SS = 4
 BG_TOP, BG_BOTTOM = (24, 32, 44), (10, 13, 19)
 SPINES = [(232, 168, 56), (79, 195, 247), (129, 199, 132), (239, 154, 154), (206, 147, 216)]

@@ -1,6 +1,6 @@
 """Audiobookshelf REST client on urllib. No Kodi imports.
 
-Every endpoint used here was checked against a 2.28.0 server (see docs/audiobookshelf.md,
+Every endpoint used here was checked against a 2.28.0 server (see docs/audioshelf.md,
 "API used"). Requests carry "Authorization: Bearer <token>", where the token is an API key
 or a signed-in access token (auth.py); it never appears in URLs, exceptions or log lines.
 """
@@ -100,7 +100,7 @@ class Client(object):
             url += '?' + urlencode([(k, v) for k, v in params.items() if v is not None])
         data = json.dumps(body).encode('utf-8') if body is not None else None
         req = Request(url, data=data, method=method)
-        req.add_header('User-Agent', 'Kodi-Audiobookshelf/%s' % VERSION)
+        req.add_header('User-Agent', 'Kodi-Audioshelf/%s' % VERSION)
         req.add_header('Accept', 'application/json')
         req.add_header('Accept-Encoding', 'gzip')
         if data is not None:

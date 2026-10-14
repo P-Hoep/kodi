@@ -1,4 +1,4 @@
-# Project: Audiobookshelf Kodi Add-on
+# Project: Audioshelf, a Kodi add-on for Audiobookshelf
 
 ## Objective
 
@@ -183,7 +183,7 @@ Keep the scope focused on audiobook listening. Do not implement unrelated media 
 Include installation instructions, configuration instructions, diagnostic logging, and a list of any remaining limitations.
 ---
 
-# Implementation (plugin.audio.audiobookshelf 1.1.0)
+# Implementation (plugin.audio.audioshelf 1.1.0)
 
 Built 2026-10-13; 1.1.0 the same day added sign-in with a username and password, Genres and
 random play. Tested on Kodi 21.1 (macOS) against an Audiobookshelf 2.28.0 server with
@@ -198,12 +198,12 @@ modules beyond the standard library and `script.module.certifi` (for HTTPS on An
 | Browsing | Plugin directories (`resources/lib/plugin.py`), one Kodi call per screen. |
 | Streaming | A playback session with direct play; Kodi plays the original files as a playlist, with the key sent as a header (`url\|Authorization=Bearer%20…`). |
 | Progress | A background service (`resources/lib/player.py`) follows Kodi's player and reports through the session's sync and close calls. |
-| Settings | `resources/lib/config.py`, turned into `settings.xml` and `strings.po` by `tools/make_settings_audiobookshelf.py`. |
+| Settings | `resources/lib/config.py`, turned into `settings.xml` and `strings.po` by `tools/make_settings_audioshelf.py`. |
 
 Modules: `api.py` (HTTP client and error types), `model.py` (JSON to book records, track and
 chapter timeline maths, resume rules), `sync.py` (listened-time bookkeeping and the pending
 queue), `cache.py` (on-disk list cache), `kodiutil.py` (Kodi glue), `plugin.py`, `player.py`.
-Only the last three import Kodi modules, so the rest is covered by `tests/test_audiobookshelf.py`.
+Only the last three import Kodi modules, so the rest is covered by `tests/test_audioshelf.py`.
 
 ## API used (each call checked against the 2.28.0 server)
 
@@ -265,8 +265,8 @@ and libraries. The same fields are in the settings under **Sign in with → User
 The steps below use an API key instead.
 
 1. Install from the P-Hoep repository (**Add-ons → Install from repository → P-Hoep Add-ons →
-   Music add-ons → Audiobookshelf**), or from a zip built with
-   `python3 tools/build_zip.py plugin.audio.audiobookshelf`.
+   Music add-ons → Audioshelf**), or from a zip built with
+   `python3 tools/build_zip.py plugin.audio.audioshelf`.
 2. In Audiobookshelf: **Settings → API Keys → Add API Key**. Give it a name (for example
    "Kodi"), choose the user whose progress Kodi should use, and copy the key.
 3. In Kodi, open the add-on's settings:
@@ -285,7 +285,7 @@ The steps below use an API key instead.
    - How long library lists are cached. Progress is never cached.
    - **Clear cached library data**.
 
-Diagnostics: lines tagged `[plugin.audio.audiobookshelf]` in `kodi.log` cover sessions opened
+Diagnostics: lines tagged `[plugin.audio.audioshelf]` in `kodi.log` cover sessions opened
 and closed, the resume point, sync failures and fallbacks. The API key is never written to the
 log. The client never puts it in URLs or exception messages, and every log line is scrubbed.
 

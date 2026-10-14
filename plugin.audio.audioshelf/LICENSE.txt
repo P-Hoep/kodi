@@ -1,4 +1,4 @@
-Audiobookshelf - Kodi add-on
+Audioshelf - Kodi add-on
 ============================
 
 Code: MIT License

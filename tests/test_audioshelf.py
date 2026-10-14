@@ -1,8 +1,8 @@
-"""Offline tests for the Audiobookshelf add-on: parsing both item shapes, the book
+"""Offline tests for the Audioshelf add-on: parsing both item shapes, the book
 timeline (tracks, chapters, resume rules), progress-sync bookkeeping, the pending queue,
 the cache, and the API client's error mapping against a local fake server. No Kodi.
 
-python3 -m unittest tests.test_audiobookshelf
+python3 -m unittest tests.test_audioshelf
 
 LIVE=1 ABS_URL=http://host:13378 ABS_KEY=... also runs read-only checks against a real
 server (no sessions are opened and no progress is written).
@@ -18,7 +18,7 @@ import time
 import unittest
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'plugin.audio.audiobookshelf'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'plugin.audio.audioshelf'))
 
 from resources.lib import api, auth, cache, config, model, sync  # noqa: E402
 
@@ -258,7 +258,7 @@ class Settings(unittest.TestCase):
         self.assertFalse(config.read({'boolean': getter, 'integer': getter, 'string': getter})['use_api_key'])
 
     def test_settings_file_is_current(self):
-        root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'plugin.audio.audiobookshelf')
+        root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'plugin.audio.audioshelf')
         xml = open(os.path.join(root, 'resources', 'settings.xml')).read()
         for s in config.all_settings():
             self.assertIn('id="%s"' % s['id'], xml)

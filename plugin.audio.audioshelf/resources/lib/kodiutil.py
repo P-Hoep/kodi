@@ -16,8 +16,8 @@ from .cache import Cache
 
 ADDON = xbmcaddon.Addon(config.ADDON_ID)
 HOME = xbmcgui.Window(10000)
-SESSION_PROP = 'audiobookshelf.session'
-SEEK_PROP = 'audiobookshelf.seek'
+SESSION_PROP = 'audioshelf.session'
+SEEK_PROP = 'audioshelf.seek'
 _secrets = []
 
 
@@ -81,7 +81,7 @@ def device_info():
         with open(path, 'w') as handle:
             handle.write(device_id)
     build = xbmc.getInfoLabel('System.BuildVersion').split(' ')[0]
-    return {'deviceId': device_id, 'clientName': 'Kodi Audiobookshelf',
+    return {'deviceId': device_id, 'clientName': 'Kodi Audioshelf',
             'clientVersion': ADDON.getAddonInfo('version'), 'manufacturer': 'Kodi', 'model': build or 'Kodi'}
 
 
