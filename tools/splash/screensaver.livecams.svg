@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="760" viewBox="0 0 960 760">
+<defs>
+<filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="18"/></filter>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A2350"/><stop offset="0.6" stop-color="#7A4E7E"/><stop offset="1" stop-color="#F29A6A"/></linearGradient><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#34466E"/><stop offset="1" stop-color="#0A1428"/></linearGradient>
+</defs>
+<clipPath id="frame"><rect x="194" y="124" width="572" height="352" rx="18"/></clipPath>
+<g clip-path="url(#frame)" opacity="0.92">
+<rect x="180" y="110" width="600" height="230" fill="url(#sky)"/>
+<rect x="180" y="340" width="600" height="150" fill="url(#sea)"/>
+<circle cx="550" cy="340" r="120" fill="#FFD8A0" opacity="0.35" filter="url(#soft)"/>
+<clipPath id="above"><rect x="0" y="0" width="960" height="340"/></clipPath>
+<circle cx="550" cy="340" r="58" fill="#FFD8A0" clip-path="url(#above)"/>
+<line x1="500.8" y1="350" x2="599.2" y2="350" stroke="#FFD8A0" stroke-opacity="0.75" stroke-width="4" stroke-linecap="round"/>
+<line x1="501.4" y1="359" x2="598.6" y2="359" stroke="#FFD8A0" stroke-opacity="0.70" stroke-width="4" stroke-linecap="round"/>
+<line x1="498.0" y1="368" x2="602.0" y2="368" stroke="#FFD8A0" stroke-opacity="0.66" stroke-width="4" stroke-linecap="round"/>
+<line x1="507.7" y1="377" x2="592.3" y2="377" stroke="#FFD8A0" stroke-opacity="0.61" stroke-width="4" stroke-linecap="round"/>
+<line x1="509.5" y1="386" x2="590.5" y2="386" stroke="#FFD8A0" stroke-opacity="0.57" stroke-width="4" stroke-linecap="round"/>
+<line x1="510.6" y1="395" x2="589.4" y2="395" stroke="#FFD8A0" stroke-opacity="0.53" stroke-width="4" stroke-linecap="round"/>
+<line x1="519.4" y1="404" x2="580.6" y2="404" stroke="#FFD8A0" stroke-opacity="0.48" stroke-width="4" stroke-linecap="round"/>
+<line x1="516.6" y1="413" x2="583.4" y2="413" stroke="#FFD8A0" stroke-opacity="0.43" stroke-width="4" stroke-linecap="round"/>
+<line x1="517.1" y1="422" x2="582.9" y2="422" stroke="#FFD8A0" stroke-opacity="0.39" stroke-width="4" stroke-linecap="round"/>
+<line x1="516.9" y1="431" x2="583.1" y2="431" stroke="#FFD8A0" stroke-opacity="0.35" stroke-width="4" stroke-linecap="round"/>
+<line x1="530.5" y1="440" x2="569.5" y2="440" stroke="#FFD8A0" stroke-opacity="0.30" stroke-width="4" stroke-linecap="round"/>
+<line x1="529.5" y1="449" x2="570.5" y2="449" stroke="#FFD8A0" stroke-opacity="0.26" stroke-width="4" stroke-linecap="round"/>
+<line x1="535.3" y1="458" x2="564.7" y2="458" stroke="#FFD8A0" stroke-opacity="0.21" stroke-width="4" stroke-linecap="round"/>
+<line x1="526.2" y1="467" x2="573.8" y2="467" stroke="#FFD8A0" stroke-opacity="0.17" stroke-width="4" stroke-linecap="round"/>
+<path d="M194 296 L270 288 L350 310 L410 340 L194 340 Z" fill="#0A1022"/>
+</g>
+<path d="M244 110 L180 110 L180 174" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M716 110 L780 110 L780 174" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M244 490 L180 490 L180 426" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M716 490 L780 490 L780 426" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="236" cy="166" r="15" fill="#F44336" filter="url(#glow)"/>
+<text x="264" y="176" font-family="'Avenir Next', 'Helvetica Neue', sans-serif" font-weight="600" font-size="26" letter-spacing="4" fill="#FFFFFF">LIVE</text>
+<text x="486" y="636" text-anchor="middle" font-family="'Avenir Next', 'Helvetica Neue', sans-serif" font-weight="600" font-size="50" letter-spacing="12" fill="#FFFFFF">LIVE CAMS</text>
+<rect x="448" y="664" width="64" height="3" rx="1.5" fill="#4DD0E1"/>
+<text x="482" y="712" text-anchor="middle" font-family="'Avenir Next', 'Helvetica Neue', sans-serif" font-weight="400" font-size="24" letter-spacing="4" fill="#FFFFFF" fill-opacity="0.55">WINDOWS ONTO THE WORLD</text>
+</svg>

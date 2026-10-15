@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The Live Cams window. Python (resources/lib/controller.py) sets the textures, the labels,
+     visibility and positions; the loading splash is added on top from Python. -->
+<window>
+  <defaultcontrol>1</defaultcontrol>
+  <controls>
+    <!-- Dialog windows don't paint a background colour, so a black image goes first. -->
+    <control type="image" id="1">
+      <left>-20</left><top>-20</top><width>1960</width><height>1120</height>
+      <colordiffuse>FF000000</colordiffuse>
+    </control>
+    <control type="videowindow" id="2">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+    </control>
+    <!-- Letterbox bars: the video layer is under the GUI, so the backdrop goes while a camera
+         plays and these cover what a 4:3 (or very wide) picture leaves uncovered. -->
+    <control type="image" id="3">
+      <left>0</left><top>0</top><width>1</width><height>1</height>
+      <colordiffuse>FF000000</colordiffuse>
+    </control>
+    <control type="image" id="4">
+      <left>0</left><top>0</top><width>1</width><height>1</height>
+      <colordiffuse>FF000000</colordiffuse>
+    </control>
+
+    <!-- Fallback card background (no cameras): shown with the clock card. -->
+    <control type="image" id="11">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <aspectratio>scale</aspectratio>
+      <animation effect="fade" start="0" end="100" time="800">Visible</animation>
+      <animation effect="fade" start="100" end="0" time="600">Hidden</animation>
+    </control>
+    <!-- Clock card: fallback card and clock-only mode. Moved from Python for burn-in protection. -->
+    <control type="group" id="10">
+      <left>560</left><top>380</top><width>800</width><height>320</height>
+      <animation effect="fade" start="0" end="100" time="800">Visible</animation>
+      <animation effect="fade" start="100" end="0" time="600">Hidden</animation>
+      <control type="label" id="12">
+        <left>0</left><top>0</top><width>800</width><height>170</height>
+        <font>font60</font><align>center</align><aligny>center</aligny>
+        <textcolor>E6FFFFFF</textcolor>
+        <label>$INFO[System.Time]</label>
+        <animation effect="zoom" start="180" end="180" center="400,85" time="0" condition="true">Conditional</animation>
+      </control>
+      <control type="label" id="13">
+        <left>0</left><top>176</top><width>800</width><height>50</height>
+        <font>font13</font><align>center</align><aligny>center</aligny>
+        <textcolor>99FFFFFF</textcolor>
+        <label>$INFO[System.Date]</label>
+      </control>
+      <control type="label" id="14">
+        <left>0</left><top>240</top><width>800</width><height>40</height>
+        <font>font10</font><align>center</align><aligny>center</aligny>
+        <textcolor>66FFFFFF</textcolor>
+      </control>
+    </control>
+
+    <!-- Camera overlay, bottom left. -->
+    <control type="group" id="20">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <animation effect="fade" start="0" end="100" time="700">Visible</animation>
+      <animation effect="fade" start="100" end="0" time="1200">Hidden</animation>
+      <control type="image" id="21">
+        <left>-40</left><top>720</top><width>2000</width><height>400</height>
+        <aspectratio>stretch</aspectratio>
+        <colordiffuse>B0000000</colordiffuse>
+      </control>
+      <control type="image" id="25">
+        <left>96</left><top>898</top><width>6</width><height>58</height>
+        <colordiffuse>FF4DD0E1</colordiffuse>
+      </control>
+      <control type="label" id="22">
+        <left>124</left><top>886</top><width>1600</width><height>76</height>
+        <font>font45</font><aligny>center</aligny>
+        <textcolor>FFFFFFFF</textcolor><shadowcolor>A0000000</shadowcolor>
+      </control>
+      <control type="label" id="23">
+        <left>126</left><top>960</top><width>1600</width><height>44</height>
+        <font>font13</font><aligny>center</aligny>
+        <textcolor>E0DCE6F0</textcolor><shadowcolor>A0000000</shadowcolor>
+      </control>
+      <control type="label" id="24">
+        <left>126</left><top>1002</top><width>1600</width><height>36</height>
+        <font>font10</font><aligny>center</aligny>
+        <textcolor>A8FFFFFF</textcolor><shadowcolor>A0000000</shadowcolor>
+      </control>
+    </control>
+
+    <!-- Viewer's clock, top right (setting). -->
+    <control type="label" id="30">
+      <left>1420</left><top>44</top><width>420</width><height>70</height>
+      <font>font45</font><align>right</align><aligny>center</aligny>
+      <textcolor>D0FFFFFF</textcolor><shadowcolor>A0000000</shadowcolor>
+      <label>$INFO[System.Time]</label>
+      <animation effect="fade" start="0" end="100" time="700">Visible</animation>
+      <animation effect="fade" start="100" end="0" time="700">Hidden</animation>
+    </control>
+  </controls>
+</window>

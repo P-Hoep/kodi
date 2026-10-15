@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.livecams" name="Live Cams" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+    <import addon="script.module.certifi" version="2019.0.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library="default.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Live outdoor webcams from around the world</summary>
+    <description lang="en_GB">Turns an idle TV into a window onto live outdoor scenes: beaches, mountains, lakes, harbours and towns, rotating through public camera feeds from the Live-Environment-Streams dataset (github.com/william-ricchiuti/Live-Environment-Streams). It favours places where it is daytime right now and high-quality streams, skips dead or stalled feeds by itself and remembers them, and shows a small overlay with the place, the source and the local time there. Any key exits straight away. If your own video or music is paused, it shows only a clock and never touches it. Streams play muted by default.</description>
+    <disclaimer lang="en_GB">Camera list: Live-Environment-Streams by William Ricchiuti, fetched at run time. The feeds belong to their owners (source shown on screen); this add-on only plays their public streams and records nothing.</disclaimer>
+    <platform>all</platform>
+    <license>MIT</license>
+    <source>https://github.com/P-Hoep/kodi</source>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

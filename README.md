@@ -232,6 +232,57 @@ KODI_ADDON=plugin.audio.audioshelf python3 tools/kodi.py install   # then open i
 python3 -m unittest tests.test_audioshelf   # offline; LIVE=1 ABS_URL=… ABS_KEY=… adds read-only server checks
 ```
 
+## Live Cams (new, v1.0)
+
+`screensaver.livecams`, built from [docs/livecams-screensaver.md](docs/livecams-screensaver.md):
+the idle TV becomes a window onto live outdoor scenes. It rotates through public camera feeds
+from the [Live-Environment-Streams](https://github.com/william-ricchiuti/Live-Environment-Streams)
+dataset (beaches, mountains, lakes, harbours, towns; traffic cameras optional), with a small
+overlay giving the place, the source and the local time there.
+
+- **Choosing a camera**: a weighted draw that favours places in daylight right now (offline NOAA
+  sun position), premium and HD streams and your favourites. It plays down cameras shown in the
+  last 6 hours and the source or country already on screen. If the filters leave nothing, it
+  relaxes daylight, then minimum resolution, then unverified streams.
+- **Self-healing**: each pick's manifest is probed first (4 s), so a dead feed costs no screen
+  time. A stream that shows no picture in 15 s, or stalls for 10 s, is skipped. Failures are
+  remembered (skip for 1 hour, 1 day, then a week), and a source where more than half the
+  attempts fail in an hour is skipped for 6 hours. After 5 failures in a row, or with no
+  network, a fallback card with a clock shows and it retries every minute.
+- **Safe with your media**: if your own video or music is loaded (paused), it shows only a clock
+  and never touches the player. Any key, mouse move or remote button exits straight away. Streams
+  play muted unless *Play audio* is on. After 2 hours (*Stop streaming after*) it switches to a
+  clock that uses no network.
+- **Catalogue**: downloaded at run time (nothing bundled; the dataset has no licence yet), cached
+  as a slim index and refreshed weekly in the background with an ETag. A bad download keeps the
+  old index.
+
+```bash
+python3 tools/make_livecams_media.py     # icon, fanart, fallback card (Pillow)
+python3 tools/make_splash.py livecams    # loading splash (Chrome)
+python3 tools/make_settings_livecams.py  # settings.xml + strings.po from resources/lib/config.py
+python3 tools/build_zip.py screensaver.livecams
+KODI_ADDON=screensaver.livecams python3 tools/kodi.py install   # then select / Preview
+python3 -m unittest tests.test_livecams  # offline: sun, local time, catalogue, selector, health, HLS, watchdog
+```
+
+Notes from building it:
+
+- Kodi wakes a screensaver as soon as anything starts playing, then stops its script. So
+  `default.py` (the screensaver) only checks for your media and starts `session.py` as an
+  ordinary script, which owns the window and the player and ignores the wake-up its own
+  `play()` causes. Before the first camera, any key still wakes Kodi's screensaver and the
+  session closes.
+- The video layer is drawn under the whole GUI, so the window's black backdrop is hidden while a
+  camera plays, and two black bars, sized from the video and screen aspect, cover the letterbox.
+- The default pool (active, HLS, no token or browser needed, not traffic) is **282 cameras**, not
+  the README's 2,929 or 4,229. In October 2026, 131 of them answered a strict probe. The 45
+  Balticlivecam URLs carry tokens that expired in April 2026, and about 40 others return 404;
+  health tracking learns this within a few sessions. The 58 `ls.tkchopin.pl` cameras send an
+  incomplete certificate chain: with *Allow cameras with incomplete HTTPS certificates* (on by
+  default) they are probed and played without certificate checks. No source needed special
+  headers (User-Agent or Referer made no difference).
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full

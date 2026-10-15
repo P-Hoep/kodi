@@ -9,7 +9,7 @@ import unittest
 
 ROOT = os.path.join(os.path.dirname(__file__), '..')
 ADDONS = ['screensaver.godseye.map', 'screensaver.godsworld.map', 'screensaver.math.clock',
-          'screensaver.couchstronomy']
+          'screensaver.couchstronomy', 'screensaver.skywatch', 'screensaver.livecams']
 
 
 class FakeImage(object):

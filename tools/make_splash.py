@@ -466,13 +466,59 @@ def skywatch():
     return svg('\n'.join(parts), defs), sky
 
 
+# ---------------------------------------------------------------- Live Cams
+
+def livecams():
+    teal, sun, red = '#4DD0E1', '#FFD8A0', '#F44336'
+    random.seed(11)
+    parts = []
+    # A camera viewfinder framing a sunrise over the sea, with a REC dot.
+    x0, y0, x1, y1 = CX - 300, CY - 190, CX + 300, CY + 190
+    horizon = CY + 40
+    # Everything inside the frame is clipped to one rounded rectangle.
+    parts.append('<clipPath id="frame"><rect x="%d" y="%d" width="%d" height="%d" rx="18"/></clipPath>'
+                 % (x0 + 14, y0 + 14, x1 - x0 - 28, y1 - y0 - 28))
+    parts.append('<g clip-path="url(#frame)" opacity="0.92">')
+    parts.append('<rect x="%d" y="%d" width="%d" height="%d" fill="url(#sky)"/>' % (x0, y0, x1 - x0, horizon - y0))
+    parts.append('<rect x="%d" y="%d" width="%d" height="%d" fill="url(#sea)"/>' % (x0, horizon, x1 - x0, y1 - horizon))
+    parts.append('<circle cx="%d" cy="%d" r="120" fill="%s" opacity="0.35" filter="url(#soft)"/>'
+                 % (CX + 70, horizon, sun))
+    parts.append('<clipPath id="above"><rect x="0" y="0" width="%d" height="%d"/></clipPath>' % (W, horizon))
+    parts.append('<circle cx="%d" cy="%d" r="58" fill="%s" clip-path="url(#above)"/>' % (CX + 70, horizon, sun))
+    for k in range(14):
+        y = horizon + 10 + k * 9
+        half = 50 - k * 2.4 + random.uniform(-8, 8)
+        parts.append('<line x1="%.1f" y1="%d" x2="%.1f" y2="%d" stroke="%s" stroke-opacity="%.2f" '
+                     'stroke-width="4" stroke-linecap="round"/>'
+                     % (CX + 70 - half, y, CX + 70 + half, y, sun, 0.75 - k * 0.045))
+    parts.append('<path d="M%d %d L%d %d L%d %d L%d %d L%d %d Z" fill="#0A1022"/>'
+                 % (x0 + 14, horizon - 44, x0 + 90, horizon - 52, x0 + 170, horizon - 30, x0 + 230, horizon,
+                    x0 + 14, horizon))
+    parts.append('</g>')
+    arm, sw = 64, 8
+    for cx, cy, sx, sy in ((x0, y0, 1, 1), (x1, y0, -1, 1), (x0, y1, 1, -1), (x1, y1, -1, -1)):
+        parts.append('<path d="M%d %d L%d %d L%d %d" fill="none" stroke="#FFFFFF" stroke-width="%d" '
+                     'stroke-linecap="round" stroke-linejoin="round"/>'
+                     % (cx + sx * arm, cy, cx, cy, cx, cy + sy * arm, sw))
+    parts.append('<circle cx="%d" cy="%d" r="15" fill="%s" filter="url(#glow)"/>' % (x0 + 56, y0 + 56, red))
+    parts.append('<text x="%d" y="%d" %s font-weight="600" font-size="26" letter-spacing="4" fill="#FFFFFF">'
+                 'LIVE</text>' % (x0 + 84, y0 + 66, TITLE_FONT))
+    parts.append(title('LIVE CAMS', 'WINDOWS ONTO THE WORLD', teal))
+    defs = ('<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">'
+            '<stop offset="0" stop-color="#1A2350"/><stop offset="0.6" stop-color="#7A4E7E"/>'
+            '<stop offset="1" stop-color="#F29A6A"/></linearGradient>'
+            '<linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">'
+            '<stop offset="0" stop-color="#34466E"/><stop offset="1" stop-color="#0A1428"/></linearGradient>')
+    return svg('\n'.join(parts), defs), teal
+
+
 DOTS = ('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="24" viewBox="0 0 120 24">'
         '<circle cx="28" cy="12" r="6" fill="#FFFFFF"/><circle cx="60" cy="12" r="6" fill="#FFFFFF"/>'
         '<circle cx="92" cy="12" r="6" fill="#FFFFFF"/></svg>')
 
 ADDONS = [('screensaver.godseye.map', godseye), ('screensaver.godsworld.map', godsworld),
           ('screensaver.math.clock', mathclock), ('screensaver.couchstronomy', couchstronomy),
-          ('screensaver.skywatch', skywatch)]
+          ('screensaver.skywatch', skywatch), ('screensaver.livecams', livecams)]
 
 
 def render(svg_text, out_png, w, h):
