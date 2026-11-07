@@ -5,16 +5,12 @@
     <import addon="kodi.binary.global.main" version="2.0.2"/>
     <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
   </requires>
-  <extension point="xbmc.ui.screensaver"
-             library_linux="screensaver.sandclock.gl.so"
-             library_osx="screensaver.sandclock.gl.dylib"
-             library_windows="screensaver.sandclock.gl.dll"
-             library_android="libscreensaver.sandclock.gl.so"/>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.sandclock.gl.dylib"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en_GB">A clock whose digits crumble into falling sand, drawn on the GPU</summary>
     <description lang="en_GB">The OpenGL version of Sand Clock. Every second (or minute) the digits that change break into thousands of grains that fall, slide into a heap and sink slowly through the floor. The sand is simulated in native code and drawn in one GPU pass, so it can use far finer grains than the Python version at a smooth frame rate, even on small boxes. It has the same settings as Sand Clock: nine fonts, palettes, night colours, grain size and look, gravity, crumble speed, pile height, dimming and an OLED-friendly drift.</description>
-    <disclaimer lang="en_GB">Digit shapes from fonts under the SIL Open Font License 1.1; see LICENSE.txt. This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega).</disclaimer>
-    <platform>linux osx windows android</platform>
+    <disclaimer lang="en_GB">Digit shapes from fonts under the SIL Open Font License 1.1; see LICENSE.txt. This is a native add-on: it is built per platform and Kodi version (this one: macOS, Kodi 21 Omega, Apple Silicon and Intel).</disclaimer>
+    <platform>osx</platform>
     <license>MIT, OFL-1.1</license>
     <assets>
       <icon>icon.png</icon>

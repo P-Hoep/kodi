@@ -24,11 +24,15 @@ def build(addon, dist):
         os.makedirs(dist)
     out = os.path.join(dist, '%s-%s.zip' % (addon, addon_version(src)))
     count = 0
+    native = 'library_' in open(os.path.join(src, 'addon.xml')).read()
+    skip_dirs = {'__pycache__'} | ({'src', 'tests'} if native else set())   # a native add-on ships its library, not its sources
     with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
         for folder, dirs, files in os.walk(src):
-            dirs[:] = sorted(d for d in dirs if d != '__pycache__')
+            dirs[:] = sorted(d for d in dirs if d not in skip_dirs and not (native and d.startswith('build')))
             for name in sorted(files):
                 if name.endswith(('.pyc', '.pyo')) or name.startswith('.'):
+                    continue
+                if native and name in ('CMakeLists.txt', 'README.md'):
                     continue
                 full = os.path.join(folder, name)
                 z.write(full, os.path.join(addon, os.path.relpath(full, src)))
