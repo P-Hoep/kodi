@@ -9,8 +9,8 @@
              library_android="screensaver.sandclock.gl.so"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en_GB">A clock whose digits crumble into falling sand, drawn on the GPU</summary>
-    <description lang="en_GB">The OpenGL version of Sand Clock. Every second (or minute) the digits that change break into thousands of grains that fall, slide into a heap and sink slowly through the floor. The sand is simulated in native code and drawn in one GPU pass, so it can use far finer grains than the Python version at a smooth frame rate, even on small boxes. It has the same settings as Sand Clock: nine fonts, palettes, night colours, grain size and look, gravity, crumble speed, pile height, dimming and an OLED-friendly drift.</description>
-    <disclaimer lang="en_GB">Digit shapes from fonts under the SIL Open Font License 1.1; see LICENSE.txt. This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS (Apple Silicon and Intel) and 64-bit Android (arm64-v8a)).</disclaimer>
+    <description lang="en_GB">The OpenGL version of Sand Clock. Every second (or minute) the digits that change break into thousands of grains that fall, slide into a heap and sink slowly through the floor. The sand is simulated in native code and drawn in one GPU pass, so it can use far finer grains than the Python version at a smooth frame rate, even on small boxes. It has the same settings as Sand Clock: nine fonts, palettes, night colours, grain size and look, gravity, crumble speed, pile height, dimming and an OLED-friendly drift. On a 32-bit Android Kodi (many Google TV boxes) install "Sand Clock (OpenGL, 32-bit Android)" instead.</description>
+    <disclaimer lang="en_GB">Digit shapes from fonts under the SIL Open Font License 1.1; see LICENSE.txt. This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Apple Silicon and Intel, and 64-bit Android).</disclaimer>
     <platform>osx android</platform>
     <license>MIT, OFL-1.1</license>
     <assets>
