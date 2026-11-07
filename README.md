@@ -285,6 +285,8 @@ Notes from building it:
 
 ## Sheetcards (new, v1.0)
 
+![Sheetcards: deck picker, flashcards, multiple choice, pause sheet and results](release/gifs/sheetcards.gif)
+
 `script.sheetcards` (an app under **Add-ons → Program add-ons**) and `screensaver.sheetcards`, built
 from [docs/Sheetcards.md](docs/Sheetcards.md): flashcards from any public Google Sheet. Column A
 is the question, column B the answer, and every tab is a deck. Share the sheet as "Anyone with the

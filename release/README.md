@@ -1,7 +1,7 @@
 # P-Hoep Kodi Add-ons
 
-Four ambient screensavers and a scheduler for Kodi, published as one Kodi repository so
-Kodi installs them and keeps them up to date.
+Ambient screensavers, a scheduler and a flashcard app for Kodi, published as one Kodi
+repository so Kodi installs them and keeps them up to date.
 
 | Add-on | Version | What it is |
 |---|---|---|
@@ -10,6 +10,7 @@ Kodi installs them and keeps them up to date.
 | [Math Clock](#math-clock) | 0.1.1 | The date and time as maths puzzles, typeset like LaTeX |
 | [Couchstronomy](#couchstronomy) | 0.1.3 | Your TV as a window onto the real night sky |
 | [Screensaver Switcher](#screensaver-switcher) | 0.1.0 | Different screensavers at different times of day |
+| [Sheetcards](#sheetcards) | 1.0.0 | Flashcards from a Google Sheet: an app to study with and a screensaver |
 
 All of them are pure Python with no compiled code. They run on Kodi 19 (Matrix) and later,
 on any platform. They were developed and tested on Kodi 21 on macOS. God's Eye Map has
@@ -25,10 +26,11 @@ The add-ons are in a Kodi repository hosted on GitHub Pages:
 1. **Settings → System → Add-ons → Unknown sources → On.**
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/`
    and name it `phoep`.
-3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.0.zip`.
+3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.2.zip`.
    Kodi shows "P-Hoep Add-ons — Add-on installed".
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** The screensavers are
-   under **Look and feel → Screensaver**, and the Switcher is under **Services**.
+   under **Look and feel → Screensaver**, the Switcher is under **Services**, and the
+   Sheetcards app is under **Program add-ons**.
 5. To turn one on, go to **Settings → Interface → Screensaver → Screensaver mode**, pick it,
    then open **Settings** below it to configure it. **Preview** starts it straight away.
 
@@ -180,6 +182,34 @@ Clock in the morning, God's World Map during the day, and Black at night.
 
 Open **Programs → Screensaver Switcher** to see what is scheduled now, apply the schedule,
 preview it or change the settings.
+
+---
+
+## Sheetcards
+
+![Sheetcards: the deck picker, flashcards that flip, multiple choice with right and wrong answers, the pause sheet and the results](gifs/sheetcards.gif)
+
+Flashcards from any Google Sheet: an app you study with, and a screensaver that plays the
+cards by itself. Put questions in column A and answers in column B. Every tab is a deck.
+Share the sheet as "Anyone with the link can view" and paste its ID or link in the settings.
+It needs no Google account or API key.
+
+- **Three modes:** Flashcard (the card flips to the answer), Multiple choice (3 or 4
+  options) and Mixed. Wrong options come from the deck's other answers, picked to look
+  plausible: years with years, single words with single words, similar lengths.
+- **The app:** pick decks, then answer with the remote, a mouse or a touch screen (number
+  keys 1–4 answer directly). You get a score, streaks, and a results screen listing the
+  cards you missed, with **Review missed**.
+- **Spaced repetition:** Leitner boxes bring cards back after 1, 2, 4, 8 and 16 days. A
+  missed card comes back 3–5 cards later in the same session.
+- **The screensaver:** a question with a timer bar, then the answer, card after card. Any
+  key exits at once. The card drifts slightly at each change to protect OLED screens. It
+  can also show a clock and dim after a while.
+- **Looks and offline use:** Night, Day or Auto themes with six accent colours or your own.
+  Cards are cached, so they keep working without a network.
+
+The app is under **Program add-ons** and the screensaver under **Look and feel →
+Screensaver**. By default the screensaver uses the app's sheet and decks.
 
 ---
 
