@@ -216,6 +216,8 @@ Screensaver**. By default the screensaver uses the app's sheet and decks.
 
 ## RSS Live Tiles
 
+![RSS Live Tiles: the hub of live tiles, a tile expanding into its story, the menu, the layouts and tile styles, and the screensaver](gifs/rss-live-tiles.gif)
+
 Your RSS and Atom feeds as a wall of flat, coloured live tiles, in the style of Windows Phone
 and the Windows 8 Start screen. It comes as an app you browse with the remote and a screensaver
 that runs by itself. Three sample feeds are included (BBC News, r/kodi and NASA Image of the

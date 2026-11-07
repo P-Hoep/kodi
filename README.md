@@ -329,6 +329,13 @@ take screenshots of one, run a script inside Kodi that activates it and calls `T
 
 ## RSS Live Tiles (new, v1.0)
 
+![RSS Live Tiles: the hub of live tiles, a tile expanding into its story, the menu, the Mixed wall, Magazine, Spotlight and Mosaic layouts in the Classic, Modern and Outline styles, and the screensaver](release/gifs/rss-live-tiles.gif)
+
+Your news feeds as a wall of flat, coloured live tiles, like the Windows Phone home screen and
+the Windows 8 Start screen. Headlines and pictures come straight from the feeds. Tiles flip,
+peek and roll on their own to show the next story. Select one to read the whole story, with a
+QR code to open it on your phone. The screensaver turns an idle TV into a news wall.
+
 `script.rsslivetiles` (an app under **Add-ons → Program add-ons**) and `screensaver.rsslivetiles`,
 built from [docs/RSSliveTiles.md](docs/RSSliveTiles.md): RSS and Atom feeds as Windows Phone
 style live tiles. Both use the shared library `script.module.rsslivetiles`, which Kodi installs
