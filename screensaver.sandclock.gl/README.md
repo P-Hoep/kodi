@@ -94,3 +94,5 @@ automatic; needs a VAO). Linux and Android builds have not been run on a device.
 - macOS: the library is only ad-hoc signed and Kodi may refuse it.
 - CI build matrix; Linux, Windows (ANGLE) and 32-bit Android (armeabi-v7a) builds.
 - Time is a float in the shader. Fine for hours; rebase `born` and `now` for sessions of days.
+
+<!-- republish: Pages deploy for 4d54381 stalled -->
