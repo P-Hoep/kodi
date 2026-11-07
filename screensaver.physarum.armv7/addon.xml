@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.physarum.armv7" name="Physarum (32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_android="screensaver.physarum.armv7.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">A slime mould simulation on the GPU that grows into a clock: millions of agents weave living transport networks</summary>
+    <description lang="en_GB">Physarum polycephalum, the slime mould that can rebuild the Tokyo rail network, simulated on the GPU after Jeff Jones's agent model (Artificial Life, 2010) and Sage Jenson's Physarum art. Each agent senses the trail ahead, ahead-left and ahead-right, turns towards the strongest scent, moves and leaves its own trail, which spreads and fades; together they weave networks that branch, merge and keep reorganising. The clock in the middle can be food the slime grows into, so the time appears as the network finds it and reroutes every minute; it can also be made of slime kept inside the digits, cut out of the network as the slime flows round it, or simply sit on top. Eleven behaviours: Jones's transport network, a fine web in Sage Jenson's style, double-veined cells, coarse veins, honeycomb, labyrinth, worms, spots and comets, foam, long threads and restless jittery agents. It can wander through all of them, morphing from one to the next, or you can set the sensor angle, turn, sensor distance, step, decay, diffusion and deposit yourself. Up to three species, each following its own trail and avoiding the others, and from 16 thousand to 8 million agents on a trail map of up to 3840 x 2160. Start everywhere, from a disc, a ring, colonies, a big bang, the clock digits or each species in its own third, and scatter food that the network links like a rail map. Colour by density, by species, as fire, neon, ink on paper, one colour, a drifting rainbow or plasma, with glow, vignette or CRT. Fly over it: the camera can drift, zoom and turn, and the slime can be shown in relief, as a landscape you fly over, a tunnel or a spinning globe. If the device cannot keep up it slows the simulation rather than the display. This build is for 32-bit Android Kodi (armeabi-v7a), as on many Google TV boxes.</description>
+    <disclaimer lang="en_GB">Clock digits from fonts under the SIL Open Font License 1.1. Native add-on built for Kodi 21 Omega, 32-bit ARM Android. It needs OpenGL ES 2.0 with vertex texture fetch and high-precision floats in fragment shaders. Millions of agents need a strong GPU; start with the default and raise it.</disclaimer>
+    <platform>android</platform>
+    <license>MIT, OFL-1.1</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

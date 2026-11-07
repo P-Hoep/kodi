@@ -12,7 +12,7 @@ option(SANDCLOCK_FETCH_GLFW "Download GLFW instead of using an installed one" OF
 option(SANDCLOCK_KODI "Build the Kodi add-on (needs the kodi-addon-dev-kit headers)" OFF)
 set(KODI_DEVKIT_INCLUDE "" CACHE PATH "xbmc/addons/kodi-dev-kit/include, if Kodi's cmake package is not installed")
 
-add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp src/liquid.cpp src/automata.cpp)
+add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp src/liquid.cpp src/automata.cpp src/physarum.cpp)
 target_include_directories(sandclock_core PUBLIC src)
 target_compile_options(sandclock_core PRIVATE -Wall -Wextra)
 
@@ -25,6 +25,9 @@ target_link_libraries(test_liquid sandclock_core)
 add_executable(test_automata tests/test_automata.cpp)
 target_link_libraries(test_automata sandclock_core)
 add_test(NAME automata COMMAND test_automata)
+add_executable(test_physarum tests/test_physarum.cpp)
+target_link_libraries(test_physarum sandclock_core)
+add_test(NAME physarum COMMAND test_physarum)
 add_test(NAME liquid COMMAND test_liquid ${CMAKE_SOURCE_DIR}/../screensaver.sandclock/resources/media/fonts/fonts.json)
 
 if(SANDCLOCK_HARNESS)
@@ -68,7 +71,21 @@ if(SANDCLOCK_HARNESS)
   add_executable(automata_glfw src/main_automata_glfw.cpp)
   target_link_libraries(automata_glfw automata_render ${GLFW_TARGET})
 
+  add_library(physarum_render STATIC src/physarum_app.cpp)
+  target_link_libraries(physarum_render PUBLIC sandclock_core OpenGL::GL)
+  if(SANDCLOCK_GLES)
+    target_compile_definitions(physarum_render PUBLIC SANDCLOCK_GLES)
+  endif()
+  add_executable(physarum_glfw src/main_physarum_glfw.cpp)
+  target_link_libraries(physarum_glfw physarum_render ${GLFW_TARGET})
+
   if(APPLE)
+    add_library(physarum_render_core STATIC src/physarum_app.cpp)
+    target_link_libraries(physarum_render_core PUBLIC sandclock_core OpenGL::GL)
+    target_compile_definitions(physarum_render_core PUBLIC SANDCLOCK_CORE)
+    add_executable(physarum_glfw_core src/main_physarum_glfw.cpp)
+    target_link_libraries(physarum_glfw_core physarum_render_core ${GLFW_TARGET})
+
     # The same thing with the 3.2 core profile Kodi runs on macOS, to test that shader dialect.
     add_library(automata_render_core STATIC src/automata_app.cpp)
     target_link_libraries(automata_render_core PUBLIC sandclock_core OpenGL::GL)
@@ -154,4 +171,7 @@ if(SANDCLOCK_KODI)
 
   # Cellular Automata: only the library; the add-on folder is ../screensaver.automata.armv7.
   sandclock_kodi_module(screensaver.automata src/kodi_automata.cpp src/automata_app.cpp)
+
+  # Physarum: only the library; the add-on folder is ../screensaver.physarum.armv7.
+  sandclock_kodi_module(screensaver.physarum src/kodi_physarum.cpp src/physarum_app.cpp)
 endif()

@@ -43,6 +43,26 @@ checked against GLSL ES 1.00 with `glslangValidator` (`brew install glslang`) be
 build. The rule, grid, speed and pattern lists come from `tools/make_settings_automata.py`, which writes both the Kodi settings
 and `src/automata_tables.hpp`. Add-on folder: `../screensaver.automata.armv7`.
 
+## Physarum
+
+A fourth: the slime mould model of Jeff Jones ("Characteristics of pattern formation and evolution
+in approximations of Physarum transport networks", Artificial Life 16(2), 2010), drawn as Sage
+Jenson and nicoptere/physarum do, entirely on the GPU. Agents live in RGBA8 textures (position x/y
+and heading as 16-bit fractions, the only render target every GLES 2 device has); the trail map is
+half float where the device can render and blend it, else RGBA8 with a rounding floor. A step is
+four passes: sense and turn, move, deposit (every agent a 1 px point blended into its species'
+channel; the vertex shader reads the agent's texel, so it needs vertex texture fetch) and diffuse +
+decay + feed. Trail A is food (clock digits, food sources) that every species is drawn to. Clock
+modes feed the digits, wall the slime inside them (Jones's blocked agents pick a new direction) or
+wall it out. Above 1M agents each step deposits a rotating 1/k of them at k times the amount,
+because blended points are the slow part on tile-based GPUs (4x faster at 4M). On an Apple M2:
+1M agents at about 165 steps/s, 4M at 115, 8M on a 1920 x 1080 trail at 30. Files: `physarum.*`
+(settings, behaviours, wandering, no GL), `physarum_app.*`, `kodi_physarum.cpp`,
+`main_physarum_glfw.cpp`, shared `gl_util.hpp`. `physarum_glfw --selftest` checks the move, deposit
+and turning passes against the model on the CPU, with both trail formats. `--custom
+sa,ra,so,ss,decay,diffuse,deposit,jitter` tries a behaviour. Presets and settings come from
+`tools/make_settings_physarum.py`. Add-on folder: `../screensaver.physarum.armv7`.
+
 ## Build and test
 
 ```sh
@@ -94,5 +114,3 @@ automatic; needs a VAO). Linux and Android builds have not been run on a device.
 - macOS: the library is only ad-hoc signed and Kodi may refuse it.
 - CI build matrix; Linux, Windows (ANGLE) and 32-bit Android (armeabi-v7a) builds.
 - Time is a float in the shader. Fine for hours; rebase `born` and `now` for sessions of days.
-
-<!-- republish: Pages deploy for 4d54381 stalled -->
