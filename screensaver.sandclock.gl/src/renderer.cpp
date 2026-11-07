@@ -75,7 +75,11 @@ void main() {
 
 const char* kFragment = R"(
 #ifdef GL_ES
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
 precision mediump float;
+#endif
 #endif
 uniform float u_look;      // 0 sand, 1 flat squares, 2 round beads
 varying vec3 v_col;

@@ -42,12 +42,26 @@ to copy into Kodi's `addons` folder. `resources/settings.xml` and the strings ar
 the Python add-on's settings table by `tools/make_settings_sandclock_gl.py`, so both have the same
 settings.
 
+Android (arm64-v8a; needs the NDK, `brew install --cask android-ndk`):
+
+```sh
+cmake -S . -B build-android -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+  -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-21 -DANDROID_STL=c++_static \
+  -DSANDCLOCK_HARNESS=OFF -DSANDCLOCK_KODI=ON -DKODI_DEVKIT_INCLUDE=<xbmc>/xbmc/addons/kodi-dev-kit/include
+cmake --build build-android   # then llvm-strip --strip-unneeded the .so
+```
+
+The built `screensaver.sandclock.gl.dylib` (macOS universal, ad-hoc signed) and
+`screensaver.sandclock.gl.so` (Android arm64) are committed in this folder so
+`tools/make_repo.py` publishes them in the Kodi repository. Rebuild and recopy them after code changes.
+32-bit Android (armeabi-v7a) is not built.
+
 Shader dialects: GLES 2 (`-DSANDCLOCK_GLES=ON`), desktop GL 2.1 and the 3.2 core profile (macOS,
-automatic; needs a VAO). Linux and Android builds are untested.
+automatic; needs a VAO). Linux and Android builds have not been run on a device.
 
 ## Not done yet
 
 - Not yet run inside Kodi itself.
-- macOS: the library needs ad-hoc signing (`codesign -s -`) and Kodi may refuse unsigned add-ons.
-- CI build matrix (Linux x64/ARM, Android arm64, Windows/ANGLE) and Kodi's own add-on repo packaging.
+- macOS: the library is only ad-hoc signed and Kodi may refuse it.
+- CI build matrix; Linux, Windows (ANGLE) and 32-bit Android (armeabi-v7a) builds.
 - Time is a float in the shader. Fine for hours; rebase `born` and `now` for sessions of days.
