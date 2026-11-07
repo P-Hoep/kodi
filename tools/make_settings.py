@@ -114,7 +114,8 @@ def write(root, addon, addon_name, categories, generator='tools/make_settings.py
                     group += 1
                 out.append('      <group id="%d" label="%d">' % (group, label))
                 continue
-            xtype = {'slider': 'integer', 'options': 'integer', 'multi': 'list[integer]'}.get(kind, kind)
+            xtype = {'slider': 'integer', 'options': 'integer', 'multi': 'list[integer]',
+                     'colour': 'string'}.get(kind, kind)
             out.append('        <setting id="%s" type="%s" label="%d">' % (s['id'], xtype, label))
             out.append('          <level>%d</level>' % s.get('level', 0))
             if kind == 'action':
@@ -128,6 +129,9 @@ def write(root, addon, addon_name, categories, generator='tools/make_settings.py
                 out.append('          <constraints><allowempty>true</allowempty></constraints>')
                 out.append('          <control type="edit" format="string"><heading>%d</heading>%s</control>'
                            % (label, '<hidden>true</hidden>' if s.get('hidden') else ''))
+            elif kind == 'colour':  # Kodi 20+: a colour picker; the value is 'AARRGGBB'
+                out.append('          <default>%s</default>' % s['default'])
+                out.append('          <control type="colorbutton"/>')
             elif kind == 'time':
                 out.append('          <default>%s</default>' % s['default'])
                 out.append('          <control type="button" format="time"><heading>%d</heading></control>' % label)

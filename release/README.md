@@ -1,6 +1,6 @@
 # P-Hoep Kodi Add-ons
 
-Ambient screensavers, a scheduler, a flashcard app and a news reader for Kodi, published as one Kodi
+Ambient screensavers, a word clock, a scheduler, a flashcard app and a news reader for Kodi, published as one Kodi
 repository so Kodi installs them and keeps them up to date.
 
 | Add-on | Version | What it is |
@@ -12,6 +12,7 @@ repository so Kodi installs them and keeps them up to date.
 | [Screensaver Switcher](#screensaver-switcher) | 0.1.0 | Different screensavers at different times of day |
 | [Sheetcards](#sheetcards) | 1.0.0 | Flashcards from a Google Sheet: an app to study with and a screensaver |
 | [RSS Live Tiles](#rss-live-tiles) | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles: an app and a screensaver |
+| [Word Clock](#word-clock) | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 
 All of them are pure Python with no compiled code. They run on Kodi 19 (Matrix) and later,
 on any platform. They were developed and tested on Kodi 21 on macOS. God's Eye Map has
@@ -27,7 +28,7 @@ The add-ons are in a Kodi repository hosted on GitHub Pages:
 1. **Settings → System → Add-ons → Unknown sources → On.**
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/`
    and name it `phoep`.
-3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.3.zip`.
+3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.4.zip`.
    Kodi shows "P-Hoep Add-ons — Add-on installed".
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** The screensavers are
    under **Look and feel → Screensaver**, the Switcher is under **Services**, and the
@@ -241,6 +242,32 @@ Day). Add your own in **Manage feeds**.
 The app is under **Program add-ons** (press **Menu** on a tile for Manage feeds, layouts and
 settings) and the screensaver under **Look and feel → Screensaver**. By default the screensaver
 uses the app's feeds and look.
+
+---
+
+## Word Clock
+
+![Word Clock: IT IS FIVE TO TWO PM turning to TWO O'CLOCK, a ripple, midnight in blue with a glow, rainbow words, an amber dot-matrix face, a serif walnut card, minute dots, and the day colours blending into night](gifs/word-clock.gif)
+
+A word clock like the ones sold for walls and desks: an 11 × 11 grid of letters where the words
+that tell the time light up. At 1:55 PM it reads **IT IS FIVE TO TWO PM**, and at ten past
+twelve at night **IT IS TEN PAST MIDNIGHT**. Out of the box it looks like the classic graphite
+word clock: bold white letters over dim grey ones on a rounded dark card.
+
+- **Fonts:** eight to choose from: Inter (the default), Montserrat, Raleway, Playfair Display,
+  JetBrains Mono, Comfortaa, a dot-matrix font and a stencil font. Lit letters can be bold.
+- **Colours:** eight palettes (Graphite, Paper, Midnight blue, Amber LED, Terminal green, Rose,
+  Walnut, Steel) or your own, chosen with colour pickers. Lit words can also each have their own
+  colour, or slowly cycle through the rainbow. Add a soft or strong glow, and make the unlit
+  letters faint or hide them.
+- **Day and night:** separate day and night colours that switch at the times you set, blending
+  over a few seconds, and optional dimming at night.
+- **The clock:** round down (like most word clocks) or to the nearest five minutes, minute dots
+  in the corners, and IT IS, A QUARTER, AM/PM and MIDNIGHT can each be turned off.
+- **Screen:** a rounded card, a square card or full screen, any size, a fade or ripple when the
+  time changes, dimming, and a slow drift to protect OLED screens. Any key exits at once.
+
+It is under **Look and feel → Screensaver**.
 
 ---
 

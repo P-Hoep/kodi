@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The background and the card. Python sizes and colours them through Home window properties
+     and adds the letters on top. The card border must match CARD_RADIUS in
+     tools/make_wordclock_media.py so the corners keep their radius at any size. -->
+<window>
+  <backgroundcolor>0xff000000</backgroundcolor>
+  <controls>
+    <control type="image" id="10">
+      <left>-60</left><top>-60</top><width>2040</width><height>1200</height>
+      <texture>card_square.png</texture>
+      <colordiffuse>$INFO[Window(Home).Property(wordclock.bg)]</colordiffuse>
+    </control>
+    <control type="image" id="11">
+      <left>528</left><top>108</top><width>864</width><height>864</height>
+      <texture border="104">card_round.png</texture>
+      <colordiffuse>$INFO[Window(Home).Property(wordclock.card)]</colordiffuse>
+      <visible>String.IsEqual(Window(Home).Property(wordclock.frame),0)</visible>
+    </control>
+    <control type="image" id="12">
+      <left>528</left><top>108</top><width>864</width><height>864</height>
+      <texture>card_square.png</texture>
+      <colordiffuse>$INFO[Window(Home).Property(wordclock.card)]</colordiffuse>
+      <visible>String.IsEqual(Window(Home).Property(wordclock.frame),1)</visible>
+    </control>
+  </controls>
+</window>

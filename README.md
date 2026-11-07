@@ -393,6 +393,46 @@ Notes from building it (Kodi 21.1, macOS):
 - **Speed.** A window file is about 1.5 MB and ~3,800 controls. It loads in about 0.15 s, and
   the board fills from the cache in 0.01 s.
 
+## Word Clock (new, v1.0)
+
+![Word Clock: IT IS FIVE TO TWO PM turning to TWO O'CLOCK, a ripple, midnight in blue with a glow, rainbow words, an amber dot-matrix face, a serif walnut card, minute dots, and the day colours blending into night](release/gifs/word-clock.gif)
+
+`screensaver.wordclock`, built from [docs/wordclock.md](docs/wordclock.md): the time in words on an
+11 × 11 grid of letters, like a QlockTwo-style word clock. The words that tell the time light up
+(IT IS FIVE TO TWO PM, IT IS TEN PAST MIDNIGHT). By default it matches the classic graphite face:
+bold white letters over dim grey ones on a rounded `#1B1B1D` card.
+
+- **Clock:** round down or to the nearest five minutes, minute dots in the corners, and IT IS,
+  A QUARTER, AM/PM and MIDNIGHT can each be turned off. AM/PM follows the hour that is named, so
+  11:45 AM reads QUARTER TO TWELVE PM. The grid has no NOON (row 11 ends `NOO`).
+- **Letters:** eight OFL fonts (Inter, Montserrat, Raleway, Playfair Display, JetBrains Mono,
+  Comfortaa, Doto dot matrix, Big Shoulders Stencil), bold or regular lit letters, unlit letters
+  shown, faint or hidden, a soft or strong glow, and letter size.
+- **Colours:** eight palettes or Custom (Kodi 20+ colour pickers for background, card, lit and
+  unlit), separately for day and night. Lit words can be one colour, each word its own colour,
+  or a slow rainbow cycle.
+- **Day and night:** night colours, day colours, or both by the clock (an 8 s blend at the
+  switch), and dimming at night.
+- **Screen:** rounded card, square card or full screen, size, fade / ripple / cut transitions,
+  dimming and an OLED drift. Any input exits in about 0.02 s.
+
+```bash
+python3 tools/make_wordclock_media.py      # glyphs for 8 fonts, card textures, icon, fanart (Pillow; downloads the fonts)
+python3 tools/make_settings_wordclock.py   # settings.xml + strings.po from resources/lib/config.py
+python3 tools/preview_wordclock.py out.png 13:55 font=6 glow=2 night_palette=3   # draw the face with Pillow
+python3 tools/build_zip.py screensaver.wordclock
+KODI_ADDON=screensaver.wordclock python3 tools/kodi.py install         # then select / run
+python3 -m unittest tests.test_wordclock   # offline: the grid, every minute of the day, settings, colours, layout
+```
+
+Notes from building it (Kodi 21.1, macOS): letters are white glyph PNGs tinted with
+`setColorDiffuse`, because add-ons cannot load fonts. Each cell has an unlit, a glow and a lit
+image whose `setVisibleCondition()` watches a Home window property, with Visible/Hidden fade
+animations. A time change is a few `setProperty` calls and Kodi does the cross-fade, so Kodi uses
+about 3% CPU while it runs. The rounded card is an XML image with a 9-slice `border`, so its
+corners stay the same at any size. Setting the Home property `wordclock.demo` to `HH:MM` shows
+that time, for testing.
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full
