@@ -138,11 +138,21 @@ class Screensaver(object):
     # ------------------------------------------------------------ lifecycle
 
     def run(self):
+        """show() and wait here rather than doModal(): when Kodi itself wakes the screensaver
+        (a RunScript, a screenshot) it closes the window without telling Python, doModal()
+        then never returns and Kodi kills the script after 5 seconds. Waiting in a loop that
+        also watches System.ScreenSaverActive always ends."""
         self.window = SaverWindow('screensaver-sandclock.xml', self.path, 'Default', '1080i', app=self)
         try:
-            self.window.doModal()
+            self.window.show()
+            started = time.time()
+            while not self.stopped():
+                if time.time() - started > 2.0 and not xbmc.getCondVisibility('System.ScreenSaverActive'):
+                    break
+                self.monitor.waitForAbort(0.2)
         finally:
             self.stop.set()
+            self.close_window()
             if self.thread:
                 self.thread.join(2.0)
             self.batches.clear_all()
@@ -186,18 +196,17 @@ class Screensaver(object):
 
     def exit(self):
         """Called from Kodi callbacks (a key, or the screensaver being woken)."""
-        if not self.stop.is_set():
-            self.stop.set()
-            self.close_window()
+        self.stop.set()      # run() notices and closes the window
 
     def close_window(self):
         """Close the window without waiting for Kodi's main thread. Window.close() waits for
         the main thread while holding Python's lock; if the main thread wants that lock at the
         same moment (it does when it stops this script because a screensaver is being started
         again), both wait forever and Kodi freezes. Dialog.Close is only posted to the main
-        thread, and doModal() returns once it has run."""
+        thread (and does nothing if Kodi already closed the window)."""
         if self.dialog_id:
             xbmc.executebuiltin('Dialog.Close(%d,true)' % self.dialog_id)
+            self.monitor.waitForAbort(0.3)
         elif self.window:
             self.window.close()      # before onInit: nothing is running yet
 

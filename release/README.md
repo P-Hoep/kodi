@@ -13,7 +13,7 @@ repository so Kodi installs them and keeps them up to date.
 | [Sheetcards](#sheetcards) | 1.0.0 | Flashcards from a Google Sheet: an app to study with and a screensaver |
 | [RSS Live Tiles](#rss-live-tiles) | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles: an app and a screensaver |
 | [Word Clock](#word-clock) | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
-| [Sand Clock](#sand-clock) | 1.0.0 | A clock whose digits crumble into falling sand every second |
+| [Sand Clock](#sand-clock) | 1.0.1 | A clock whose digits crumble into falling sand every second |
 | [Jeopkodi](#jeopkodi) | 1.0.0 | An endless Jeopardy! slideshow: clue, then the response |
 
 All of them are pure Python with no compiled code. They run on Kodi 19 (Matrix) and later,
