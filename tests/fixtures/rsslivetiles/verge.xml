@@ -1,0 +1,922 @@
+<?xml version="1.0" encoding="UTF-8"?><feed
+	xmlns="http://www.w3.org/2005/Atom"
+	xmlns:thr="http://purl.org/syndication/thread/1.0"
+	xml:lang="en-US"
+	>
+	<title type="text">The Verge</title>
+	<subtitle type="text">The Verge is about technology and how it makes us feel. Founded in 2011, we offer our audience everything from breaking news to reviews to award-winning features and investigations, on our site, in video, and in podcasts.</subtitle>
+
+	<updated>2026-11-06T23:46:18+00:00</updated>
+
+	<link rel="alternate" type="text/html" href="https://www.theverge.com" />
+	<id>https://www.theverge.com/rss/index.xml</id>
+	<link rel="self" type="application/atom+xml" href="https://www.theverge.com/rss/index.xml" />
+
+	<icon>https://platform.theverge.com/wp-content/uploads/sites/2/2025/01/verge-rss-large_80b47e.png?w=150&amp;h=150&amp;crop=1</icon>
+		<entry>
+			
+			<author>
+				<name>Stevie Bonifield</name>
+			</author>
+			
+			<title type="html"><![CDATA[OpenAI valued at $1.25 trillion, as rival Anthropic nears its IPO]]></title>
+			<link rel="alternate" type="text/html" href="https://www.theverge.com/ai-artificial-intelligence/1029380/openai-1-25-trillion-investment-valuation" />
+			<id>https://www.theverge.com/?p=1029380</id>
+			<updated>2026-11-06T18:46:18-05:00</updated>
+			<published>2026-11-06T18:46:18-05:00</published>
+			<category scheme="https://www.theverge.com" term="AI" /><category scheme="https://www.theverge.com" term="Business" /><category scheme="https://www.theverge.com" term="News" /><category scheme="https://www.theverge.com" term="OpenAI" />
+							<summary type="html"><![CDATA[OpenAI is now valued at $1.25 trillion in a new round of funding that has raised another $11 billion, according to Bloomberg. That would make it one of the world's most valuable companies, not long after raising $122 billion from investors in March at a valuation of $852 billion. Echoing FT and Wall Street Journal [&#8230;]]]></summary>
+			
+							<content type="html">
+											<![CDATA[
+
+						
+<figure>
+
+<img alt="" data-caption="" data-portal-copyright="Image: The Verge" data-has-syndication-rights="1" src="https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/STK155_OPEN_AI_CVirginia_2_A.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100" />
+	<figcaption>
+		</figcaption>
+</figure>
+<p class="wp-block-paragraph">OpenAI is now valued at $1.25 trillion in a new round of funding that has raised another $11 billion, according to <a href="https://www.bloomberg.com/news/articles/2026-11-06/openai-completes-11-billion-portion-of-funding-at-1-25-trillion-value"><em>Bloomberg</em></a>. That would make it one of the world's most valuable companies, not long after raising  $122 billion from investors in March at a valuation of $852 billion.</p>
+<p class="wp-block-paragraph">Echoing <em><a href="https://www.ft.com/content/7a3ad950-1b3b-4d9e-8c15-65a61ae6180f?syn-25a6b1a6=1">FT</a></em> and <a href="https://www.wsj.com/tech/ai/openai-raises-less-than-half-of-30-billion-target-in-latest-round-91aecdc5"><em>Wall Street Journal</em></a> reports from last week, <em>Bloomberg</em> says OpenAI is still pursuing additional investments that could increase the amount to $20 billion, and that it had initially hoped to raise as much as $30 billion at a higher valuation of $1.4 trillion. That was before tech stocks dropped, and the results of the midterms showed how much public o …</p>
+<p><a href="https://www.theverge.com/ai-artificial-intelligence/1029380/openai-1-25-trillion-investment-valuation">Read the full story at The Verge.</a></p>
+						]]>
+									</content>
+			
+					</entry>
+			<entry>
+			
+			<author>
+				<name>Jay Peters</name>
+			</author>
+			
+			<title type="html"><![CDATA[China reportedly recruited AI exec to spy on Jensen Huang]]></title>
+			<link rel="alternate" type="text/html" href="https://www.theverge.com/tech/1029338/nvidia-ceo-jensen-huang-china-spy" />
+			<id>https://www.theverge.com/?p=1029338</id>
+			<updated>2026-11-06T18:00:44-05:00</updated>
+			<published>2026-11-06T18:00:44-05:00</published>
+			<category scheme="https://www.theverge.com" term="AI" /><category scheme="https://www.theverge.com" term="News" /><category scheme="https://www.theverge.com" term="Nvidia" /><category scheme="https://www.theverge.com" term="Tech" />
+							<summary type="html"><![CDATA[China's intelligence agency recruited Megaspeed executive Alice Huang to spy on Nvidia CEO Jensen Huang, according to The New York Times. The Ministry of State Security (MSS) enlisted her to glean information about American AI chips and "potentially influence the company to push for its most advanced chips to be made available to China." Megaspeed [&#8230;]]]></summary>
+			
+							<content type="html">
+											<![CDATA[
+
+						
+<figure>
+
+<img alt="" data-caption="" data-portal-copyright="Image: The Verge" data-has-syndication-rights="1" src="https://platform.theverge.com/wp-content/uploads/sites/2/2026/07/STKP210_JENSEN_HUANG_A.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100" />
+	<figcaption>
+		</figcaption>
+</figure>
+<p class="wp-block-paragraph">China's intelligence agency recruited <a href="https://megaspeed.ai/">Megaspeed</a> executive Alice Huang to spy on Nvidia CEO Jensen Huang, <a href="https://www.nytimes.com/2026/11/06/us/politics/chinese-spy-agency-nvidia-jensen-huang.html?unlocked_article_code=1.OVE.Q7K1.pw9O9sjsZBW4&amp;smid=url-share">according to <em>The New York Times</em></a><em>.</em> The Ministry of State Security (MSS) enlisted her to glean information about American AI chips and "potentially influence the company to push for its most advanced chips to be made available to China." <a href="https://megaspeed.ai/">Megaspeed</a> is a customer of Nvidia's, and Alice Huang also has "relationships with executives at the highest levels of the A.I. chip industry," including leaders at Gigabyte, the <em>NYT</em> says.</p>
+<p class="wp-block-paragraph">Last week, the <em>NYT</em> <a href="https://www.nytimes.com/2026/10/29/us/politics/nvidia-china-jensen-huang-trump.html?smid=nytcore-android-share">reported that</a> Jensen Huang was seen as the target of a "Chinese spy plot" and shared details about Al …</p>
+<p><a href="https://www.theverge.com/tech/1029338/nvidia-ceo-jensen-huang-china-spy">Read the full story at The Verge.</a></p>
+						]]>
+									</content>
+			
+					</entry>
+			<entry>
+			
+			<author>
+				<name>Emma Roth</name>
+			</author>
+			
+			<title type="html"><![CDATA[Starlink Mobile: All the news on SpaceX&#8217;s major mobile carrier ambitions]]></title>
+			<link rel="alternate" type="text/html" href="https://www.theverge.com/science/1029162/spacex-starlink-mobile-elon-musk-news" />
+			<id>https://www.theverge.com/?post_type=vm_stream&#038;p=1029162</id>
+			<updated>2026-11-06T17:45:43-05:00</updated>
+			<published>2026-11-06T17:45:43-05:00</published>
+			<category scheme="https://www.theverge.com" term="Elon Musk" /><category scheme="https://www.theverge.com" term="Mobile" /><category scheme="https://www.theverge.com" term="Science" /><category scheme="https://www.theverge.com" term="Space" /><category scheme="https://www.theverge.com" term="SpaceX" /><category scheme="https://www.theverge.com" term="Tech" />
+							<summary type="html"><![CDATA[SpaceX has declared that it&#8217;s going to make Starlink Mobile a &#8220;major&#8221; mobile carrier. The Elon Musk-owned company has already deployed thousands of direct-to-cell satellites, but its next big challenge is building out its 5G network here on Earth. As part of its plans to rival AT&#38;T, Verizon, and T-Mobile, SpaceX has inked a deal [&#8230;]]]></summary>
+			
+							<content type="html">
+											<![CDATA[
+
+						
+<figure>
+
+<img alt="Photo of rocket launch with SpaceX logo." data-caption="" data-portal-copyright="Image: Cath Virginia / The Verge, Getty Images" data-has-syndication-rights="1" src="https://platform.theverge.com/wp-content/uploads/sites/2/2025/05/STKB355_SPACEX_C.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100" />
+	<figcaption>
+		</figcaption>
+</figure>
+<p class="wp-block-paragraph">SpaceX has <a href="https://www.theverge.com/science/1008467/spacex-announces-plan-to-become-a-major-mobile-carrier">declared that it&#8217;s going</a> to make Starlink Mobile a &#8220;major&#8221; mobile carrier. The Elon Musk-owned company has already deployed thousands of direct-to-cell satellites, but its next big challenge is building out its 5G network here on Earth.</p>
+
+<p class="wp-block-paragraph"><span>As part of its plans to rival AT&amp;T, Verizon, and T-Mobile, </span><span><a href="https://www.theverge.com/science/1026287/spacex-qualcomm-starlink-mobile-5g-netwowrk">SpaceX has inked a deal with Qualcomm</a><span>, which will deploy its cellular technology across tens of thousands of 5G cell sites starting in 2027. </span></span><span>SpaceX is also reportedly in</span><span><span> talks to </span><a href="https://www.theverge.com/science/1024330/spacex-boost-mobile-deal-report">buy Boost Mobile</a></span><span>, potentially allowing it to launch Starlink Mobile </span><span><span>through the service.</span></span> Another report suggests <span><span> <font color="#0b1328">SpaceX may</font></span><a href="https://www.theverge.com/science/1017477/spacex-cell-sites-major-us-carrier"> tap into 80,000 cell sites across the US</a><span> to build out  its network.</span></span></p>
+
+<p class="wp-block-paragraph">SpaceX’s big plans have garnered some reactions in the telecom industry. Tim Höttges, the CEO of T-Mobile&#8217;s parent company Deutsche Telekom, <a href="https://www.theverge.com/tech/1028346/t-mobile-deutsche-telecom-spacex-starlink-mobile">said he takes SpaceX&#8217;s plans &#8220;super serious&#8221; </a>but that it could cost Musk more than $200 billion to pull off.</p>
+
+<p class="wp-block-paragraph"><em>Follow along for the latest updates on Starlink&#8217;s major mobile carrier ambitions.</em></p>
+<ul>
+					<li>
+				<a href="https://www.theverge.com/science/1027867/what-will-it-take-for-spacex-to-launch-its-mobile-network">What will it take for SpaceX to launch its “major” mobile network?</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/1026287/spacex-qualcomm-starlink-mobile-5g-netwowrk">SpaceX is working with Qualcomm to build its Starlink Mobile 5G network</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/1024330/spacex-boost-mobile-deal-report">SpaceX could buy Boost Mobile as part of its big mobile carrier plans</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/1017477/spacex-cell-sites-major-us-carrier">SpaceX’s mobile carrier push reportedly involves tapping into 80,000 cell sites</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/1008467/spacex-announces-plan-to-become-a-major-mobile-carrier">SpaceX announces plan to become a ‘major mobile carrier’</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/975480/spacex-mobile-terrestrial-cellphone-company">SpaceX is coming for T-Mobile, AT&amp;T and Verizon</a>
+			</li>
+			</ul>
+						]]>
+									</content>
+			
+					</entry>
+			<entry>
+			
+			<author>
+				<name>Cameron Faulkner</name>
+			</author>
+			
+			<title type="html"><![CDATA[KPop Demon Hunters on 4K Blu-ray costs less than a month of Netflix Premium]]></title>
+			<link rel="alternate" type="text/html" href="https://www.theverge.com/gadgets/1028640/kpop-demon-hunters-4k-criterion-bluray-deal-sale" />
+			<id>https://www.theverge.com/?p=1028640</id>
+			<updated>2026-11-06T16:50:38-05:00</updated>
+			<published>2026-11-06T16:50:32-05:00</published>
+			<category scheme="https://www.theverge.com" term="Deals" /><category scheme="https://www.theverge.com" term="Entertainment" /><category scheme="https://www.theverge.com" term="Gadgets" /><category scheme="https://www.theverge.com" term="Verge Shopping" />
+							<summary type="html"><![CDATA[Buying the 4K Blu-ray disc version of KPop Demon Hunters was already going to be a wise idea for some people, especially those who primarily keep their $26.99 Netflix Premium subscription just to watch the hit animated flick in 4K. But at just $24.99 from Barnes and Noble and Amazon instead of its original $49.95 [&#8230;]]]></summary>
+			
+							<content type="html">
+											<![CDATA[
+
+						
+<figure>
+
+<img alt="A still showing the fictional Korean girl group HUNTR/X." data-caption="" data-portal-copyright="Image: Netflix" data-has-syndication-rights="1" src="https://platform.theverge.com/wp-content/uploads/sites/2/2025/08/KpopDemonHunters_ProRes422HQ_SDR_2ch_20250424.01_04_39_22.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100" />
+	<figcaption>
+		</figcaption>
+</figure>
+<p class="wp-block-paragraph">Buying the 4K Blu-ray disc version of <em>KPop Demon Hunters </em>was already going to be a wise idea for some people, especially those who primarily keep their $26.99 Netflix Premium subscription just to watch the hit animated flick in 4K. But at just $24.99 from <a href="https://www.barnesandnoble.com/w/dvd-k-pop-demon-hunters-maggie-kang/1151093594">Barnes and Noble</a> and <a href="https://www.amazon.com/dp/B0GSBP8QJ3">Amazon</a> instead of its original $49.95 price, it’s easier than ever to recommend.</p>
+<div class="product-block"><h3>KPop Demon Hunters (4K Blu-ray)</h3>
+<figure class="product-image"><img width="300" height="200" src="https://platform.theverge.com/wp-content/uploads/sites/2/2026/11/kpopcontents.jpg?w=300" class="attachment-medium size-medium" alt="" /></figure>
+<h3>Where to Buy:</h3><ul><li><a href="https://www.amazon.com/dp/B0GSBP8QJ3"> <strike>$49.95</strike> $24.99 at <strong>Amazon</strong></a></li><li><a href="https://www.barnesandnoble.com/w/dvd-k-pop-demon-hunters-maggie-kang/1151093594?ean=0715515337816"> <strike>$49.95</strike> $24.99 at <strong>Barnes &amp; Noble</strong></a></li></ul></div>
+
+
+
+
+<p class="wp-block-paragraph">The Criterion Collection version of the film recently launched, and comes with a bunch of extras in a gorgeous set. In addition to the 4K digital master, complete with Dolby Vision HDR and Dolby Atmos sound, you also get two standard 1080p Blu-rays, one containing the film, and the other packed with special features (a full feature-length animatic, a making-of documentary, lyric videos, and more). It includes physical goodies, too, like collectible postcards, as well as an essay by <em>Polygon </em>alum Karen Han. </p>
+
+<p class="wp-block-paragraph"><em>Kpop Demon Hunters</em> was on my list of physical movies to buy, and this deal just turned it into a must-buy ahead of the holiday season.</p>
+
+<p class="wp-block-paragraph"><em><strong>Update, 4:50PM ET, November 6th: </strong>Previously, this deal was available for in-store pickup at Barnes and Noble, but it’s currently available online at both Barnes and Noble and Amazon.</em></p>
+						]]>
+									</content>
+			
+					</entry>
+			<entry>
+			
+			<author>
+				<name>Verge Staff</name>
+			</author>
+			
+			<author>
+				<name>Justine Calma</name>
+			</author>
+			
+			<title type="html"><![CDATA[All the latest updates on AI data centers]]></title>
+			<link rel="alternate" type="text/html" href="https://www.theverge.com/ai-artificial-intelligence/902546/data-centers-ai-energy-power-grids-controversy" />
+			<id>https://www.theverge.com/?post_type=vm_stream&#038;p=902546</id>
+			<updated>2026-11-06T15:03:32-05:00</updated>
+			<published>2026-11-06T15:02:22-05:00</published>
+			<category scheme="https://www.theverge.com" term="AI" /><category scheme="https://www.theverge.com" term="Energy" /><category scheme="https://www.theverge.com" term="Environment" /><category scheme="https://www.theverge.com" term="News" /><category scheme="https://www.theverge.com" term="Science" />
+							<summary type="html"><![CDATA[Massive new data centers are the physical foundation for tech companies’ hopes and dreams for AI. But the rush to expand warehouses full of energy-hungry servers has also kicked up fights across the world over their impact on power grids, utility bills, nearby communities, and the environment. Data centers were a major bipartisan issue ahead [&#8230;]]]></summary>
+			
+							<content type="html">
+											<![CDATA[
+
+						
+<figure>
+
+<img alt="Photo collage of a server room with data visualizations." data-caption="" data-portal-copyright="Image: Cath Virginia / The Verge, Getty Images" data-has-syndication-rights="1" src="https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/STKS528_DATA_CENTERS_C.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100" />
+	<figcaption>
+		</figcaption>
+</figure>
+<p class="has-text-align-none wp-block-paragraph">Massive new data centers are the physical foundation for tech companies’ hopes and dreams for AI. But the rush to expand warehouses full of energy-hungry servers has also kicked up fights across the world over their impact on power grids, utility bills, nearby communities, and the environment.</p>
+
+<p class="wp-block-paragraph">Data centers were <a href="https://www.theverge.com/cs/ai-artificial-intelligence/1004040/data-centers-ai-investment-environment-backlash/">a major bipartisan issue ahead of the 2026 midterms</a>, and voters <a href="https://www.theverge.com/policy/1026365/data-centers-midterms-results">largely opposed</a> data center expansion at the polls. Tech giants like <a href="https://www.theverge.com/ai-artificial-intelligence/1028454/openai-data-center-nda">OpenAI</a> and <a href="https://www.theverge.com/tech/1003929/amazon-ai-data-center-blog-warning">Amazon</a> are promising to work more closely with local communities and cover their data center energy costs. But following the election, Democratic leaders are <a href="https://www.cnbc.com/2026/11/05/democrats-data-center-restrictions-midterms.html">calling for</a> further data center restrictions and slowdowns that the AI companies will have to grapple with.</p>
+
+<p class="has-text-align-none wp-block-paragraph">From audacious plans about <a href="https://www.theverge.com/tech/1023528/google-project-suncatcher-ai-satellite-transmission">data centers into space</a>, <a href="https://www.theverge.com/science/1026506/this-week-in-the-big-ai-data-center-buildout">heated local battles over buildouts</a>, and <a href="https://www.theverge.com/science/1022258/data-centers-climate-change-carbon-dioxide-pollution-gas">potential environmental impacts</a>, here’s <em>The Verge</em>’s news, coverage, and reporting surrounding data centers and the companies that are building them.</p>
+
+<p class="has-text-align-none wp-block-paragraph"></p>
+<ul>
+					<li>
+				<a href="https://www.theverge.com/policy/1028228/energy-infrastructure-permitting-reform-bill-congress-vote">Lame-duck Congress might actually do something: speed up energy projects</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1028538/we-are-a-data-center-first-company-amd-ceo-lisa-su-says">“We are a data center first company,” AMD CEO Lisa Su says.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1028454/openai-data-center-nda">OpenAI is stepping back from NDAs for data center projects</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/1026506/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/1026365/data-centers-midterms-results">Data centers lost the midterms</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/1026220/maine-republican-susan-collins-concedes-senate-seat-in-a-tech-fueled-race">Maine Republican Susan Collins concedes Senate seat in a tech-fueled race.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/1026215/democrat-projected-to-win-ohio-seat-that-republicans-warned-could-spell-trouble-for-data-centers">Democrat projected to win Ohio seat that Republicans warned could spell trouble for data centers.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/1026036/data-center-dense-texas-turns-blue">Data center-dense Texas turns blue.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1025242/openai-quietly-renames-data-centers-as-compute-campuses">OpenAI is quietly renaming data centers ‘compute campuses’</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1024604/openai-data-center-grid-protection-program">OpenAI pitches data center power plants as a way to protect nearby areas</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/1024357/florida-governors-race-donalds-jolly-data-centers">Could data center backlash flip Florida?</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/1023877/prop-45-california-data-centers-energy">Prop 45 in California could be hiding a loophole for data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1021080/maine-senate-race-susan-collins-ai-data-centers">Maine’s data center revolt will decide who controls the Senate</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/1022258/data-centers-climate-change-carbon-dioxide-pollution-gas">Data centers could send US climate pollution skyrocketing</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/cs/features/1016650/arizona-water-data-center-tsmc">AI has come for Arizona’s water</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/1021615/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1018676/data-center-midterm-election-energy-water-texas">Voters in Texas agree: They hate data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1019393/data-centers-highway-robbery">Highway robbers are targeting trucks carrying data center components.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/1019152/data-centers-midterm-elections">Data center backlash is uniting America</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1018994/anthropic-ipo-ai-data-center-energy-climate-risk">Anthropic is burning gas to feed the AI boom</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1016407/its-a-good-time-to-sell-gray-paint">It’s a good time to sell gray paint.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1015958/data-center-pollution-rising-report">Data centers could erase decades of air quality gains</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1016049/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/1015392/trump-says-paying-communities-a-dividend-could-make-data-centers-more-popular">Trump says paying communities a &#8220;dividend&#8221; could make data centers more popular.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/1014580/data-center-moratorium-texas-investigation">Texas is still permitting data centers despite a supposed statewide moratorium.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/1013954/fossil-fuel-power-infrastructure-data-centers-report">The fossil fuel comeback is here</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/1013754/microsoft-abandons-the-uks-largest-data-center-project">Microsoft abandons the UK’s largest data center project.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/1013735/amazon-x-energy-aep-nuclear-indiana">Amazon is funding a new nuclear plant in Indiana</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1013097/ai-datacenter-pr-interview">You’ve got to hear both sides?</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1011460/neocloud-coreweaves-bonds-are-distressed-and-so-am-i">Neocloud CoreWeave’s bonds are distressed, and so am I.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1011299/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/1008076/bipartisan-energy-permitting-bill-data-centers">A bipartisan bill aims to hold data centers accountable for their energy use.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/1007407/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/1006082/google-nuclear-energy-power-purchase-agreement-constellation">Google’s power-hungry data centers crave nuclear energy</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/1005082/a-japanese-real-estate-company-is-building-a-data-center-in-an-underground-tunnel">A Japanese real estate company is building a data center in an underground tunnel.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/1003681/microsoft-data-centers-ai-environment-biomimicry">If a data center is camouflaged in the woods, will anyone hate it?</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/1003929/amazon-ai-data-center-blog-warning">Amazon writes scary blog warning communities not to block data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/cs/features/993343/stratos-utah-kevin-oleary-data-center-backlash">The People of Utah vs. Kevin O&#8217;Leary</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/entertainment/1003177/south-park-has-a-data-center-infestation">South Park has a data center infestation.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/1002829/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/1002474/trump-youre-going-to-see-data-centers-are-going-to-be-very-popular">Trump: “You’re going to see — data centers are going to be very popular.”</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/1000015/google-ai-satellite-space-project-suncatcher">Google is sending an AI satellite into space next week</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/999412/data-center-water-electricity-disclosure-bills">Data centers are black boxes, but California wants to change that </a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/999063/pew-data-center-survey-september-2026">Americans sour even more on data centers.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/998453/california-ai-data-center-bills">California tightens rules on AI data center energy and water use</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/997573/virginia-governor-spanberger-data-center-ai-task-force">Virginia governor creates an AI task force and moves to restrain data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/996470/ai-data-center-e-waste-ban">The AI data center e-waste problem is huge — and getting bigger</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/996322/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/995917/data-center-nyt-midterm-poll-september">AI and data centers are incredibly unpopular in every poll</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/992240/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/cs/features/975597/loudoun-county-virginia-data-center-backlash">Is this the future of America?</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/986288/microsoft-data-center-unpermitted-gas-generator-pollution-investigation">A Microsoft-backed data center has reportedly been running on unpermitted generators.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/986176/data-center-pollution-epa-rule-change-air-permit">Trump’s EPA wants to let data centers hide their air pollution</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/985200/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/984747/now-openais-former-head-of-data-centers-is-out">Now OpenAI’s former head of data centers is out.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/984606/gas-power-projects-data-centers-surge">There’s a surge of new gas projects being built to power data centers in the US.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/983677/now-politicians-say-they-are-against-data-centers">The latest turn in the data center debate.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/982384/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/981000/nvidia-will-provide-up-to-105-billion-to-support-an-openai-data-center">Nvidia guarantees up to $105 billion to support an OpenAI data center.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/979183/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/977124/amazon-data-center-worst-polluting-power-plant">An Amazon data center could have the worst polluting power plant in the country</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/podcast/971855/ai-data-center-backlash-protests-florida-bipartisan">The left and right agree on one thing: no data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/975615/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/975381/amd-q2-2026-earnings-ai-gaming-ryzen">AMD&#8217;s data center business is booming while gaming takes a backseat</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/975077/at-least-37-people-have-reportedly-been-arrested-for-protesting-data-centers">At least 37 people have reportedly been arrested for protesting data centers.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/975071/texas-data-center-audit">Texas says data centers must pass an audit before connecting to the grid</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/972590/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/972297/willie-nelson-is-pushing-back-against-data-centers-in-his-hometown">Willie Nelson is pushing back against data centers in his hometown.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/971997/meta-and-blackrock-are-building-a-data-center-campus-together">Meta and BlackRock are building a data center campus together.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/969667/humans-first-data-center-protest-hernando-county-florida-republicans">The right-wing boomers protesting data centers have a lot in common with the left</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/969137/us-utility-ai-electricty-data-center-rate-pledge-trump">Utility companies promise to spare us from AI’s energy bill</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/967281/meta-reportedly-considers-leasing-computing-power-to-anthropic">Meta reportedly considers leasing computing power to Anthropic.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/965953/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/965837/ais-power-bill-is-here">AI’s power bill is here.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/965110/new-york-ai-data-center-moratorium">New York becomes the first state to enact a data center moratorium</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/column/963346/ai-data-centers-fight">The fight against AI data centers is just beginning</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/963930/sunrun-distributed-ai-data-center">Would you host part of an AI data center in your home?</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/962990/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/961722/anthropic-signs-20-year-lease-agreement-for-an-ai-data-center-in-kentucky">Anthropic signs 20-year lease agreement for an AI data center in Kentucky.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/960449/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/960443/meta-might-launch-its-own-cloud-computing-business">Meta might launch its own cloud computing business.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/956468/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/954139/nvidia-data-centers-rubin-liquid-cooling">Nvidia says its AI data center design runs hotter to use a lot less water</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/952180/amazon-seattle-data-center-moratorium-aecj-disciplinary-action">Amazon employees say they’re facing termination for backing data center limits</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/951808/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/950722/xais-gas-powered-data-center-is-necessary-for-national-security-doj-argues">xAI’s gas-powered data center is necessary for national security, DOJ argues.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/949520/spacex-reportedly-rented-out-colossus-1-ai-data-center-after-it-ran-into-latency-issues">SpaceX reportedly rented out Colossus 1 AI data center after it ran into latency issues.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/948534/amazon-data-centers-water-use">Amazon&#8217;s data centers used 2.5 billion gallons of water last year</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/947823/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/transportation/946820/gm-energy-ev-v2g-storage-sodium-ion">GM thinks EVs can help offset AI’s energy suck with vehicle-to-grid tech</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/945809/amazon-employees-seattle-data-center-moratorium">Amazon employees ask Seattle to put the brakes on new data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/944984/shelbyville-indiana-mayor-shitty-houses-data-center">The mayor of Shelbyville, Indiana, says only people who live in ‘shitty houses’ oppose data center</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/944041/new-york-data-center-moratorium">New York lawmakers pass one-year ban on new data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/943234/kevin-oleary-agrees-to-downsize-massive-utah-data-center">Kevin O’Leary agrees to downsize massive Utah data center</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/942570/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/942296/google-water-commitments-data-centers">AI has a water problem — Google thinks it has a fix</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/938213/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/937195/erin-brockovich-created-a-map-of-data-centers-in-the-us">Erin Brockovich created a map of data centers in the US.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/935229/spacex-anthropic-ipo-ai-capacity-deal-colossus">Anthropic is paying $15 billion a year for access to Elon Musk’s data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/934894/whats-your-score-on-the-wsjs-data-center-quiz">What’s your score on the WSJ’s data center quiz?</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/934836/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/933687/utah-stratos-project-data-center-kevin-oleary">The biggest data center ever is becoming a huge problem in Utah</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/930629/data-center-policy-map-interactive">Use this map to find the data centers in your backyard</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/930477/ai-data-centers-gallup-survey-70-percent-opposition">Americans do not want AI data centers in their backyards</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/930018/this-week-in-the-big-ai-data-center-buildout">This week in the big AI data center buildout.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/928963/data-center-rural-america-jobs-jay-maine">Data centers are coming for rural America</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/928916/google-may-work-with-spacex-to-launch-data-centers-in-space">Google may work with SpaceX to launch data centers into space.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/925426/43-percent-of-americans-blame-data-centers-as-a-major-reason-for-rising-power-bills">43 percent of Americans blame data centers as a major reason for rising power bills.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/924745/a-40000-acre-data-center-project-was-just-approved-in-utah-despite-outcry-from-the-community">A 40,000-acre data center project was just approved in Utah, despite outcry from the community.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/918905/a-political-battleground-is-forming-around-data-centers">A political battleground is forming around data centers.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/912993/are-data-centers-coming-to-your-area">Are AI data centers coming to your area?</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/912793/data-centers-will-soon-have-to-complete-mandatory-energy-usage-surveys">Data centers will soon have to complete “mandatory” energy usage surveys.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/912337/a-data-center-should-not-be-a-potential-death-sentence-for-a-communitys-health">“A data center should not be a potential death sentence for a community’s health.”</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/907427/iran-openai-stargate-datacenter-uae-abu-dhabi-threat">Iran threatens OpenAI’s Stargate data center in Abu Dhabi</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/policy/901404/senators-warren-hawley-eia-letter-data-centers">Senators are pushing to find out how much electricity data centers actually use</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/899823/arm-agi-cpu-meta">Arm’s first CPU ever will plug into Meta’s AI data centers later this year</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/899533/data-center-power-lake-tahoe-utility">Lake Tahoe has to look for a new power source as data center demand soars.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/report/892661/iran-war-oil-gas-prices-data-center-electricity">How the spiraling Iran conflict could affect data centers and electricity costs</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/889578/data-center-power-pledge-white-house-google-meta-microsoft">Seven tech giants signed Trump’s pledge to keep electricity costs from spiking around data centers </a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/884191/ai-data-center-energy-state-of-the-union-trump">Trump claims tech companies will sign deals next week to pay for their own power supply</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/877526/anthropic-ai-electricity-costs-data-center-pledge">Anthropic says it&#8217;ll try to keep its data centers from raising electricity costs</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/876555/meta-data-center-winter-power-outages-storm-ice">How an ‘icepocalypse’ raises more questions about Meta’s biggest data center project</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/876083/microsoft-ai-data-center-superconductor">Microsoft wants to rewire data centers to save space</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/875501/new-york-is-considering-two-bills-to-rein-in-the-ai-industry">New York is considering two bills to rein in the AI industry</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/transportation/873203/elon-musk-spacex-xai-merge-data-centers-space-tesla-ipo">Elon Musk is merging SpaceX and xAI to build data centers in space — or so he says</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/870422/data-center-ai-gas-power-surge">It’s a new heyday for gas thanks to data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/869047/microsoft-gets-approval-to-build-15-data-centers-in-mount-pleasant-wisconsin">Microsoft gets approval to build 15 data centers in Mount Pleasant, Wisconsin.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/869008/meta-data-centers-ad-campaign">Meta is spending millions to convince people that data centers are cool and you like them</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/report/868859/electricity-rates-power-grid-ai-data-center-winter-storm">The winter storm tested power grids straining to accommodate AI data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/865387/microsoft-wants-to-build-15-data-centers-in-mount-pleasant-wisconsin">Microsoft wants to build 15 data centers in Mount Pleasant, Wisconsin.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/864798/openai-data-center-opposition-energy-bills">OpenAI says its data centers will pay for their own energy and limit water usage</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/863280/ice-hits-meta-data-center-project">ICE hits Meta data center project.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/862820/amazon-arizona-copper-mine-data-centers">Amazon is buying copper harvested by bacteria for its data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/861080/microsoft-ai-data-center-infrastructure-electricity-rates">Microsoft scrambles to quell fury around its new AI data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/861005/data-center-projects-canceled-ai-energy-water-opposition">Data center projects are dropping like flies.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/858018/thats-a-lot-of-money-for-just-one-data-center-job">That’s a lot of money for just one data center job.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/849455/googles-parent-company-is-acquiring-a-data-center-company">Alphabet is acquiring a data center company.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/841169/ai-data-center-opposition">Communities are rising up against data centers — and winning</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/846696/electricity-cost-ai-data-center-democrat-investigation">Democratic lawmakers are investigating data centers’ impact on electricity costs </a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/845453/space-data-centers-astronomers">Billionaires want data centers everywhere, including space</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/845831/ai-chips-data-center-power-water">AI&#8217;s water and electricity use soars in 2025</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/844966/heavy-ai-data-center-buildout">Racks of AI chips are too damn heavy</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/841887/data-center-space-solar-power-aetherflux-lunch">The scramble to launch data centers into space is heating up</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/840883/data-center-moratorium-letter-congress">Data center construction moratorium is gaining steam</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/835480/satya-nadella-microsoft-ai-data-center-energy">Satya Nadella acknowledged that data centers are “putting a lot of pressure” on power grids.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/science/835214/blackout-data-center-electricity-demand">The largest power grid system in the US is considering rolling blackouts because of energy-hungry data centers.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/834151/amazon-data-centers-oregon-cancer-miscarriage">Data centers in Oregon might be helping to drive an increase in cancer and miscarriages</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/tech/824111/nvidia-q3-2026-earnings-data-center-revenue">Nvidia says some AI GPUs are ‘sold out,’ grows data center business by $10B in just three months</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/819390/data-centers-energy-forecast-iea">Data centers are already influencing the global forecast for clean energy.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/819072/anthropic-50-billion-infrastructure-ai-data-center-investment">Anthropic will invest $50 billion in building AI data centers in the US</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/813894/google-project-suncatcher-ai-datacenter-satellites">Google has a ‘moonshot’ plan for AI data centers in space</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/805682/google-data-center-gas-power-plant-carbon-capture">Google is turning on the gas for its data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/802178/data-center-ai-electricity-power-plants">Why data centers are building their own power plants</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/790688/electricity-bills-rise-data-centers">Electricity costs are up to 267 percent higher than they used to be in communities near data centers.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/report/785992/ai-chip-cooling-microsoft-microfluidic-energy-efficiency">Microsoft says this new cooling method could enable more powerful chips and efficient data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/ai-artificial-intelligence/784251/openai-oracle-and-softbank-announced-five-new-ai-data-centers-as-part-of-stargate">OpenAI, Oracle, and SoftBank announced five new AI data centers as part of Stargate.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/781052/microsoft-foxconn-fairwater-worlds-most-powerful-ai-data-center">Microsoft is turning Foxconn&#8217;s empty buildings into the &#8216;world&#8217;s most powerful&#8217; AI data center</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/780792/nvidia-intel-investment-pc-chips-data-center">Nvidia invests $5 billion into Intel to jointly develop PC and data center chips</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/exclusive/770650/data-center-ai-naacp-guiding-principles">Tech companies ‘be on alert,’ NAACP says with new guiding principles for data centers</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/668934/meta-ai-data-center-gas-energy-climate-sustainability">Meta faces Democratic probe into plans to power a giant data center with gas</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/news/604677/amazon-is-investing-billions-more-into-its-mississippi-datacenter">Amazon is investing billions more into its Mississippi data centers.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2025/1/24/24351061/mark-zuckerberg-meta-ai-data-center-investment">Mark Zuckerberg wants you to know he has a big AI data center, too</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2025/1/23/24350335/bill-gates-terrapower-data-center-sabey-nuclear-energy-ai">Bill Gates’ nuclear energy startup inks new data center deal</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2025/1/21/24348816/openai-softbank-ai-data-center-stargate-project">OpenAI and SoftBank are starting a $500 billion AI data center company</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2025/1/21/24348801/cbs-news-reports-openai-oracle-and-softbank-will-announce-a-stargate-ai-data-center-project-in-texas">CBS News reports OpenAI, Oracle, and Softbank will announce a “Stargate” AI data center project.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2025/1/14/24328120/data-center-executive-order-biden-energy">Joe Biden signs executive order to speed AI data center construction</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2024/12/23/24328172/go-read-this-report-on-arizona-data-centers-and-those-without-power-in-the-state">Go read this report on Arizona data centers and those without power in the state.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2024/12/10/24317888/googles-data-center-solar-wind-renewable-energy-intersect-partnership">Google’s future data centers will be built next to solar and wind farms</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2024/12/4/24313357/meta-is-putting-a-10-billion-ai-data-center-in-louisiana">Meta is putting a $10 billion AI data center in Louisiana.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2024/11/13/24295688/xai-competitors-are-flying-spy-planes-over-the-colossus-data-center">xAI competitors are flying spy planes over the ‘Colossus’ data center.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2024/11/4/24288159/new-ai-data-centers-could-raise-americans-electricity-bills">New AI data centers could raise Americans’ electricity bills.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2024/9/11/24242221/some-memphis-residents-are-pissed-about-xais-new-data-center">Some Memphis residents are pissed about xAI’s new data center.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2024/8/29/24231301/meta-facebook-geothermal-energy-sage-data-center-partnership">Can Meta clean up its data centers with geothermal energy?</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2024/8/28/24230395/xai-faces-accusations-its-data-center-is-polluting-the-air">xAI faces accusations its data center is polluting the air.</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2024/7/11/24195989/climate-change-carbon-removal-startup-280-earth-google">This climate tech startup wants to capture carbon and help data centers cool down</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2024/5/20/24160788/google-ai-data-center-expansion-heat-recovery">Google plans to reuse heat after expanding a data center for AI</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2024/1/24/24049047/data-center-ai-crypto-bitcoin-mining-electricity-report-iea">AI and crypto mining are driving up data centers’ energy use</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2023/11/28/23972940/google-data-center-geothermal-energy">Google’s new geothermal energy project is up and running</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2023/10/10/23911059/ai-climate-impact-google-openai-chatgpt-energy">The environmental impact of the AI revolution is starting to come into focus</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/23641207/data-center-pools-united-kingdom-energy-cost-saving">How data centers at public pools can keep swimmers warm</a>
+			</li>
+					<li>
+				<a href="https://www.theverge.com/2022/7/28/23281394/microsoft-data-centers-hydrogen-fuel-cells">Can hydrogen fuel cells power Microsoft data centers?</a>
+			</li>
+			</ul>
+						]]>
+									</content>
+			
+					</entry>
+			<entry>
+			
+			<author>
+				<name>Brad Bourque</name>
+			</author>
+			
+			<title type="html"><![CDATA[Shure’s popular podcasting and streaming mic is almost $50 off]]></title>
+			<link rel="alternate" type="text/html" href="https://www.theverge.com/gadgets/1028846/shure-mv7-plus-podcasting-streaming-mic-deal-sale" />
+			<id>https://www.theverge.com/?p=1028846</id>
+			<updated>2026-11-06T14:47:02-05:00</updated>
+			<published>2026-11-06T14:47:02-05:00</published>
+			<category scheme="https://www.theverge.com" term="Deals" /><category scheme="https://www.theverge.com" term="Gadgets" /><category scheme="https://www.theverge.com" term="Verge Shopping" />
+							<summary type="html"><![CDATA[While the Shure Mv7 Plus is popular with streamers and podcasters, it’s equally good at impressing your friends and coworkers on meetings and Discord calls. It’s currently marked down to $255 at various retailers, including Amazon, Guitar Center, and directly from Shure. That’s almost $50 lower than its usual price, and just a few dollars [&#8230;]]]></summary>
+			
+							<content type="html">
+											<![CDATA[
+
+						
+<figure>
+
+<img alt="" data-caption="Shure’s MV7 Plus is a popular podcasting and streaming mic. | Image: Shure" data-portal-copyright="Image: Shure" data-has-syndication-rights="1" src="https://platform.theverge.com/wp-content/uploads/sites/2/2026/11/shure-mv7-plus-breakout.png?quality=90&#038;strip=all&#038;crop=0,0,100,100" />
+	<figcaption>
+	Shure’s MV7 Plus is a popular podcasting and streaming mic. | Image: Shure	</figcaption>
+</figure>
+<p class="wp-block-paragraph">While the <strong>Shure Mv7 Plus</strong> is popular with streamers and podcasters, it’s equally good at impressing your friends and coworkers on meetings and Discord calls. It’s currently marked down to $255 at various retailers, including <a href="https://www.amazon.com/dp/B0CTJ7PVN1">Amazon</a>, <a href="https://www.guitarcenter.com/Shure/MV7-Podcast-Microphone-Black-1500000424235.gc">Guitar Center</a>, and directly from <a href="https://www.shure.com/en-US/products/microphones/mv7?variant=MV7%252B-K&amp;design=JTdCJTIyYmFzZU1vZGVsJTIyJTNBJTIyJTIyJTJDJTIyY29sb3JzJTIyJTNBJTdCJTIyYm9keSUyMiUzQSUyMmdsYW1vdXItZ2xvc3MlMjIlMkMlMjJyaW5nJTIyJTNBJTIyc21va2Utd2hpdGUtZ2xvc3MlMjIlMkMlMjJ5b2tlJTIyJTNBJTIyc21va2Utd2hpdGUtZ2xvc3MlMjIlN0QlMkMlMjJlbmdyYXZpbmdzJTIyJTNBJTdCJTdEJTdE">Shure</a>. That’s almost $50 lower than its usual price, and just a few dollars off Amazon’s all-time low. If you don’t already have a stand, both <a href="https://www.amazon.com/Shure-MV7-Microphone-Certified-Podcasting/dp/B0CTJ8BSWN">Amazon</a> and <a href="https://www.shure.com/en-US/products/microphones/mv7?variant=MV7%2B-K-BNDL">Shure</a> are offering a bundle that includes the mic and a desktop stand for $269, and the white model is also discounted at <a href="https://www.amazon.com/Shure-MV7-Microphone-Certified-Podcasting/dp/B0CTJ6GQGZ">Amazon</a>. </p>
+<div class="product-block"><h3>Shure MV7 Plus</h3>
+<div class="product-description">Shure’s MV7 Plus is an updated version of its popular USB microphone. The new version features a USB-C port, a customizable LED light panel, and several additional features available in the Motiv Mix app. </div>
+<figure class="product-image"><img width="300" height="200" src="https://platform.theverge.com/wp-content/uploads/sites/2/2025/11/Shure-MV7-Plus.jpg?w=300" class="attachment-medium size-medium" alt="A main singing into the Shure MV7 Plus Microphone." /></figure>
+<h3>Where to Buy:</h3><ul><li><a href="https://www.amazon.com/Shure-Microphone-Podcasting-Voice-Isolating-Technology/dp/B0CTJ7PVN1"> <strike>$299</strike> $255 at <strong>Amazon</strong></a></li><li><a href="https://www.shure.com/en-US/products/microphones/mv7?variant=MV7%2B-K"> <strike>$299</strike> $255 at <strong>Shure</strong></a></li><li><a href="https://www.guitarcenter.com/Shure/MV7-Podcast-Microphone-Black-1500000424235.gc"> <strike>$299</strike> $255 at <strong>Guitar Center</strong></a></li></ul></div>
+<p class="wp-block-paragraph">When our team shared <a href="https://www.theverge.com/24224339/audio-headphone-earbuds-mics-favorites">some of our favorite audio gear in late 2024</a>, we noted that the Mv7 Plus was the mic we send to podcast guests for remote interviews. It’s known for its crisp and clean audio quality, with auto-leveling and denoising, so you can use it without touching an equalizer.</p>
+
+<p class="wp-block-paragraph">The MV7’s unique shape and sonic profile is inspired by the Shure SM7B (<a href="https://www.amazon.com/Shure-SM7B-Cardioid-Dynamic-Microphone/dp/B0002E4Z8M">also discounted</a>), a microphone that’s often used in professional recording. This version is meant as a more budget-friendly variant for content creators looking for a simpler setup, with both an XLR output and USB-C, letting you wire into an audio interface or directly to a computer.</p>
+						]]>
+									</content>
+			
+					</entry>
+			<entry>
+			
+			<author>
+				<name>Justine Calma</name>
+			</author>
+			
+			<title type="html"><![CDATA[Lame-duck Congress might actually do something: speed up energy projects]]></title>
+			<link rel="alternate" type="text/html" href="https://www.theverge.com/policy/1028228/energy-infrastructure-permitting-reform-bill-congress-vote" />
+			<id>https://www.theverge.com/?p=1028228</id>
+			<updated>2026-11-06T13:42:30-05:00</updated>
+			<published>2026-11-06T13:42:30-05:00</published>
+			<category scheme="https://www.theverge.com" term="Climate" /><category scheme="https://www.theverge.com" term="Energy" /><category scheme="https://www.theverge.com" term="Environment" /><category scheme="https://www.theverge.com" term="Policy" /><category scheme="https://www.theverge.com" term="Politics" /><category scheme="https://www.theverge.com" term="Science" />
+							<summary type="html"><![CDATA[A massive permitting bill that could help energy projects come online much quicker and potentially lower utility bills for Americans is advancing with bipartisan support. And while it could be a catalyst for lots of clean energy, it could also speed up polluting projects and limit oversight of new data centers. With data centers demanding [&#8230;]]]></summary>
+			
+							<content type="html">
+											<![CDATA[
+
+						
+<figure>
+
+<img alt="A photo illustration showing a pair of scissors cutting through pieces of red tape. A power line appears in the backround." data-caption="" data-portal-copyright="Image: Cath Virginia / The Verge, Getty Images" data-has-syndication-rights="1" src="https://platform.theverge.com/wp-content/uploads/sites/2/2026/11/268857_cutting_red_tape_to_build_more_powerlines__CVirginia-1.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100" />
+	<figcaption>
+		</figcaption>
+</figure>
+<p class="has-drop-cap wp-block-paragraph">A massive permitting bill that could help energy projects come online much quicker and potentially lower utility bills for Americans is advancing with bipartisan support. And while it could be a catalyst for lots of clean energy, it could also speed up polluting projects and limit oversight of new data centers.</p>
+<p class="wp-block-paragraph">With data centers demanding more electricity for AI, environmental advocates fear that developers could take advantage of the reforms to evade public scrutiny and rely more heavily on fossil fuels. The bill sacrifices caution for speed, limiting environmental reviews and preventing communities from stopping a project from moving forw …</p>
+<p><a href="https://www.theverge.com/policy/1028228/energy-infrastructure-permitting-reform-bill-congress-vote">Read the full story at The Verge.</a></p>
+						]]>
+									</content>
+			
+					</entry>
+			<entry>
+			
+			<author>
+				<name>Emma Roth</name>
+			</author>
+			
+			<title type="html"><![CDATA[Meta&#8217;s Muse AI can create custom &#8216;spaces&#8217; for the version of the app you need right now]]></title>
+			<link rel="alternate" type="text/html" href="https://www.theverge.com/tech/1028871/meta-muse-ai-spaces" />
+			<id>https://www.theverge.com/?p=1028871</id>
+			<updated>2026-11-06T15:00:43-05:00</updated>
+			<published>2026-11-06T13:10:10-05:00</published>
+			<category scheme="https://www.theverge.com" term="AI" /><category scheme="https://www.theverge.com" term="Apps" /><category scheme="https://www.theverge.com" term="Meta" /><category scheme="https://www.theverge.com" term="Tech" />
+							<summary type="html"><![CDATA[Meta will now allow you to build customized, app-like experiences within Muse. The new feature, called "spaces," allows its AI assistant to build things like a shopping hub, school dashboard, music tracker, trivia game, and more, which you can interact with directly in the Muse app. Meta says you can create a new space by [&#8230;]]]></summary>
+			
+							<content type="html">
+											<![CDATA[
+
+						
+<figure>
+
+<img alt="" data-caption="" data-portal-copyright="" data-has-syndication-rights="1" src="https://platform.theverge.com/wp-content/uploads/sites/2/2026/11/meta-muse-spaces.png?quality=90&#038;strip=all&#038;crop=8.0752843063528,0,91.924715693647,74.471659887186" />
+	<figcaption>
+		</figcaption>
+</figure>
+<p class="wp-block-paragraph">Meta will now allow you to build customized, app-like experiences within Muse. The <a href="https://about.fb.com/news/2026/11/introducing-spaces-customize-muse-app/">new feature, called "spaces,"</a> allows its AI assistant to build things like a shopping hub, school dashboard, music tracker, trivia game, and more, which you can interact with directly in the Muse app.</p>
+<p class="wp-block-paragraph">Meta says you can create a new space by describing it. If you connect an outside app to Muse - like Gmail, Google Calendar, OpenTable, Notion, and others Muse works with - the AI assistant will continuously pull information from them, allowing it to update pricing, dates, and other information in your space in the background. You can also interact with elements  …</p>
+<p><a href="https://www.theverge.com/tech/1028871/meta-muse-ai-spaces">Read the full story at The Verge.</a></p>
+						]]>
+									</content>
+			
+					</entry>
+			<entry>
+			
+			<author>
+				<name>Jay Peters</name>
+			</author>
+			
+			<title type="html"><![CDATA[Amazon is now making a Melania Trump TV series]]></title>
+			<link rel="alternate" type="text/html" href="https://www.theverge.com/tech/1028854/amazon-melania-the-series-mgm-studios-prime-video" />
+			<id>https://www.theverge.com/?p=1028854</id>
+			<updated>2026-11-06T13:22:13-05:00</updated>
+			<published>2026-11-06T12:56:58-05:00</published>
+			<category scheme="https://www.theverge.com" term="Amazon" /><category scheme="https://www.theverge.com" term="Entertainment" /><category scheme="https://www.theverge.com" term="News" /><category scheme="https://www.theverge.com" term="Streaming" /><category scheme="https://www.theverge.com" term="Tech" />
+							<summary type="html"><![CDATA[Following the Melania documentary movie that premiered earlier this year, Amazon is now planning to release a two-part Prime Video series focusing on the first lady. The show, Melania: The Series, is set to debut on November 20th. "MELANIA, The Series reveals never-before-told stories, offering unprecedented insight into Melania Trump's life, including the extraordinary days [&#8230;]]]></summary>
+			
+							<content type="html">
+											<![CDATA[
+
+						
+<figure>
+
+<img alt="First lady Melania Trump stands at a podium." data-caption="" data-portal-copyright="Photo: Bloomberg via Getty Images" data-has-syndication-rights="1" src="https://platform.theverge.com/wp-content/uploads/sites/2/2026/11/gettyimages-2303179993.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100" />
+	<figcaption>
+		</figcaption>
+</figure>
+<p class="wp-block-paragraph">Following the <em>Melania</em> documentary movie that premiered earlier this year, Amazon is now planning to release a two-part Prime Video series focusing on the first lady. The show, <em>Melania: The Series</em>, is set to debut on November 20th.</p>
+<p class="wp-block-paragraph">"MELANIA, The Series reveals never-before-told stories, offering unprecedented insight into Melania Trump's life, including the extraordinary days immediately following the 47th Presidential Inauguration," according to <a href="https://press.amazonmgmstudios.com/us/en/press-release/melania-trump-and-prime-video-unveil-official-trai">a description in a press release</a>.</p>
+<p class="wp-block-paragraph">Here's what Amazon says the two episodes will be about:</p>
+<blockquote class="wp-block-quote is-layout-flow wp-block-quote-is-layout-flow">
+<p class="wp-block-paragraph">I.  Family &amp; Trust:</p>
+<p class="wp-block-paragraph">Melania Trump sets priorities as she prepares to become America's First Lady.  B …</p></blockquote>
+<p><a href="https://www.theverge.com/tech/1028854/amazon-melania-the-series-mgm-studios-prime-video">Read the full story at The Verge.</a></p>
+						]]>
+									</content>
+			
+					</entry>
+			<entry>
+			
+			<author>
+				<name>Emma Roth</name>
+			</author>
+			
+			<title type="html"><![CDATA[Just about anyone can rent access to White House IP addresses]]></title>
+			<link rel="alternate" type="text/html" href="https://www.theverge.com/tech/1028835/white-house-residential-proxy" />
+			<id>https://www.theverge.com/?p=1028835</id>
+			<updated>2026-11-06T14:02:42-05:00</updated>
+			<published>2026-11-06T12:40:06-05:00</published>
+			<category scheme="https://www.theverge.com" term="News" /><category scheme="https://www.theverge.com" term="Policy" /><category scheme="https://www.theverge.com" term="Security" /><category scheme="https://www.theverge.com" term="Tech" />
+							<summary type="html"><![CDATA[Someone at the White House appears to be running software that could enable outsiders to rent access on the presidential network for just "a few dollars," as reported by Krebs on Security and The Register. That's according to findings from the security firms Layer3 Intel and Synthient, which discovered residential proxy activity on the White [&#8230;]]]></summary>
+			
+							<content type="html">
+											<![CDATA[
+
+						
+<figure>
+
+<img alt="Digital photo illustration of a laptop displaying a black and green image of the Capitol building, with ones and zeroes falling in the background." data-caption="" data-portal-copyright="Photo: Amelia Holowaty Krales / The Verge" data-has-syndication-rights="1" src="https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/23318430/akrales_220309_4977_0038.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100" />
+	<figcaption>
+		</figcaption>
+</figure>
+<p class="wp-block-paragraph">Someone at the White House appears to be running software that could enable outsiders to rent access on the presidential network for just "a few dollars," <a href="https://krebsonsecurity.com/2026/11/want-to-rent-an-internet-address-at-the-white-house/">as reported by <em>Krebs on Security</em></a> and <a href="https://www.theregister.com/security/2026/11/05/the-white-house-is-apparently-a-popular-residential-proxy-exit-spot/5307969"><em>The Register</em></a>. That's according to findings <a href="https://layer3intel.com/blog/residential-proxies-white-house-network">from the security firms Layer3 Intel</a> and <a href="https://x.com/synthient/status/2118204377613914516?a=072aNdrl_VybfL50S1I&amp;s=20">Synthient</a>, which discovered residential proxy activity on the White House network.</p>
+<p class="wp-block-paragraph">A residential proxy opens up a way for people to rent access to a home IP address and route their internet traffic through it, allowing them to conceal where their activity is actually coming from. Some apps and browser extensions include third-party software development kits (SDKs) that  …</p>
+<p><a href="https://www.theverge.com/tech/1028835/white-house-residential-proxy">Read the full story at The Verge.</a></p>
+						]]>
+									</content>
+			
+					</entry>
+	</feed>

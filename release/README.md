@@ -1,6 +1,6 @@
 # P-Hoep Kodi Add-ons
 
-Ambient screensavers, a scheduler and a flashcard app for Kodi, published as one Kodi
+Ambient screensavers, a scheduler, a flashcard app and a news reader for Kodi, published as one Kodi
 repository so Kodi installs them and keeps them up to date.
 
 | Add-on | Version | What it is |
@@ -11,6 +11,7 @@ repository so Kodi installs them and keeps them up to date.
 | [Couchstronomy](#couchstronomy) | 0.1.3 | Your TV as a window onto the real night sky |
 | [Screensaver Switcher](#screensaver-switcher) | 0.1.0 | Different screensavers at different times of day |
 | [Sheetcards](#sheetcards) | 1.0.0 | Flashcards from a Google Sheet: an app to study with and a screensaver |
+| [RSS Live Tiles](#rss-live-tiles) | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles: an app and a screensaver |
 
 All of them are pure Python with no compiled code. They run on Kodi 19 (Matrix) and later,
 on any platform. They were developed and tested on Kodi 21 on macOS. God's Eye Map has
@@ -26,7 +27,7 @@ The add-ons are in a Kodi repository hosted on GitHub Pages:
 1. **Settings → System → Add-ons → Unknown sources → On.**
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/`
    and name it `phoep`.
-3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.2.zip`.
+3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.3.zip`.
    Kodi shows "P-Hoep Add-ons — Add-on installed".
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** The screensavers are
    under **Look and feel → Screensaver**, the Switcher is under **Services**, and the
@@ -210,6 +211,34 @@ It needs no Google account or API key.
 
 The app is under **Program add-ons** and the screensaver under **Look and feel →
 Screensaver**. By default the screensaver uses the app's sheet and decks.
+
+---
+
+## RSS Live Tiles
+
+Your RSS and Atom feeds as a wall of flat, coloured live tiles, in the style of Windows Phone
+and the Windows 8 Start screen. It comes as an app you browse with the remote and a screensaver
+that runs by itself. Three sample feeds are included (BBC News, r/kodi and NASA Image of the
+Day). Add your own in **Manage feeds**.
+
+- **Live tiles:** pictures come from the feeds themselves. Tiles flip to the next story, peek
+  from the picture to the headline and summary, and count new items. Calm, Normal or Lively, or
+  fades only with Reduced motion.
+- **Five layouts and three styles:** Feed groups (a scrolling hub with one group per feed),
+  Mixed wall, Magazine, Spotlight and Mosaic, in Classic, Modern or Outline style.
+- **Your colours:** the 20 Windows Phone accent colours or your own, a different accent per feed
+  if you like, and Night / Day themes that can switch by the clock or at sunrise and sunset.
+- **Read the story:** Select expands a tile into the full story with a QR code to open it on your
+  phone. Left and Right go through the feed. Podcast and video enclosures play straight away.
+- **Feeds:** add, edit, reorder and delete them in the app, or import and export OPML. They
+  refresh in the background and everything works offline from the cache.
+- **The screensaver:** fills the screen with tiles, rotates fresh stories in every few minutes,
+  can show a clock, dims at night and shifts slightly to protect OLED screens. Any key exits
+  at once.
+
+The app is under **Program add-ons** (press **Menu** on a tile for Manage feeds, layouts and
+settings) and the screensaver under **Look and feel → Screensaver**. By default the screensaver
+uses the app's feeds and look.
 
 ---
 

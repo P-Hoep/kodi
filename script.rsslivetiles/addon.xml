@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.rsslivetiles" name="RSS Live Tiles" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <import addon="xbmc.python" version="3.0.1"/>
+    <import addon="script.module.rsslivetiles" version="1.0.0"/>
+  </requires>
+  <extension point="xbmc.python.script" library="default.py">
+    <provides>executable</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Your RSS and Atom feeds as Windows Phone style live tiles</summary>
+    <description lang="en_GB">A hub of flat, coloured live tiles built from your RSS and Atom feeds. Tiles flip, peek and roll to show new stories; pictures come from the feeds themselves. Five layouts (Feed groups, Mixed wall, Magazine, Spotlight, Mosaic), three tile styles (Classic, Modern, Outline), twenty accent colours plus your own, per-feed accents, and Day / Night themes switched by hand, by the clock or at sunrise and sunset. Select a tile to expand it into the full story with a QR code for your phone; podcasts and video enclosures play straight away. Feeds are managed in the program (add, edit, reorder, OPML import and export) and refresh in the background; everything works offline from the cache.</description>
+    <platform>all</platform>
+    <license>MIT</license>
+    <source>https://github.com/P-Hoep/kodi</source>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

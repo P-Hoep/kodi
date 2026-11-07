@@ -327,6 +327,65 @@ theme. A bare number in a `<label>` is read as a string ID, so the option badges
 `$NUMBER[n]`. Any EventServer packet (`kodi.py shot`, `kodi.py builtin`) wakes a screensaver. To
 take screenshots of one, run a script inside Kodi that activates it and calls `TakeScreenshot`.
 
+## RSS Live Tiles (new, v1.0)
+
+`script.rsslivetiles` (an app under **Add-ons → Program add-ons**) and `screensaver.rsslivetiles`,
+built from [docs/RSSliveTiles.md](docs/RSSliveTiles.md): RSS and Atom feeds as Windows Phone
+style live tiles. Both use the shared library `script.module.rsslivetiles`, which Kodi installs
+with them (with `script.module.certifi` and `script.module.pyqrcode` from Kodi's repository).
+It ships with three sample feeds: BBC News, r/kodi and NASA Image of the Day.
+
+- **Tiles**: flat accent squares and rectangles in four sizes (small, medium, wide, large) on a
+  130 px grid. Picture tiles have a scrim, the headline and "SOURCE · 12 MIN AGO". Text tiles
+  show the headline, plus a summary on wide and large tiles. Count tiles show the feed icon (or
+  its initials) and how many items are new.
+- **Live**: a scheduler animates a random on-screen tile every few seconds (Calm / Normal /
+  Lively, 1–4 at once, never the focused tile). Feed tiles flip or roll to their next story,
+  picture tiles peek to their text, text tiles flip to their summary and count tiles pulse when
+  the count changes. Tiles drop in column by column on open. Reduced motion uses fades only.
+- **Layouts**: Feed groups (a scrolling Start-screen hub, one group per feed), Mixed wall,
+  Magazine, Spotlight (one feed per screen) and Mosaic (pictures only; headlines on peek).
+  **Styles**: Classic, Modern (rounded, translucent panels) and Outline.
+- **Look**: the 20 Windows Phone accents or your own hex (warns below 3:1 contrast), per-feed
+  accents, shade variation, and Night / Day / Scheduled / Sunrise–sunset themes (sun times are
+  computed locally) with a crossfade.
+- **Detail view**: Select expands the tile into the story: picture, headline, author and time,
+  the article text (bold, italics and paragraphs kept) and a QR code of the link. Left / Right
+  go through the feed. Podcasts and video enclosures play.
+- **Feeds**: add by URL (checked, title detected), edit title, accent, max items, refresh
+  interval, enabled and pinned tile size; reorder; OPML import and export. A background thread
+  refreshes them with conditional GET, a 5 MB cap and backoff up to 6 h. Everything renders from
+  the cache first and works offline. A failing feed shows a warning glyph.
+- **The screensaver**: the grid fills the screen without scrolling, rotates fresh stories in
+  every few minutes, shifts a few pixels every two minutes (optionally drifts), can show a clock
+  tile and dims at night. Any input exits at once.
+
+```bash
+python3 tools/make_rsslivetiles_media.py     # textures, icons, fanart (Pillow)
+python3 tools/make_rsslivetiles_skin.py      # one window XML per tile style
+python3 tools/make_settings_rsslivetiles.py  # both settings.xml + strings.po from lib/rsslivetiles/config.py
+for a in script.module.rsslivetiles script.rsslivetiles screensaver.rsslivetiles; do KODI_ADDON=$a python3 tools/kodi.py install; done
+python3 -m unittest tests.test_rsslivetiles  # offline: parsing, images, layouts, scheduler, theme, sun, QR
+```
+
+Notes from building it (Kodi 21.1, macOS):
+- **Fixed slots.** The board is a set of tile slots generated into the window XML (pools per
+  size). Python moves a slot with `setPosition()` and fills it through window properties, and
+  Kodi animates everything. Only tiles near the visible part of the hub are bound, so a hub of
+  any length fits the pools. Each face is double-buffered: new content goes into the hidden
+  face, then a property swaps them and XML `Hidden`/`Visible` animations play.
+- **No clipping.** Kodi groups and grouplists do not clip animated children, so peeks and rolls
+  are squashes that stay inside the tile, not slides.
+- **No 3D flips.** Kodi's `rotatex`/`rotatey` use a close camera, so a flipping picture tile
+  balloons out of its rectangle. Flips are 2D squashes with a slight shrink at the midpoint.
+- **Scrolling** restarts a `condition=true` slide with `setAnimations()` and then
+  `setPosition()`s the strip, which gives a smooth 300 ms scroll.
+- **Frames** are four solid bars. A small bordered texture, stretched, renders soft.
+- **Fonts.** Add-ons cannot register fonts without editing the skin, so tiles use Estuary's
+  font names. The hub title uses `font_clock` (Roboto Thin) for the light Metro look.
+- **Speed.** A window file is about 1.5 MB and ~3,800 controls. It loads in about 0.15 s, and
+  the board fills from the cache in 0.01 s.
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full
