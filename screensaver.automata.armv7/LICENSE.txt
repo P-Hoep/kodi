@@ -21,3 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 The Gosper glider gun, R-pentomino, acorn and glider are well-known patterns from the Game of
 Life community and are not subject to copyright.
+
+The clock's digit shapes (resources/fonts.json) come from Inter, Montserrat, Orbitron, Pixelify Sans,
+Doto, JetBrains Mono, Comfortaa, Playfair Display and Big Shoulders, all under the SIL Open Font
+License 1.1 (https://openfontlicense.org); see screensaver.sandclock for the full notices.

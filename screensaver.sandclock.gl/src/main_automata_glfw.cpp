@@ -2,6 +2,9 @@
 //   automata_glfw [--rule N] [--custom B3/S23] [--grid N] [--speed N] [--start N] [--density N]
 //                 [--mode N] [--palette N] [--trail N] [--shape N] [--sparks N] [--no-wrap]
 //                 [--fullscreen] [--shot out.ppm --shot-after SECONDS] [--selftest]
+//                 [--fonts fonts.json] [--clock-style N] [--clock-colour N] [--clock-size N] [--clock-font N]
+//                 [--no-seconds] [--time HH:MM:SS] [--view N] [--camera N] [--cam-speed N] [--zoom N]
+//                 [--bg N] [--glow N] [--fx N]
 // N for --rule, --grid, --speed, --start is the index in the settings lists (see
 // tools/make_settings_automata.py). --selftest checks the shader against the CPU reference.
 #define GLFW_INCLUDE_NONE
@@ -49,7 +52,7 @@ static int selftest() {
         s.auto_restart = false;
         App app;
         std::string err;
-        if (!app.init(s, 1, &err)) { std::printf("init: %s\n", err.c_str()); return 1; }
+        if (!app.init(s, 1, "", &err)) { std::printf("init: %s\n", err.c_str()); return 1; }
         Rule rule = rule_for(s);
         std::mt19937 rng(11);
         std::vector<uint8_t> cpu((size_t)app.cols() * app.rows());
@@ -84,7 +87,9 @@ int main(int argc, char** argv) {
     Settings s;
     std::string shot;
     double shot_after = 8;
-    bool fullscreen = false, test = false;
+    bool fullscreen = false, test = false, fixed_time = false;
+    std::string fonts = "../screensaver.sandclock/resources/media/fonts/fonts.json";
+    double time_offset = 0;
     for (int i = 1; i < argc; ++i) {
         auto is = [&](const char* a) { return !std::strcmp(argv[i], a); };
         auto next = [&] { return i + 1 < argc ? argv[++i] : (char*)"0"; };
@@ -104,6 +109,25 @@ int main(int argc, char** argv) {
         else if (is("--shot")) shot = next();
         else if (is("--shot-after")) shot_after = std::atof(next());
         else if (is("--selftest")) test = true;
+        else if (is("--fonts")) fonts = next();
+        else if (is("--clock-style")) s.clock = std::atoi(next());
+        else if (is("--clock-colour")) s.clock_colour_mode = std::atoi(next());
+        else if (is("--clock-size")) s.clock_size = std::atoi(next());
+        else if (is("--clock-font")) s.clock_font = std::atoi(next());
+        else if (is("--no-seconds")) s.seconds = false;
+        else if (is("--time")) {
+            int h = 0, m = 0, sec = 0;
+            std::sscanf(next(), "%d:%d:%d", &h, &m, &sec);
+            time_offset = h * 3600 + m * 60 + sec;
+            fixed_time = true;
+        }
+        else if (is("--view")) s.view = std::atoi(next());
+        else if (is("--camera")) s.camera = std::atoi(next());
+        else if (is("--cam-speed")) s.camera_speed = std::atoi(next());
+        else if (is("--zoom")) s.zoom = std::atoi(next());
+        else if (is("--bg")) s.background_style = std::atoi(next());
+        else if (is("--glow")) s.glow = std::atoi(next());
+        else if (is("--fx")) s.screen_fx = std::atoi(next());
     }
 
     if (!glfwInit()) return 1;
@@ -124,10 +148,18 @@ int main(int argc, char** argv) {
 
     App app;
     std::string err;
-    if (!app.init(s, (unsigned)std::time(nullptr), &err)) {
+    if (!app.init(s, (unsigned)std::time(nullptr), fonts, &err)) {
         std::fprintf(stderr, "init: %s\n", err.c_str());
         return 1;
     }
+    if (!err.empty()) std::fprintf(stderr, "note: %s\n", err.c_str());
+    auto clock_now = [&] {
+        if (fixed_time) return time_offset + glfwGetTime();
+        std::time_t tt = std::time(nullptr);
+        std::tm lt;
+        localtime_r(&tt, &lt);
+        return lt.tm_hour * 3600.0 + lt.tm_min * 60.0 + lt.tm_sec;
+    };
     std::printf("%d x %d cells (%.1f million)\n", app.cols(), app.rows(), app.cols() * (double)app.rows() / 1e6);
 
     double next_status = 5, last_status = 0;
@@ -139,7 +171,7 @@ int main(int argc, char** argv) {
         int fw, fh;
         glfwGetFramebufferSize(win, &fw, &fh);
         glViewport(0, 0, fw, fh);
-        app.render(now, fw, fh);
+        app.render(now, clock_now(), fw, fh);
         if (!shot.empty() && now >= shot_after) {
             std::printf("shot %s %s\n", shot.c_str(), save_ppm(shot, fw, fh) ? "ok" : "FAILED");
             break;

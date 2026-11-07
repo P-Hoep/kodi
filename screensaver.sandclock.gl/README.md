@@ -34,8 +34,13 @@ about 1,400 generations/s on 2.1 million cells and 490/s on 8.3 million (3840 x 
 lowers generations per frame if the display slows. Files: `automata.*` (rules, patterns, a CPU
 reference, no GL), `automata_app.*` (shaders, textures, restarts), `kodi_automata.cpp`,
 `main_automata_glfw.cpp`. `automata_glfw --selftest` runs random boards on the GPU and compares
-every cell with the CPU reference for 10 rule/wrap combinations (all match). The rule, grid, speed
-and pattern lists come from `tools/make_settings_automata.py`, which writes both the Kodi settings
+every cell with the CPU reference for 10 rule/wrap combinations (all match). Since 1.1: a clock in
+the middle (on top, digits that burst into life, cut out of the cells, or made of living cells;
+the font masks are drawn into a texture the update shader reads), nine colour modes, glow,
+backgrounds, vignette/CRT, a camera (drift, zoom, fly-through) and 3D-looking views (raised blocks,
+a perspective landscape, a tunnel, a globe), all in the draw shader. Every shader in this folder is
+checked against GLSL ES 1.00 with `glslangValidator` (`brew install glslang`) before an Android
+build. The rule, grid, speed and pattern lists come from `tools/make_settings_automata.py`, which writes both the Kodi settings
 and `src/automata_tables.hpp`. Add-on folder: `../screensaver.automata.armv7`.
 
 ## Build and test

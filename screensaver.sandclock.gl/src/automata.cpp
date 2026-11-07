@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdio>
 #include <cstdlib>
 
 namespace sandclock {
@@ -49,6 +50,17 @@ Rule rule_for(const Settings& s) {
         parse_rule(RULES[0].rule, &r);   // a custom rule that does not parse: Conway's
     }
     return r;
+}
+
+std::string clock_text(const Settings& s, double seconds) {
+    long t = (long)seconds % 86400;
+    if (t < 0) t += 86400;
+    int h = (int)(t / 3600), m = (int)(t / 60 % 60), sec = (int)(t % 60);
+    if (s.hours == 1) h = h % 12 == 0 ? 12 : h % 12;
+    char buf[16];
+    if (s.seconds) std::snprintf(buf, sizeof buf, s.hours == 1 ? "%d:%02d:%02d" : "%02d:%02d:%02d", h, m, sec);
+    else std::snprintf(buf, sizeof buf, s.hours == 1 ? "%d:%02d" : "%02d:%02d", h, m);
+    return buf;
 }
 
 int cols_for(const Settings& s) { return GRID_COLS[std::max(0, std::min(GRID_COUNT - 1, s.grid))]; }

@@ -47,7 +47,15 @@ RESTARTS = [0, 1, 2, 5, 10, 30, 60]                              # minutes; 0 = 
 STARTS = ['Random soup', 'Sparse soup', 'Clusters', 'Kaleidoscope soup (4-way mirror)', 'Centre blob',
           'R-pentomino', 'Acorn', 'Gosper glider guns', 'Glider swarm', 'Soup and guns']
 MODES = ['Age (palette gradient)', 'Position (flowing palette)', 'Time (whole screen cycles)', 'One colour',
-         'Rainbow']
+         'Rainbow', 'Fire (white hot when born, embers as they age)', 'Neighbours (crowded cells change colour)',
+         'Rainbow ghosts (trails change colour as they fade)', 'Plasma (a moving colour field)']
+CLOCKS = ['Off', 'On top', 'On top, and the digits burst into life at each change', 'Cut out of the cells',
+          'Made of living cells (the cells grow from the digits)']
+VIEWS = ['Flat', 'Raised blocks (lit, with shadows)', 'Landscape (flying over it)', 'Tunnel (flying through it)',
+         'Globe (a spinning planet)']
+CAMERAS = ['Still', 'Drift', 'Zoom in and out', 'Fly through (drift, zoom and turn)']
+BACKGROUNDS = ['Solid', 'Gradient', 'Plasma']
+SCREEN_FX = ['None', 'Vignette', 'CRT (scanlines and vignette)']
 SHAPES = ['Square', 'Rounded', 'Dots']
 
 
@@ -66,6 +74,18 @@ def categories():
     O, S, B, C = config.O, config.S, config.B, config.C
     custom = len(RULES)
     return [
+        ('Clock', [
+            O('clock', 'Clock in the middle', 1, CLOCKS),
+            O('clock_font', 'Font', 0, [f[0] for f in config.FONTS], visible=('clock', '!', '0')),
+            O('clock_weight', 'Weight', 2, config.WEIGHTS, visible=('clock', '!', '0')),
+            B('seconds', 'Show seconds', True, visible=('clock', '!', '0')),
+            O('hours', 'Hours', 0, ['24 hour (17:52)', '12 hour (5:52)'], visible=('clock', '!', '0')),
+            S('clock_size', 'Clock width (% of the screen)', 50, 20, 90, 5, visible=('clock', '!', '0')),
+            O('clock_colour_mode', 'Clock colour', 0, ['White', 'Follows the palette', 'One colour'],
+              visible=('clock', '!', '0')),
+            C('clock_colour', 'Colour of the clock', 'FFFFFFFF', visible=('clock_colour_mode', '2')),
+            S('clock_opacity', 'Clock opacity (%)', 85, 10, 100, 5, visible=('clock', '!', '0')),
+        ]),
         ('Rules', [
             O('rule', 'Rule', 0, [r[0] for r in RULES] + ['Custom (type it below)']),
             dict(id='custom_rule', type='string', label='Custom rule (B3/S23, or B2/S/C3 with 3 states)',
@@ -93,7 +113,16 @@ def categories():
             S('age_span', 'Colour by age over (generations)', 96, 8, 255, 8),
             S('trail', 'Trails (how long dead cells glow, %)', 60, 0, 95, 5),
             O('shape', 'Cell shape (when cells are 4 px or bigger)', 0, SHAPES),
+            O('background_style', 'Background', 0, BACKGROUNDS),
+            S('glow', 'Glow around cells (flat and blocks views; costs speed)', 0, 0, 100, 10),
+            O('screen_fx', 'Screen effect', 0, SCREEN_FX),
             S('dim', 'Dim (%)', 0, 0, 80, 10),
+        ]),
+        ('Camera and 3D', [
+            O('view', 'View', 0, VIEWS),
+            O('camera', 'Camera', 0, CAMERAS),
+            S('camera_speed', 'Camera speed', 30, 5, 100, 5),
+            S('zoom', 'Deepest zoom (x)', 4, 1, 16, 1),
         ]),
     ]
 
@@ -124,6 +153,10 @@ constexpr int SPEED_COUNT = %d;
 constexpr int RESTART_MINUTES[] = {%s};        // 0 = never
 constexpr int RESTART_COUNT = %d;
 constexpr int START_COUNT = %d;
+constexpr int MODE_COUNT = %d;
+constexpr int CLOCK_COUNT = %d;
+constexpr int VIEW_COUNT = %d;
+constexpr int CAMERA_COUNT = %d;
 constexpr uint32_t PALETTE[][7] = {
 %s
 };
@@ -132,7 +165,7 @@ constexpr int PALETTE_COUNT = %d;
 }  // namespace automata
 }  // namespace sandclock
 ''' % (rules, len(RULES), cols, len(GRID_COLS), speeds, len(SPEEDS) + 1, restarts, len(RESTARTS), len(STARTS),
-       pal, len(config.PALETTES)))
+       len(MODES), len(CLOCKS), len(VIEWS), len(CAMERAS), pal, len(config.PALETTES)))
 
 
 if __name__ == '__main__':

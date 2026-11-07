@@ -34,6 +34,10 @@ constexpr int SPEED_COUNT = 12;
 constexpr int RESTART_MINUTES[] = {0, 1, 2, 5, 10, 30, 60};        // 0 = never
 constexpr int RESTART_COUNT = 7;
 constexpr int START_COUNT = 10;
+constexpr int MODE_COUNT = 9;
+constexpr int CLOCK_COUNT = 5;
+constexpr int VIEW_COUNT = 5;
+constexpr int CAMERA_COUNT = 4;
 constexpr uint32_t PALETTE[][7] = {
     {0xFF5FA2, 0xD45CFF, 0x5C9DFF, 0x3FE0E8, 0x45E07A, 0xFFB38A, 0xFF5C6C},
     {0xE8C27A, 0xD9A25F, 0xC98A4B, 0xF2D7A0, 0xB5734A, 0xE3B58C, 0xA86A3D},

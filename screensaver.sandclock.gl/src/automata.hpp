@@ -27,7 +27,8 @@ struct Settings {
     int density = 30;                // % alive for the soups
     bool auto_restart = true;
     int restart_every = 4;           // index into RESTART_MINUTES
-    int colour_mode = 0;             // age, position, time, one colour, rainbow
+    int colour_mode = 0;             // age, position, time, one colour, rainbow, fire, neighbours,
+                                     // rainbow ghosts, plasma
     int palette = 0;
     uint32_t colour = 0xFFB347;      // 0xRRGGBB
     uint32_t background = 0x000000;
@@ -36,7 +37,30 @@ struct Settings {
     int trail = 60;                  // % of a dead cell's glow kept each generation
     int shape = 0;                   // square, rounded, dots
     int dim = 0;                     // %
+    int background_style = 0;        // solid, gradient, plasma
+    int glow = 0;                    // 0..100
+    int screen_fx = 0;               // none, vignette, CRT
+
+    // The clock in the middle.
+    int clock = 1;                   // off, on top, on top + digits burst into life, cut out, made of living cells
+    int clock_font = 0;              // sandclock::FONT_FOLDERS
+    int clock_weight = 2;
+    bool seconds = true;
+    int hours = 0;                   // 24 h, 12 h
+    int clock_size = 50;             // % of the screen width
+    int clock_colour_mode = 0;       // white, follows the palette, one colour
+    uint32_t clock_colour = 0xFFFFFF;
+    int clock_opacity = 85;
+
+    // Camera and 3D.
+    int view = 0;                    // flat, raised blocks, landscape, tunnel, globe
+    int camera = 0;                  // still, drift, zoom in and out, fly through
+    int camera_speed = 30;           // 5..100
+    int zoom = 4;                    // deepest zoom, 1..16
 };
+
+// The clock's text at `seconds` since midnight.
+std::string clock_text(const Settings& s, double seconds);
 
 struct Rule {
     int birth = 1 << 3;
