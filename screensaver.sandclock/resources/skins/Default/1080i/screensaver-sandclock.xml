@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Just the background; Python adds the sand and the clock on top and colours the
+     background through the Home window property sandclock.bg. -->
+<window>
+  <backgroundcolor>0xff000000</backgroundcolor>
+  <controls>
+    <control type="image" id="10">
+      <left>-60</left><top>-60</top><width>2040</width><height>1200</height>
+      <texture>white.png</texture>
+      <colordiffuse>$INFO[Window(Home).Property(sandclock.bg)]</colordiffuse>
+    </control>
+  </controls>
+</window>

@@ -1,6 +1,6 @@
 # P-Hoep Kodi Add-ons
 
-Ambient screensavers, a word clock, a scheduler, a flashcard app and a news reader for Kodi, published as one Kodi
+Ambient screensavers, a word clock, a sand clock, a scheduler, a flashcard app and a news reader for Kodi, published as one Kodi
 repository so Kodi installs them and keeps them up to date.
 
 | Add-on | Version | What it is |
@@ -13,6 +13,7 @@ repository so Kodi installs them and keeps them up to date.
 | [Sheetcards](#sheetcards) | 1.0.0 | Flashcards from a Google Sheet: an app to study with and a screensaver |
 | [RSS Live Tiles](#rss-live-tiles) | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles: an app and a screensaver |
 | [Word Clock](#word-clock) | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
+| [Sand Clock](#sand-clock) | 1.0.0 | A clock whose digits crumble into falling sand every second |
 
 All of them are pure Python with no compiled code. They run on Kodi 19 (Matrix) and later,
 on any platform. They were developed and tested on Kodi 21 on macOS. God's Eye Map has
@@ -28,7 +29,7 @@ The add-ons are in a Kodi repository hosted on GitHub Pages:
 1. **Settings → System → Add-ons → Unknown sources → On.**
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/`
    and name it `phoep`.
-3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.4.zip`.
+3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.5.zip`.
    Kodi shows "P-Hoep Add-ons — Add-on installed".
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** The screensavers are
    under **Look and feel → Screensaver**, the Switcher is under **Services**, and the
@@ -266,6 +267,30 @@ word clock: bold white letters over dim grey ones on a rounded dark card.
   in the corners, and IT IS, A QUARTER, AM/PM and MIDNIGHT can each be turned off.
 - **Screen:** a rounded card, a square card or full screen, any size, a fade or ripple when the
   time changes, dimming, and a slow drift to protect OLED screens. Any key exits at once.
+
+It is under **Look and feel → Screensaver**.
+
+---
+
+## Sand Clock
+
+![Sand Clock: 17:52 crumbling every second into neon sand that piles into striped mountains, a pixel font crumbling into round beads, a digital font in a slow rainbow, and a stencil clock in desert sand](gifs/sand-clock.gif)
+
+A big clock that crumbles into sand. Just before each second ticks over, the digits break into
+grains that fall, scatter and slide into heaps at the bottom of the screen. Every change brings
+a new colour, so the heaps build up in stripes, and they sink slowly through the floor so the
+screen never fills up.
+
+- **Fonts:** nine, from Inter and Montserrat to a digital, a pixel, a dot-matrix and a stencil
+  font, in light, regular or bold.
+- **Sand:** fine, medium or coarse grains that look like sand, flat squares or round beads,
+  with floaty, normal or heavy gravity, and as tall a pile as you like.
+- **What crumbles:** the whole clock every second, or only the digits that change. Turn seconds
+  off and it crumbles once a minute.
+- **Colours:** a new colour every change or for each digit, eight palettes (Neon, Desert sand,
+  Ocean, Sunset, Candy, Forest, Ice, Greyscale), one colour of your own, or a slow rainbow.
+- **Day and night:** a different palette at night, dimming, and a slow drift to protect OLED
+  screens. Any key exits at once.
 
 It is under **Look and feel → Screensaver**.
 

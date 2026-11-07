@@ -433,6 +433,45 @@ about 3% CPU while it runs. The rounded card is an XML image with a 9-slice `bor
 corners stay the same at any size. Setting the Home property `wordclock.demo` to `HH:MM` shows
 that time, for testing.
 
+## Sand Clock (new, v1.0)
+
+![Sand Clock: 17:52 crumbling every second into neon sand that piles into striped mountains, a pixel font crumbling into round beads, a digital font in a slow rainbow, and a stencil clock in desert sand](release/gifs/sand-clock.gif)
+
+`screensaver.sandclock`, built from [docs/sandclock.md](docs/sandclock.md): a big clock that crumbles
+into sand. Shortly before each second ticks over, the digits break into grains that fall under
+gravity, drift a little sideways and slide into heaps at the bottom of the screen. Each change can
+bring a new colour, so the heaps build up in stripes, and the pile sinks slowly through the floor
+so it stays the same size.
+
+- **Clock:** seconds on or off, 24 or 12 hour, the whole clock crumbles (as in the video it is
+  based on) or only the digits that change, and a slow, normal or quick crumble.
+- **Font:** nine OFL fonts (Inter, Montserrat, Orbitron, Pixelify Sans, Doto, JetBrains Mono,
+  Comfortaa, Playfair Display, Big Shoulders Stencil), light, regular or bold, width and position.
+- **Sand:** fine, medium or coarse grains that look like sand, flat squares or round beads,
+  floaty, normal or heavy gravity, and how tall the pile gets.
+- **Colours:** a new colour each change or per digit, one colour of your own, or a slow rainbow;
+  eight palettes; a background colour.
+- **Day and night:** a different palette at night, dimming at night or all the time, and a slow
+  drift to protect OLED screens.
+
+```bash
+python3 tools/make_sandclock_media.py      # glyphs and masks for 9 fonts x 3 weights, grain textures, icon, fanart
+python3 tools/make_settings_sandclock.py   # settings.xml + strings.po from resources/lib/config.py
+python3 tools/build_zip.py screensaver.sandclock
+KODI_ADDON=screensaver.sandclock python3 tools/kodi.py install         # then select / run
+python3 -m unittest tests.test_sandclock   # offline: fonts, layout, the physics, the sinking pile, colours
+```
+
+Notes from building it (Kodi 21.1, macOS): Python plans and Kodi animates. Each grain is an image
+control with a chain of `Conditional` slide animations (wait, fall, drift, slide down the pile,
+sink) keyed to one Home window property per crumble. Landed sand is merged every 1.5 s into
+strips of same-coloured grains, one image each, so a minute of sand is a few hundred controls,
+not tens of thousands. The sinking speed follows how much sand falls and how wide the heap is,
+and changes only once every grain in the air has landed. When the whole clock crumbles the grains
+get coarser if needed to stay under 1000 per second. It uses about 50% of one core on a retina
+Mac, where Kodi alone takes about 37% while anything animates. Setting the Home property
+`sandclock.demo` to `HH:MM:SS` starts the clock at that time, for testing.
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full

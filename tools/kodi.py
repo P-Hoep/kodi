@@ -34,17 +34,21 @@ def rpc(method, params=None, timeout=10):
     if params is not None:
         msg['params'] = params
     s.sendall(json.dumps(msg).encode())
-    buf = b''
+    # Kodi can send notifications (GUI.OnScreensaverDeactivated...) in the same packet as the
+    # reply, so split the stream into JSON objects rather than parsing it whole.
+    decoder = json.JSONDecoder()
+    buf = ''
     while True:
-        buf += s.recv(65536)
-        try:
-            reply = json.loads(buf.decode())
-        except ValueError:
-            continue
-        if isinstance(reply, dict) and reply.get('id') == 1:
-            s.close()
-            return reply
-        buf = b''  # a notification; wait for our reply
+        buf += s.recv(65536).decode()
+        while buf.strip():
+            try:
+                reply, end = decoder.raw_decode(buf.lstrip())
+            except ValueError:
+                break      # incomplete; read more
+            buf = buf.lstrip()[end:]
+            if isinstance(reply, dict) and reply.get('id') == 1:
+                s.close()
+                return reply
 
 
 def builtin(command):
