@@ -1,6 +1,6 @@
 # P-Hoep Kodi Add-ons
 
-Ambient screensavers, a word clock, a sand clock, a scheduler, a flashcard app and a news reader for Kodi, published as one Kodi
+Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a scheduler, a flashcard app and a news reader for Kodi, published as one Kodi
 repository so Kodi installs them and keeps them up to date.
 
 | Add-on | Version | What it is |
@@ -14,6 +14,7 @@ repository so Kodi installs them and keeps them up to date.
 | [RSS Live Tiles](#rss-live-tiles) | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles: an app and a screensaver |
 | [Word Clock](#word-clock) | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 | [Sand Clock](#sand-clock) | 1.0.0 | A clock whose digits crumble into falling sand every second |
+| [Jeopkodi](#jeopkodi) | 1.0.0 | An endless Jeopardy! slideshow: clue, then the response |
 
 All of them are pure Python with no compiled code. They run on Kodi 19 (Matrix) and later,
 on any platform. They were developed and tested on Kodi 21 on macOS. God's Eye Map has
@@ -29,7 +30,7 @@ The add-ons are in a Kodi repository hosted on GitHub Pages:
 1. **Settings → System → Add-ons → Unknown sources → On.**
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/`
    and name it `phoep`.
-3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.5.zip`.
+3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.6.zip`.
    Kodi shows "P-Hoep Add-ons — Add-on installed".
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** The screensavers are
    under **Look and feel → Screensaver**, the Switcher is under **Services**, and the
@@ -293,6 +294,27 @@ screen never fills up.
   screens. Any key exits at once.
 
 It is under **Look and feel → Screensaver**.
+
+---
+
+## Jeopkodi
+
+![Jeopkodi: a $800 clue in CHAMPAGNE PROBLEMS, the response WHO IS MICHELANGELO?, a Final Jeopardy clue about the ravens of the Tower of London, and a clue shown without the category and value](gifs/jeopkodi.jpg)
+
+Jeopardy! as a screensaver. A clue comes up on the classic blue screen in white capitals with a
+drop shadow, just like on the show, and a few seconds later the response appears, phrased as a
+question. Then the next clue. There are over half a million clues from 42 seasons, shuffled, so
+it never runs out.
+
+- **Difficulty:** easy ($200 and $400), medium ($600) and hard ($800 and $1000) clues, each on
+  or off, and Daily Doubles and Final Jeopardy if you want them.
+- **Timing:** how long a clue stays up before the response (long clues get a little extra), and
+  how long the response stays up.
+- **Display:** the category and the dollar value (in Jeopardy yellow) at the top, or just the
+  clue; WHAT IS / WHO IS phrasing; text size and dimming. Any key exits at once.
+
+It is under **Look and feel → Screensaver**. An unofficial fan project, not affiliated with
+Jeopardy Productions, Inc.
 
 ---
 

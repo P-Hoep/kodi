@@ -472,6 +472,45 @@ get coarser if needed to stay under 1000 per second. It uses about 50% of one co
 Mac, where Kodi alone takes about 37% while anything animates. Setting the Home property
 `sandclock.demo` to `HH:MM:SS` starts the clock at that time, for testing.
 
+## Jeopkodi (new, v1.0)
+
+![Jeopkodi: a $800 clue in CHAMPAGNE PROBLEMS, the response WHO IS MICHELANGELO?, a Final Jeopardy clue about the ravens of the Tower of London, and a clue shown without the category and value](release/gifs/jeopkodi.jpg)
+
+`screensaver.jeopkodi`: an endless Jeopardy! slideshow. Each clue comes up on the classic blue
+screen (#060CE9) in white Korinna capitals with the hard drop shadow, and a few seconds later the
+response replaces it, phrased as a question ("WHAT IS THE JORDAN?"). The category is shown in
+white and the dollar value in Jeopardy yellow at the top. There are 533,168 clues from 42 seasons.
+
+- **Clues:** easy ($200 and $400), medium ($600) and hard ($800 and $1000) rows, each on or off,
+  plus Daily Doubles and Final Jeopardy. Clues from before the 2001 value doubling count by their
+  row on the board, so an old $100 clue is easy.
+- **Timing:** how long a clue stays up (12 seconds by default, with more time for long clues) and
+  how long the response stays up.
+- **Display:** the category and value at the top or not, WHAT IS / WHO IS phrasing or the bare
+  response, text size and dimming.
+
+```bash
+python3 tools/make_jeopkodi_db.py combined_season1-42.tsv     # J! Archive TSV -> resources/data/clues.db
+python3 tools/make_jeopkodi_media.py KorinnaStd-Bold.ttf     # glyph images (white and yellow), vignette, icon, fanart
+python3 tools/make_settings_jeopkodi.py                      # settings.xml + strings.po from resources/lib/config.py
+python3 tools/build_zip.py screensaver.jeopkodi
+KODI_ADDON=screensaver.jeopkodi python3 tools/kodi.py install           # then select / run
+python3 -m unittest tests.test_jeopkodi                      # offline: settings, database, chunks, phrasing, layout
+```
+
+Notes from building it (Kodi 21.1, macOS): add-ons can't load fonts, so every character is a
+pre-rendered PNG with its shadow, and `metrics.json` holds the advances and kerning. Python then
+wraps and centres the text itself: it picks the largest size that fits, then narrows the column
+as far as it can without adding a line, which gives the show's stacked look (the W.C. Handy clue
+breaks exactly as on air). Two pools of image controls, 70 for the header and 250 for the text,
+are created once and re-textured for each slide, and they fade through Home window properties.
+The database is 70 MB of SQLite with the rows already in random order, so a chunk is one
+indexed read of 600 consecutive ids, filtered by the settings and shuffled again. Clues that need
+a picture, video or audio clip are left out. The window is shown with `show()` and a loop instead
+of `doModal()`: when Kodi wakes a screensaver itself (a `RunScript` or a screenshot) it closes the
+window without telling Python, `doModal()` never returns and Kodi kills the script after 5 seconds.
+The loop also watches `System.ScreenSaverActive`, so it always exits.
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full
