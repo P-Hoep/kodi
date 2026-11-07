@@ -283,6 +283,48 @@ Notes from building it:
   default) they are probed and played without certificate checks. No source needed special
   headers (User-Agent or Referer made no difference).
 
+## Sheetcards (new, v1.0)
+
+`script.sheetcards` (an app under **Add-ons → Program add-ons**) and `screensaver.sheetcards`, built
+from [docs/Sheetcards.md](docs/Sheetcards.md): flashcards from any public Google Sheet. Column A
+is the question, column B the answer, and every tab is a deck. Share the sheet as "Anyone with the
+link can view", then paste its ID or link in the settings. You need no Google login or API key.
+Both add-ons use the shared library `script.module.sheetcards`, which Kodi installs with them.
+
+- **Modes**: Flashcard (question, then the card flips), Multiple choice (3 or 4 options) and
+  Mixed. Wrong options come from other cards' answers of the same kind (number, year, date,
+  word, phrase, sentence) and similar length. A deck with too few different answers runs as
+  flashcards. Direction can be Question → Answer, Answer → Question, or both.
+- **The app**: a deck picker (multi-select, cards, due count and mastery per deck), study by
+  remote, mouse or touch (number keys 1–4 answer directly, Back pauses, Info shows the
+  card's stats), score and streaks, and results with the missed cards and **Review missed**.
+  Spaced repetition uses Leitner boxes (1, 2, 4, 8 and 16 days). A missed card comes back 3–5
+  cards later. Order can be Smart, Shuffle, Sheet order or Hardest first.
+- **The screensaver**: a question, a timer bar, then the answer, card after card from a
+  shuffle bag. Any input exits at once. The card drifts ±24 px at each change, and it can show
+  a clock and dim. By default it uses the app's sheet, decks and look.
+- **Data**: cards load from the cache first and refresh in the background every 6 hours by
+  default. If the network is down, the cached cards keep working. Tabs are found through the
+  sheet's `htmlview` page, with an optional API key or a list of tab names as fallbacks.
+- **Look**: Night, Day or Auto (by time), six accent colours or a custom one, optional custom
+  background and card colours (the text colour follows for contrast), and a soft glow. All
+  textures are white and tinted from window properties, so they look the same in every skin.
+
+```bash
+python3 tools/make_sheetcards_media.py     # textures, icons, fanart (Pillow)
+python3 tools/make_sheetcards_skin.py      # the three WindowXML files
+python3 tools/make_settings_sheetcards.py  # both settings.xml + strings.po from lib/sheetcards/config.py
+python3 tools/build_zip.py script.module.sheetcards   # and script.sheetcards, screensaver.sheetcards
+for a in script.module.sheetcards script.sheetcards screensaver.sheetcards; do KODI_ADDON=$a python3 tools/kodi.py install; done
+python3 -m unittest tests.test_sheetcards  # offline: parsing, tabs, loader fallbacks, distractors, Leitner, theme
+```
+
+Notes from building it (Kodi 21.1, macOS): `$INFO[Window.Property(...)]` works in `textcolor`,
+`selectedcolor` and texture `colordiffuse`, including inside list layouts, so one XML serves every
+theme. A bare number in a `<label>` is read as a string ID, so the option badges use
+`$NUMBER[n]`. Any EventServer packet (`kodi.py shot`, `kodi.py builtin`) wakes a screensaver. To
+take screenshots of one, run a script inside Kodi that activates it and calls `TakeScreenshot`.
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full

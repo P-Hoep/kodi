@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.sheetcards" name="Sheetcards" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <import addon="xbmc.python" version="3.0.1"/>
+    <import addon="script.module.sheetcards" version="1.0.0"/>
+  </requires>
+  <extension point="xbmc.python.script" library="default.py">
+    <provides>executable</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Flashcards from a Google Sheet</summary>
+    <description lang="en_GB">Study flashcards from any public Google Sheet with your remote, mouse or touch screen. Put questions in column A and answers in column B; every tab is a deck. Paste the sheet's ID or link in the settings, pick decks and start. Flashcard, multiple-choice and mixed modes, score and streaks, spaced repetition (Leitner boxes) that brings back the cards you miss, deck order options, day and night themes with your own accent colour, and an offline cache. No Google account or API key needed: share the sheet as "Anyone with the link can view".</description>
+    <platform>all</platform>
+    <license>MIT</license>
+    <source>https://github.com/P-Hoep/kodi</source>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

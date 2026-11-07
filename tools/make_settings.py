@@ -75,7 +75,10 @@ CATEGORIES = [
 
 
 def visible_dependency(rule):
-    """'setting' (a boolean that must be on), ('setting', value) or ('setting', '!', value)."""
+    """'setting' (a boolean that must be on), ('setting', value) or ('setting', '!', value).
+    A string starting with '<' is a ready-made <dependencies> element."""
+    if isinstance(rule, str) and rule.startswith('<'):
+        return rule
     if isinstance(rule, str):
         return ('<dependencies><dependency type="visible" setting="%s">true</dependency></dependencies>' % rule)
     if len(rule) == 3:
@@ -113,7 +116,7 @@ def write(root, addon, addon_name, categories, generator='tools/make_settings.py
                 continue
             xtype = {'slider': 'integer', 'options': 'integer', 'multi': 'list[integer]'}.get(kind, kind)
             out.append('        <setting id="%s" type="%s" label="%d">' % (s['id'], xtype, label))
-            out.append('          <level>0</level>')
+            out.append('          <level>%d</level>' % s.get('level', 0))
             if kind == 'action':
                 out.append('          <data>%s</data>' % escape(s['data']))
                 out.append('          <control type="button" format="action"><close>true</close></control>')
