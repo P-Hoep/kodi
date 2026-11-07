@@ -27,8 +27,17 @@ from build_zip import ROOT, addon_version, build  # noqa: E402
 REPO_ID = 'repository.phoep'
 
 
+def has_binary(addon):
+    """A native add-on (library_linux, library_osx, ... in its addon.xml) is only publishable when
+    a built library is in its folder; the sources of screensaver.sandclock.gl are not."""
+    xml = open(os.path.join(ROOT, addon, 'addon.xml'), encoding='utf-8').read()
+    libs = re.findall(r'library_(?:linux|osx|windows|android)="([^"]+)"', xml)
+    return not libs or any(os.path.isfile(os.path.join(ROOT, addon, name)) for name in libs)
+
+
 def addons():
-    return sorted(d for d in os.listdir(ROOT) if os.path.isfile(os.path.join(ROOT, d, 'addon.xml')))
+    return sorted(d for d in os.listdir(ROOT)
+                  if os.path.isfile(os.path.join(ROOT, d, 'addon.xml')) and has_binary(d))
 
 
 def addon_element(addon):
