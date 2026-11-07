@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.automata.armv7" name="Cellular Automata (32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_android="screensaver.automata.armv7.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Conway's Game of Life and other cellular automata, run on the GPU: up to 8 million cells</summary>
+    <description lang="en_GB">Cellular automata computed entirely on the GPU: the whole grid lives in a texture and one shader pass makes one generation, so even millions of cells run smoothly. Choose from 18 rules (Conway's Life, HighLife, Day and Night, Seeds, Maze, Brian's Brain, Star Wars and more, including multi-state Generations rules) or type your own, such as B36/S125 or B2/S/C3. The grid goes from 14 thousand cells up to 3840 x 2160 (8.3 million), at 1 to 960 generations per second or "Maximum", which does as many as the device can without stuttering. Start from random soup, clusters, a mirrored kaleidoscope, a single R-pentomino or acorn, four Gosper glider guns firing at each other, or a swarm of gliders; it starts over by itself when the board dies out or settles. Colour cells by age, by position or by time from eight palettes, or use one colour or a rainbow; trails, glow, square, rounded or dot cells, random sparks and dimming are all settings. If the device cannot keep up it slows the simulation rather than the display. This build is for 32-bit Android Kodi (armeabi-v7a), as on many Google TV boxes.</description>
+    <disclaimer lang="en_GB">Native add-on built for Kodi 21 Omega, 32-bit ARM Android. It needs OpenGL ES 2.0 with high-precision floats in fragment shaders, which GLES 2 devices Kodi runs on provide.</disclaimer>
+    <platform>android</platform>
+    <license>MIT</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

@@ -25,6 +25,19 @@ Files: `liquid.*`, `liquid_renderer.*`, `kodi_liquid.cpp`; test window `liquidcl
 (`--slosh`, `--pile`); the add-on folder is `../screensaver.liquidclock.armv7`, whose settings
 come from `tools/make_settings_liquidclock.py`.
 
+## Cellular Automata
+
+A third screensaver: Conway's Life and other Life-like and multi-state (Generations) rules run
+entirely on the GPU. The grid is two RGBA8 textures (state, age, trail, alive) that a fragment
+shader ping-pongs, one pass per generation, so cost is a few texture reads per cell: on an Apple M2
+about 1,400 generations/s on 2.1 million cells and 490/s on 8.3 million (3840 x 2160). A governor
+lowers generations per frame if the display slows. Files: `automata.*` (rules, patterns, a CPU
+reference, no GL), `automata_app.*` (shaders, textures, restarts), `kodi_automata.cpp`,
+`main_automata_glfw.cpp`. `automata_glfw --selftest` runs random boards on the GPU and compares
+every cell with the CPU reference for 10 rule/wrap combinations (all match). The rule, grid, speed
+and pattern lists come from `tools/make_settings_automata.py`, which writes both the Kodi settings
+and `src/automata_tables.hpp`. Add-on folder: `../screensaver.automata.armv7`.
+
 ## Build and test
 
 ```sh

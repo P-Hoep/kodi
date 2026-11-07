@@ -12,7 +12,7 @@ option(SANDCLOCK_FETCH_GLFW "Download GLFW instead of using an installed one" OF
 option(SANDCLOCK_KODI "Build the Kodi add-on (needs the kodi-addon-dev-kit headers)" OFF)
 set(KODI_DEVKIT_INCLUDE "" CACHE PATH "xbmc/addons/kodi-dev-kit/include, if Kodi's cmake package is not installed")
 
-add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp src/liquid.cpp)
+add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp src/liquid.cpp src/automata.cpp)
 target_include_directories(sandclock_core PUBLIC src)
 target_compile_options(sandclock_core PRIVATE -Wall -Wextra)
 
@@ -22,6 +22,9 @@ target_link_libraries(test_sand sandclock_core)
 add_test(NAME sand COMMAND test_sand ${CMAKE_SOURCE_DIR}/../screensaver.sandclock/resources/media/fonts/fonts.json)
 add_executable(test_liquid tests/test_liquid.cpp)
 target_link_libraries(test_liquid sandclock_core)
+add_executable(test_automata tests/test_automata.cpp)
+target_link_libraries(test_automata sandclock_core)
+add_test(NAME automata COMMAND test_automata)
 add_test(NAME liquid COMMAND test_liquid ${CMAKE_SOURCE_DIR}/../screensaver.sandclock/resources/media/fonts/fonts.json)
 
 if(SANDCLOCK_HARNESS)
@@ -57,8 +60,21 @@ if(SANDCLOCK_HARNESS)
   target_compile_definitions(liquidclock_glfw PRIVATE SANDCLOCK_LIQUID)
   target_link_libraries(liquidclock_glfw liquid_render ${GLFW_TARGET})
 
+  add_library(automata_render STATIC src/automata_app.cpp)
+  target_link_libraries(automata_render PUBLIC sandclock_core OpenGL::GL)
+  if(SANDCLOCK_GLES)
+    target_compile_definitions(automata_render PUBLIC SANDCLOCK_GLES)
+  endif()
+  add_executable(automata_glfw src/main_automata_glfw.cpp)
+  target_link_libraries(automata_glfw automata_render ${GLFW_TARGET})
+
   if(APPLE)
     # The same thing with the 3.2 core profile Kodi runs on macOS, to test that shader dialect.
+    add_library(automata_render_core STATIC src/automata_app.cpp)
+    target_link_libraries(automata_render_core PUBLIC sandclock_core OpenGL::GL)
+    target_compile_definitions(automata_render_core PUBLIC SANDCLOCK_CORE)
+    add_executable(automata_glfw_core src/main_automata_glfw.cpp)
+    target_link_libraries(automata_glfw_core automata_render_core ${GLFW_TARGET})
     add_library(liquid_render_core STATIC src/liquid_renderer.cpp)
     target_link_libraries(liquid_render_core PUBLIC sandclock_core OpenGL::GL)
     target_compile_definitions(liquid_render_core PUBLIC SANDCLOCK_CORE)
@@ -135,4 +151,7 @@ if(SANDCLOCK_KODI)
 
   # Liquid Clock: only the library; the add-on folder is ../screensaver.liquidclock.armv7.
   sandclock_kodi_module(screensaver.liquidclock src/kodi_liquid.cpp src/liquid_renderer.cpp)
+
+  # Cellular Automata: only the library; the add-on folder is ../screensaver.automata.armv7.
+  sandclock_kodi_module(screensaver.automata src/kodi_automata.cpp src/automata_app.cpp)
 endif()
