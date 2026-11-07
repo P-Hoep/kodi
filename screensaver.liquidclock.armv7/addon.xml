@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.liquidclock.armv7" name="Liquid Clock (32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_android="screensaver.liquidclock.armv7.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">A clock that melts into liquid: the digits drip into a pool that ripples and sloshes</summary>
+    <description lang="en_GB">A big clock that turns to liquid. Every second (or minute) the digits that change shimmer, then melt into stretched drops that run together into streams and fall into a pool at the bottom of the screen. The pool is a simulated water surface: it ripples where the streams land, takes on the colour of what falls into it and rocks from side to side now and then. It drains slowly through the floor so it never overflows. Drawn on the GPU in native code, so it is smooth even on small boxes. This build is for 32-bit Android Kodi (armeabi-v7a), which is what many Google TV boxes and the Chromecast with Google TV run. Settings: nine fonts and weights, whether only the changing digits or the whole clock melt, melt speed, droplet size, liquid looks (glossy, flat, glowing), gravity, sloshing, liquid level, eight palettes, one colour of your own or a slow rainbow, night colours, dimming and an OLED-friendly drift.</description>
+    <disclaimer lang="en_GB">Digit shapes from fonts under the SIL Open Font License 1.1; see LICENSE.txt. Native add-on built for Kodi 21 Omega, 32-bit ARM Android.</disclaimer>
+    <platform>android</platform>
+    <license>MIT, OFL-1.1</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

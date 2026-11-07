@@ -53,6 +53,7 @@ struct Settings {
     int night_start = 21 * 60;
     int dim = 0;
     bool drift = true;
+    int slosh = 1;          // Liquid Clock only: gentle, normal, wild
 };
 
 extern const char* const FONT_FOLDERS[9];

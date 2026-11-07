@@ -1,6 +1,6 @@
 // Test window for the engine + renderer, no Kodi involved.
 //   sandclock_glfw --fonts <fonts.json> [--font N] [--weight N] [--grain N] [--look N]
-//                  [--mode N] [--palette N] [--crumble N] [--no-seconds] [--clock HH:MM:SS]
+//                  [--mode N] [--palette N] [--crumble N] [--slosh N] [--pile N] [--no-seconds] [--clock HH:MM:SS]
 //                  [--fullscreen] [--shot out.ppm --shot-after SECONDS]
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -13,9 +13,17 @@
 #include <string>
 #include <vector>
 
-#include "engine.hpp"
 #include "gl_include.hpp"
+#ifdef SANDCLOCK_LIQUID
+#include "liquid_renderer.hpp"
+using Eng = sandclock::LiquidEngine;
+using Ren = sandclock::LiquidRenderer;
+#else
+#include "engine.hpp"
 #include "renderer.hpp"
+using Eng = sandclock::Engine;
+using Ren = sandclock::Renderer;
+#endif
 
 using namespace sandclock;
 
@@ -47,6 +55,8 @@ int main(int argc, char** argv) {
         else if (is("--mode")) s.colour_mode = std::atoi(next());
         else if (is("--palette")) s.palette = std::atoi(next());
         else if (is("--crumble")) s.crumble = std::atoi(next());
+        else if (is("--slosh")) s.slosh = std::atoi(next());
+        else if (is("--pile")) s.pile = std::atoi(next());
         else if (is("--no-seconds")) s.seconds = false;
         else if (is("--fullscreen")) fullscreen = true;
         else if (is("--shot")) shot = next();
@@ -85,7 +95,7 @@ int main(int argc, char** argv) {
     glfwSwapInterval(1);
     if (fullscreen) glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-    Renderer renderer;
+    Ren renderer;
     std::string err;
     if (!renderer.init(&err)) {
         std::fprintf(stderr, "shader: %s\n", err.c_str());
@@ -93,7 +103,7 @@ int main(int argc, char** argv) {
     }
     std::printf("GL %s | %s\n", glGetString(GL_VERSION), glGetString(GL_RENDERER));
 
-    Engine engine(s, font, (unsigned)std::time(nullptr));
+    Eng engine(s, font, (unsigned)std::time(nullptr));
     std::printf("grain %d px\n", engine.grain());
 
     auto wall_clock = [&] {

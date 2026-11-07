@@ -14,6 +14,17 @@ A C++ / OpenGL port of `../screensaver.sandclock`. The Python add-on stays as it
 Nothing is uploaded per frame. A crumble appends its grains to one buffer and the GPU does the
 rest, so the CPU cost is a few hundred planner steps once a second.
 
+## Liquid Clock
+
+A second screensaver from the same code: the digits shimmer, melt into stretched drops that run
+into streams and fall into a pool, and the pool is a 1-D shallow-water simulation (`src/liquid.*`:
+192 columns, wave speed from depth, ripples where drops land, a tilt "slosh" every few seconds, a
+drain that holds the level). Drops are evaluated on the GPU like the sand grains; the pool is one
+triangle strip uploaded per frame (about 6 KB), so it is cheap enough for a 32-bit set-top box.
+Files: `liquid.*`, `liquid_renderer.*`, `kodi_liquid.cpp`; test window `liquidclock_glfw`
+(`--slosh`, `--pile`); the add-on folder is `../screensaver.liquidclock.armv7`, whose settings
+come from `tools/make_settings_liquidclock.py`.
+
 ## Build and test
 
 ```sh

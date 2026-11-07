@@ -12,7 +12,7 @@ option(SANDCLOCK_FETCH_GLFW "Download GLFW instead of using an installed one" OF
 option(SANDCLOCK_KODI "Build the Kodi add-on (needs the kodi-addon-dev-kit headers)" OFF)
 set(KODI_DEVKIT_INCLUDE "" CACHE PATH "xbmc/addons/kodi-dev-kit/include, if Kodi's cmake package is not installed")
 
-add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp)
+add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp src/liquid.cpp)
 target_include_directories(sandclock_core PUBLIC src)
 target_compile_options(sandclock_core PRIVATE -Wall -Wextra)
 
@@ -20,6 +20,9 @@ enable_testing()
 add_executable(test_sand tests/test_sand.cpp)
 target_link_libraries(test_sand sandclock_core)
 add_test(NAME sand COMMAND test_sand ${CMAKE_SOURCE_DIR}/../screensaver.sandclock/resources/media/fonts/fonts.json)
+add_executable(test_liquid tests/test_liquid.cpp)
+target_link_libraries(test_liquid sandclock_core)
+add_test(NAME liquid COMMAND test_liquid ${CMAKE_SOURCE_DIR}/../screensaver.sandclock/resources/media/fonts/fonts.json)
 
 if(SANDCLOCK_HARNESS)
   if(SANDCLOCK_FETCH_GLFW)
@@ -45,8 +48,24 @@ if(SANDCLOCK_HARNESS)
   add_executable(sandclock_glfw src/main_glfw.cpp)
   target_link_libraries(sandclock_glfw sandclock_render ${GLFW_TARGET})
 
+  add_library(liquid_render STATIC src/liquid_renderer.cpp)
+  target_link_libraries(liquid_render PUBLIC sandclock_core OpenGL::GL)
+  if(SANDCLOCK_GLES)
+    target_compile_definitions(liquid_render PUBLIC SANDCLOCK_GLES)
+  endif()
+  add_executable(liquidclock_glfw src/main_glfw.cpp)
+  target_compile_definitions(liquidclock_glfw PRIVATE SANDCLOCK_LIQUID)
+  target_link_libraries(liquidclock_glfw liquid_render ${GLFW_TARGET})
+
   if(APPLE)
     # The same thing with the 3.2 core profile Kodi runs on macOS, to test that shader dialect.
+    add_library(liquid_render_core STATIC src/liquid_renderer.cpp)
+    target_link_libraries(liquid_render_core PUBLIC sandclock_core OpenGL::GL)
+    target_compile_definitions(liquid_render_core PUBLIC SANDCLOCK_CORE)
+    add_executable(liquidclock_glfw_core src/main_glfw.cpp)
+    target_compile_definitions(liquidclock_glfw_core PRIVATE SANDCLOCK_LIQUID)
+    target_link_libraries(liquidclock_glfw_core liquid_render_core ${GLFW_TARGET})
+
     add_library(sandclock_render_core STATIC src/renderer.cpp)
     target_link_libraries(sandclock_render_core PUBLIC sandclock_core OpenGL::GL)
     target_compile_definitions(sandclock_render_core PUBLIC SANDCLOCK_CORE)
@@ -55,10 +74,9 @@ if(SANDCLOCK_HARNESS)
   endif()
 endif()
 
-# ---- Kodi add-on: cmake -DSANDCLOCK_KODI=ON -DKODI_DEVKIT_INCLUDE=<.../kodi-dev-kit/include>
-# Produces build/addon/screensaver.sandclock.gl/, ready to copy into Kodi's addons folder.
+# ---- Kodi add-ons: cmake -DSANDCLOCK_KODI=ON -DKODI_DEVKIT_INCLUDE=<.../kodi-dev-kit/include>
+# Sand Clock -> build/addon/screensaver.sandclock.gl/ ; Liquid Clock -> build/liquid/ (library only).
 if(SANDCLOCK_KODI)
-  set(ADDON_ID screensaver.sandclock.gl)
   if(NOT KODI_DEVKIT_INCLUDE)
     find_package(Kodi QUIET)
     if(KODI_INCLUDE_DIR)
@@ -70,36 +88,41 @@ if(SANDCLOCK_KODI)
   if(NOT ANDROID)
     find_package(OpenGL REQUIRED)
   endif()
-
-  add_library(${ADDON_ID} MODULE src/kodi_addon.cpp src/renderer.cpp)
-  target_include_directories(${ADDON_ID} PRIVATE ${KODI_DEVKIT_INCLUDE})
-  target_link_libraries(${ADDON_ID} PRIVATE sandclock_core)
-  target_compile_definitions(${ADDON_ID} PRIVATE SANDCLOCK_KODI)
-  set_target_properties(${ADDON_ID} PROPERTIES PREFIX "" POSITION_INDEPENDENT_CODE ON)
   set_target_properties(sandclock_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  if(ANDROID)
-    # cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake
-    #       -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-21 -DANDROID_STL=c++_static
-    target_compile_definitions(${ADDON_ID} PRIVATE TARGET_ANDROID TARGET_LINUX HAS_GLES=2 SANDCLOCK_GLES)
-    target_link_libraries(${ADDON_ID} PRIVATE GLESv2 log)
-    set_target_properties(${ADDON_ID} PROPERTIES SUFFIX ".so")
-  elseif(APPLE)
-    target_compile_definitions(${ADDON_ID} PRIVATE TARGET_DARWIN HAS_GL SANDCLOCK_CORE GL_SILENCE_DEPRECATION)
-    set_target_properties(${ADDON_ID} PROPERTIES SUFFIX ".dylib")
-    target_link_options(${ADDON_ID} PRIVATE -undefined dynamic_lookup)  # kodi:: symbols live in Kodi
-    target_link_libraries(${ADDON_ID} PRIVATE OpenGL::GL)
-  elseif(WIN32)
-    message(FATAL_ERROR "Kodi on Windows uses ANGLE (GLES); build with the kodi-addons cmake there")
-  else()
-    target_compile_definitions(${ADDON_ID} PRIVATE TARGET_LINUX)
-    if(SANDCLOCK_GLES)
-      target_compile_definitions(${ADDON_ID} PRIVATE HAS_GLES=2)
-    else()
-      target_compile_definitions(${ADDON_ID} PRIVATE HAS_GL)
-      target_link_libraries(${ADDON_ID} PRIVATE OpenGL::GL)
-    endif()
-  endif()
 
+  function(sandclock_kodi_module NAME)
+    add_library(${NAME} MODULE ${ARGN})
+    target_include_directories(${NAME} PRIVATE ${KODI_DEVKIT_INCLUDE})
+    target_link_libraries(${NAME} PRIVATE sandclock_core)
+    target_compile_definitions(${NAME} PRIVATE SANDCLOCK_KODI)
+    set_target_properties(${NAME} PROPERTIES PREFIX "" POSITION_INDEPENDENT_CODE ON)
+    if(ANDROID)
+      # cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake
+      #       -DANDROID_ABI=arm64-v8a|armeabi-v7a -DANDROID_PLATFORM=android-21 -DANDROID_STL=c++_static
+      target_compile_definitions(${NAME} PRIVATE TARGET_ANDROID TARGET_LINUX HAS_GLES=2 SANDCLOCK_GLES)
+      target_link_libraries(${NAME} PRIVATE GLESv2 log)
+      set_target_properties(${NAME} PROPERTIES SUFFIX ".so")
+    elseif(APPLE)
+      target_compile_definitions(${NAME} PRIVATE TARGET_DARWIN HAS_GL SANDCLOCK_CORE GL_SILENCE_DEPRECATION)
+      set_target_properties(${NAME} PROPERTIES SUFFIX ".dylib")
+      target_link_options(${NAME} PRIVATE -undefined dynamic_lookup)  # kodi:: symbols live in Kodi
+      target_link_libraries(${NAME} PRIVATE OpenGL::GL)
+    elseif(WIN32)
+      message(FATAL_ERROR "Kodi on Windows uses ANGLE (GLES); build with the kodi-addons cmake there")
+    else()
+      target_compile_definitions(${NAME} PRIVATE TARGET_LINUX)
+      if(SANDCLOCK_GLES)
+        target_compile_definitions(${NAME} PRIVATE HAS_GLES=2)
+      else()
+        target_compile_definitions(${NAME} PRIVATE HAS_GL)
+        target_link_libraries(${NAME} PRIVATE OpenGL::GL)
+      endif()
+    endif()
+  endfunction()
+
+  # Sand Clock: also assembles a ready-to-copy add-on folder.
+  set(ADDON_ID screensaver.sandclock.gl)
+  sandclock_kodi_module(${ADDON_ID} src/kodi_addon.cpp src/renderer.cpp)
   set(OUT ${CMAKE_BINARY_DIR}/addon/${ADDON_ID})
   set(FONTS ${CMAKE_SOURCE_DIR}/../screensaver.sandclock/resources/media/fonts/fonts.json)
   add_custom_command(TARGET ${ADDON_ID} POST_BUILD
@@ -109,4 +132,7 @@ if(SANDCLOCK_KODI)
             ${CMAKE_SOURCE_DIR}/fanart.jpg ${CMAKE_SOURCE_DIR}/LICENSE.txt ${OUT}/
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/resources/settings.xml ${FONTS} ${OUT}/resources/
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/language ${OUT}/resources/language)
+
+  # Liquid Clock: only the library; the add-on folder is ../screensaver.liquidclock.armv7.
+  sandclock_kodi_module(screensaver.liquidclock src/kodi_liquid.cpp src/liquid_renderer.cpp)
 endif()
