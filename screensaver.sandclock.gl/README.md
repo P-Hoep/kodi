@@ -69,6 +69,23 @@ and turning passes against the model on the CPU, with both trail formats. `--cus
 sa,ra,so,ss,decay,diffuse,deposit,jitter` tries a behaviour. Presets and settings come from
 `tools/make_settings_physarum.py`. Add-on folder: `../screensaver.physarum.armv7`.
 
+## Physarum Lite
+
+A separate, stripped-down Physarum for low-resource devices, published as its own add-on. The
+clock, the fonts and every timer are gone: no digits are drawn over the network, the food map's
+first channel and the wall/respawn logic that served them are removed, the simulation never starts
+over on a schedule and the behaviour never wanders on its own. The trail map's fourth channel now
+carries only food sources. What remains is the four-pass agent model and the draw pass, running
+continuously for as long as Kodi shows it.
+
+The defaults are deliberately light (65 thousand agents, a 480 x 270 trail, 30 steps/s, no glow,
+no screen effect); the settings expose the same behaviour, size, food, colour, view and camera
+lists as the full add-on. Files: `physarum_lite.hpp` (settings and the shared params),
+`physarum_lite_app.*`, `kodi_physarum_lite.cpp`, `main_physarum_lite_glfw.cpp`.
+`physarum_lite_glfw --selftest` runs the same move/deposit/turning checks as `physarum_glfw`.
+Settings come from `tools/make_settings_physarum_lite.py`. Add-on folder:
+`../screensaver.physarum.lite.armv7`.
+
 ## Build and test
 
 ```sh

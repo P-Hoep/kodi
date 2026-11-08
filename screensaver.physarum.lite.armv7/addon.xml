@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.physarum.lite.armv7" name="Physarum Lite (32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_android="screensaver.physarum.lite.armv7.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">The Physarum slime mould with the clock, fonts and timers removed: a continuous GPU simulation tuned for low-resource devices</summary>
+    <description lang="en_GB">The Physarum slime mould simulation without the clock. This is the same GPU agent model as the full Physarum screensaver, but with the clock, the fonts and every timer stripped out: nothing is drawn over the network, the simulation never starts over on a schedule, and the behaviour never wanders on its own. What is left is the living transport network, growing and reorganising for as long as the screensaver runs.
+
+Every agent senses the trail ahead, ahead-left and ahead-right, turns towards the strongest scent, moves and leaves its own trail, which spreads and fades; together they weave networks that branch, merge and keep reorganising. The slime can start everywhere at random, from a disc, a ring, scattered colonies, a big bang, or each species in its own third. Food sources can be scattered so the network links them like a rail map. Eleven behaviours, or Custom (set the sensor angle, turn, sensor distance, step, decay, diffusion, deposit, wobble and repellence yourself), and up to three species that follow their own trail and avoid the others.
+
+This build is made for low-resource devices and its defaults are deliberately light: 65 thousand agents on a 480 x 270 trail at 30 steps per second, no glow and no screen effect. Raise the agent count, the trail resolution and the glow in the settings if your device can take it, up to 8 million agents on a 3840 x 2160 trail. If the device cannot keep up it slows the simulation rather than the display.</description>
+    <disclaimer lang="en_GB">Native add-on built for Kodi 21 Omega, 32-bit ARM Android (armeabi-v7a), as on many Google TV boxes. It needs OpenGL ES 2.0 with vertex texture fetch and high-precision floats in fragment shaders. Millions of agents need a strong GPU; start with the default and raise it. The full Physarum screensaver, with the clock in the middle, is a separate add-on.</disclaimer>
+    <platform>android</platform>
+    <license>MIT</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>
