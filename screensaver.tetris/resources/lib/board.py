@@ -66,7 +66,8 @@ class Board(object):
 
     def can_set_fixed(self, cells):
         """True when no locked piece is in the way of these fixed cells (the clock is free to
-        change to a new pattern)."""
+        change to a new pattern). Pieces may be resting on cells the new pattern removes; they
+        fall when it is applied (see settle())."""
         for x, y in cells:
             if (self.bits[y] >> x) & 1 and not (self.fixed_bits[y] >> x) & 1:
                 return False
@@ -74,7 +75,8 @@ class Board(object):
 
     def set_fixed(self, cells):
         """Replace the fixed cells: the block clock's digits. Fixed cells never fall or clear.
-        Only call this when can_set_fixed() is true, so no piece is overwritten."""
+        Only call this when can_set_fixed() is true, so no piece is overwritten. A piece that
+        was resting on a digit which has just gone falls, as a whole piece, into the space."""
         for y in range(self.height):
             old = self.fixed_bits[y]
             if not old:
@@ -91,6 +93,68 @@ class Board(object):
                 self.fixed_letters[y][x] = FIXED
                 self.bits[y] |= 1 << x
                 self.letters[y][x] = FIXED
+        self.settle()
+
+    def settle(self):
+        """Drop piece cells left in the air, as rigid pieces: every group of touching piece
+        cells falls as far as the lowest cell it can reach allows. Lower groups go first so an
+        upper group can come to rest on one that has already landed. Returns True if anything
+        moved."""
+        moved = False
+        while True:
+            groups = self._piece_groups()
+            if not groups:
+                return moved
+            groups.sort(key=lambda group: max(y for _x, y in group), reverse=True)
+            fell = False
+            for group in groups:
+                columns = {}
+                for x, y in group:
+                    if x not in columns or y > columns[x]:
+                        columns[x] = y
+                distance = self.height
+                for x, bottom in columns.items():
+                    y = bottom + 1
+                    while y < self.height and self.letters[y][x] is None:
+                        y += 1
+                    distance = min(distance, y - bottom - 1)
+                if distance:
+                    self._move_group(group, distance)
+                    fell = moved = True
+            if not fell:
+                return moved
+
+    def _piece_groups(self):
+        """Sets of 4-connected piece cells; fixed cells are not part of a group."""
+        seen = set()
+        groups = []
+        for y in range(self.height):
+            for x in range(self.cols):
+                if self.letters[y][x] in (None, FIXED) or (x, y) in seen:
+                    continue
+                seen.add((x, y))
+                stack = [(x, y)]
+                group = []
+                while stack:
+                    cx, cy = stack.pop()
+                    group.append((cx, cy))
+                    for nx, ny in ((cx + 1, cy), (cx - 1, cy), (cx, cy + 1), (cx, cy - 1)):
+                        if (0 <= nx < self.cols and 0 <= ny < self.height
+                                and (nx, ny) not in seen
+                                and self.letters[ny][nx] not in (None, FIXED)):
+                            seen.add((nx, ny))
+                            stack.append((nx, ny))
+                groups.append(group)
+        return groups
+
+    def _move_group(self, group, distance):
+        cells = [(x, y, self.letters[y][x]) for x, y in group]
+        for x, y in group:
+            self.bits[y] &= ~(1 << x)
+            self.letters[y][x] = None
+        for x, y, letter in cells:
+            self.bits[y + distance] |= 1 << x
+            self.letters[y + distance][x] = letter
 
     def place(self, letter, shape, x, y):
         for dx, dy in shape:

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.tetris" name="Tetris AI" version="1.1.0" provider-name="P-Hoep">
+<addon id="screensaver.tetris" name="Tetris AI" version="1.1.1" provider-name="P-Hoep">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
   </requires>
@@ -10,7 +10,7 @@
 
 The skill setting is how often the AI takes the best move: Perfect is every time, then Expert, Skilled, Average and Beginner make progressively more mistakes, so the stack sometimes reaches the top and the game starts fresh. Overall speed runs from a slow, meditative fall to a rapid-fire game, and the speed can climb as lines are cleared. The landing ghost can be turned off.
 
-The blocks can be Classic, NES, Neon, Pastel, Monochrome, Game Boy, Sunset, Ocean or Vaporwave, or your own seven colours; the background is any colour, the grid can be hidden, and the HUD can be dimmed. The block size sets how wide the blocks are in pixels: 96 keeps a close-up view of 20 columns, while smaller blocks fit up to 60 columns across the screen, so a wide display does not fill up with huge squares. An optional clock (12 or 24 hour, with seconds when the board has room for them) is either text in the corner or HH:MM built from blocks, resting on the bottom of the playfield or suspended in mid-air. The block clock really is part of the game: pieces collide with its digits and rows clear around them. Every move is drawn with Kodi controls, so there are no compiled parts and it runs on any Kodi 19+ platform, including Android and Fire TV.</description>
+The blocks can be Classic, NES, Neon, Pastel, Monochrome, Game Boy, Sunset, Ocean or Vaporwave, or your own seven colours; the background is any colour, the grid can be hidden, and the HUD can be dimmed. The block size sets how wide the blocks are in pixels: 96 keeps a close-up view of 20 columns, while smaller blocks fit up to 60 columns across the screen, so a wide display does not fill up with huge squares. An optional clock (12 or 24 hour, with seconds when the board has room for them) is either text in the corner or HH:MM built from blocks, resting on the bottom of the playfield or suspended in mid-air. The block clock really is part of the game: pieces collide with its digits, rows clear around them, and a piece resting on a digit that changes falls into the gap it leaves. Every move is drawn with Kodi controls, so there are no compiled parts and it runs on any Kodi 19+ platform, including Android and Fire TV.</description>
     <disclaimer lang="en_GB">Tetris is a trademark of The Tetris Company. This is a personal, unaffiliated fan project with no official artwork or assets: the pieces are plain geometric blocks drawn by the tool in this repository. Pure Python, no compiled parts, works on Kodi 19 and newer.</disclaimer>
     <platform>all</platform>
     <license>MIT</license>

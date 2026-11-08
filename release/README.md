@@ -16,7 +16,7 @@ repository so Kodi installs them and keeps them up to date.
 | [Sand Clock](#sand-clock) | 1.0.1 | A clock whose digits crumble into falling sand every second |
 | [Jeopkodi](#jeopkodi) | 1.0.0 | An endless Jeopardy! slideshow: clue, then the response |
 | [DVD Logo](#dvd-logo) | 1.0.1 | The classic bouncing DVD logo, with corner tricks |
-| [Tetris AI](#tetris-ai) | 1.1.0 | An AI plays Tetris edge to edge, with a clock made of blocks |
+| [Tetris AI](#tetris-ai) | 1.1.1 | An AI plays Tetris edge to edge, with a clock made of blocks |
 
 All of them are pure Python with no compiled code. They run on Kodi 19 (Matrix) and later,
 on any platform. They were developed and tested on Kodi 21 on macOS. God's Eye Map has
@@ -360,7 +360,8 @@ classic tetrominoes fall in the modern Guideline shapes and colours.
   as HH:MM (with seconds when the board is wide enough) built from blocks on the floor or
   suspended in mid-air. The block clock is part of the game: pieces collide with the digits and
   have to be placed around them, the digits never fall, rows clear around them, and the time is
-  redrawn once a minute (every second with seconds on).
+  redrawn once a minute (every second with seconds on) — a piece resting on a digit that
+  vanishes falls into the gap rather than hanging in the air.
 - **Look:** seven classic colours, the muted NES palette, Neon, Pastel, Monochrome, Game Boy,
   Sunset, Ocean, Vaporwave, or your own seven colours; the background is any colour, the block
   width runs from 32 to 96 pixels, and the grid, score panel, its opacity, the landing ghost and

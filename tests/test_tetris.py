@@ -219,6 +219,52 @@ class BoardTest(unittest.TestCase):
         self.assertEqual(b.letters[2][1], board.FIXED)  # clear keeps the clock
         self.assertIsNone(b.letters[0][0])
 
+    def test_a_clock_change_drops_what_rested_on_it(self):
+        b = board.Board(6, 8)
+        b.set_fixed([(1, 4)])
+        b.place('O', ((0, 0), (1, 0), (0, 1), (1, 1)), 0, 2)   # its corner sits on (1, 4)
+        self.assertTrue(b.can_set_fixed([(4, 7)]))
+        b.set_fixed([(4, 7)])                                   # the supporting digit goes
+        self.assertIsNone(b.letters[3][1])
+        self.assertEqual(b.letters[6][0], 'O')                  # the O fell four rows intact
+        self.assertEqual(b.letters[6][1], 'O')
+        self.assertEqual(b.letters[7][0], 'O')
+        self.assertEqual(b.letters[7][1], 'O')
+        self.assertEqual(b.letters[7][4], board.FIXED)
+        self.assertEqual(b.bits[3], 0)
+
+    def test_a_resting_piece_stays_put(self):
+        b = board.Board(6, 8)
+        b.set_fixed([(1, 4)])
+        b.place('O', ((0, 0), (1, 0), (0, 1), (1, 1)), 0, 2)
+        b.set_fixed([(1, 4), (4, 7)])                           # the support stays
+        self.assertEqual(b.letters[3][0], 'O')
+        self.assertIsNone(b.letters[4][0])
+
+    def test_settle_leaves_nothing_hanging(self):
+        def can_fall():
+            for group in b._piece_groups():
+                cells = set(group)
+                if all((x, y + 1) in cells
+                       or (y + 1 < b.height and b.letters[y + 1][x] is None)
+                       for x, y in group):
+                    return True
+            return False
+
+        rng = random.Random(3)
+        for _trial in range(40):
+            b = board.Board(10, 12)
+            b.set_fixed([(x, y) for y in range(12) for x in range(10) if rng.random() < 0.08])
+            for _piece in range(12):
+                letter = rng.choice(pieces.TYPES)
+                shape = rng.choice(pieces.ROTATIONS[letter])
+                x = rng.randrange(max(1, 10 - pieces.width(shape)))
+                y = rng.randrange(12)
+                if b.fits(pieces.masks(shape), x, y):
+                    b.place(letter, shape, x, y)
+            b.settle()
+            self.assertFalse(can_fall())
+
     def test_full_rows_keep_the_clock(self):
         b = board.Board(4, 4)
         b.set_fixed([(1, 2)])
@@ -395,7 +441,7 @@ class AddonTest(unittest.TestCase):
         tree = ET.parse(os.path.join(ROOT, 'addon.xml'))
         addon = tree.getroot()
         self.assertEqual(addon.get('id'), config.ADDON_ID)
-        self.assertEqual(addon.get('version'), '1.1.0')
+        self.assertEqual(addon.get('version'), '1.1.1')
         points = set(e.get('point') for e in addon.iter('extension'))
         self.assertIn('xbmc.ui.screensaver', points)
         self.assertTrue(os.path.isfile(os.path.join(ROOT, 'default.py')))

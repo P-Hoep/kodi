@@ -580,8 +580,10 @@ have two orientations, O one, T, J and L four).
   it, hanging in mid-air with the game playing around and above it. Either way its digits are
   fixed cells: pieces collide with them and have to be placed around them, they never fall with
   the stack, and a row that clears leaves them exactly where they are. The digits are redrawn
-  once a minute (every second with seconds on), as soon as no locked piece is in the way, in
-  any colour (*Block clock colour*). If the clock is off, the game is plain Tetris.
+  once a minute (every second with seconds on), as soon as no locked piece is in the way; a
+  piece resting on a digit that vanishes falls into the gap it leaves, never hanging in the
+  air. The clock can be any colour (*Block clock colour*). If the clock is off, the game is
+  plain Tetris.
 - **Look:** block width from 32 to 96 pixels (60 down to 20 columns), the grid, the stats panel
   (score, lines, level and best), its opacity, the landing ghost and the next-piece preview can
   each be switched off.
