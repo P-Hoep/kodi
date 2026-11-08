@@ -25,12 +25,15 @@ class App {
 public:
     ~App();
     static bool force_rgba8;          // tests: use the 8-bit trail map even where half floats work
+    // The draw pass renders into a target no larger than this and scales it up (tests lower it).
+    static int draw_cap_w, draw_cap_h;
 
     // GL context must be current. No fonts, no clock: the simulation starts at once.
     bool init(const Settings& settings, unsigned seed, std::string* error);
     void release();
 
-    // now: seconds on a steady clock. The simulation runs continuously; nothing outside drives it.
+    // now: seconds on a steady clock. One step runs on every pace-th frame; nothing outside drives
+    // the simulation.
     void render(double now, int fb_w, int fb_h);
 
     int agents_w() const { return aw_; }
@@ -39,7 +42,7 @@ public:
     int trail_h() const { return th_; }
     bool half_float() const { return half_; }
     long steps() const { return steps_; }
-    int steps_per_frame_limit() const { return max_steps_; }
+    int pace() const { return pace_; }
     int preset() const { return preset_; }
 
     // Tests and the harness's --selftest. Positions are 0..1 of the trail, headings 0..1 of a turn.
@@ -56,6 +59,7 @@ private:
     struct Target { unsigned tex = 0, fbo = 0; int w = 0, h = 0; };
     bool make_target(Target* t, int w, int h, bool linear, bool half);
     void draw_quad();
+    void step_saved(int n, const Params& p);   // step with a glu::SavedState already in force
     void restart();
     void set_palette();
     void build_food();
@@ -67,9 +71,9 @@ private:
     int preset_ = 0;
     std::mt19937 rng_;
     unsigned prog_sense_ = 0, prog_move_ = 0, prog_deposit_ = 0, prog_diffuse_ = 0, prog_init_ = 0;
-    unsigned prog_draw_ = 0;
+    unsigned prog_draw_ = 0, prog_upscale_ = 0;
     unsigned vbo_ = 0, points_vbo_ = 0, vao_ = 0, pal_tex_ = 0, food_tex_ = 0;
-    Target pos_[2], head_[2], trail_[2];
+    Target pos_[2], head_[2], trail_[2], draw_;
     int cp_ = 0, ch_ = 0, ct_ = 0;
     int aw_ = 0, ah_ = 0, tw_ = 0, th_ = 0, block_rows_ = 0;
     int species_ = 1;
@@ -80,9 +84,9 @@ private:
     std::vector<float> nodes_;
 
     double cam_x_ = 0.5, cam_y_ = 0.5, cam_t_ = 0, zoom_ = 1, rot_ = 0;
-    double last_now_ = -1, acc_ = 0, next_governor_ = 0, ema_dt_ = 0.016;
+    double last_now_ = -1;
     long steps_ = 0;
-    int max_steps_ = 2, steps_limit_ = 32;
+    int pace_ = 1, frames_since_step_ = 0;
     bool ready_ = false;
 };
 

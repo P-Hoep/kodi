@@ -1,13 +1,16 @@
 // Test window for the Physarum Lite screensaver, no Kodi involved.
-//   physarum_lite_glfw [--preset N] [--species N] [--agents N] [--trail N] [--speed N] [--start N]
+//   physarum_lite_glfw [--preset N] [--species N] [--agents N] [--trail N] [--pace N] [--start N]
 //                      [--food N] [--mode N] [--palette N] [--glow N] [--bright N] [--scale N] [--fx N]
 //                      [--view N] [--camera N] [--cam-speed N] [--zoom N] [--no-differ]
-//                      [--fullscreen] [--shot out.ppm --shot-after SECONDS] [--selftest]
-// N is the index in the settings lists (tools/make_settings_physarum_lite.py). --selftest checks
-// the sense / move / deposit passes against the model computed on the CPU.
+//                      [--fullscreen] [--draw-cap N] [--shot out.ppm --shot-after SECONDS] [--selftest]
+// N is the index in the settings lists (tools/make_settings_physarum_lite.py). --pace is frames per
+// step (1 = a step on every frame). --draw-cap lowers App::draw_cap_w (and h, in 16:9) to exercise
+// the scale-up path. --selftest checks the sense / move / deposit passes against the model computed
+// on the CPU.
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -137,7 +140,7 @@ int main(int argc, char** argv) {
         else if (is("--species")) s.species = std::atoi(next());
         else if (is("--agents")) s.agents = std::atoi(next());
         else if (is("--trail")) s.trail = std::atoi(next());
-        else if (is("--speed")) s.speed = std::atoi(next());
+        else if (is("--pace")) s.pace = std::atoi(next());
         else if (is("--start")) s.start = std::atoi(next());
         else if (is("--food")) s.food = std::atoi(next());
         else if (is("--mode")) s.colour_mode = std::atoi(next());
@@ -156,6 +159,10 @@ int main(int argc, char** argv) {
         else if (is("--shot-after")) shot_after = std::atof(next());
         else if (is("--selftest")) test = true;
         else if (is("--rgba8")) App::force_rgba8 = true;
+        else if (is("--draw-cap")) {
+            App::draw_cap_w = std::max(16, std::atoi(next()));
+            App::draw_cap_h = App::draw_cap_w * 9 / 16;
+        }
         else if (is("--custom")) {      // sa,ra,so,ss,decay,diffuse,deposit,jitter in the slider units
             s.preset = PRESET_COUNT;
             std::sscanf(next(), "%f,%f,%f,%f,%f,%f,%f,%f", &s.sa, &s.ra, &s.so, &s.ss, &s.decay, &s.diffuse, &s.deposit,
@@ -213,9 +220,8 @@ int main(int argc, char** argv) {
         ++frames;
         if (now >= next_status) {
             double dt = now - last_status;
-            std::printf("t=%.0fs %.0f fps, %.0f steps/s, up to %d per frame, behaviour %d\n", now,
-                        (frames - frames_at) / dt, (app.steps() - steps_at) / dt, app.steps_per_frame_limit(),
-                        app.preset());
+            std::printf("t=%.0fs %.0f fps, %.0f steps/s, 1 step per %d frame(s), behaviour %d\n", now,
+                        (frames - frames_at) / dt, (app.steps() - steps_at) / dt, app.pace(), app.preset());
             frames_at = frames;
             steps_at = app.steps();
             last_status = now;

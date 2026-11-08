@@ -21,11 +21,11 @@ using Params = sandclock::physarum::Params;
 
 // The shared tables are generated for the Physarum add-on (tools/make_settings_physarum.py); the
 // Lite settings use the same lists. Re-export the counts so the wrapper and the harness can write
-// `using namespace lite` and still see them.
+// `using namespace lite` and still see them. (Lite does not use the steps-per-second list: it
+// steps once per displayed frame; see Settings::pace.)
 using sandclock::physarum::PRESET_COUNT;
 using sandclock::physarum::AGENT_COUNT;
 using sandclock::physarum::TRAIL_COUNT;
-using sandclock::physarum::SPEED_COUNT;
 using sandclock::physarum::FOOD_COUNT;
 using sandclock::physarum::MODE_COUNT;
 using sandclock::physarum::PALETTE_COUNT;
@@ -45,10 +45,14 @@ struct Settings {
     // The Custom behaviour, in the PresetDef units.
     float sa = 22.5f, ra = 45, so = 9, ss = 10, decay = 90, diffuse = 100, deposit = 30, jitter = 0, repel = 50;
 
-    // Size and speed. The light defaults: 65 thousand agents on a 480 x 270 trail at 30 steps/s.
+    // Size and speed. The light defaults: 65 thousand agents on a 480 x 270 trail.
+    // The simulation is locked to the display: one step on every pace-th rendered frame (1 = every
+    // frame). At pace 1 every frame does exactly the same amount of GPU work, which is what keeps
+    // the frame rate even; a steps-per-second accumulator makes some frames do twice the work of
+    // others, which shows up as judder. At 60 Hz, pace 1 is 60 steps/s and pace 2 is 30.
     int agents = 1;                  // index into AGENT_SIZES
     int trail = 0;                   // index into TRAIL_SIZES
-    int speed = 1;                   // index into SPEED_SPS
+    int pace = 1;                    // frames per step: 1..4 (1 = every frame, the smoothest)
 
     // Start and food.
     int start = 0;                   // index into the lite start list

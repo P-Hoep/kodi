@@ -349,6 +349,14 @@ void main() {
 
 double wrap01(double v) { return v - std::floor(v); }
 
+// The draw pass renders into a small target (the trail map is far smaller than the screen); this
+// scales it up to the framebuffer with one bilinear sample a pixel.
+const char* kUpscale = R"(
+uniform sampler2D u_tex;
+varying vec2 v_uv;
+void main() { gl_FragColor = texture2D(u_tex, v_uv); }
+)";
+
 bool has_extension(const char* name) {
 #if defined(SANDCLOCK_GLES) || (defined(SANDCLOCK_KODI) && defined(HAS_GLES))
     const char* e = (const char*)glGetString(GL_EXTENSIONS);
@@ -391,6 +399,7 @@ Params params_for(const Settings& s, float px_scale) {
 }
 
 bool App::force_rgba8 = false;
+int App::draw_cap_w = 1920, App::draw_cap_h = 1080;
 
 App::~App() { release(); }
 
@@ -448,9 +457,9 @@ bool App::init(const Settings& settings, unsigned seed, std::string* error) {
     int max_tex = 2048;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_tex);
 
-    const char* frag[] = {kSense, kMove, kDiffuse, kInit, kDraw};
-    unsigned* progs[] = {&prog_sense_, &prog_move_, &prog_diffuse_, &prog_init_, &prog_draw_};
-    for (int i = 0; i < 5; ++i) {
+    const char* frag[] = {kSense, kMove, kDiffuse, kInit, kDraw, kUpscale};
+    unsigned* progs[] = {&prog_sense_, &prog_move_, &prog_diffuse_, &prog_init_, &prog_draw_, &prog_upscale_};
+    for (int i = 0; i < 6; ++i) {
         *progs[i] = glu::link(nullptr, frag[i], error);
         if (!*progs[i]) return false;
     }
@@ -530,14 +539,15 @@ bool App::init(const Settings& settings, unsigned seed, std::string* error) {
     nodes_.clear();
     build_food();
 
-    max_steps_ = 2;
+    pace_ = std::max(1, std::min(4, s_.pace));
+    frames_since_step_ = 0;
     ready_ = true;
     restart();
     return true;
 }
 
 void App::release() {
-    for (Target* t : {&pos_[0], &pos_[1], &head_[0], &head_[1], &trail_[0], &trail_[1]}) {
+    for (Target* t : {&pos_[0], &pos_[1], &head_[0], &head_[1], &trail_[0], &trail_[1], &draw_}) {
         free_target(&t->tex, &t->fbo);
         *t = Target();
     }
@@ -548,7 +558,8 @@ void App::release() {
 #ifdef SANDCLOCK_CORE
     if (vao_) glDeleteVertexArrays(1, &vao_);
 #endif
-    for (unsigned* p : {&prog_sense_, &prog_move_, &prog_deposit_, &prog_diffuse_, &prog_init_, &prog_draw_}) {
+    for (unsigned* p : {&prog_sense_, &prog_move_, &prog_deposit_, &prog_diffuse_, &prog_init_, &prog_draw_,
+                        &prog_upscale_}) {
         if (*p) glDeleteProgram(*p);
         *p = 0;
     }
@@ -675,9 +686,14 @@ float App::deposit_amount(const Params& p) const {
     return (float)std::min(1.0, std::max(lo, d));
 }
 
-void App::step(int n, const Params& base) {
-    if (n <= 0) return;
+void App::step(int n, const Params& p) {
     SavedState saved;
+    step_saved(n, p);
+}
+
+// Expects a glu::SavedState to be in force (it has turned blending, depth, cull and scissor off).
+void App::step_saved(int n, const Params& base) {
+    if (n <= 0) return;
     Params sp[3];
     for (int i = 0; i < 3; ++i) sp[i] = for_species(base, i, s_.species_differ);
     float node_food = nodes_.empty() ? 0.0f : 0.06f;
@@ -862,36 +878,41 @@ void App::render(double now, int fb_w, int fb_h) {
     if (!ready_) return;
     double dt = last_now_ < 0 ? 0.016 : std::min(0.25, std::max(0.0, now - last_now_));
     last_now_ = now;
-    ema_dt_ += 0.1 * (dt - ema_dt_);
     update_camera(dt);
 
-    // Steps due, capped by a governor so a device that cannot keep up slows the simulation, not
-    // the display.
-    if (now >= next_governor_) {
-        next_governor_ = now + 0.5;
-        if (ema_dt_ > 0.045 && max_steps_ > 1) max_steps_ = std::max(1, max_steps_ / 2);
-        else if (ema_dt_ < 0.019 && max_steps_ < steps_limit_) max_steps_ = std::min(steps_limit_, max_steps_ + 1);
-    }
-    int sps = SPEED_SPS[std::max(0, std::min(SPEED_COUNT - 1, s_.speed))];
-    int steps;
-    if (sps < 0) {
-        steps = max_steps_;
-    } else {
-        acc_ = std::min(acc_ + dt * sps, 6.0);
-        steps = std::min((int)acc_, max_steps_);
-        acc_ -= steps;
-    }
-    step(steps, params_);
-
-    // Draw.
     SavedState saved;
-    glBindFramebuffer(GL_FRAMEBUFFER, (unsigned)saved.fbo);
+
+    // One step on every pace-th frame, and never more than one. At pace 1 every frame asks the GPU
+    // for exactly the same work, so the compositor either keeps its refresh rate or settles evenly
+    // on a lower one. A time-based accumulator instead hands it frames of different weights (0, 1
+    // or 2 steps depending on where the frame landed), and that unevenness is what reads as
+    // judder. Higher paces are still evenly spaced; if one step plus the draw does not fit in a
+    // frame, prefer lowering the agent count over spacing the steps out.
+    if (++frames_since_step_ >= pace_) {
+        frames_since_step_ = 0;
+        step_saved(1, params_);
+    }
+
+    // Draw. The draw pass is the most per-pixel work in the add-on, and the trail map underneath it
+    // is far smaller than the screen, so it renders into a target of at most draw_cap_w x
+    // draw_cap_h and that is scaled up with one bilinear sample a pixel. A 4K output then costs
+    // about what a 1080p one does.
     int vw = fb_w, vh = fb_w * 9 / 16;
     if (vh > fb_h) { vh = fb_h; vw = fb_h * 16 / 9; }
-    glViewport(saved.viewport[0], saved.viewport[1], fb_w, fb_h);
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glViewport(saved.viewport[0] + (fb_w - vw) / 2, saved.viewport[1] + (fb_h - vh) / 2, vw, vh);
+    int dw = vw, dh = vh;
+    bool scaled = vw > draw_cap_w || vh > draw_cap_h;
+    if (scaled) {
+        if (dw > draw_cap_w) { dh = std::max(1, dh * draw_cap_w / dw); dw = draw_cap_w; }
+        if (dh > draw_cap_h) { dw = std::max(1, dw * draw_cap_h / dh); dh = draw_cap_h; }
+    }
+    if (scaled && (!draw_.tex || draw_.w != dw || draw_.h != dh) && !make_target(&draw_, dw, dh, true, false)) {
+        free_target(&draw_.tex, &draw_.fbo);   // no render targets: draw straight to the framebuffer
+        draw_ = Target();
+        scaled = false;
+    } else if (!scaled && draw_.tex) {
+        free_target(&draw_.tex, &draw_.fbo);
+        draw_ = Target();
+    }
 
     const uint32_t* pal = PALETTE[std::max(0, std::min(PALETTE_COUNT - 1, s_.palette))];
     double phase = std::fmod(now * s_.cycle / 100.0 * 0.05, 1.0);
@@ -901,6 +922,18 @@ void App::render(double now, int fb_w, int fb_h) {
     colour3(s_.colour, colour);
     colour3(s_.background, bg);
     bool food_visible = !nodes_.empty();
+
+    if (draw_.tex) {
+        glBindFramebuffer(GL_FRAMEBUFFER, draw_.fbo);
+        glViewport(0, 0, dw, dh);
+    } else {
+        // The screen is small enough to draw into directly: clear the black bars around it.
+        glBindFramebuffer(GL_FRAMEBUFFER, (unsigned)saved.fbo);
+        glViewport(saved.viewport[0], saved.viewport[1], fb_w, fb_h);
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glViewport(saved.viewport[0] + (fb_w - vw) / 2, saved.viewport[1] + (fb_h - vh) / 2, vw, vh);
+    }
 
     glUseProgram(prog_draw_);
     bind(1, pal_tex_);
@@ -918,6 +951,20 @@ void App::render(double now, int fb_w, int fb_h) {
     glUniform3f(u(prog_draw_, "u_c2"), c[2][0], c[2][1], c[2][2]);
     glUniform3f(u(prog_draw_, "u_colour"), colour[0], colour[1], colour[2]);
     glUniform3f(u(prog_draw_, "u_bg"), bg[0], bg[1], bg[2]);
+    draw_quad();
+
+    if (!draw_.tex) return;
+
+    // Scale the scene up into the letterboxed part of the framebuffer; the black bars are cleared
+    // behind it.
+    glBindFramebuffer(GL_FRAMEBUFFER, (unsigned)saved.fbo);
+    glViewport(saved.viewport[0], saved.viewport[1], fb_w, fb_h);
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glViewport(saved.viewport[0] + (fb_w - vw) / 2, saved.viewport[1] + (fb_h - vh) / 2, vw, vh);
+    glUseProgram(prog_upscale_);
+    bind(0, draw_.tex);
+    glUniform1i(u(prog_upscale_, "u_tex"), 0);
     draw_quad();
 }
 
