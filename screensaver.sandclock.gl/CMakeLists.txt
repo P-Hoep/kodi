@@ -79,12 +79,26 @@ if(SANDCLOCK_HARNESS)
   add_executable(physarum_glfw src/main_physarum_glfw.cpp)
   target_link_libraries(physarum_glfw physarum_render ${GLFW_TARGET})
 
+  add_library(physarum_lite_render STATIC src/physarum_lite_app.cpp)
+  target_link_libraries(physarum_lite_render PUBLIC sandclock_core OpenGL::GL)
+  if(SANDCLOCK_GLES)
+    target_compile_definitions(physarum_lite_render PUBLIC SANDCLOCK_GLES)
+  endif()
+  add_executable(physarum_lite_glfw src/main_physarum_lite_glfw.cpp)
+  target_link_libraries(physarum_lite_glfw physarum_lite_render ${GLFW_TARGET})
+
   if(APPLE)
     add_library(physarum_render_core STATIC src/physarum_app.cpp)
     target_link_libraries(physarum_render_core PUBLIC sandclock_core OpenGL::GL)
     target_compile_definitions(physarum_render_core PUBLIC SANDCLOCK_CORE)
     add_executable(physarum_glfw_core src/main_physarum_glfw.cpp)
     target_link_libraries(physarum_glfw_core physarum_render_core ${GLFW_TARGET})
+
+    add_library(physarum_lite_render_core STATIC src/physarum_lite_app.cpp)
+    target_link_libraries(physarum_lite_render_core PUBLIC sandclock_core OpenGL::GL)
+    target_compile_definitions(physarum_lite_render_core PUBLIC SANDCLOCK_CORE)
+    add_executable(physarum_lite_glfw_core src/main_physarum_lite_glfw.cpp)
+    target_link_libraries(physarum_lite_glfw_core physarum_lite_render_core ${GLFW_TARGET})
 
     # The same thing with the 3.2 core profile Kodi runs on macOS, to test that shader dialect.
     add_library(automata_render_core STATIC src/automata_app.cpp)
@@ -174,4 +188,8 @@ if(SANDCLOCK_KODI)
 
   # Physarum: only the library; the add-on folder is ../screensaver.physarum.armv7.
   sandclock_kodi_module(screensaver.physarum src/kodi_physarum.cpp src/physarum_app.cpp)
+
+  # Physarum Lite: the same simulation without the clock, fonts or timers; the add-on folder is
+  # ../screensaver.physarum.lite.armv7.
+  sandclock_kodi_module(screensaver.physarum_lite src/kodi_physarum_lite.cpp src/physarum_lite_app.cpp)
 endif()
