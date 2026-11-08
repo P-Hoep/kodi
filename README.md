@@ -608,7 +608,7 @@ python3 -m unittest tests.test_tetris        # engine, clock, settings, AI and m
 
 Tetris is a trademark of The Tetris Company; this is an unaffiliated fan project.
 
-## Tetris AI (OpenGL) (new, v1.0.1)
+## Tetris AI (OpenGL) (new, v1.0.2)
 
 `screensaver.tetris.gl` is the same game drawn by the GPU instead of by Kodi image controls:
 everything about the rules, the AI, the colours, the clock and the settings is the same, but the

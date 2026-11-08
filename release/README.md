@@ -17,7 +17,7 @@ repository so Kodi installs them and keeps them up to date.
 | [Jeopkodi](#jeopkodi) | 1.0.0 | An endless Jeopardy! slideshow: clue, then the response |
 | [DVD Logo](#dvd-logo) | 1.0.1 | The classic bouncing DVD logo, with corner tricks |
 | [Tetris AI](#tetris-ai) | 1.1.1 | An AI plays Tetris edge to edge, with a clock made of blocks |
-| [Tetris AI (OpenGL)](#tetris-ai-opengl) | 1.0.1 | The same AI in native code and OpenGL: the motion is as smooth as the display |
+| [Tetris AI (OpenGL)](#tetris-ai-opengl) | 1.0.2 | The same AI in native code and OpenGL: the motion is as smooth as the display |
 
 All of them are pure Python with no compiled code, except Tetris AI (OpenGL), which is a native
 add-on. The Python add-ons run on Kodi 19 (Matrix) and later, on any platform; Tetris AI

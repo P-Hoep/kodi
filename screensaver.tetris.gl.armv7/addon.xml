@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.tetris.gl.armv7" name="Tetris AI (OpenGL, 32-bit Android)" version="1.0.1" provider-name="P-Hoep">
+<addon id="screensaver.tetris.gl.armv7" name="Tetris AI (OpenGL, 32-bit Android)" version="1.0.2" provider-name="P-Hoep">
   <requires>
     <c-pluff version="1.0"/>
     <import addon="kodi.binary.global.main" version="2.0.2"/>

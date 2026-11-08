@@ -95,11 +95,20 @@ class ATTR_DLL_LOCAL CTetrisGL : public kodi::addon::CInstanceScreensaver {
     const double now =
         std::chrono::duration<double>(std::chrono::steady_clock::now() - started_).count();
     app_->render(now, seconds_since_midnight(), Width(), Height());
+
+    ++frames_;
+    if (now - fps_since_ >= 10.0) {
+      kodi::Log(ADDON_LOG_DEBUG, "Tetris AI (OpenGL): %.1f fps", frames_ / (now - fps_since_));
+      frames_ = 0;
+      fps_since_ = now;
+    }
   }
 
  private:
   std::unique_ptr<sandclock::tetrisgl::App> app_;
   std::chrono::steady_clock::time_point started_;
+  int frames_ = 0;
+  double fps_since_ = 0;
 };
 
 class ATTR_DLL_LOCAL CTetrisGLAddon : public kodi::addon::CAddonBase {

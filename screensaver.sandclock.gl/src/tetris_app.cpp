@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #include "gl_util.hpp"
@@ -345,15 +346,10 @@ bool App::init(const tetris::Settings& settings, unsigned seed, std::string* err
 // ---------------------------------------------------------------- the loop
 
 void App::spawn(double now) {
-  think_seconds_ = 0.12;
-  move_seconds_ = 0.045;
-  drop_seconds_ = 0.020;
   const tetris::Delays d = tetris::delays(settings_, game_.level);
   think_seconds_ = d.think;
   move_seconds_ = d.move;
   drop_seconds_ = d.drop;
-
-  maybe_update_clock(now);
 
   letter_ = game_.take();
   const tetris::Placement placement = tetris::choose(board_, letter_, rng_, settings_.skill);
@@ -372,6 +368,13 @@ void App::spawn(double now) {
   if (!board_.fits(tetris::piece(letter_).masks[rotation_], spawn_x_, 0)) spawn_x_ = target_x_;
   vis_x_ = spawn_x_;
   vis_y_ = 0;
+
+  // The delays are one column of slide and one row of fall, as in the Python add-on, so a
+  // 12-row drop takes 12 drop delays instead of one: the piece is visibly in motion instead
+  // of covering the whole distance in a single frame.
+  move_seconds_ = d.move * std::max(1, std::abs(target_x_ - spawn_x_));
+  drop_seconds_ = d.drop * std::max(1, target_y_);
+
   phase_ = Phase::Think;
   phase_start_ = now;
 }
@@ -379,6 +382,9 @@ void App::spawn(double now) {
 void App::update(double now) {
   if (now < now_) now = now_;
   now_ = now;
+  // Once per frame, not once per piece: the block clock ticks every second even when the
+  // game runs slowly.
+  maybe_update_clock(now);
   if (!started_) {
     started_ = true;
     spawn(now);
