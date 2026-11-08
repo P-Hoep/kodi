@@ -98,12 +98,18 @@ struct SavedState {
     int fbo = 0, viewport[4] = {0, 0, 0, 0}, active_texture = 0, program = 0, array_buffer = 0;
     int blend_src_rgb = 0, blend_dst_rgb = 0, blend_src_a = 0, blend_dst_a = 0;
     bool blend, depth, cull, scissor;
+#ifdef SANDCLOCK_CORE
+    int vao = 0;
+#endif
     SavedState() {
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo);
         glGetIntegerv(GL_VIEWPORT, viewport);
         glGetIntegerv(GL_ACTIVE_TEXTURE, &active_texture);
         glGetIntegerv(GL_CURRENT_PROGRAM, &program);
         glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &array_buffer);
+#ifdef SANDCLOCK_CORE
+        glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &vao);
+#endif
         glGetIntegerv(GL_BLEND_SRC_RGB, &blend_src_rgb);
         glGetIntegerv(GL_BLEND_DST_RGB, &blend_dst_rgb);
         glGetIntegerv(GL_BLEND_SRC_ALPHA, &blend_src_a);
@@ -123,11 +129,18 @@ struct SavedState {
         glBindTexture(GL_TEXTURE_2D, 0);
         glUseProgram((unsigned)program);
         glBindBuffer(GL_ARRAY_BUFFER, (unsigned)array_buffer);
+#ifdef SANDCLOCK_CORE
+        // A core-profile context draws only through a bound VAO, so put back whichever one the
+        // caller had; ours is deleted in release() and must not be left bound.
+        glBindVertexArray((unsigned)vao);
+#endif
         glBlendFuncSeparate((unsigned)blend_src_rgb, (unsigned)blend_dst_rgb, (unsigned)blend_src_a, (unsigned)blend_dst_a);
+        // Kodi's GUI draws its quads with culling off and depth test off. If we leave either
+        // enabled, textured GUI quads are culled and the skin loses its pictures.
         if (blend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
-        if (depth) glEnable(GL_DEPTH_TEST);
-        if (cull) glEnable(GL_CULL_FACE);
-        if (scissor) glEnable(GL_SCISSOR_TEST);
+        if (depth) glEnable(GL_DEPTH_TEST); else glDisable(GL_DEPTH_TEST);
+        if (cull) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
+        if (scissor) glEnable(GL_SCISSOR_TEST); else glDisable(GL_SCISSOR_TEST);
     }
 };
 

@@ -318,9 +318,12 @@ bool App::load_texture(const std::string& path, unsigned* texture, bool mipmaps,
   }
   glGenTextures(1, texture);
   glBindTexture(GL_TEXTURE_2D, *texture);
+  int alignment = 4;
+  glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(format), w, h, 0, format, GL_UNSIGNED_BYTE,
                pixels);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);  // Kodi expects the default 4
   stbi_image_free(pixels);
   if (mipmaps) {
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -361,6 +364,8 @@ static bool split_swatches(const std::string& path, int total, int count, unsign
   const size_t row = static_cast<size_t>(sw) * channels;
   std::vector<unsigned char> strip(row * h);
   glGenTextures(count, textures);
+  int alignment = 4;
+  glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   for (int s = 0; s < count; ++s) {
     for (int y = 0; y < h; ++y) {
@@ -377,6 +382,7 @@ static bool split_swatches(const std::string& path, int total, int count, unsign
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   }
+  glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);  // Kodi expects the default 4
   stbi_image_free(pixels);
   return true;
 }
@@ -466,6 +472,11 @@ void App::make_buffers() {
   glGenBuffers(1, &sky_ibo_);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sky_ibo_);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof kCubeIndices, kCubeIndices, GL_STATIC_DRAW);
+#ifdef SANDCLOCK_CORE
+  // Leave no VAO of ours bound: Kodi draws through its own, and it only rebinds at init and
+  // around video rendering. Binding 0 is legal in the core profile, just not drawable.
+  glBindVertexArray(0);
+#endif
 }
 
 bool App::init(const infworld::Settings& settings, unsigned seed, const std::string& asset_dir,

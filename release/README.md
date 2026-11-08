@@ -18,7 +18,7 @@ repository so Kodi installs them and keeps them up to date.
 | [DVD Logo](#dvd-logo) | 1.0.1 | The classic bouncing DVD logo, with corner tricks |
 | [Tetris AI](#tetris-ai) | 1.1.1 | An AI plays Tetris edge to edge, with a clock made of blocks |
 | [Tetris AI (OpenGL)](#tetris-ai-opengl) | 1.0.2 | The same AI in native code and OpenGL: the motion is as smooth as the display |
-| [Endless World (OpenGL)](#endless-world-opengl) | 1.0.0 | An endless procedural landscape of mountains, lakes and forests, generated as the camera flies |
+| [Endless World (OpenGL)](#endless-world-opengl) | 1.0.1 | An endless procedural landscape of mountains, lakes and forests, generated as the camera flies |
 
 All of them are pure Python with no compiled code, except Tetris AI (OpenGL) and Endless World
 (OpenGL), which are native add-ons. The Python add-ons run on Kodi 19 (Matrix) and later, on any

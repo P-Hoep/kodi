@@ -703,7 +703,7 @@ python3 ../tools/make_settings_physarum_audio.py   # settings.xml + strings.po f
 KODI_ADDON=visualization.physarum.lite python3 ../tools/kodi.py install
 ```
 
-## Endless World (OpenGL) (new, v1.0.0)
+## Endless World (OpenGL) (new, v1.0.1)
 
 ![Endless World: a slow glide over hills, a lake and forests that are generated as they come into view, with rippling water and drifting clouds](release/gifs/endless-world.gif)
 
