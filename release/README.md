@@ -17,7 +17,7 @@ repository so Kodi installs them and keeps them up to date.
 | [Jeopkodi](#jeopkodi) | 1.0.0 | An endless Jeopardy! slideshow: clue, then the response |
 | [DVD Logo](#dvd-logo) | 1.0.1 | The classic bouncing DVD logo, with corner tricks |
 | [Tetris AI](#tetris-ai) | 1.1.1 | An AI plays Tetris edge to edge, with a clock made of blocks |
-| [Tetris AI (OpenGL)](#tetris-ai-opengl) | 1.0.0 | The same AI in native code and OpenGL: the motion is as smooth as the display |
+| [Tetris AI (OpenGL)](#tetris-ai-opengl) | 1.0.1 | The same AI in native code and OpenGL: the motion is as smooth as the display |
 
 All of them are pure Python with no compiled code, except Tetris AI (OpenGL), which is a native
 add-on. The Python add-ons run on Kodi 19 (Matrix) and later, on any platform; Tetris AI
@@ -396,10 +396,11 @@ any colour). The engine is a C++ port of the Python one, so the AI behaves the s
 
 This is a native add-on, so Kodi needs the build for its platform:
 
-- **Tetris AI (OpenGL)** — macOS (Intel and Apple Silicon) and 64-bit Android.
-- **Tetris AI (OpenGL, 32-bit Android)** — 32-bit Android Kodi: many Google TV boxes and the
-  Chromecast with Google TV. Install this one on those devices; the other one is for 64-bit
+- **Tetris AI (OpenGL, macOS and 64-bit Android)** — macOS (Intel and Apple Silicon) and 64-bit
   Android.
+- **Tetris AI (OpenGL, 32-bit Android)** — 32-bit Android Kodi: the Fire TV, many Google TV boxes
+  and the Chromecast with Google TV. Install this one on those devices; the other one is for
+  64-bit Android and macOS, and its library cannot load in a 32-bit Kodi.
 
 Any key or click ends it at once. It is under **Look and feel → Screensaver**. Tetris is a
 trademark of The Tetris Company; this is an unaffiliated fan project.

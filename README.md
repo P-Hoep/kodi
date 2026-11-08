@@ -608,7 +608,7 @@ python3 -m unittest tests.test_tetris        # engine, clock, settings, AI and m
 
 Tetris is a trademark of The Tetris Company; this is an unaffiliated fan project.
 
-## Tetris AI (OpenGL) (new, v1.0)
+## Tetris AI (OpenGL) (new, v1.0.1)
 
 `screensaver.tetris.gl` is the same game drawn by the GPU instead of by Kodi image controls:
 everything about the rules, the AI, the colours, the clock and the settings is the same, but the
@@ -621,9 +621,11 @@ sharp on a high-DPI screen.
 It is a native add-on (C++ / OpenGL, 2.1 and GLES 2.0), so it is built per platform, and there
 are two Kodi add-ons for it:
 
-- **Tetris AI (OpenGL)** — macOS (universal, Intel and Apple Silicon) and 64-bit Android.
-- **Tetris AI (OpenGL, 32-bit Android)** — the same build for 32-bit Android Kodi, which many
-  Google TV boxes and the Chromecast with Google TV use.
+- **Tetris AI (OpenGL, macOS and 64-bit Android)** — macOS (universal, Intel and Apple Silicon)
+  and 64-bit Android.
+- **Tetris AI (OpenGL, 32-bit Android)** — the same build for 32-bit Android Kodi, which the Fire
+  TV, many Google TV boxes and the Chromecast with Google TV use. Install this one on those
+  devices; the 64-bit library cannot load in a 32-bit Kodi.
 
 The code lives in `screensaver.sandclock.gl` with the other GPU add-ons and is documented in
 [screensaver.sandclock.gl/README.md](screensaver.sandclock.gl/README.md#tetris-ai-opengl). The
