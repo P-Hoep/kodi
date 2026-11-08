@@ -699,8 +699,8 @@ cmake -S . -B build-android -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake
   -DSANDCLOCK_KODI=ON -DSANDCLOCK_HARNESS=OFF \
   -DKODI_DEVKIT_INCLUDE=<xbmc>/xbmc/addons/kodi-dev-kit/include && cmake --build build-android
 
-python3 tools/make_settings_physarum_audio.py   # settings.xml + strings.po for both add-on folders
-KODI_ADDON=visualization.physarum.lite python3 tools/kodi.py install
+python3 ../tools/make_settings_physarum_audio.py   # settings.xml + strings.po for both add-on folders
+KODI_ADDON=visualization.physarum.lite python3 ../tools/kodi.py install
 ```
 
 ## Documentation
