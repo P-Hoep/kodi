@@ -18,12 +18,13 @@ repository so Kodi installs them and keeps them up to date.
 | [DVD Logo](#dvd-logo) | 1.0.1 | The classic bouncing DVD logo, with corner tricks |
 | [Tetris AI](#tetris-ai) | 1.1.1 | An AI plays Tetris edge to edge, with a clock made of blocks |
 | [Tetris AI (OpenGL)](#tetris-ai-opengl) | 1.0.2 | The same AI in native code and OpenGL: the motion is as smooth as the display |
+| [Endless World (OpenGL)](#endless-world-opengl) | 1.0.0 | An endless procedural landscape of mountains, lakes and forests, generated as the camera flies |
 
-All of them are pure Python with no compiled code, except Tetris AI (OpenGL), which is a native
-add-on. The Python add-ons run on Kodi 19 (Matrix) and later, on any platform; Tetris AI
-(OpenGL) is built for macOS (Intel and Apple Silicon) and Android, in a 64-bit and a 32-bit
-build. They were developed and tested on Kodi 21 on macOS. God's Eye Map has also been tested
-on Amazon Fire TV Sticks.
+All of them are pure Python with no compiled code, except Tetris AI (OpenGL) and Endless World
+(OpenGL), which are native add-ons. The Python add-ons run on Kodi 19 (Matrix) and later, on any
+platform; the OpenGL add-ons are built for macOS (Intel and Apple Silicon) and Android, in a
+64-bit and a 32-bit build. They were developed and tested on Kodi 21 on macOS. God's Eye Map has
+also been tested on Amazon Fire TV Sticks.
 
 ---
 
@@ -404,6 +405,36 @@ This is a native add-on, so Kodi needs the build for its platform:
 
 Any key or click ends it at once. It is under **Look and feel → Screensaver**. Tetris is a
 trademark of The Tetris Company; this is an unaffiliated fan project.
+
+---
+
+## Endless World (OpenGL)
+
+![Endless World: a slow glide over hills, a lake and forests that are generated as they come into view, with rippling water and drifting clouds](gifs/endless-world.gif)
+
+A camera flies slowly over an infinite landscape generated from noise: mountains, green hills,
+sandy beaches, lakes and seas, pine and broadleaf forests, and a sky with drifting clouds.
+Nothing is loaded from disk except the textures: the height of every hill and the position of
+every tree come from the seed when a chunk comes into view, and the world is redrawn in five
+levels of detail around the camera, so it never ends and the ground near you stays detailed.
+It is a port of [infworld](https://github.com/NULLPTR-ERROR/infworld) by Jeremy Li "Nullptr
+Error".
+
+The flight can glide, circle or drift; you pick the seed (0 is a new world every start), how far
+to draw, the terrain and tree detail, the tree density, the speed and the height, and whether to
+look around while flying and to draw the sea. Automatic resolution and adaptive quality keep a
+slow box smooth.
+
+This is a native add-on, so Kodi needs the build for its platform:
+
+- **Endless World (OpenGL)** — macOS (Intel and Apple Silicon) and 64-bit Android.
+- **Endless World (OpenGL, 32-bit Android)** — 32-bit Android Kodi: many Google TV boxes and the
+  Chromecast with Google TV. Install this one on those devices; the other one's library cannot
+  load in a 32-bit Kodi.
+
+Any key or click ends it at once. It is under **Look and feel → Screensaver**. The code is MIT
+licensed; the textures are used under CC-BY-SA 3.0, with the credits in the add-on's
+`LICENSE.txt` and `resources/textures/credits.txt`.
 
 ---
 

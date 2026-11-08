@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.infworld.gl" name="Endless World (OpenGL)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.infworld.gl.dylib"
+             library_android="screensaver.infworld.gl.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">An endless procedurally generated world of mountains, lakes and forests, drawn on the GPU</summary>
+    <description lang="en_GB">A camera flies slowly over an infinite landscape generated from noise: mountains, green hills, sandy beaches, lakes and seas, pine and broadleaf forests, and a sky with drifting clouds. Nothing is loaded from disk except the textures: every hill and every tree is computed from the seed when it comes into view, and the world is redrawn in five levels of detail around the camera, so it never ends. The flight can glide, circle or drift, at three speeds and at any height from just above the treetops to high above the clouds, looking around or holding a steady course. Change the seed to explore a different world, choose the render distance and detail, and use Automatic resolution and adaptive quality to keep a slow box smooth. On a 32-bit Android Kodi (many Google TV boxes) install "Endless World (OpenGL, 32-bit Android)" instead.</description>
+    <disclaimer lang="en_GB">The world is a port of infworld by Jeremy Li "Nullptr Error" (MIT); the textures come from its assets and are used under CC-BY-SA 3.0, with credits in LICENSE.txt and resources/textures/credits.txt. This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Apple Silicon and Intel, and 64-bit Android).</disclaimer>
+    <platform>osx android</platform>
+    <license>MIT, CC-BY-SA-3.0</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

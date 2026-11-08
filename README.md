@@ -703,6 +703,55 @@ python3 ../tools/make_settings_physarum_audio.py   # settings.xml + strings.po f
 KODI_ADDON=visualization.physarum.lite python3 ../tools/kodi.py install
 ```
 
+## Endless World (OpenGL) (new, v1.0.0)
+
+![Endless World: a slow glide over hills, a lake and forests that are generated as they come into view, with rippling water and drifting clouds](release/gifs/endless-world.gif)
+
+`screensaver.infworld.gl` flies a camera slowly over an endless, procedurally generated landscape
+drawn with OpenGL. Mountains, green hills, sandy beaches, lakes and seas, pine and broadleaf
+forests, and a sky with drifting clouds: nothing is loaded from disk except the textures, because
+the height of every hill and the position of every tree come from the seed when a chunk comes into
+view. The world is redrawn in five levels of detail around the camera, so it never ends and the
+near ground stays detailed. The flight can glide, circle or drift; the seed, render distance,
+detail, tree density, height and speed are all settings, and Automatic resolution plus adaptive
+quality keep a slow box smooth. It is a port of [infworld](https://github.com/NULLPTR-ERROR/infworld)
+by Jeremy Li "Nullptr Error" (MIT); the textures are from its assets (CC-BY-SA 3.0).
+
+It is a native add-on (C++ / OpenGL, 2.1, 3.2 core and GLES 2.0), so it is built per platform, and
+there are two Kodi add-ons for it:
+
+- **Endless World (OpenGL)** — macOS (universal, Intel and Apple Silicon) and 64-bit Android.
+- **Endless World (OpenGL, 32-bit Android)** — the same build for 32-bit Android Kodi, which many
+  Google TV boxes and the Chromecast with Google TV use. Install this one on those devices; the
+  64-bit library cannot load in a 32-bit Kodi.
+
+The code lives in its own project, `screensaver.infworld.gl`, and is documented in
+[screensaver.infworld.gl/README.md](screensaver.infworld.gl/README.md). The world model is a C++
+port of infworld (`src/infworld.*`, tested by `screensaver.infworld.gl/tests/test_infworld.cpp`),
+the renderer is `src/infworld_app.*`, and the settings come from
+`tools/make_settings_infworld.py`:
+
+```bash
+cd screensaver.infworld.gl
+cmake -S . -B build && cmake --build build      # infworld_glfw test window (macOS also infworld_glfw_core)
+./build/infworld_glfw_core --assets resources/textures --seed 2 --shot out.ppm --shot-after 8
+ctest --test-dir build                          # noise, chunks, LOD rings, tree placement
+
+# Kodi add-on: macOS universal dylib
+cmake -S . -B build-macos -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+  -DSANDCLOCK_KODI=ON -DSANDCLOCK_HARNESS=OFF \
+  -DKODI_DEVKIT_INCLUDE=<xbmc>/xbmc/addons/kodi-dev-kit/include && cmake --build build-macos
+
+# Kodi add-on: Android (arm64-v8a, or armeabi-v7a for the 32-bit add-on)
+cmake -S . -B build-android -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+  -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-21 -DANDROID_STL=c++_static \
+  -DSANDCLOCK_KODI=ON -DSANDCLOCK_HARNESS=OFF \
+  -DKODI_DEVKIT_INCLUDE=<xbmc>/xbmc/addons/kodi-dev-kit/include && cmake --build build-android
+
+cd .. && python3 tools/make_settings_infworld.py   # settings.xml + strings.po for both add-on folders
+KODI_ADDON=screensaver.infworld.gl python3 tools/kodi.py install   # then select / run
+```
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full
