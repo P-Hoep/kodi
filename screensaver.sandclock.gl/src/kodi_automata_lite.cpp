@@ -1,10 +1,10 @@
 // Kodi binary add-on: the Cellular Automata Lite screensaver around automata::lite::App.
-// Same wrapper as kodi_automata.cpp, without the clock settings and with the draw-resolution
-// setting.
+// Same wrapper as kodi_automata.cpp, with the draw-resolution setting.
 #include <kodi/addon-instance/Screensaver.h>
 
 #include <chrono>
 #include <cstdlib>
+#include <ctime>
 #include <memory>
 #include <string>
 
@@ -56,7 +56,27 @@ sandclock::automata::Settings read_settings() {
     s.camera = clamp(kodi::addon::GetSettingInt("camera", s.camera), 0, CAMERA_COUNT - 1);
     s.camera_speed = clamp(kodi::addon::GetSettingInt("camera_speed", s.camera_speed), 5, 100);
     s.zoom = clamp(kodi::addon::GetSettingInt("zoom", s.zoom), 1, 16);
+    s.clock = clamp(kodi::addon::GetSettingInt("clock", s.clock), 0, CLOCK_COUNT - 1);
+    s.clock_font = clamp(kodi::addon::GetSettingInt("clock_font", s.clock_font), 0, 8);
+    s.clock_weight = clamp(kodi::addon::GetSettingInt("clock_weight", s.clock_weight), 0, 2);
+    s.seconds = kodi::addon::GetSettingBoolean("seconds", s.seconds);
+    s.hours = clamp(kodi::addon::GetSettingInt("hours", s.hours), 0, 1);
+    s.clock_size = clamp(kodi::addon::GetSettingInt("clock_size", s.clock_size), 20, 90);
+    s.clock_colour_mode = clamp(kodi::addon::GetSettingInt("clock_colour_mode", s.clock_colour_mode), 0, 2);
+    s.clock_colour = parse_colour(kodi::addon::GetSettingString("clock_colour", ""), s.clock_colour);
+    s.clock_opacity = clamp(kodi::addon::GetSettingInt("clock_opacity", s.clock_opacity), 10, 100);
     return s;
+}
+
+double seconds_since_midnight() {
+    std::time_t t = std::time(nullptr);
+    std::tm lt;
+#ifdef _WIN32
+    localtime_s(&lt, &t);
+#else
+    localtime_r(&t, &lt);
+#endif
+    return lt.tm_hour * 3600.0 + lt.tm_min * 60.0 + lt.tm_sec;
 }
 
 }  // namespace
@@ -69,7 +89,7 @@ public:
         std::string error;
         app_ = std::make_unique<sandclock::automata::lite::App>();
         if (!app_->init(read_settings(), (unsigned)std::chrono::steady_clock::now().time_since_epoch().count(),
-                        &error)) {
+                        kodi::addon::GetAddonPath("resources/fonts.json"), &error)) {
             kodi::Log(ADDON_LOG_ERROR, "Cellular Automata Lite: cannot start: %s", error.c_str());
             app_.reset();
             return false;
@@ -89,7 +109,7 @@ public:
     void Render() override {
         if (!app_) return;
         double now = std::chrono::duration<double>(std::chrono::steady_clock::now() - started_).count();
-        app_->render(now, Width(), Height());
+        app_->render(now, seconds_since_midnight(), Width(), Height());
     }
 
 private:

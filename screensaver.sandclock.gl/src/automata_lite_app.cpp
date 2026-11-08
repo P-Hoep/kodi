@@ -1,8 +1,9 @@
-// Cellular Automata Lite: see automata_lite_app.hpp. The clock, its font, mask texture and overlay
-// pass are gone. The update and draw shaders are specialised at init (wrap, rule state count,
-// sparks, colour mode, view, background, shape, glow, screen effect), and the draw pass renders
-// into a target at no more than twice the grid, scaled up once, so the per-screen-pixel work on a
-// weak GPU is a fraction of the full add-on's.
+// Cellular Automata Lite: see automata_lite_app.hpp. The update and draw shaders are specialised at
+// init (wrap, rule state count, sparks, colour mode, view, background, shape, glow, screen effect),
+// and the draw pass renders into a target at no more than twice the grid, scaled up once, so the
+// per-screen-pixel work on a weak GPU is a fraction of the full add-on's. The clock is compiled in
+// the same way: off, nothing about it exists; on, only the mode chosen is in the code, and its
+// overlay pass runs after the scale-up so the digits are sharp.
 #include "automata_lite_app.hpp"
 
 #include <algorithm>
@@ -62,6 +63,25 @@ void main() {
 }
 )";
 
+// The clock on top: a soft-edged mask scaled up from the font masks, with a drop shadow.
+// Premultiplied alpha. Only compiled when a clock mode that shows the time over the scene is on.
+const char* kClock = R"(
+uniform sampler2D u_mask;
+uniform vec4 u_rect;           // x, y, w, h in viewport uv
+uniform vec4 u_ccol;           // rgb, opacity
+varying vec2 v_uv;
+float inside(vec2 q) { return step(0.0, q.x) * step(0.0, q.y) * step(q.x, 1.0) * step(q.y, 1.0); }
+void main() {
+    vec2 q = (v_uv - u_rect.xy) / u_rect.zw;
+    vec2 sq = q + vec2(-0.006, 0.03);
+    float m = inside(q) * smoothstep(0.4, 0.6, texture2D(u_mask, q).r);
+    float s = inside(sq) * smoothstep(0.15, 0.85, texture2D(u_mask, sq).r);
+    float a = clamp(m + s * 0.6 * (1.0 - m), 0.0, 1.0) * u_ccol.a;
+    if (a < 0.003) discard;
+    gl_FragColor = vec4(u_ccol.rgb * m * u_ccol.a, a);
+}
+)";
+
 double wrap01(double v) { return v - std::floor(v); }
 
 }  // namespace
@@ -88,14 +108,16 @@ bool App::make_target(Target* t, int w, int h, bool linear) {
     return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
 }
 
-// One generation. The rule, wrap, two-state versus Generations, and whether sparks exist are
-// compiled in; the cell coordinates wrap with one fract (one multiply-add and a fract per
-// neighbour) instead of a mod and a divide.
-std::string App::update_source(const Settings& s, const Rule& rule) {
+// One generation. The rule, wrap, two-state versus Generations, whether sparks exist and the clock
+// mask mode are compiled in; the cell coordinates wrap with one fract (one multiply-add and a fract
+// per neighbour) instead of a mod and a divide. clock_mask 0 leaves the mask sampler, uniform and
+// branch out of the shader entirely.
+std::string App::update_source(const Settings& s, const Rule& rule, int clock_mask) {
     std::string d;
     d += "#define WRAP " + std::to_string(s.wrap ? 1 : 0) + "\n";
     d += "#define TWO_STATE " + std::to_string(rule.states <= 2 ? 1 : 0) + "\n";
     d += "#define SPARKS " + std::to_string(s.sparks > 0 ? 1 : 0) + "\n";
+    d += "#define CLOCK_MASK " + std::to_string(clock_mask) + "\n";   // always defined: #if needs it
     d += R"(
 uniform sampler2D u_src;
 uniform vec2 u_grid;
@@ -103,6 +125,11 @@ uniform vec2 u_inv;
 uniform vec4 u_rules;      // birth mask, survive mask, trail kept, spark chance
 uniform float u_states;
 uniform float u_seed;
+#if CLOCK_MASK > 0
+uniform sampler2D u_mask;
+uniform vec4 u_maskrect;   // x, y, w, h in grid uv
+uniform float u_maskmode;  // 0 nothing, 1 force the mask alive (once for mode 1), 2 force it dead
+#endif
 
 float bit(float mask, float n) { return mod(floor(mask / exp2(n) + 0.001), 2.0); }
 
@@ -146,6 +173,22 @@ void main() {
     if (u_rules.w > 0.0 && ns < 0.5) {
         float h = fract(sin(dot(c + vec2(u_seed, u_seed * 1.7), vec2(12.9898, 78.233))) * 43758.5453);
         if (h < u_rules.w) { ns = 1.0; age = 0.0; trail = 1.0; live = true; }
+    }
+#endif
+#if CLOCK_MASK > 0
+    if (u_maskmode > 0.5) {
+        vec2 q = ((c + 0.5) * u_inv - u_maskrect.xy) / u_maskrect.zw;
+        if (q.x >= 0.0 && q.y >= 0.0 && q.x <= 1.0 && q.y <= 1.0 && texture2D(u_mask, q).r > 0.5) {
+#if CLOCK_MASK == 2
+            ns = 0.0;
+            live = false;
+#else
+            if (!live) age = 0.0;
+            ns = 1.0;
+            live = true;
+            trail = 1.0;
+#endif
+        }
     }
 #endif
     gl_FragColor = vec4(ns * 0.00392157, age, trail, live ? 1.0 : 0.0);
@@ -376,20 +419,48 @@ void main() {
     return d;
 }
 
+const char* App::clock_source() { return kClock; }
+
 void App::shader_sources(const Settings& settings, std::string* update, std::string* draw,
-                         std::string* present) {
+                         std::string* present, std::string* clock) {
     Rule rule = rule_for(settings);
-    if (update) *update = update_source(settings, rule);
+    int clock_mask = 0;
+    if (settings.clock == 2) clock_mask = 1;
+    else if (settings.clock == 3) clock_mask = 2;
+    else if (settings.clock == 4) clock_mask = 3;
+    if (update) *update = update_source(settings, rule, clock_mask);
     if (draw) *draw = draw_source(settings, rule);
     if (present) *present = present_source(settings);
+    if (clock) *clock = settings.clock >= 1 && settings.clock <= 3 ? kClock : std::string();
 }
 
-bool App::init(const Settings& settings, unsigned seed, std::string* error) {
+bool App::init(const Settings& settings, unsigned seed, const std::string& fonts_json, std::string* error) {
     release();
     glu::SavedState saved;
     s_ = settings;
     rule_ = rule_for(s_);
     rng_.seed(seed);
+
+    // The clock: its font, and a texture its mask is drawn into whenever the time changes. The font
+    // is loaded before the shaders are built, so a clock with no font is simply a clock that is not
+    // in the shaders at all.
+    has_font_ = false;
+    clock_text_.clear();
+    clock_mask_ = 0;
+    if (s_.clock > 0 && !fonts_json.empty()) {
+        try {
+            font_ = sandclock::Font::load(fonts_json, sandclock::FONT_FOLDERS[std::max(0, std::min(8, s_.clock_font))],
+                                          std::max(0, std::min(2, s_.clock_weight)));
+            has_font_ = true;
+        } catch (const std::exception& e) {
+            *error = std::string("clock font: ") + e.what();   // not fatal: no clock
+        }
+    }
+    if (has_font_) {
+        if (s_.clock == 2) clock_mask_ = 1;         // the digits come alive once, when they change
+        else if (s_.clock == 3) clock_mask_ = 2;    // cut out of the cells
+        else if (s_.clock == 4) clock_mask_ = 3;    // made of living cells
+    }
 
     int max_tex = 2048;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_tex);
@@ -399,7 +470,7 @@ bool App::init(const Settings& settings, unsigned seed, std::string* error) {
     rows_ = rows_for_cols(cols_);
     draw_pref_ = clamp_int(s_.draw, 0, 5);
 
-    std::string update_src = update_source(s_, rule_), draw_src = draw_source(s_, rule_),
+    std::string update_src = update_source(s_, rule_, clock_mask_), draw_src = draw_source(s_, rule_),
                 present_src = present_source(s_);
     prog_update_ = glu::link(nullptr, update_src.c_str(), error);
     if (!prog_update_) return false;
@@ -411,9 +482,14 @@ bool App::init(const Settings& settings, unsigned seed, std::string* error) {
     if (!prog_reduce_) return false;
     prog_present_ = glu::link(nullptr, present_src.c_str(), error);
     if (!prog_present_) return false;
+    if (has_font_ && s_.clock >= 1 && s_.clock <= 3) {
+        prog_clock_ = glu::link(nullptr, kClock, error);
+        if (!prog_clock_) return false;
+    }
 
     uu_ = {loc(prog_update_, "u_src"), loc(prog_update_, "u_grid"), loc(prog_update_, "u_inv"),
-           loc(prog_update_, "u_rules"), loc(prog_update_, "u_states"), loc(prog_update_, "u_seed")};
+           loc(prog_update_, "u_rules"), loc(prog_update_, "u_states"), loc(prog_update_, "u_seed"),
+           loc(prog_update_, "u_mask"), loc(prog_update_, "u_maskrect"), loc(prog_update_, "u_maskmode")};
     iu_ = {loc(prog_init_, "u_grid"), loc(prog_init_, "u_mode"), loc(prog_init_, "u_density"),
            loc(prog_init_, "u_seed")};
     du_ = {loc(prog_draw_, "u_state"), loc(prog_draw_, "u_pal"), loc(prog_draw_, "u_p0"),
@@ -421,6 +497,7 @@ bool App::init(const Settings& settings, unsigned seed, std::string* error) {
            loc(prog_draw_, "u_colour"), loc(prog_draw_, "u_bg")};
     ru_ = {loc(prog_reduce_, "u_src"), loc(prog_reduce_, "u_srcsize"), loc(prog_reduce_, "u_first")};
     pu_ = {loc(prog_present_, "u_tex")};
+    cu_ = {loc(prog_clock_, "u_mask"), loc(prog_clock_, "u_rect"), loc(prog_clock_, "u_ccol")};
 
     static const float quad[8] = {-1, -1, 1, -1, -1, 1, 1, 1};
     glGenBuffers(1, &vbo_);
@@ -444,6 +521,18 @@ bool App::init(const Settings& settings, unsigned seed, std::string* error) {
     glGenTextures(1, &pal_tex_);
     set_palette();
 
+    // The clock mask texture. Only a clock that is on gets one.
+    if (has_font_) {
+        glGenTextures(1, &clock_tex_);
+        glBindTexture(GL_TEXTURE_2D, clock_tex_);
+        unsigned char blank[4] = {0, 0, 0, 0};
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, blank);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+
     max_steps_ = 4;
     ready_ = true;
     restart(0);
@@ -465,14 +554,18 @@ void App::release() {
     if (draw_.tex) glDeleteTextures(1, &draw_.tex);
     draw_ = Target();
     if (pal_tex_) glDeleteTextures(1, &pal_tex_);
+    if (clock_tex_) glDeleteTextures(1, &clock_tex_);
     if (vbo_) glDeleteBuffers(1, &vbo_);
 #ifdef SANDCLOCK_CORE
     if (vao_) glDeleteVertexArrays(1, &vao_);
 #endif
-    for (unsigned* p : {&prog_update_, &prog_init_, &prog_draw_, &prog_reduce_, &prog_present_})
+    for (unsigned* p : {&prog_update_, &prog_init_, &prog_draw_, &prog_reduce_, &prog_present_, &prog_clock_})
         if (*p) glDeleteProgram(*p);
-    prog_update_ = prog_init_ = prog_draw_ = prog_reduce_ = prog_present_ = 0;
-    vbo_ = vao_ = pal_tex_ = 0;
+    prog_update_ = prog_init_ = prog_draw_ = prog_reduce_ = prog_present_ = prog_clock_ = 0;
+    vbo_ = vao_ = pal_tex_ = clock_tex_ = 0;
+    has_font_ = false;
+    clock_mask_ = 0;
+    clock_text_.clear();
     draw_scaled_ = false;
     ready_ = false;
 }
@@ -558,6 +651,7 @@ void App::restart(double now) {
     dead_checks_ = stagnant_checks_ = 0;
     history_.clear();
     gens_at_check_ = generation_;
+    if (s_.clock == 2) seed_pending_ = true;             // a fresh board starts with the time in it
 }
 
 void App::step_saved(int n) {
@@ -570,9 +664,25 @@ void App::step_saved(int n) {
     glUniform4f(uu_.rules, (float)rule_.birth, (float)rule_.survive, s_.trail / 100.0f,
                 s_.sparks * 1e-6f);
     glUniform1f(uu_.states, (float)rule_.states);
+    bool clock_live = has_font_ && !clock_text_.empty();
+    if (clock_mask_ > 0) {
+        glUniform1i(uu_.mask, 1);
+        glUniform4f(uu_.maskrect, clock_rect_[0], clock_rect_[1], clock_rect_[2], clock_rect_[3]);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, clock_tex_);
+        glActiveTexture(GL_TEXTURE0);
+    }
     glActiveTexture(GL_TEXTURE0);
     for (int i = 0; i < n; ++i) {
         if (s_.sparks > 0) glUniform1f(uu_.seed, (float)(rng_() % 1000));
+        if (clock_mask_ > 0) {
+            float mode = 0;
+            if (clock_live) {
+                if (clock_mask_ != 1) mode = 1;
+                else if (seed_pending_) { mode = 1; seed_pending_ = false; }
+            }
+            glUniform1f(uu_.maskmode, mode);
+        }
         glBindFramebuffer(GL_FRAMEBUFFER, state_[1 - cur_].fbo);
         glBindTexture(GL_TEXTURE_2D, state_[cur_].tex);
         draw_quad();
@@ -624,6 +734,51 @@ App::Measure App::measure() {
     return m;
 }
 
+// Draws the time into the mask texture (from the font's glyph masks, 128 px high plus a margin)
+// and places it in the middle of the grid. The rect is sized from the widest time, so the clock
+// does not change size when 9:59 becomes 10:00.
+void App::update_clock(double clock) {
+    if (!has_font_) return;
+    std::string text = clock_text(s_, clock);
+    if (text == clock_text_) return;
+    clock_text_ = text;
+    const int HC = 128, MARGIN = 6;
+    double tw = font_.width(text), widest = font_.width(s_.seconds ? "88:88:88" : "88:88");
+    int wc = (int)std::ceil(HC * tw / font_.h) + 2 * MARGIN, hc = HC + 2 * MARGIN;
+    std::vector<uint8_t> px((size_t)wc * hc * 4, 0);
+    double x0 = MARGIN;
+    for (char ch : text) {
+        double cw = font_.widths.at(ch) * HC / font_.h;
+        const sandclock::Mask& m = font_.masks.at(ch);
+        for (int x = (int)x0; x < (int)(x0 + cw) && x < wc; ++x) {
+            int mu = std::min(m.w - 1, std::max(0, (int)((x + 0.5 - x0) / cw * m.w)));
+            for (int y = 0; y < HC; ++y) {
+                int mv = std::min(m.h - 1, (int)((y + 0.5) / HC * m.h));
+                if (m.at(mu, mv)) {
+                    int row = hc - 1 - (MARGIN + y);                 // texture rows go up
+                    uint8_t* p = &px[((size_t)row * wc + x) * 4];
+                    p[0] = p[1] = p[2] = p[3] = 255;
+                }
+            }
+        }
+        x0 += cw;
+    }
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, clock_tex_);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, wc, hc, 0, GL_RGBA, GL_UNSIGNED_BYTE, px.data());
+    glActiveTexture(GL_TEXTURE0);
+
+    double w = s_.clock_size / 100.0 * tw / widest;
+    double h = w * hc / (double)wc * (16.0 / 9.0);
+    if (h > 0.6) { w *= 0.6 / h; h = 0.6; }
+    clock_rect_[0] = (float)(0.5 - w / 2);
+    clock_rect_[1] = (float)(0.5 - h / 2);
+    clock_rect_[2] = (float)w;
+    clock_rect_[3] = (float)h;
+    if (s_.clock == 2) seed_pending_ = true;
+}
+
 // Moves the camera. Flat views pan, zoom and turn over the grid; the landscape and tunnel always
 // travel forward; the globe spins.
 void App::update_camera(double dt) {
@@ -670,12 +825,13 @@ void App::update_camera(double dt) {
     }
 }
 
-void App::render(double now, int fb_w, int fb_h) {
+void App::render(double now, double clock, int fb_w, int fb_h) {
     if (!ready_) return;
     glu::SavedState saved;
     double dt = last_now_ < 0 ? 0.016 : std::min(0.25, std::max(0.0, now - last_now_));
     last_now_ = now;
     ema_dt_ += 0.1 * (dt - ema_dt_);
+    if (s_.clock > 0) update_clock(clock);
     update_camera(dt);
 
     // Restarts: on a timer, or when the board has died out or settled.
@@ -789,6 +945,40 @@ void App::render(double now, int fb_w, int fb_h) {
         glBindTexture(GL_TEXTURE_2D, draw_.tex);
         glUniform1i(pu_.tex, 0);
         draw_quad();
+    }
+
+    // The clock on top (not for "made of living cells", where the cells are the clock). Drawn after
+    // the scale-up, so the digits are sharp whatever the scene is drawn at.
+    bool overlay = has_font_ && !clock_text_.empty() && s_.clock >= 1 && s_.clock <= 3;
+    if (overlay) {
+        float r = 1, g = 1, b = 1;
+        if (s_.clock_colour_mode == 1) {
+            const uint32_t* p = PALETTE[std::max(0, std::min(PALETTE_COUNT - 1, s_.palette))];
+            double t = phase * 7.0;
+            int i0 = (int)t % 7, i1 = (i0 + 1) % 7;
+            double f = t - std::floor(t);
+            auto ch = [&](int shift) {
+                return (float)((((p[i0] >> shift) & 255) * (1 - f) + ((p[i1] >> shift) & 255) * f) / 255.0);
+            };
+            r = ch(16); g = ch(8); b = ch(0);
+        } else if (s_.clock_colour_mode == 2) {
+            r = ((s_.clock_colour >> 16) & 255) / 255.f;
+            g = ((s_.clock_colour >> 8) & 255) / 255.f;
+            b = (s_.clock_colour & 255) / 255.f;
+        }
+        float dimf = 1.0f - s_.dim / 100.0f;
+        float opacity = s_.clock_opacity / 100.0f * (s_.clock == 3 ? 0.35f : 1.0f);   // a cut-out clock is mostly the hole
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        glUseProgram(prog_clock_);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, clock_tex_);
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(cu_.mask, 1);
+        glUniform4f(cu_.rect, clock_rect_[0], clock_rect_[1], clock_rect_[2], clock_rect_[3]);
+        glUniform4f(cu_.ccol, r * dimf, g * dimf, b * dimf, opacity);
+        draw_quad();
+        glDisable(GL_BLEND);
     }
 }
 

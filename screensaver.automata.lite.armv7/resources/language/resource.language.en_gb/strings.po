@@ -468,57 +468,181 @@ msgid "Dim (%)"
 msgstr ""
 
 msgctxt "#30215"
-msgid "Camera and 3D"
+msgid "Clock"
 msgstr ""
 
 msgctxt "#30216"
-msgid "View"
+msgid "Clock in the middle"
 msgstr ""
 
 msgctxt "#30217"
-msgid "Flat"
+msgid "Off"
 msgstr ""
 
 msgctxt "#30218"
-msgid "Raised blocks (lit, with shadows)"
+msgid "On top"
 msgstr ""
 
 msgctxt "#30219"
-msgid "Landscape (flying over it)"
+msgid "On top, and the digits burst into life at each change"
 msgstr ""
 
 msgctxt "#30220"
-msgid "Tunnel (flying through it)"
+msgid "Cut out of the cells"
 msgstr ""
 
 msgctxt "#30221"
-msgid "Globe (a spinning planet)"
+msgid "Made of living cells (the cells grow from the digits)"
 msgstr ""
 
 msgctxt "#30222"
-msgid "Camera"
+msgid "Font"
 msgstr ""
 
 msgctxt "#30223"
-msgid "Still"
+msgid "Modern sans: Inter"
 msgstr ""
 
 msgctxt "#30224"
-msgid "Drift"
+msgid "Geometric: Montserrat"
 msgstr ""
 
 msgctxt "#30225"
-msgid "Zoom in and out"
+msgid "Digital: Orbitron"
 msgstr ""
 
 msgctxt "#30226"
-msgid "Fly through (drift, zoom and turn)"
+msgid "Pixel: Pixelify Sans"
 msgstr ""
 
 msgctxt "#30227"
-msgid "Camera speed"
+msgid "Dot matrix: Doto"
 msgstr ""
 
 msgctxt "#30228"
+msgid "Monospace: JetBrains Mono"
+msgstr ""
+
+msgctxt "#30229"
+msgid "Rounded: Comfortaa"
+msgstr ""
+
+msgctxt "#30230"
+msgid "Serif: Playfair Display"
+msgstr ""
+
+msgctxt "#30231"
+msgid "Stencil: Big Shoulders"
+msgstr ""
+
+msgctxt "#30232"
+msgid "Weight"
+msgstr ""
+
+msgctxt "#30233"
+msgid "Light"
+msgstr ""
+
+msgctxt "#30234"
+msgid "Regular"
+msgstr ""
+
+msgctxt "#30235"
+msgid "Bold"
+msgstr ""
+
+msgctxt "#30236"
+msgid "Show seconds"
+msgstr ""
+
+msgctxt "#30237"
+msgid "Hours"
+msgstr ""
+
+msgctxt "#30238"
+msgid "24 hour (17:52)"
+msgstr ""
+
+msgctxt "#30239"
+msgid "12 hour (5:52)"
+msgstr ""
+
+msgctxt "#30240"
+msgid "Clock width (% of the screen)"
+msgstr ""
+
+msgctxt "#30241"
+msgid "Clock colour"
+msgstr ""
+
+msgctxt "#30242"
+msgid "White"
+msgstr ""
+
+msgctxt "#30243"
+msgid "Follows the palette"
+msgstr ""
+
+msgctxt "#30244"
+msgid "Colour of the clock"
+msgstr ""
+
+msgctxt "#30245"
+msgid "Clock opacity (%)"
+msgstr ""
+
+msgctxt "#30246"
+msgid "Camera and 3D"
+msgstr ""
+
+msgctxt "#30247"
+msgid "View"
+msgstr ""
+
+msgctxt "#30248"
+msgid "Flat"
+msgstr ""
+
+msgctxt "#30249"
+msgid "Raised blocks (lit, with shadows)"
+msgstr ""
+
+msgctxt "#30250"
+msgid "Landscape (flying over it)"
+msgstr ""
+
+msgctxt "#30251"
+msgid "Tunnel (flying through it)"
+msgstr ""
+
+msgctxt "#30252"
+msgid "Globe (a spinning planet)"
+msgstr ""
+
+msgctxt "#30253"
+msgid "Camera"
+msgstr ""
+
+msgctxt "#30254"
+msgid "Still"
+msgstr ""
+
+msgctxt "#30255"
+msgid "Drift"
+msgstr ""
+
+msgctxt "#30256"
+msgid "Zoom in and out"
+msgstr ""
+
+msgctxt "#30257"
+msgid "Fly through (drift, zoom and turn)"
+msgstr ""
+
+msgctxt "#30258"
+msgid "Camera speed"
+msgstr ""
+
+msgctxt "#30259"
 msgid "Deepest zoom (x)"
 msgstr ""

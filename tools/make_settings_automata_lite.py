@@ -1,14 +1,14 @@
 """Generate the Cellular Automata Lite screensaver's settings.xml and strings.po from one table.
 
-Lite is the Cellular Automata screensaver without the clock: no font, no clock texture, no mask in
-the update shader and no overlay pass. It is aimed at weak devices (32-bit ARM boxes), so its
-shaders are generated at start with the chosen rule, wrap, colour mode, view, background, shape,
-glow and screen effect compiled in, and the scene is drawn at no more than twice the grid (and no
-more than 1080p) and scaled up, rather than shading every output pixel.
+Lite is the Cellular Automata screensaver written for weak devices (32-bit ARM boxes): its shaders
+are generated at start with the chosen rule, wrap, colour mode, clock, view, background, shape, glow
+and screen effect compiled in, and the scene is drawn at no more than twice the grid (and no more
+than 1080p) and scaled up, rather than shading every output pixel. The clock is off by default, and
+while it is off the update shader has no mask, no mask texture exists and no overlay is drawn.
 
-It shares the rule, start, colour, view and camera lists with the Cellular Automata add-on, so the
-two cannot disagree about what option 7 means. It adds one list of its own: how large the scene is
-drawn before it is scaled up. Run:
+It shares the rule, start, colour, clock, view and camera lists with the Cellular Automata add-on, so
+the two cannot disagree about what option 7 means. It adds one list of its own: how large the scene
+is drawn before it is scaled up. Run:
 python3 tools/make_settings_automata_lite.py
 """
 
@@ -21,7 +21,7 @@ sys.path.insert(0, SRC)
 sys.path.insert(0, HERE)
 
 from make_settings import write  # noqa: E402
-from make_settings_automata import (BACKGROUNDS, CAMERAS, GRID_COLS, MODES, RESTARTS, RULES, SCREEN_FX,  # noqa: E402
+from make_settings_automata import (BACKGROUNDS, CAMERAS, CLOCKS, GRID_COLS, MODES, RESTARTS, RULES, SCREEN_FX,  # noqa: E402
                                     SHAPES, SPEEDS, STARTS, VIEWS, cells_text)
 
 from resources.lib import config  # noqa: E402
@@ -79,6 +79,19 @@ def categories():
             S('glow', 'Glow around cells (flat and blocks views; costs speed)', 0, 0, 100, 10),
             O('screen_fx', 'Screen effect', 0, SCREEN_FX),
             S('dim', 'Dim (%)', 0, 0, 80, 10),
+        ]),
+        ('Clock', [
+            # Off by default: while it is off nothing about it is created, read or drawn.
+            O('clock', 'Clock in the middle', 0, CLOCKS),
+            O('clock_font', 'Font', 0, [f[0] for f in config.FONTS], visible=('clock', '!', '0')),
+            O('clock_weight', 'Weight', 2, config.WEIGHTS, visible=('clock', '!', '0')),
+            B('seconds', 'Show seconds', True, visible=('clock', '!', '0')),
+            O('hours', 'Hours', 0, ['24 hour (17:52)', '12 hour (5:52)'], visible=('clock', '!', '0')),
+            S('clock_size', 'Clock width (% of the screen)', 50, 20, 90, 5, visible=('clock', '!', '0')),
+            O('clock_colour_mode', 'Clock colour', 0, ['White', 'Follows the palette', 'One colour'],
+              visible=('clock', '!', '0')),
+            C('clock_colour', 'Colour of the clock', 'FFFFFFFF', visible=('clock_colour_mode', '2')),
+            S('clock_opacity', 'Clock opacity (%)', 85, 10, 100, 5, visible=('clock', '!', '0')),
         ]),
         ('Camera and 3D', [
             O('view', 'View', 0, VIEWS),
