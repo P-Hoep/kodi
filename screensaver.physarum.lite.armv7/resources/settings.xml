@@ -168,21 +168,22 @@
             <option label="30158">3</option>
             <option label="30159">4</option>
             <option label="30160">5</option>
+            <option label="30161">6</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="food" type="integer" label="30161">
+        <setting id="food" type="integer" label="30162">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30162">0</option>
-            <option label="30163">1</option>
-            <option label="30164">2</option>
-            <option label="30165">3</option>
+            <option label="30163">0</option>
+            <option label="30164">1</option>
+            <option label="30165">2</option>
+            <option label="30166">3</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="food_nodes" type="integer" label="30166">
+        <setting id="food_nodes" type="integer" label="30167">
           <level>0</level>
           <default>12</default>
           <constraints><minimum>3</minimum><step>1</step><maximum>40</maximum></constraints>
@@ -191,24 +192,29 @@
         </setting>
       </group>
     </category>
-    <category id="c3" label="30167">
+    <category id="c3" label="30168">
       <group id="1">
-        <setting id="colour_mode" type="integer" label="30168">
+        <setting id="clock" type="integer" label="30169">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30169">0</option>
-            <option label="30170">1</option>
-            <option label="30171">2</option>
-            <option label="30172">3</option>
-            <option label="30173">4</option>
-            <option label="30174">5</option>
-            <option label="30175">6</option>
-            <option label="30176">7</option>
+            <option label="30170">0</option>
+            <option label="30171">1</option>
+            <option label="30172">2</option>
+            <option label="30173">3</option>
+            <option label="30174">4</option>
+            <option label="30175">5</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="palette" type="integer" label="30177">
+        <setting id="food_strength" type="integer" label="30176">
+          <level>0</level>
+          <default>50</default>
+          <constraints><minimum>10</minimum><step>10</step><maximum>100</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="clock" operator="!is">0</dependency></dependencies>
+        </setting>
+        <setting id="clock_font" type="integer" label="30177">
           <level>0</level>
           <default>0</default>
           <constraints><options>
@@ -220,49 +226,143 @@
             <option label="30183">5</option>
             <option label="30184">6</option>
             <option label="30185">7</option>
+            <option label="30186">8</option>
+          </options></constraints>
+          <control type="spinner" format="string"/>
+          <dependencies><dependency type="visible" setting="clock" operator="!is">0</dependency></dependencies>
+        </setting>
+        <setting id="clock_weight" type="integer" label="30187">
+          <level>0</level>
+          <default>2</default>
+          <constraints><options>
+            <option label="30188">0</option>
+            <option label="30189">1</option>
+            <option label="30190">2</option>
+          </options></constraints>
+          <control type="spinner" format="string"/>
+          <dependencies><dependency type="visible" setting="clock" operator="!is">0</dependency></dependencies>
+        </setting>
+        <setting id="seconds" type="boolean" label="30191">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+          <dependencies><dependency type="visible" setting="clock" operator="!is">0</dependency></dependencies>
+        </setting>
+        <setting id="hours" type="integer" label="30192">
+          <level>0</level>
+          <default>0</default>
+          <constraints><options>
+            <option label="30193">0</option>
+            <option label="30194">1</option>
+          </options></constraints>
+          <control type="spinner" format="string"/>
+          <dependencies><dependency type="visible" setting="clock" operator="!is">0</dependency></dependencies>
+        </setting>
+        <setting id="clock_size" type="integer" label="30195">
+          <level>0</level>
+          <default>60</default>
+          <constraints><minimum>20</minimum><step>5</step><maximum>90</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="clock" operator="!is">0</dependency></dependencies>
+        </setting>
+        <setting id="clock_colour_mode" type="integer" label="30196">
+          <level>0</level>
+          <default>0</default>
+          <constraints><options>
+            <option label="30197">0</option>
+            <option label="30198">1</option>
+            <option label="30199">2</option>
+          </options></constraints>
+          <control type="spinner" format="string"/>
+          <dependencies><dependency type="visible" setting="clock" operator="!is">0</dependency></dependencies>
+        </setting>
+        <setting id="clock_colour" type="string" label="30200">
+          <level>0</level>
+          <default>FFFFFFFF</default>
+          <control type="colorbutton"/>
+          <dependencies><dependency type="visible" setting="clock_colour_mode">2</dependency></dependencies>
+        </setting>
+        <setting id="clock_opacity" type="integer" label="30201">
+          <level>0</level>
+          <default>85</default>
+          <constraints><minimum>10</minimum><step>5</step><maximum>100</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="clock" operator="!is">0</dependency></dependencies>
+        </setting>
+      </group>
+    </category>
+    <category id="c4" label="30202">
+      <group id="1">
+        <setting id="colour_mode" type="integer" label="30203">
+          <level>0</level>
+          <default>0</default>
+          <constraints><options>
+            <option label="30204">0</option>
+            <option label="30205">1</option>
+            <option label="30206">2</option>
+            <option label="30207">3</option>
+            <option label="30208">4</option>
+            <option label="30199">5</option>
+            <option label="30209">6</option>
+            <option label="30210">7</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="colour" type="string" label="30186">
+        <setting id="palette" type="integer" label="30211">
+          <level>0</level>
+          <default>0</default>
+          <constraints><options>
+            <option label="30212">0</option>
+            <option label="30213">1</option>
+            <option label="30214">2</option>
+            <option label="30215">3</option>
+            <option label="30216">4</option>
+            <option label="30217">5</option>
+            <option label="30218">6</option>
+            <option label="30219">7</option>
+          </options></constraints>
+          <control type="spinner" format="string"/>
+        </setting>
+        <setting id="colour" type="string" label="30220">
           <level>0</level>
           <default>FFFFD36B</default>
           <control type="colorbutton"/>
           <dependencies><dependency type="visible" setting="colour_mode">5</dependency></dependencies>
         </setting>
-        <setting id="background" type="string" label="30187">
+        <setting id="background" type="string" label="30221">
           <level>0</level>
           <default>FF000000</default>
           <control type="colorbutton"/>
         </setting>
-        <setting id="brightness" type="integer" label="30188">
+        <setting id="brightness" type="integer" label="30222">
           <level>0</level>
           <default>100</default>
           <constraints><minimum>30</minimum><step>10</step><maximum>300</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="cycle" type="integer" label="30189">
+        <setting id="cycle" type="integer" label="30223">
           <level>0</level>
           <default>20</default>
           <constraints><minimum>0</minimum><step>5</step><maximum>100</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="glow" type="integer" label="30190">
+        <setting id="glow" type="integer" label="30224">
           <level>0</level>
           <default>0</default>
           <constraints><minimum>0</minimum><step>10</step><maximum>100</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="screen_fx" type="integer" label="30191">
+        <setting id="screen_fx" type="integer" label="30225">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30162">0</option>
-            <option label="30192">1</option>
-            <option label="30193">2</option>
+            <option label="30163">0</option>
+            <option label="30226">1</option>
+            <option label="30227">2</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="dim" type="integer" label="30194">
+        <setting id="dim" type="integer" label="30228">
           <level>0</level>
           <default>0</default>
           <constraints><minimum>0</minimum><step>10</step><maximum>80</maximum></constraints>
@@ -270,38 +370,38 @@
         </setting>
       </group>
     </category>
-    <category id="c4" label="30195">
+    <category id="c5" label="30229">
       <group id="1">
-        <setting id="view" type="integer" label="30196">
+        <setting id="view" type="integer" label="30230">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30197">0</option>
-            <option label="30198">1</option>
-            <option label="30199">2</option>
-            <option label="30200">3</option>
-            <option label="30201">4</option>
+            <option label="30231">0</option>
+            <option label="30232">1</option>
+            <option label="30233">2</option>
+            <option label="30234">3</option>
+            <option label="30235">4</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="camera" type="integer" label="30202">
+        <setting id="camera" type="integer" label="30236">
           <level>0</level>
           <default>0</default>
           <constraints><options>
-            <option label="30203">0</option>
-            <option label="30204">1</option>
-            <option label="30205">2</option>
-            <option label="30206">3</option>
+            <option label="30237">0</option>
+            <option label="30238">1</option>
+            <option label="30239">2</option>
+            <option label="30240">3</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>
-        <setting id="camera_speed" type="integer" label="30207">
+        <setting id="camera_speed" type="integer" label="30241">
           <level>0</level>
           <default>30</default>
           <constraints><minimum>5</minimum><step>5</step><maximum>100</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="zoom" type="integer" label="30208">
+        <setting id="zoom" type="integer" label="30242">
           <level>0</level>
           <default>3</default>
           <constraints><minimum>1</minimum><step>1</step><maximum>12</maximum></constraints>

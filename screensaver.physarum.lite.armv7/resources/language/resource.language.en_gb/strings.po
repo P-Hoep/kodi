@@ -252,193 +252,329 @@ msgid "Each species in its own third of the screen"
 msgstr ""
 
 msgctxt "#30161"
-msgid "Food"
+msgid "From the clock digits"
 msgstr ""
 
 msgctxt "#30162"
-msgid "None"
+msgid "Food"
 msgstr ""
 
 msgctxt "#30163"
-msgid "Scattered food (the network links them, as in the Tokyo rail experiment)"
+msgid "None"
 msgstr ""
 
 msgctxt "#30164"
-msgid "A ring of food"
+msgid "Scattered food (the network links them, as in the Tokyo rail experiment)"
 msgstr ""
 
 msgctxt "#30165"
-msgid "A grid of food"
+msgid "A ring of food"
 msgstr ""
 
 msgctxt "#30166"
-msgid "Food sources"
+msgid "A grid of food"
 msgstr ""
 
 msgctxt "#30167"
-msgid "Colours"
+msgid "Food sources"
 msgstr ""
 
 msgctxt "#30168"
-msgid "Colour"
+msgid "Clock"
 msgstr ""
 
 msgctxt "#30169"
-msgid "Density (palette gradient)"
+msgid "Clock in the middle"
 msgstr ""
 
 msgctxt "#30170"
-msgid "Species colours (palette)"
+msgid "Off"
 msgstr ""
 
 msgctxt "#30171"
-msgid "Fire"
+msgid "On top"
 msgstr ""
 
 msgctxt "#30172"
-msgid "Neon (white-hot cores)"
+msgid "The slime grows into the digits"
 msgstr ""
 
 msgctxt "#30173"
-msgid "Ink on paper"
+msgid "Grows into the digits, with the clock faintly on top"
 msgstr ""
 
 msgctxt "#30174"
-msgid "One colour"
+msgid "Made of slime (kept inside the digits)"
 msgstr ""
 
 msgctxt "#30175"
-msgid "Rainbow (drifts across the screen)"
+msgid "The network flows around the digits"
 msgstr ""
 
 msgctxt "#30176"
-msgid "Plasma (a moving colour field)"
+msgid "How strongly the digits draw the slime (%)"
 msgstr ""
 
 msgctxt "#30177"
-msgid "Palette"
+msgid "Font"
 msgstr ""
 
 msgctxt "#30178"
-msgid "Neon (as in video)"
+msgid "Modern sans: Inter"
 msgstr ""
 
 msgctxt "#30179"
-msgid "Desert sand"
+msgid "Geometric: Montserrat"
 msgstr ""
 
 msgctxt "#30180"
-msgid "Ocean"
+msgid "Digital: Orbitron"
 msgstr ""
 
 msgctxt "#30181"
-msgid "Sunset"
+msgid "Pixel: Pixelify Sans"
 msgstr ""
 
 msgctxt "#30182"
-msgid "Candy"
+msgid "Dot matrix: Doto"
 msgstr ""
 
 msgctxt "#30183"
-msgid "Forest"
+msgid "Monospace: JetBrains Mono"
 msgstr ""
 
 msgctxt "#30184"
-msgid "Ice"
+msgid "Rounded: Comfortaa"
 msgstr ""
 
 msgctxt "#30185"
-msgid "Greyscale"
+msgid "Serif: Playfair Display"
 msgstr ""
 
 msgctxt "#30186"
-msgid "Colour of the slime"
+msgid "Stencil: Big Shoulders"
 msgstr ""
 
 msgctxt "#30187"
-msgid "Background"
+msgid "Weight"
 msgstr ""
 
 msgctxt "#30188"
-msgid "Brightness (%)"
+msgid "Light"
 msgstr ""
 
 msgctxt "#30189"
-msgid "Colour cycling speed"
+msgid "Regular"
 msgstr ""
 
 msgctxt "#30190"
-msgid "Glow (costs speed)"
+msgid "Bold"
 msgstr ""
 
 msgctxt "#30191"
-msgid "Screen effect"
+msgid "Show seconds"
 msgstr ""
 
 msgctxt "#30192"
-msgid "Vignette"
+msgid "Hours"
 msgstr ""
 
 msgctxt "#30193"
-msgid "CRT (scanlines and vignette)"
+msgid "24 hour (17:52)"
 msgstr ""
 
 msgctxt "#30194"
-msgid "Dim (%)"
+msgid "12 hour (5:52)"
 msgstr ""
 
 msgctxt "#30195"
-msgid "Camera and 3D"
+msgid "Clock width (% of the screen)"
 msgstr ""
 
 msgctxt "#30196"
-msgid "View"
+msgid "Clock colour (when drawn on top)"
 msgstr ""
 
 msgctxt "#30197"
-msgid "Flat"
+msgid "White"
 msgstr ""
 
 msgctxt "#30198"
-msgid "Relief (lit, embossed)"
+msgid "Follows the palette"
 msgstr ""
 
 msgctxt "#30199"
-msgid "Landscape (flying over it)"
+msgid "One colour"
 msgstr ""
 
 msgctxt "#30200"
-msgid "Tunnel (flying through it)"
+msgid "Colour of the clock"
 msgstr ""
 
 msgctxt "#30201"
-msgid "Globe (a spinning planet)"
+msgid "Clock opacity (%)"
 msgstr ""
 
 msgctxt "#30202"
-msgid "Camera"
+msgid "Colours"
 msgstr ""
 
 msgctxt "#30203"
-msgid "Still"
+msgid "Colour"
 msgstr ""
 
 msgctxt "#30204"
-msgid "Drift"
+msgid "Density (palette gradient)"
 msgstr ""
 
 msgctxt "#30205"
-msgid "Zoom in and out"
+msgid "Species colours (palette)"
 msgstr ""
 
 msgctxt "#30206"
-msgid "Fly through (drift, zoom and turn)"
+msgid "Fire"
 msgstr ""
 
 msgctxt "#30207"
-msgid "Camera speed"
+msgid "Neon (white-hot cores)"
 msgstr ""
 
 msgctxt "#30208"
+msgid "Ink on paper"
+msgstr ""
+
+msgctxt "#30209"
+msgid "Rainbow (drifts across the screen)"
+msgstr ""
+
+msgctxt "#30210"
+msgid "Plasma (a moving colour field)"
+msgstr ""
+
+msgctxt "#30211"
+msgid "Palette"
+msgstr ""
+
+msgctxt "#30212"
+msgid "Neon (as in video)"
+msgstr ""
+
+msgctxt "#30213"
+msgid "Desert sand"
+msgstr ""
+
+msgctxt "#30214"
+msgid "Ocean"
+msgstr ""
+
+msgctxt "#30215"
+msgid "Sunset"
+msgstr ""
+
+msgctxt "#30216"
+msgid "Candy"
+msgstr ""
+
+msgctxt "#30217"
+msgid "Forest"
+msgstr ""
+
+msgctxt "#30218"
+msgid "Ice"
+msgstr ""
+
+msgctxt "#30219"
+msgid "Greyscale"
+msgstr ""
+
+msgctxt "#30220"
+msgid "Colour of the slime"
+msgstr ""
+
+msgctxt "#30221"
+msgid "Background"
+msgstr ""
+
+msgctxt "#30222"
+msgid "Brightness (%)"
+msgstr ""
+
+msgctxt "#30223"
+msgid "Colour cycling speed"
+msgstr ""
+
+msgctxt "#30224"
+msgid "Glow (costs speed)"
+msgstr ""
+
+msgctxt "#30225"
+msgid "Screen effect"
+msgstr ""
+
+msgctxt "#30226"
+msgid "Vignette"
+msgstr ""
+
+msgctxt "#30227"
+msgid "CRT (scanlines and vignette)"
+msgstr ""
+
+msgctxt "#30228"
+msgid "Dim (%)"
+msgstr ""
+
+msgctxt "#30229"
+msgid "Camera and 3D"
+msgstr ""
+
+msgctxt "#30230"
+msgid "View"
+msgstr ""
+
+msgctxt "#30231"
+msgid "Flat"
+msgstr ""
+
+msgctxt "#30232"
+msgid "Relief (lit, embossed)"
+msgstr ""
+
+msgctxt "#30233"
+msgid "Landscape (flying over it)"
+msgstr ""
+
+msgctxt "#30234"
+msgid "Tunnel (flying through it)"
+msgstr ""
+
+msgctxt "#30235"
+msgid "Globe (a spinning planet)"
+msgstr ""
+
+msgctxt "#30236"
+msgid "Camera"
+msgstr ""
+
+msgctxt "#30237"
+msgid "Still"
+msgstr ""
+
+msgctxt "#30238"
+msgid "Drift"
+msgstr ""
+
+msgctxt "#30239"
+msgid "Zoom in and out"
+msgstr ""
+
+msgctxt "#30240"
+msgid "Fly through (drift, zoom and turn)"
+msgstr ""
+
+msgctxt "#30241"
+msgid "Camera speed"
+msgstr ""
+
+msgctxt "#30242"
 msgid "Deepest zoom (x)"
 msgstr ""

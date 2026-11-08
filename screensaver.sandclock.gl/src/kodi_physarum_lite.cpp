@@ -1,9 +1,11 @@
 // Kodi binary add-on: the Physarum Lite screensaver around lite::App.
-// See kodi_physarum.cpp for the same wrapper with the clock; this one has no clock and no timers.
+// See kodi_physarum.cpp for the same wrapper with the clock on by default and the timers; this one
+// has no timers and an optional clock (off unless the user turns it on).
 #include <kodi/addon-instance/Screensaver.h>
 
 #include <chrono>
 #include <cstdlib>
+#include <ctime>
 #include <memory>
 #include <string>
 
@@ -25,6 +27,17 @@ uint32_t parse_colour(const std::string& text, uint32_t fallback) {
 }
 
 int get_int(const char* id, int fallback, int lo, int hi) { return clamp(kodi::addon::GetSettingInt(id, fallback), lo, hi); }
+
+double seconds_since_midnight() {
+    std::time_t t = std::time(nullptr);
+    std::tm lt;
+#ifdef _WIN32
+    localtime_s(&lt, &t);
+#else
+    localtime_r(&t, &lt);
+#endif
+    return lt.tm_hour * 3600.0 + lt.tm_min * 60.0 + lt.tm_sec;
+}
 
 // Setting ids and defaults match tools/make_settings_physarum_lite.py.
 sandclock::physarum::lite::Settings read_settings() {
@@ -49,6 +62,16 @@ sandclock::physarum::lite::Settings read_settings() {
     s.start = get_int("start", s.start, 0, LITE_START_COUNT - 1);
     s.food = get_int("food", s.food, 0, FOOD_COUNT - 1);
     s.food_nodes = get_int("food_nodes", s.food_nodes, 3, 40);
+    s.clock = get_int("clock", s.clock, 0, CLOCK_COUNT - 1);
+    s.food_strength = get_int("food_strength", s.food_strength, 10, 100);
+    s.clock_font = get_int("clock_font", s.clock_font, 0, 8);
+    s.clock_weight = get_int("clock_weight", s.clock_weight, 0, 2);
+    s.seconds = kodi::addon::GetSettingBoolean("seconds", s.seconds);
+    s.hours = get_int("hours", s.hours, 0, 1);
+    s.clock_size = get_int("clock_size", s.clock_size, 20, 90);
+    s.clock_colour_mode = get_int("clock_colour_mode", s.clock_colour_mode, 0, 2);
+    s.clock_colour = parse_colour(kodi::addon::GetSettingString("clock_colour", ""), s.clock_colour);
+    s.clock_opacity = get_int("clock_opacity", s.clock_opacity, 10, 100);
     s.colour_mode = get_int("colour_mode", s.colour_mode, 0, MODE_COUNT - 1);
     s.palette = get_int("palette", s.palette, 0, PALETTE_COUNT - 1);
     s.colour = parse_colour(kodi::addon::GetSettingString("colour", ""), s.colour);
@@ -75,7 +98,7 @@ public:
         std::string error;
         app_ = std::make_unique<sandclock::physarum::lite::App>();
         if (!app_->init(read_settings(), (unsigned)std::chrono::steady_clock::now().time_since_epoch().count(),
-                        &error)) {
+                        kodi::addon::GetAddonPath("resources/fonts.json"), &error)) {
             kodi::Log(ADDON_LOG_ERROR, "Physarum Lite: cannot start: %s", error.c_str());
             app_.reset();
             return false;
@@ -97,7 +120,7 @@ public:
     void Render() override {
         if (!app_) return;
         double now = std::chrono::duration<double>(std::chrono::steady_clock::now() - started_).count();
-        app_->render(now, Width(), Height());
+        app_->render(now, seconds_since_midnight(), Width(), Height());
 
         // A frame rate line in the log: the only way to tell a device that holds 60 from one that
         // alternates between 60 and 30 (which is what a missed frame looks like). Ten-second

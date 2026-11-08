@@ -2,10 +2,13 @@
 //   physarum_lite_glfw [--preset N] [--species N] [--agents N] [--trail N] [--pace N] [--start N]
 //                      [--food N] [--mode N] [--palette N] [--glow N] [--bright N] [--scale N] [--fx N]
 //                      [--view N] [--camera N] [--cam-speed N] [--zoom N] [--no-differ]
+//                      [--clock-style N] [--clock-size N] [--seconds] [--time HH:MM:SS]
+//                      [--fonts fonts.json]
 //                      [--fullscreen] [--draw-cap N] [--shot out.ppm --shot-after SECONDS] [--selftest]
 // N is the index in the settings lists (tools/make_settings_physarum_lite.py). --pace is frames per
 // step (1 = a step on every frame). The draw pass renders at no more than 2 x the trail size;
-// --draw-cap lowers that further (and h, in 16:9) to exercise the scale-up path. --selftest checks
+// --draw-cap lowers that further (and h, in 16:9) to exercise the scale-up path. --clock-style is
+// off by default; --time fixes the time instead of following the wall clock. --selftest checks
 // the sense / move / deposit passes against the model computed on the CPU.
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -47,7 +50,7 @@ static int selftest() {
     s.species = 0;
     App app;
     std::string err;
-    if (!app.init(s, 1, &err)) { std::printf("init: %s\n", err.c_str()); return 1; }
+    if (!app.init(s, 1, "", &err)) { std::printf("init: %s\n", err.c_str()); return 1; }
     std::printf("trail %dx%d (%s), %d agents\n", app.trail_w(), app.trail_h(), app.half_float() ? "half float" : "8 bit",
                 app.agents_w() * app.agents_h());
     const int W = app.trail_w(), H = app.trail_h();
@@ -131,8 +134,9 @@ static int selftest() {
 int main(int argc, char** argv) {
     Settings s;
     std::string shot;
-    double shot_after = 8;
-    bool fullscreen = false, test = false;
+    std::string fonts = "../screensaver.sandclock/resources/media/fonts/fonts.json";
+    double shot_after = 8, time_offset = 0;
+    bool fullscreen = false, test = false, fixed_time = false;
     for (int i = 1; i < argc; ++i) {
         auto is = [&](const char* a) { return !std::strcmp(argv[i], a); };
         auto next = [&] { return i + 1 < argc ? argv[++i] : (char*)"0"; };
@@ -154,6 +158,16 @@ int main(int argc, char** argv) {
         else if (is("--cam-speed")) s.camera_speed = std::atoi(next());
         else if (is("--zoom")) s.zoom = std::atoi(next());
         else if (is("--no-differ")) s.species_differ = false;
+        else if (is("--clock-style")) s.clock = std::atoi(next());
+        else if (is("--clock-size")) s.clock_size = std::atoi(next());
+        else if (is("--seconds")) s.seconds = true;
+        else if (is("--fonts")) fonts = next();
+        else if (is("--time")) {
+            int hh = 0, mm = 0, ss = 0;
+            std::sscanf(next(), "%d:%d:%d", &hh, &mm, &ss);
+            time_offset = hh * 3600 + mm * 60 + ss;
+            fixed_time = true;
+        }
         else if (is("--fullscreen")) fullscreen = true;
         else if (is("--shot")) shot = next();
         else if (is("--shot-after")) shot_after = std::atof(next());
@@ -194,13 +208,20 @@ int main(int argc, char** argv) {
 
     App app;
     std::string err;
-    if (!app.init(s, (unsigned)std::time(nullptr), &err)) {
+    if (!app.init(s, (unsigned)std::time(nullptr), fonts, &err)) {
         std::fprintf(stderr, "init: %s\n", err.c_str());
         return 1;
     }
     if (!err.empty()) std::fprintf(stderr, "note: %s\n", err.c_str());
     std::printf("%d agents, trail %d x %d (%s)\n", app.agents_w() * app.agents_h(), app.trail_w(), app.trail_h(),
                 app.half_float() ? "half float" : "8 bit");
+    auto clock_now = [&] {
+        if (fixed_time) return time_offset + glfwGetTime();
+        std::time_t tt = std::time(nullptr);
+        std::tm lt;
+        localtime_r(&tt, &lt);
+        return lt.tm_hour * 3600.0 + lt.tm_min * 60.0 + lt.tm_sec;
+    };
 
     double next_status = 5, last_status = 0;
     long frames = 0, frames_at = 0, steps_at = 0;
@@ -211,7 +232,7 @@ int main(int argc, char** argv) {
         int fw, fh;
         glfwGetFramebufferSize(win, &fw, &fh);
         glViewport(0, 0, fw, fh);
-        app.render(now, fw, fh);
+        app.render(now, clock_now(), fw, fh);
         if (!shot.empty() && now >= shot_after) {
             std::printf("shot %s %s\n", shot.c_str(), save_ppm(shot, fw, fh) ? "ok" : "FAILED");
             break;

@@ -1,5 +1,5 @@
-// Physarum Lite with GL. The same GPU model as physarum_app.hpp, with the clock, the fonts and
-// the timers removed:
+// Physarum Lite with GL. The same GPU model as physarum_app.hpp, with the timers removed and the
+// clock made optional (off by default; when off, no font, clock texture or overlay pass exists):
 //   agents: two pairs of ping-pong RGBA8 textures, one texel per agent:
 //           position (x in RG, y in BA, 16 bits each) and heading (RG, 16 bits);
 //   trail:  one ping-pong pair the size of the trail map, R G B = the three species' trails,
@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "physarum_lite.hpp"
+#include "sand.hpp"          // Font, for the optional clock
 
 namespace sandclock {
 namespace physarum {
@@ -29,13 +30,15 @@ public:
     // (tests lower them to exercise the scale-up path).
     static int draw_cap_w, draw_cap_h;
 
-    // GL context must be current. No fonts, no clock: the simulation starts at once.
-    bool init(const Settings& settings, unsigned seed, std::string* error);
+    // GL context must be current. fonts_json: fonts.json for the clock; empty = no clock. The font
+    // is only read when Settings::clock is not CLOCK_OFF.
+    bool init(const Settings& settings, unsigned seed, const std::string& fonts_json, std::string* error);
     void release();
 
-    // now: seconds on a steady clock. One step runs on every pace-th frame; nothing outside drives
-    // the simulation.
-    void render(double now, int fb_w, int fb_h);
+    // now: seconds on a steady clock. clock: seconds since midnight, for the clock in the middle (it
+    // is ignored while the clock is off). One step runs on every pace-th frame; nothing outside
+    // drives the simulation.
+    void render(double now, double clock, int fb_w, int fb_h);
 
     int agents_w() const { return aw_; }
     int agents_h() const { return ah_; }
@@ -64,6 +67,7 @@ private:
     void restart();
     void set_palette();
     void build_food();
+    void update_clock(double clock);
     void update_camera(double dt);
     int u(unsigned prog, const char* name) const;
 
@@ -72,8 +76,8 @@ private:
     int preset_ = 0;
     std::mt19937 rng_;
     unsigned prog_sense_ = 0, prog_move_ = 0, prog_deposit_ = 0, prog_diffuse_ = 0, prog_init_ = 0;
-    unsigned prog_draw_ = 0, prog_upscale_ = 0;
-    unsigned vbo_ = 0, points_vbo_ = 0, vao_ = 0, pal_tex_ = 0, food_tex_ = 0;
+    unsigned prog_draw_ = 0, prog_upscale_ = 0, prog_clock_ = 0;
+    unsigned vbo_ = 0, points_vbo_ = 0, vao_ = 0, pal_tex_ = 0, food_tex_ = 0, clock_tex_ = 0;
     Target pos_[2], head_[2], trail_[2], draw_;
     int cp_ = 0, ch_ = 0, ct_ = 0;
     int aw_ = 0, ah_ = 0, tw_ = 0, th_ = 0, block_rows_ = 0;
@@ -83,6 +87,15 @@ private:
 
     // Food sources only (no clock digits): x, y pairs in screen uv.
     std::vector<float> nodes_;
+
+    // The clock. All of this stays empty while Settings::clock is CLOCK_OFF.
+    sandclock::Font font_;
+    bool has_font_ = false;
+    std::string clock_text_;
+    std::vector<uint8_t> clock_px_;
+    int clock_w_ = 0, clock_h_ = 0;
+    float clock_rect_[4] = {0, 0, 0, 0};             // the clock, in trail uv
+    bool clock_restart_ = false;                     // restart once the first clock is built
 
     double cam_x_ = 0.5, cam_y_ = 0.5, cam_t_ = 0, zoom_ = 1, rot_ = 0;
     double last_now_ = -1;
