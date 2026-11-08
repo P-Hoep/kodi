@@ -66,8 +66,8 @@
         </setting>
         <setting id="block_size" type="integer" label="30124">
           <level>0</level>
-          <default>100</default>
-          <constraints><minimum>50</minimum><step>5</step><maximum>100</maximum></constraints>
+          <default>96</default>
+          <constraints><minimum>32</minimum><step>4</step><maximum>96</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
         <setting id="show_grid" type="boolean" label="30125">
@@ -153,13 +153,29 @@
           <control type="spinner" format="string"/>
           <dependencies><dependency type="visible" setting="show_clock">true</dependency></dependencies>
         </setting>
-        <setting id="clock_24h" type="boolean" label="30141">
+        <setting id="clock_seconds" type="boolean" label="30141">
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
           <dependencies><dependency type="visible" setting="show_clock">true</dependency></dependencies>
         </setting>
-        <setting id="clock_colour" type="string" label="30142">
+        <setting id="clock_24h" type="boolean" label="30142">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+          <dependencies><dependency type="visible" setting="show_clock">true</dependency></dependencies>
+        </setting>
+        <setting id="clock_position" type="integer" label="30143">
+          <level>0</level>
+          <default>0</default>
+          <constraints><options>
+            <option label="30144">0</option>
+            <option label="30145">1</option>
+          </options></constraints>
+          <control type="spinner" format="string"/>
+          <dependencies><dependency type="visible" setting="show_clock">true</dependency><dependency type="visible" setting="clock_style">1</dependency></dependencies>
+        </setting>
+        <setting id="clock_colour" type="string" label="30146">
           <level>0</level>
           <default>FFE8ECF4</default>
           <control type="colorbutton"/>

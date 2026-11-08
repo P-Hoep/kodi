@@ -5,7 +5,8 @@
 Writes, under screensaver.tetris/resources/media/:
   block.png     a white, bevel-shaded block that Kodi tints with setColorDiffuse; drawn at
                 192x120 (2x its 96x60 size on screen) so it stays crisp on 4K screens
-  grid.png      the 20 x 18 cell lines, transparent apart from them
+  grid-NN.png   the NN x 18 cell lines, transparent apart from them; one per column count the
+                block size slider can produce, so a narrow or wide board gets matching lines
   panel.png     a rounded white panel, tinted with the HUD's opacity at run time
   vignette.png  a soft dark edge over the background
   white.png     a plain white texture
@@ -99,7 +100,7 @@ def glow(mark, argb, blur, strength):
     return big
 
 
-def grid_image(w=config.W, h=config.H, cols=config.COLS, rows=config.ROWS, alpha=config.GRID_ALPHA):
+def grid_image(w=config.W, h=config.H, cols=20, rows=config.ROWS, alpha=config.GRID_ALPHA):
     img = Image.new('RGBA', (w, h), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     line = (255, 255, 255, alpha)
@@ -228,14 +229,16 @@ def main():
     os.makedirs(MEDIA, exist_ok=True)
     block = block_sprite()
     block.save(os.path.join(MEDIA, 'block.png'), optimize=True)
-    grid_image().save(os.path.join(MEDIA, 'grid.png'), optimize=True)
+    for cols in config.column_counts():
+        grid_image(cols=cols).save(os.path.join(MEDIA, 'grid-%d.png' % cols), optimize=True)
     panel_image().save(os.path.join(MEDIA, 'panel.png'), optimize=True)
     vignette_image().save(os.path.join(MEDIA, 'vignette.png'), optimize=True)
     Image.new('RGBA', (8, 8), (255, 255, 255, 255)).save(os.path.join(MEDIA, 'white.png'))
     make_icon(block)
     make_fanart(block)
-    print('block %dx%d, grid %dx%d, icon 512, fanart 1920x1080' % (
-        block.width, block.height, config.W, config.H))
+    print('block %dx%d, grid %dx%d for %s columns, icon 512, fanart 1920x1080' % (
+        block.width, block.height, config.W, config.H,
+        ', '.join(str(c) for c in config.column_counts())))
 
 
 if __name__ == '__main__':

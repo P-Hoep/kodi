@@ -551,15 +551,17 @@ so it always exits, and `Dialog.Close` closes it without waiting for Kodi's main
 The DVD logo is a trademark of DVD Format/Logo Licensing Corporation; this is an unaffiliated
 fan project.
 
-## Tetris AI (new, v1.0)
+## Tetris AI (new, v1.1)
 
-![Tetris AI: the AI stacks tetrominoes edge to edge, clears rows, and plays around a clock made of blocks at the bottom of the screen](release/gifs/tetris.gif)
+![Tetris AI: the AI stacks tetrominoes edge to edge, clears rows, and plays around a clock made of blocks suspended above the floor](release/gifs/tetris.gif)
 
-`screensaver.tetris`: an AI plays Tetris across the whole screen, forever. The board is 20 by
-18 cells — exactly 16:9 — so at the default 100% block size every cell is 96 × 60 pixels and
-the playfield reaches all four edges. All seven classic tetrominoes come from a seven-bag
-randomizer, with the Guideline rotation counts (I, S and Z have two orientations, O one,
-T, J and L four).
+`screensaver.tetris`: an AI plays Tetris across the whole screen, forever. The playfield is
+always 18 rows tall and reaches all four edges; the *block size* setting sets how wide the
+blocks are in pixels. At the default 96 pixels there are 20 columns of 96 × 60 pixels — exactly
+16:9 — and smaller blocks fit more, narrower columns, so a wide screen does not fill up with
+huge squares: 64 gives 30 near-square columns, the minimum 32 gives 60. All seven classic
+tetrominoes come from a seven-bag randomizer, with the Guideline rotation counts (I, S and Z
+have two orientations, O one, T, J and L four).
 
 - **AI skill:** *Perfect*, *Expert*, *Skilled*, *Average* or *Beginner*. Perfect always takes
   the best placement under the El-Tetris heuristic (landing height, rows cleared, row and
@@ -573,14 +575,16 @@ T, J and L four).
   Ocean and Vaporwave, or seven colours of your own. The background is any colour too, and the
   blocks are the same relief sprite as a real Tetris app, tinted per piece.
 - **The clock:** on by default, drawn as text in the top-left panel or — *Clock style:
-  Tetris blocks* — as HH:MM in a 3 × 5 block font along the bottom five rows of the playfield.
-  Block clock digits are fixed cells: pieces collide with them and have to be placed around
-  them, they never fall with the stack, and a row that clears leaves them exactly where they
-  are. The digits are redrawn once a minute, as soon as no locked piece is in the way, in any
-  colour (*Block clock colour*). If the clock is off, the game is plain Tetris.
-- **Look:** block size from 50% to 100% of the screen, the grid, the stats panel (score, lines,
-  level and best), its opacity, the landing ghost and the next-piece preview can each be
-  switched off.
+  Tetris blocks* — as HH:MM in a 3 × 5 block font, with seconds when the board has 27 columns
+  for them. *Block clock position* leaves it resting on the floor or suspended three rows above
+  it, hanging in mid-air with the game playing around and above it. Either way its digits are
+  fixed cells: pieces collide with them and have to be placed around them, they never fall with
+  the stack, and a row that clears leaves them exactly where they are. The digits are redrawn
+  once a minute (every second with seconds on), as soon as no locked piece is in the way, in
+  any colour (*Block clock colour*). If the clock is off, the game is plain Tetris.
+- **Look:** block width from 32 to 96 pixels (60 down to 20 columns), the grid, the stats panel
+  (score, lines, level and best), its opacity, the landing ghost and the next-piece preview can
+  each be switched off.
 
 The playfield is a bitmask per row (`board.py`), so collisions, landings in all four
 orientations and full-row detection are integer operations, and the AI scores every legal
@@ -592,7 +596,7 @@ screensaver itself when it wakes, and `doModal()` would never return — and it 
 `Dialog.Close`.
 
 ```bash
-python3 tools/make_tetris_media.py           # blocks, grid, panels, icon and fanart with Pillow
+python3 tools/make_tetris_media.py           # blocks, a grid per column count, panels, icon, fanart
 python3 tools/make_settings_tetris.py        # settings.xml + strings.po from resources/lib/config.py
 python3 tools/make_tetris_gif.py release/gifs/tetris.gif   # demo frames from the same engine
 python3 tools/build_zip.py screensaver.tetris

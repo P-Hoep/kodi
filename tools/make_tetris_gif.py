@@ -6,9 +6,10 @@ The frames come from the add-on's own ai, board, game and pieces and its block, 
 and vignette images, so the pieces, the AI's choices, the scoring and the look are exactly
 what Kodi runs. Only the Kodi window itself is not involved. Needs Pillow.
 
-The clip starts partway into a game (seed 16, after 28 pieces) so that three lines clear
-within the next eight pieces, and the clock is frozen at the time of the screenshot it was
-matched to.
+The demo uses a wide board (64 px blocks, 30 columns) with the block clock showing seconds and
+suspended in mid-air, so it shows what a wide screen can do. The clip starts partway into a game
+so that lines clear within the next few pieces, and the clock is frozen at the time of the
+screenshot it was matched to.
 """
 
 import os
@@ -27,11 +28,13 @@ from resources.lib import ai, board, clockface, config, game, pieces  # noqa: E4
 OUT_W, OUT_H = 960, 540
 SCALE = OUT_W / float(config.W)
 FPS = 15
-SEED = 16
-START_PIECE = 29          # pieces 1-28 are played before the clip starts
-CLIP_PIECES = 8
-CLOCK = '11:17 AM'        # frozen: a demo should look the same every time it is rendered
-CLOCK_TIME = time.struct_time((2026, 11, 8, 11, 17, 0, 6, 312, 0))
+BLOCK_W = 64              # 30 columns: near-square blocks, room for the seconds
+SEED = 1
+START_PIECE = 46          # pieces 1-START_PIECE are played before the clip starts
+CLIP_PIECES = 7           # pieces 47 and 50 clear a line, 53 clears one more
+# Frozen: a demo should look the same every time it is rendered.
+CLOCK = '11:17:42 AM'
+CLOCK_TIME = time.struct_time((2026, 11, 8, 11, 17, 42, 6, 312, 0))
 
 # The Kodi window's own layout, from resources/lib/screensaver.py.
 PANEL_X, PANEL_Y, PANEL_W, PANEL_H = 28, 24, 420, 286
@@ -78,7 +81,8 @@ class Renderer(object):
         self.ghosts = dict((p, self.fade(self.blocks[p], GHOST_ALPHA))
                            for p in self.colours)
 
-        self.grid = self.open(os.path.join(media, 'grid.png'), (OUT_W, OUT_H))
+        self.grid = self.open(os.path.join(media, 'grid-%d.png' % config.columns(s)),
+                              (OUT_W, OUT_H))
         self.vignette = self.open(os.path.join(media, 'vignette.png'), (OUT_W, OUT_H))
 
         self.base = Image.new('RGB', (OUT_W, OUT_H), rgb(s['background']))
@@ -185,8 +189,11 @@ class Renderer(object):
 
 def play(renderer, seed=SEED, start_piece=START_PIECE, count=CLIP_PIECES):
     s = renderer.s
-    b = board.Board(config.COLS, config.ROWS)
-    b.set_fixed(clockface.cells(CLOCK_TIME, s['clock_24h']))
+    cols, rows = config.board_size(s)
+    b = board.Board(cols, rows)
+    floating = s['clock_position'] == config.CLOCK_SUSPENDED
+    b.set_fixed(clockface.cells(CLOCK_TIME, s['clock_24h'], cols, rows, s['clock_seconds'],
+                                floating))
     rng = random.Random(seed)
     g = game.Game(b, rng, 1)
     frames = []
@@ -211,7 +218,7 @@ def play(renderer, seed=SEED, start_piece=START_PIECE, count=CLIP_PIECES):
         shape = pieces.ROTATIONS[letter][placement.rotation]
         masks = pieces.masks(shape)
         width = pieces.width(shape)
-        spawn_x = max(0, min(config.COLS - width, config.COLS // 2 - width // 2))
+        spawn_x = max(0, min(cols - width, cols // 2 - width // 2))
         if not b.fits(masks, spawn_x, 0):
             spawn_x = placement.x
         ghost = (letter, shape, placement.x, placement.y)
@@ -247,10 +254,15 @@ def play(renderer, seed=SEED, start_piece=START_PIECE, count=CLIP_PIECES):
 
 def build(out_path):
     s = config.defaults()
+    s['block_size'] = BLOCK_W
     s['clock_style'] = config.CLOCK_BLOCKS      # the demo shows the clock on the playfield
+    s['clock_seconds'] = True
+    s['clock_position'] = config.CLOCK_SUSPENDED
     renderer = Renderer(s)
+    cols, rows = config.board_size(s)
     # One shared palette for every frame, so players do not flash between palettes.
-    sample = renderer.render([('IOTSZJL#' * 3)[:config.COLS]] * config.ROWS,
+    sample_row = ('IOTSZJL#' * ((cols + 7) // 8))[:cols]
+    sample = renderer.render([sample_row] * rows,
                              ('T', pieces.ROTATIONS['T'][0], 8, 8), None, 1234, 7, 3, 1234, 'O',
                              flash_rows=(0,))
     palette = sample.quantize(colors=256)

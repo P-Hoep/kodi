@@ -6,10 +6,14 @@ values with the right types and defaults. No Kodi imports.
 
 ADDON_ID = 'screensaver.tetris'
 
-# The skin's coordinate system, as in the other screensavers here. The board is 20 x 18 cells,
-# which is 16:9, so at 100% block size it covers the whole screen exactly: 96 x 60 pixels a cell.
+# The skin's coordinate system, as in the other screensavers here. The playfield is always 18
+# rows tall and fills the screen, and the block size decides how many columns fit across it:
+# at the default 96 px, 20 x 18 cells of 96 x 60 pixels cover the screen exactly. Smaller
+# blocks mean more, narrower columns, which keeps them from looking huge on a wide screen.
 W, H = 1920, 1080
-COLS, ROWS = 20, 18
+ROWS = 18
+BLOCK_W = 96
+BLOCK_W_MIN, BLOCK_W_MAX, BLOCK_W_STEP = 32, 96, 4
 
 PIECES = ('I', 'O', 'T', 'S', 'Z', 'J', 'L')
 
@@ -48,6 +52,10 @@ CLOCK_TEXT = 0
 CLOCK_BLOCKS = 1
 CLOCK_STYLES = ('Text', 'Tetris blocks')
 
+CLOCK_BOTTOM = 0
+CLOCK_SUSPENDED = 1
+CLOCK_POSITIONS = ('Bottom', 'Suspended')
+
 
 def B(sid, label, default, **kw):
     return dict(id=sid, type='boolean', label=label, default=default, **kw)
@@ -80,7 +88,7 @@ CATEGORIES = [
     ]),
     ('Look', [
         O('scheme', 'Colour scheme', 0, [name for name, _c in SCHEMES] + ['Custom']),
-        S('block_size', 'Block size (% of the screen)', 100, 50, 100, 5),
+        S('block_size', 'Block size (pixels)', BLOCK_W, BLOCK_W_MIN, BLOCK_W_MAX, BLOCK_W_STEP),
         B('show_grid', 'Show the grid', True),
         B('show_hud', 'Show the score, lines and level', True),
         S('hud_opacity', 'HUD panel opacity (%)', 60, 0, 90, 10, visible='show_hud'),
@@ -89,7 +97,12 @@ CATEGORIES = [
     ('Clock', [
         B('show_clock', 'Show the clock', True),
         O('clock_style', 'Clock style', CLOCK_TEXT, list(CLOCK_STYLES), visible='show_clock'),
+        B('clock_seconds', 'Show seconds', False, visible='show_clock'),
         B('clock_24h', 'Use 24-hour time', False, visible='show_clock'),
+        O('clock_position', 'Block clock position', CLOCK_BOTTOM, list(CLOCK_POSITIONS),
+          visible=('<dependencies><dependency type="visible" setting="show_clock">true</dependency>'
+                   '<dependency type="visible" setting="clock_style">%d</dependency></dependencies>'
+                   % CLOCK_BLOCKS)),
         C('clock_colour', 'Block clock colour', 'FFE8ECF4',
           visible=('<dependencies><dependency type="visible" setting="show_clock">true</dependency>'
                    '<dependency type="visible" setting="clock_style">%d</dependency></dependencies>'
@@ -168,23 +181,41 @@ def hud_colour(s):
 
 # ---------------------------------------------------------------- layout
 
-def scale(s):
-    return min(1.0, max(0.0, s['block_size'] / 100.0))
+def columns_for(block_width):
+    """How many columns fit across the screen at this block width."""
+    return max(10, int(round(W / float(block_width))))
+
+
+def columns(s):
+    return columns_for(s['block_size'])
+
+
+def board_size(s):
+    """(columns, rows) of the playfield."""
+    return columns(s), ROWS
+
+
+def block_widths():
+    return range(BLOCK_W_MIN, BLOCK_W_MAX + 1, BLOCK_W_STEP)
+
+
+def column_counts():
+    """Every column count the block size slider can produce (for the grid images)."""
+    return sorted(set(columns_for(w) for w in block_widths()))
 
 
 def board_rect(s):
-    """(left, top, width, height) of the playfield on screen."""
-    bw = int(round(W * scale(s)))
-    bh = int(round(H * scale(s)))
-    return (W - bw) // 2, (H - bh) // 2, bw, bh
+    """(left, top, width, height) of the playfield on screen: always the whole screen."""
+    return 0, 0, W, H
 
 
 def cell_rect(s, x, y):
     """The screen rectangle of board cell (x, y) as (left, top, width, height). Rounded so the
     cells tile the board exactly, with no gaps or overlaps."""
+    cols = columns(s)
     left, top, bw, bh = board_rect(s)
-    x0 = left + int(round(bw * x / float(COLS)))
-    x1 = left + int(round(bw * (x + 1) / float(COLS)))
+    x0 = left + int(round(bw * x / float(cols)))
+    x1 = left + int(round(bw * (x + 1) / float(cols)))
     y0 = top + int(round(bh * y / float(ROWS)))
     y1 = top + int(round(bh * (y + 1) / float(ROWS)))
     return x0, y0, x1 - x0, y1 - y0
@@ -205,9 +236,14 @@ def delays(s, level):
             max(0.006, DROP_SECONDS / factor))
 
 
-def clock_text(now, twenty_four_hour):
+def clock_text(now, twenty_four_hour, seconds=False):
     """`now` is a time.struct_time (what time.localtime returns in Kodi)."""
     if twenty_four_hour:
+        if seconds:
+            return '%02d:%02d:%02d' % (now.tm_hour, now.tm_min, now.tm_sec)
         return '%02d:%02d' % (now.tm_hour, now.tm_min)
     hour = now.tm_hour % 12 or 12
+    if seconds:
+        return '%d:%02d:%02d %s' % (hour, now.tm_min, now.tm_sec,
+                                    'AM' if now.tm_hour < 12 else 'PM')
     return '%d:%02d %s' % (hour, now.tm_min, 'AM' if now.tm_hour < 12 else 'PM')

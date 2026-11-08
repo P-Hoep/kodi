@@ -1,9 +1,11 @@
 """The screensaver window: an AI plays Tetris on a playfield that fills the screen.
 
-Kodi controls do the drawing. There are 360 block images, one per board cell, each positioned
-once and tinted with the piece colour; a piece moving or locking only touches the handful of
-cells that changed. The active piece and its landing ghost are four more images, moved one cell
-at a time, so Python wakes about 20-50 times a second only while a piece is falling.
+Kodi controls do the drawing. There is one block image per board cell, each positioned once and
+tinted with the piece colour; a piece moving or locking only touches the handful of cells that
+changed. The block size setting decides how many columns there are: fewer, larger blocks for a
+close view, more, narrower ones so a wide screen does not get filled by huge squares. The active
+piece and its landing ghost are four more images, moved one cell at a time, so Python wakes about
+20-50 times a second only while a piece is falling.
 
 The AI and the board live in ai.py, board.py, game.py and pieces.py, which have no Kodi imports
 and are tested offline. This module is the window, the clock, the HUD and the play loop.
@@ -81,7 +83,8 @@ class Screensaver(object):
         self.colours[board.FIXED] = self.s['clock_colour']
         self.clock_key = None
         self.rng = random.Random()
-        self.game = game.Game(board.Board(config.COLS, config.ROWS), self.rng, self.s['start_level'])
+        self.cols, self.rows = config.board_size(self.s)
+        self.game = game.Game(board.Board(self.cols, self.rows), self.rng, self.s['start_level'])
         self.stop = threading.Event()
         self.monitor = ExitMonitor(self.exit)
         self.window = None
@@ -90,7 +93,7 @@ class Screensaver(object):
         self.best = 0
 
         self.cells = []
-        self.shown = [None] * (config.COLS * config.ROWS)
+        self.shown = [None] * (self.cols * self.rows)
         self.clock = None
         self.active = []
         self.ghost = []
@@ -109,16 +112,18 @@ class Screensaver(object):
         try:
             self.window.show()
             started = time.time()
-            last_minute = None
+            last_key = None
             while not self.stopped():
                 if time.time() - started > 2.0 and not xbmc.getCondVisibility('System.ScreenSaverActive'):
                     break
                 if (self.s['show_clock'] and self.s['clock_style'] == config.CLOCK_TEXT
                         and self.clock is not None):
                     now = time.localtime()
-                    if now.tm_min != last_minute:
-                        last_minute = now.tm_min
-                        self.set_label(self.clock, config.clock_text(now, self.s['clock_24h']))
+                    seconds = self.s['clock_seconds']
+                    key = (now.tm_hour, now.tm_min, now.tm_sec) if seconds else (now.tm_hour, now.tm_min)
+                    if key != last_key:
+                        last_key = key
+                        self.set_label(self.clock, config.clock_text(now, self.s['clock_24h'], seconds))
                 self.monitor.waitForAbort(0.2)
         finally:
             self.stop.set()
@@ -140,13 +145,13 @@ class Screensaver(object):
         controls.append(self.image(0, 0, config.W, config.H, 'vignette.png'))
 
         left, top, width, height = config.board_rect(s)
-        self.grid = self.image(left, top, width, height, 'grid.png')
+        self.grid = self.image(left, top, width, height, 'grid-%d.png' % self.cols)
         self.grid.setVisible(s['show_grid'])
         controls.append(self.grid)
 
         cell_w, cell_h = config.cell_rect(s, 0, 0)[2:]
-        for y in range(config.ROWS):
-            for x in range(config.COLS):
+        for y in range(self.rows):
+            for x in range(self.cols):
                 cell = self.image(*config.cell_rect(s, x, y), 'block.png')
                 cell.setVisible(False)
                 self.cells.append(cell)
@@ -161,7 +166,7 @@ class Screensaver(object):
 
         self.stats_panel = self.image(PANEL_X, PANEL_Y, PANEL_W, PANEL_H, 'panel.png',
                                       config.hud_colour(s))
-        self.clock_panel = self.image(PANEL_X, PANEL_Y, 330, 92, 'panel.png',
+        self.clock_panel = self.image(PANEL_X, PANEL_Y, 380, 92, 'panel.png',
                                       config.hud_colour(s))
         self.next_panel = self.image(NEXT_X, NEXT_Y, NEXT_W, NEXT_H, 'panel.png',
                                      config.hud_colour(s))
@@ -169,7 +174,7 @@ class Screensaver(object):
                                          'panel.png', 'CC000000')
         controls.extend([self.stats_panel, self.clock_panel, self.next_panel, self.gameover_panel])
 
-        self.clock = self.label(52, 38, 352, 64, '', 'font45', CLOCK)
+        self.clock = self.label(52, 38, 356, 64, '', 'font45', CLOCK)
         self.score_caption = self.label(52, 118, 352, 28, 'SCORE', 'font13', CAPTION)
         self.score_value = self.label(52, 142, 352, 46, '0', 'font30', VALUE)
         self.lines_caption = self.label(52, 198, 90, 26, 'LINES', 'font13', CAPTION)
@@ -208,13 +213,14 @@ class Screensaver(object):
         self.gameover_label.setVisible(False)
         window.addControls(controls)
 
-        self.set_label(self.clock, config.clock_text(time.localtime(), s['clock_24h']))
+        self.set_label(self.clock, config.clock_text(time.localtime(), s['clock_24h'],
+                                                     s['clock_seconds']))
         self.update_hud()
         self.draw_next(self.game.next)
         self.update_block_clock()
         self.draw_board()
-        log('%d x %d board, %.0f%% block size, skill %s, speed %d%%, scheme %d' % (
-            config.COLS, config.ROWS, s['block_size'], config.SKILLS[s['skill']], s['speed'],
+        log('%d x %d board, %d px blocks, skill %s, speed %d%%, scheme %d' % (
+            self.cols, self.rows, s['block_size'], config.SKILLS[s['skill']], s['speed'],
             s['scheme']))
         self.thread = threading.Thread(target=self.play_loop, name='tetris-ai')
         self.thread.daemon = True
@@ -272,10 +278,10 @@ class Screensaver(object):
     def draw_board(self):
         letters = self.game.board.letters
         shown = self.shown
-        for y in range(config.ROWS):
+        for y in range(self.rows):
             row = letters[y]
-            for x in range(config.COLS):
-                index = y * config.COLS + x
+            for x in range(self.cols):
+                index = y * self.cols + x
                 letter = row[x]
                 want = self.colours[letter] if letter else None
                 if want == shown[index]:
@@ -294,11 +300,14 @@ class Screensaver(object):
             control.setPosition(left, top)
 
     def show_active(self, shape, x, y, colour):
+        # Colour and position every cell before making any visible: a cell shown first would
+        # flash at the old piece's spot (usually the far side of the board) for a frame.
         self.active_shape = shape
         for control in self.active:
             control.setColorDiffuse(colour)
-            control.setVisible(True)
         self.move_active(x, y)
+        for control in self.active:
+            control.setVisible(True)
 
     def hide_active(self):
         for control in self.active:
@@ -313,6 +322,9 @@ class Screensaver(object):
             left, top = config.cell_rect(self.s, x + dx, y + dy)[:2]
             control.setPosition(left, top)
             control.setColorDiffuse(ghost)
+        # Position first, then show: the other way round leaves a frame with cells visible where
+        # the previous ghost was.
+        for control in self.ghost:
             control.setVisible(True)
 
     def hide_ghost(self):
@@ -332,7 +344,7 @@ class Screensaver(object):
             control.setVisible(self.s['show_next'])
 
     def flash_rows(self, rows):
-        indexes = [y * config.COLS + x for y in rows for x in range(config.COLS)]
+        indexes = [y * self.cols + x for y in rows for x in range(self.cols)]
         letters = self.game.board.letters
         for _pulse in range(2):
             for index in indexes:
@@ -340,7 +352,7 @@ class Screensaver(object):
             if not self.wait(0.07):
                 return
             for index in indexes:
-                y, x = divmod(index, config.COLS)
+                y, x = divmod(index, self.cols)
                 self.cells[index].setColorDiffuse(self.colours[letters[y][x]])
             if not self.wait(0.05):
                 return
@@ -357,15 +369,20 @@ class Screensaver(object):
 
     def update_block_clock(self):
         """Put the block clock on the board, once a minute. If locked pieces are in the way,
-        keep the old digits and try again after the next piece locks."""
+        keep the old digits and try again after the next piece locks. With seconds on, the
+        clock ticks every second, but seconds are only used when the board is wide enough for
+        them (27 columns); a narrower board gets HH:MM instead."""
         if not self.s['show_clock'] or self.s['clock_style'] != config.CLOCK_BLOCKS:
             return
+        seconds = self.s['clock_seconds'] and clockface.fits(self.cols, True)
         now = time.localtime()
-        key = (now.tm_hour, now.tm_min)
+        key = (now.tm_hour, now.tm_min, now.tm_sec) if seconds else (now.tm_hour, now.tm_min)
         if key == self.clock_key:
             return
-        cells = clockface.cells(now, self.s['clock_24h'])
-        if not self.game.board.can_set_fixed(cells):
+        floating = self.s['clock_position'] == config.CLOCK_SUSPENDED
+        cells = clockface.cells(now, self.s['clock_24h'], self.cols, self.rows, seconds,
+                                floating)
+        if not cells or not self.game.board.can_set_fixed(cells):
             return
         self.game.board.set_fixed(cells)
         self.clock_key = key
@@ -385,7 +402,7 @@ class Screensaver(object):
         masks = pieces.masks(shape)
         colour = self.colours[letter]
         width = pieces.width(shape)
-        spawn_x = max(0, min(config.COLS - width, config.COLS // 2 - width // 2))
+        spawn_x = max(0, min(self.cols - width, self.cols // 2 - width // 2))
         if not game.board.fits(masks, spawn_x, 0):
             spawn_x = placement.x
 
@@ -416,10 +433,13 @@ class Screensaver(object):
             if not self.wait(drop_delay):
                 return
 
-        self.hide_active()
-        self.hide_ghost()
+        # Draw the locked piece into the board cells before hiding the falling piece that covers
+        # them: the block images are on top, so the cells underneath change unseen and there is
+        # no frame where the landed piece is missing.
         game.board.place(letter, shape, placement.x, placement.y)
         self.draw_board()
+        self.hide_active()
+        self.hide_ghost()
         full = game.board.full_rows()
         if full:
             self.flash_rows(full)

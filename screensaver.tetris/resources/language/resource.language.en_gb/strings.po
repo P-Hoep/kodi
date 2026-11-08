@@ -104,7 +104,7 @@ msgid "Custom"
 msgstr ""
 
 msgctxt "#30124"
-msgid "Block size (% of the screen)"
+msgid "Block size (pixels)"
 msgstr ""
 
 msgctxt "#30125"
@@ -172,9 +172,25 @@ msgid "Tetris blocks"
 msgstr ""
 
 msgctxt "#30141"
-msgid "Use 24-hour time"
+msgid "Show seconds"
 msgstr ""
 
 msgctxt "#30142"
+msgid "Use 24-hour time"
+msgstr ""
+
+msgctxt "#30143"
+msgid "Block clock position"
+msgstr ""
+
+msgctxt "#30144"
+msgid "Bottom"
+msgstr ""
+
+msgctxt "#30145"
+msgid "Suspended"
+msgstr ""
+
+msgctxt "#30146"
 msgid "Block clock colour"
 msgstr ""

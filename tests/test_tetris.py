@@ -20,6 +20,8 @@ from resources.lib import ai, board, clockface, config, game, pieces  # noqa: E4
 
 MEDIA = os.path.join(ROOT, 'resources', 'media')
 
+COLS, ROWS = 20, config.ROWS      # the default 96 px blocks
+
 
 def defaults(**kw):
     s = dict((x['id'], x['default']) for x in config.all_settings())
@@ -35,7 +37,7 @@ def png_size(path):
 
 
 def simulate(pieces_count, seed=1, skill=0, start_level=1):
-    b = board.Board(config.COLS, config.ROWS)
+    b = board.Board(COLS, ROWS)
     rng = random.Random(seed)
     g = game.Game(b, rng, start_level)
     tops = 0
@@ -52,7 +54,7 @@ def simulate(pieces_count, seed=1, skill=0, start_level=1):
         assert b.landing(pieces.masks(shape), p.x) == p.y
         b.place(letter, shape, p.x, p.y)
         g.lock(b.remove_rows(b.full_rows()))
-        max_height = max(max_height, max(b.column_height(x) for x in range(config.COLS)))
+        max_height = max(max_height, max(b.column_height(x) for x in range(COLS)))
         played += 1
     return g, tops, max_height, played
 
@@ -73,7 +75,7 @@ class SettingsTest(unittest.TestCase):
         s = config.read({'boolean': lambda _: True, 'integer': lambda _: 9999,
                          'string': lambda _: 'nonsense'})
         self.assertEqual(s['speed'], 400)
-        self.assertEqual(s['block_size'], 100)
+        self.assertEqual(s['block_size'], config.BLOCK_W_MAX)
         self.assertEqual(s['background'], 'FF06080F')
 
     def test_colour_schemes(self):
@@ -97,20 +99,44 @@ class SettingsTest(unittest.TestCase):
         self.assertEqual(config.clock_text(noon, False), '12:05 PM')
         self.assertEqual(config.clock_text(midnight, False), '12:07 AM')
         self.assertEqual(config.clock_text(noon, True), '12:05')
+        self.assertEqual(config.clock_text(noon, False, True), '12:05:00 PM')
+        self.assertEqual(config.clock_text(midnight, True, True), '00:07:00')
 
-    def test_layout_fills_the_screen_at_100(self):
+    def test_layout_fills_the_screen_at_the_default_block_size(self):
         s = defaults()
         self.assertEqual(config.board_rect(s), (0, 0, 1920, 1080))
+        self.assertEqual(config.columns(s), COLS)
         left, top, w, h = config.cell_rect(s, 0, 0)
         self.assertEqual((left, top, w, h), (0, 0, 96, 60))
-        right, bottom = config.cell_rect(s, config.COLS - 1, config.ROWS - 1)[:2]
+        right, bottom = config.cell_rect(s, COLS - 1, ROWS - 1)[:2]
         self.assertEqual((right + w, bottom + h), (1920, 1080))
-        self.assertEqual(config.board_rect(defaults(block_size=50)), (480, 270, 960, 540))
+
+    def test_smaller_blocks_mean_more_columns(self):
+        # The playfield always fills the screen; the block size sets the column width.
+        self.assertEqual(config.columns(defaults(block_size=60)), 32)    # square 60 px cells
+        self.assertEqual(config.columns(defaults(block_size=44)), 44)
+        self.assertEqual(config.columns(defaults(block_size=32)), 60)
+        for width in config.block_widths():
+            s = defaults(block_size=width)
+            cols = config.columns(s)
+            self.assertGreaterEqual(cols, 10)
+            last = config.cell_rect(s, cols - 1, ROWS - 1)
+            self.assertEqual(last[0] + last[2], config.W)
+            self.assertEqual(last[1] + last[3], config.H)
+
+    def test_column_counts_cover_every_block_width(self):
+        counts = config.column_counts()
+        self.assertEqual(counts, sorted(set(config.columns_for(w) for w in config.block_widths())))
+        self.assertIn(COLS, counts)
+        self.assertIn(60, counts)
 
     def test_clock_settings(self):
         s = defaults()
         self.assertEqual(s['clock_style'], config.CLOCK_TEXT)
         self.assertIn('Tetris blocks', config.CLOCK_STYLES)
+        self.assertEqual(s['clock_position'], config.CLOCK_BOTTOM)
+        self.assertIn('Suspended', config.CLOCK_POSITIONS)
+        self.assertEqual(s['clock_seconds'], False)
         self.assertEqual(s['ghost'], True)
         self.assertEqual(config.valid_colour(s['clock_colour']), 'FFE8ECF4')
 
@@ -210,30 +236,57 @@ class BoardTest(unittest.TestCase):
 
 
 class ClockfaceTest(unittest.TestCase):
+    NOW = time.struct_time((2026, 11, 8, 12, 27, 42, 6, 312, 0))
+
     def test_clock_fits_on_the_board(self):
         now = time.struct_time((2026, 11, 8, 23, 59, 0, 6, 312, 0))
         for twelve in (False, True):
-            cells = clockface.cells(now, twelve)
-            self.assertTrue(cells)
-            for x, y in cells:
-                self.assertTrue(0 <= x < config.COLS)
-                self.assertTrue(0 <= y < config.ROWS)
+            for seconds in (False, True):
+                for floating in (False, True):
+                    cells = clockface.cells(now, twelve, 30, ROWS, seconds, floating)
+                    self.assertTrue(cells)
+                    for x, y in cells:
+                        self.assertTrue(0 <= x < 30)
+                        self.assertTrue(0 <= y < ROWS)
+
+    def test_clock_needs_room_for_its_digits(self):
+        self.assertEqual(clockface.width(False), 17)
+        self.assertEqual(clockface.width(True), 27)
+        self.assertEqual(clockface.cells(self.NOW, True, 16, ROWS), [])
+        self.assertEqual(clockface.cells(self.NOW, True, 17, ROWS),
+                         clockface.cells(self.NOW, True, 17, ROWS, seconds=True))  # seconds dropped
+        self.assertNotEqual(clockface.cells(self.NOW, True, 27, ROWS, seconds=True),
+                            clockface.cells(self.NOW, True, 27, ROWS))
 
     def test_digits_are_five_rows_high(self):
-        now = time.struct_time((2026, 11, 8, 12, 27, 0, 6, 312, 0))
-        cells = clockface.cells(now, True)
-        self.assertEqual(min(y for _x, y in cells), clockface.TOP)
-        self.assertEqual(max(y for _x, y in cells), clockface.TOP + clockface.HEIGHT - 1)
-        self.assertIn((clockface.LEFT + 1, clockface.TOP), cells)        # the 1's top
+        cells = clockface.cells(self.NOW, True, COLS, ROWS)     # 12:27
+        left = (COLS - clockface.width()) // 2
+        top = ROWS - clockface.HEIGHT
+        self.assertEqual(min(y for _x, y in cells), top)
+        self.assertEqual(max(y for _x, y in cells), top + clockface.HEIGHT - 1)
+        self.assertIn((left + 1, top), cells)                   # the 1's top
         for dx in range(3):
-            self.assertIn((clockface.LEFT + 4 + dx, clockface.TOP), cells)  # the 2's bar
-        self.assertIn((clockface.LEFT + 8, clockface.TOP + 1), cells)    # the colon
+            self.assertIn((left + 4 + dx, top), cells)          # the 2's bar
+        self.assertIn((left + 8, top + 1), cells)               # the colon
+        self.assertEqual(min(x for x, _y in cells), left)
+
+    def test_suspended_clock_hangs_above_the_floor(self):
+        floor = clockface.cells(self.NOW, True, 30, ROWS)
+        air = clockface.cells(self.NOW, True, 30, ROWS, floating=True)
+        self.assertEqual(min(y for _x, y in floor), ROWS - clockface.HEIGHT)
+        self.assertEqual(min(y for _x, y in air),
+                         ROWS - clockface.HEIGHT - clockface.SUSPENDED_GAP)
+        self.assertEqual(max(y for _x, y in air), ROWS - clockface.SUSPENDED_GAP - 1)
+        self.assertEqual(len(air), len(floor))                  # the same digits, just higher
+        self.assertEqual(sorted(x for x, _y in air), sorted(x for x, _y in floor))
 
     def test_twelve_hour_midnight_is_twelve(self):
         midnight = time.struct_time((2026, 11, 8, 0, 7, 0, 6, 312, 0))
         noon = time.struct_time((2026, 11, 8, 12, 7, 0, 6, 312, 0))
-        self.assertEqual(clockface.cells(midnight, False), clockface.cells(noon, False))
-        self.assertNotEqual(clockface.cells(midnight, True), clockface.cells(noon, True))
+        self.assertEqual(clockface.cells(midnight, False, COLS, ROWS),
+                         clockface.cells(noon, False, COLS, ROWS))
+        self.assertNotEqual(clockface.cells(midnight, True, COLS, ROWS),
+                            clockface.cells(noon, True, COLS, ROWS))
 
 
 class AiTest(unittest.TestCase):
@@ -242,10 +295,10 @@ class AiTest(unittest.TestCase):
         self.assertEqual(tops, 0)
         self.assertEqual(played, 400)
         self.assertGreater(g.lines, 20)
-        self.assertLess(max_height, config.ROWS)
+        self.assertLess(max_height, ROWS)
 
     def test_skill_changes_the_choice(self):
-        b = board.Board(config.COLS, config.ROWS)
+        b = board.Board(COLS, ROWS)
         rng = random.Random(7)
         letter = 'T'
         best = ai.best(b, letter)
@@ -259,23 +312,22 @@ class AiTest(unittest.TestCase):
         self.assertLessEqual(perfect_tops, beginner_tops)
 
     def test_no_placement_on_a_full_board(self):
-        b = board.Board(config.COLS, config.ROWS)
-        for y in range(config.ROWS):
+        b = board.Board(COLS, ROWS)
+        for y in range(ROWS):
             b.bits[y] = b.full_mask
         self.assertIsNone(ai.choose(b, 'T', random.Random(1), 0))
 
     def test_candidates_are_legal_and_clear(self):
-        b = board.Board(config.COLS, config.ROWS)
+        b = board.Board(COLS, ROWS)
         places = ai.candidates(b, 'I')
-        self.assertEqual(len(places), (config.COLS - 3) + config.COLS)  # flat: 17, upright: 20
+        self.assertEqual(len(places), (COLS - 3) + COLS)  # flat: 17, upright: 20
         for p in places:
             shape = pieces.ROTATIONS['I'][p.rotation]
             self.assertEqual(b.landing(pieces.masks(shape), p.x), p.y)
 
-    def test_pieces_play_around_the_block_clock(self):
-        now = time.struct_time((2026, 11, 8, 11, 17, 0, 6, 312, 0))
-        clock = clockface.cells(now, False)
-        b = board.Board(config.COLS, config.ROWS)
+    def play_around(self, clock, cols, keep_clock):
+        """120 pieces around a fixed clock; checks every placement misses it and it stays."""
+        b = board.Board(cols, ROWS)
         b.set_fixed(clock)
         fixed = set(clock)
         rng = random.Random(5)
@@ -293,19 +345,30 @@ class AiTest(unittest.TestCase):
             b.place(letter, shape, p.x, p.y)
             g.lock(b.remove_rows(b.full_rows()))
             played += 1
-            for x, y in fixed:
-                self.assertEqual(b.letters[y][x], board.FIXED)
-        self.assertGreater(played, 90)
+            if keep_clock:
+                for x, y in fixed:
+                    self.assertEqual(b.letters[y][x], board.FIXED)
+        return played
+
+    def test_pieces_play_around_the_block_clock(self):
+        now = time.struct_time((2026, 11, 8, 11, 17, 0, 6, 312, 0))
+        clock = clockface.cells(now, False, COLS, ROWS)
+        self.assertGreater(self.play_around(clock, COLS, keep_clock=True), 90)
+
+    def test_pieces_work_around_a_suspended_clock(self):
+        now = time.struct_time((2026, 11, 8, 11, 17, 0, 6, 312, 0))
+        clock = clockface.cells(now, False, 30, ROWS, floating=True)
+        self.assertGreater(self.play_around(clock, 30, keep_clock=True), 60)
 
 
 class GameTest(unittest.TestCase):
     def test_bag_has_every_piece_before_repeating(self):
-        g = game.Game(board.Board(config.COLS, config.ROWS), random.Random(2))
+        g = game.Game(board.Board(COLS, ROWS), random.Random(2))
         first = [g.take() for _ in range(7)]
         self.assertEqual(sorted(first), sorted(pieces.TYPES))
 
     def test_scoring_and_levels(self):
-        g = game.Game(board.Board(config.COLS, config.ROWS), random.Random(2))
+        g = game.Game(board.Board(COLS, ROWS), random.Random(2))
         g.lock(4)
         self.assertEqual((g.score, g.lines, g.level), (800, 4, 1))
         g.lock(2)
@@ -319,7 +382,7 @@ class GameTest(unittest.TestCase):
         self.assertEqual(g.score, 1900 + 800 * 2)
 
     def test_start_level_and_reset(self):
-        g = game.Game(board.Board(config.COLS, config.ROWS), random.Random(2), start_level=4)
+        g = game.Game(board.Board(COLS, ROWS), random.Random(2), start_level=4)
         self.assertEqual(g.level, 4)
         g.lock(10)
         self.assertEqual(g.level, 5)
@@ -332,7 +395,7 @@ class AddonTest(unittest.TestCase):
         tree = ET.parse(os.path.join(ROOT, 'addon.xml'))
         addon = tree.getroot()
         self.assertEqual(addon.get('id'), config.ADDON_ID)
-        self.assertEqual(addon.get('version'), '1.0.0')
+        self.assertEqual(addon.get('version'), '1.1.0')
         points = set(e.get('point') for e in addon.iter('extension'))
         self.assertIn('xbmc.ui.screensaver', points)
         self.assertTrue(os.path.isfile(os.path.join(ROOT, 'default.py')))
@@ -343,7 +406,8 @@ class AddonTest(unittest.TestCase):
 
     def test_media_sizes(self):
         self.assertEqual(png_size(os.path.join(MEDIA, 'block.png')), (192, 120))
-        self.assertEqual(png_size(os.path.join(MEDIA, 'grid.png')), (1920, 1080))
+        for cols in config.column_counts():
+            self.assertEqual(png_size(os.path.join(MEDIA, 'grid-%d.png' % cols)), (1920, 1080))
         self.assertEqual(png_size(os.path.join(MEDIA, 'vignette.png')), (1920, 1080))
         self.assertEqual(png_size(os.path.join(MEDIA, 'panel.png')), (512, 512))
         self.assertEqual(png_size(os.path.join(ROOT, 'icon.png')), (512, 512))
