@@ -3,12 +3,14 @@
 Physarum Lite is the Physarum simulation with the clock, the fonts and every timer removed: no
 clock in the middle, no start over every so many minutes, no wandering between behaviours. What is
 left is the agent model and its drawing, running continuously. It is meant for low-resource
-devices, so its defaults are light: 65 thousand agents on a 480 x 270 trail at 30 steps/s, no
-glow, no screen effect.
+devices, so its defaults are light: 65 thousand agents on a 480 x 270 trail, no glow, no screen
+effect, and one simulation step on every displayed frame (which is what keeps the frame rate even:
+every frame costs the same).
 
-It shares the behaviour, agent-size, trail-size, speed, food, colour, view and camera lists with the
-Physarum add-on, so the two cannot disagree about what option 3 means. Only the start list differs
-(the clock digit start is gone). Run: python3 tools/make_settings_physarum_lite.py
+It shares the behaviour, agent-size, trail-size, food, colour, view and camera lists with the
+Physarum add-on, so the two cannot disagree about what option 3 means. Only the start list and the
+step rate differ (the clock digit start is gone, and the step rate is frames per step instead of
+steps per second). Run: python3 tools/make_settings_physarum_lite.py
 """
 
 import os
@@ -20,8 +22,8 @@ sys.path.insert(0, SRC)
 sys.path.insert(0, HERE)
 
 from make_settings import write  # noqa: E402
-from make_settings_physarum import (AGENTS, CAMERAS, FOODS, MODES, PRESETS, SCREEN_FX, SPEEDS,  # noqa: E402
-                                    TRAILS, VIEWS, count_text)
+from make_settings_physarum import (AGENTS, CAMERAS, FOODS, MODES, PRESETS, SCREEN_FX, TRAILS,  # noqa: E402
+                                    VIEWS, count_text)
 
 from resources.lib import config  # noqa: E402
 
@@ -59,7 +61,10 @@ def categories():
         ('Size and speed', [
             O('agents', 'Agents', 1, [count_text(w, h) for w, h in AGENTS]),
             O('trail', 'Trail map resolution', 0, ['%d x %d' % t for t in TRAILS]),
-            O('speed', 'Steps per second', 1, ['%d' % s for s in SPEEDS] + ['Maximum (as many as the device can do)']),
+            # One step per displayed frame costs the same on every frame, so the frame rate stays
+            # even. A steps-per-second setting would make some frames twice as heavy as others.
+            O('pace', 'Simulation updates', 0, ['Every frame (smoothest)', 'Every other frame',
+                                                'Every third frame', 'Every fourth frame']),
         ]),
         ('Start and food', [
             O('start', 'Starting pattern', 0, LITE_STARTS),

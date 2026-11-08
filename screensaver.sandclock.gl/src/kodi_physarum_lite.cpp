@@ -45,7 +45,7 @@ sandclock::physarum::lite::Settings read_settings() {
     s.repel = (float)get_int("repel", (int)s.repel, 0, 100);
     s.agents = get_int("agents", s.agents, 0, AGENT_COUNT - 1);
     s.trail = get_int("trail", s.trail, 0, TRAIL_COUNT - 1);
-    s.speed = get_int("speed", s.speed, 0, SPEED_COUNT - 1);
+    s.pace = get_int("pace", s.pace, 1, 4);
     s.start = get_int("start", s.start, 0, LITE_START_COUNT - 1);
     s.food = get_int("food", s.food, 0, FOOD_COUNT - 1);
     s.food_nodes = get_int("food_nodes", s.food_nodes, 3, 40);
