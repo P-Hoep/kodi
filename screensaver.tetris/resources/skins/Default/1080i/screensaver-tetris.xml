@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Empty full-screen window; Python adds the background, the playfield, the pieces and the HUD. -->
+<window>
+  <backgroundcolor>0xff06080f</backgroundcolor>
+  <controls/>
+</window>

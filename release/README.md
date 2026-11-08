@@ -16,6 +16,7 @@ repository so Kodi installs them and keeps them up to date.
 | [Sand Clock](#sand-clock) | 1.0.1 | A clock whose digits crumble into falling sand every second |
 | [Jeopkodi](#jeopkodi) | 1.0.0 | An endless Jeopardy! slideshow: clue, then the response |
 | [DVD Logo](#dvd-logo) | 1.0.1 | The classic bouncing DVD logo, with corner tricks |
+| [Tetris AI](#tetris-ai) | 1.0.0 | An AI plays Tetris edge to edge, with a clock made of blocks |
 
 All of them are pure Python with no compiled code. They run on Kodi 19 (Matrix) and later,
 on any platform. They were developed and tested on Kodi 21 on macOS. God's Eye Map has
@@ -340,6 +341,35 @@ ends it at once.
 
 It is under **Look and feel → Screensaver**. The DVD logo is a trademark of DVD Format/Logo
 Licensing Corporation; this is an unaffiliated fan project.
+
+---
+
+## Tetris AI
+
+![Tetris AI: the AI stacks tetrominoes edge to edge, clears rows, and plays around a clock made of blocks at the bottom of the screen](gifs/tetris.gif)
+
+An AI plays Tetris across the whole screen, forever. The board is 20 by 18 cells — exactly
+16:9 — so at the default 100% block size the playfield reaches all four edges, and all seven
+classic tetrominoes fall in the modern Guideline shapes and colours.
+
+- **AI skill:** *Perfect*, *Expert*, *Skilled*, *Average* or *Beginner*. Perfect always picks
+  the best placement; the lower levels increasingly choose a runner-up, so the stack grows and
+  the board tops out now and then before clearing itself and starting again.
+- **Clock:** on by default, as text in the top-left panel or — *Clock style: Tetris blocks* —
+  as HH:MM built from blocks along the bottom of the playfield. The block clock is part of the
+  game: pieces collide with the digits and have to be placed around them, the digits never
+  fall, rows clear around them, and the time is redrawn once a minute.
+- **Look:** seven classic colours, the muted NES palette, Neon, Pastel, Monochrome, Game Boy,
+  Sunset, Ocean, Vaporwave, or your own seven colours; the background is any colour, the block
+  size runs from 50% to 100% of the screen, and the grid, score panel, its opacity, the landing
+  ghost and the next-piece preview can each be switched off.
+- **Speed:** an overall slider from 25% to 400%, an optional speed-up with each level, and a
+  starting level up to 10.
+
+Any key or click ends it at once.
+
+It is under **Look and feel → Screensaver**. Tetris is a trademark of The Tetris Company;
+this is an unaffiliated fan project.
 
 ---
 

@@ -551,6 +551,57 @@ so it always exits, and `Dialog.Close` closes it without waiting for Kodi's main
 The DVD logo is a trademark of DVD Format/Logo Licensing Corporation; this is an unaffiliated
 fan project.
 
+## Tetris AI (new, v1.0)
+
+![Tetris AI: the AI stacks tetrominoes edge to edge, clears rows, and plays around a clock made of blocks at the bottom of the screen](release/gifs/tetris.gif)
+
+`screensaver.tetris`: an AI plays Tetris across the whole screen, forever. The board is 20 by
+18 cells — exactly 16:9 — so at the default 100% block size every cell is 96 × 60 pixels and
+the playfield reaches all four edges. All seven classic tetrominoes come from a seven-bag
+randomizer, with the Guideline rotation counts (I, S and Z have two orientations, O one,
+T, J and L four).
+
+- **AI skill:** *Perfect*, *Expert*, *Skilled*, *Average* or *Beginner*. Perfect always takes
+  the best placement under the El-Tetris heuristic (landing height, rows cleared, row and
+  column transitions, holes and wells). The lower levels increasingly pick
+  a runner-up instead, so the stack grows and the board tops out now and then — and clears
+  itself and starts again.
+- **Speed:** an overall slider from 25% to 400%. *Speed up as lines are cleared* shortens
+  every step with each level, as on a real machine, and the starting level can begin higher.
+- **Colours:** the *Classic* Guideline rainbow (cyan I, yellow O, purple T, green S, red Z,
+  blue J, orange L), the muted *NES* palette, plus Neon, Pastel, Monochrome, Game Boy, Sunset,
+  Ocean and Vaporwave, or seven colours of your own. The background is any colour too, and the
+  blocks are the same relief sprite as a real Tetris app, tinted per piece.
+- **The clock:** on by default, drawn as text in the top-left panel or — *Clock style:
+  Tetris blocks* — as HH:MM in a 3 × 5 block font along the bottom five rows of the playfield.
+  Block clock digits are fixed cells: pieces collide with them and have to be placed around
+  them, they never fall with the stack, and a row that clears leaves them exactly where they
+  are. The digits are redrawn once a minute, as soon as no locked piece is in the way, in any
+  colour (*Block clock colour*). If the clock is off, the game is plain Tetris.
+- **Look:** block size from 50% to 100% of the screen, the grid, the stats panel (score, lines,
+  level and best), its opacity, the landing ghost and the next-piece preview can each be
+  switched off.
+
+The playfield is a bitmask per row (`board.py`), so collisions, landings in all four
+orientations and full-row detection are integer operations, and the AI scores every legal
+placement of the current piece in one pass (`ai.py`). `game.py` keeps the seven-bag, the score
+(100/300/500/800 × level), the level every ten lines and the best score; `clockface.py` turns
+a `struct_time` into board cells. None of the engine modules import Kodi. The window is shown
+with `show()` and a `System.ScreenSaverActive` loop rather than `doModal()` — Kodi closes a
+screensaver itself when it wakes, and `doModal()` would never return — and it always exits by
+`Dialog.Close`.
+
+```bash
+python3 tools/make_tetris_media.py           # blocks, grid, panels, icon and fanart with Pillow
+python3 tools/make_settings_tetris.py        # settings.xml + strings.po from resources/lib/config.py
+python3 tools/make_tetris_gif.py release/gifs/tetris.gif   # demo frames from the same engine
+python3 tools/build_zip.py screensaver.tetris
+KODI_ADDON=screensaver.tetris python3 tools/kodi.py install   # then select / run
+python3 -m unittest tests.test_tetris        # engine, clock, settings, AI and media
+```
+
+Tetris is a trademark of The Tetris Company; this is an unaffiliated fan project.
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full
