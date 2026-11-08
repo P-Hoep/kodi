@@ -1,17 +1,20 @@
 """Generate the Physarum Lite screensaver's settings.xml and strings.po from one table.
 
-Physarum Lite is the Physarum simulation with the clock, the fonts and every timer removed: no
-clock in the middle, no start over every so many minutes, no wandering between behaviours. What is
-left is the agent model and its drawing, running continuously. It is meant for low-resource
-devices, so its defaults are light: 16 thousand agents on a 480 x 270 trail, no glow, no screen
-effect, and one simulation step on every displayed frame (which is what keeps the frame rate even:
-every frame costs the same). The scene itself is drawn at twice the trail resolution and scaled up,
-so the draw pass costs a fraction of a screen-sized one whatever the output.
+Physarum Lite is the Physarum simulation with every timer removed: no restart every so many
+minutes and no wandering between behaviours. What is left is the agent model and its drawing,
+running continuously, plus an optional clock in the middle. The clock is off by default; while it
+is off nothing about it runs (no font is loaded, no clock texture is made and the shaders take
+their ordinary path), so the add-on is as light as it was before the clock was added. It is meant
+for low-resource devices, so its defaults are light: 16 thousand agents on a 480 x 270 trail, no
+glow, no screen effect, and one simulation step on every displayed frame (which is what keeps the
+frame rate even: every frame costs the same). The scene itself is drawn at twice the trail
+resolution and scaled up, so the draw pass costs a fraction of a screen-sized one whatever the
+output.
 
-It shares the behaviour, agent-size, food, colour, view and camera lists with the Physarum add-on,
-so the two cannot disagree about what option 3 means. The start list differs (the clock digit start
-is gone), the step rate is frames per step instead of steps per second, and one 320 x 180 trail map
-is added below the shared list for very weak GPUs. Run:
+It shares the behaviour, agent-size, food, clock, colour, view and camera lists with the Physarum
+add-on, so the two cannot disagree about what option 3 means. The start list differs (the clock
+digit start is appended at the end), the step rate is frames per step instead of steps per second,
+and one 320 x 180 trail map is added below the shared list for very weak GPUs. Run:
 python3 tools/make_settings_physarum_lite.py
 """
 
@@ -24,7 +27,7 @@ sys.path.insert(0, SRC)
 sys.path.insert(0, HERE)
 
 from make_settings import write  # noqa: E402
-from make_settings_physarum import (AGENTS, CAMERAS, FOODS, MODES, PRESETS, SCREEN_FX, TRAILS,  # noqa: E402
+from make_settings_physarum import (AGENTS, CAMERAS, CLOCKS, FOODS, MODES, PRESETS, SCREEN_FX, TRAILS,  # noqa: E402
                                     VIEWS, count_text)
 
 from resources.lib import config  # noqa: E402
@@ -32,11 +35,12 @@ from resources.lib import config  # noqa: E402
 ADDON_ID = 'screensaver.physarum.lite.armv7'
 ROOT = os.path.normpath(os.path.join(HERE, '..', ADDON_ID))
 
-# The original start list without "From the clock digits" (index 5); the species-third start moves
-# into that slot. The shader's init pass in physarum_lite_app.cpp matches this order.
+# The original start list without "From the clock digits" (its index 5), with the species-third
+# start moved into that slot and the clock start appended at the end. The shader's init pass in
+# physarum_lite_app.cpp matches this order, and appending keeps every saved index meaningful.
 LITE_STARTS = ['Everywhere at random', 'A disc in the middle (it grows outwards)', 'A ring, facing inwards',
                'Scattered colonies', 'Big bang (all from the centre, facing out)',
-               'Each species in its own third of the screen']
+               'Each species in its own third of the screen', 'From the clock digits']
 
 # The shared trail list plus one smaller map for very weak GPUs, appended so that the shared
 # indices keep their meaning (a saved trail index must not change resolution on an update). The
@@ -49,6 +53,7 @@ def categories():
     custom = len(PRESETS)
     is_custom = ('preset', str(custom))
     first = PRESETS[0][1]
+    clock_on = ('clock', '!', '0')
     return [
         ('Behaviour', [
             O('preset', 'Behaviour', 0, [p[0] for p in PRESETS] + ['Custom (set below)']),
@@ -77,6 +82,20 @@ def categories():
             O('start', 'Starting pattern', 0, LITE_STARTS),
             O('food', 'Food', 0, FOODS),
             S('food_nodes', 'Food sources', 12, 3, 40, 1, visible=('food', '1')),
+        ]),
+        ('Clock', [
+            # Off by default: the add-on does no clock work at all until this is not "Off".
+            O('clock', 'Clock in the middle', 0, CLOCKS),
+            S('food_strength', 'How strongly the digits draw the slime (%)', 50, 10, 100, 10, visible=clock_on),
+            O('clock_font', 'Font', 0, [f[0] for f in config.FONTS], visible=clock_on),
+            O('clock_weight', 'Weight', 2, config.WEIGHTS, visible=clock_on),
+            B('seconds', 'Show seconds', False, visible=clock_on),
+            O('hours', 'Hours', 0, ['24 hour (17:52)', '12 hour (5:52)'], visible=clock_on),
+            S('clock_size', 'Clock width (% of the screen)', 60, 20, 90, 5, visible=clock_on),
+            O('clock_colour_mode', 'Clock colour (when drawn on top)', 0, ['White', 'Follows the palette', 'One colour'],
+              visible=clock_on),
+            C('clock_colour', 'Colour of the clock', 'FFFFFFFF', visible=('clock_colour_mode', '2')),
+            S('clock_opacity', 'Clock opacity (%)', 85, 10, 100, 5, visible=clock_on),
         ]),
         ('Colours', [
             O('colour_mode', 'Colour', 0, MODES),

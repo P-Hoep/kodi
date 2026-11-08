@@ -189,7 +189,7 @@ if(SANDCLOCK_KODI)
   # Physarum: only the library; the add-on folder is ../screensaver.physarum.armv7.
   sandclock_kodi_module(screensaver.physarum src/kodi_physarum.cpp src/physarum_app.cpp)
 
-  # Physarum Lite: the same simulation without the clock, fonts or timers; the add-on folder is
-  # ../screensaver.physarum.lite.armv7.
+  # Physarum Lite: the same simulation with the timers removed and an optional clock (off by
+  # default); the add-on folder is ../screensaver.physarum.lite.armv7.
   sandclock_kodi_module(screensaver.physarum_lite src/kodi_physarum_lite.cpp src/physarum_lite_app.cpp)
 endif()

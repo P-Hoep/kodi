@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 
 #include "gl_util.hpp"
@@ -56,7 +57,8 @@ Params from_custom(const Settings& s, float px) {
 
 // Sense and turn (Jones 2010): read the trail ahead, ahead-left and ahead-right; keep going if
 // ahead is strongest, turn at random if it is weakest, else turn towards the stronger side. A
-// species follows its own channel, avoids the others' (repel) and is drawn to food (alpha).
+// species follows its own channel, avoids the others' (repel) and is drawn to food (alpha). The
+// clock's digit edges can be walls (u_k.x), and the digits can weigh more in the sense (u_k.y).
 const char* kSense = COMMON R"(
 uniform sampler2D u_pos;
 uniform sampler2D u_head;
@@ -67,6 +69,16 @@ uniform vec4 u_ra;     // turn per species
 uniform vec4 u_so;     // sensor distance per species (trail px)
 uniform vec4 u_b;      // species, repel, jitter (radians), seed
 uniform vec4 u_ss;     // step per species (trail px)
+uniform vec4 u_k;      // walls (0 none, 1 keep inside the digits, 2 keep out), food weight
+uniform sampler2D u_food;
+
+// Jones's agents cannot move into an occupied cell and pick a new direction instead; here the
+// digit edges are the walls.
+bool blocked(vec2 a, vec2 b) {
+    if (u_k.x < 0.5) return false;
+    float ia = texture2D(u_food, a).r, ib = texture2D(u_food, b).r;
+    return u_k.x < 1.5 ? (ia > 0.5 && ib < 0.5) : (ia < 0.5 && ib > 0.5);
+}
 
 float sense(vec2 p, float a, float d, vec4 w) {
     return dot(texture2D(u_trail, fract(p + vec2(cos(a), sin(a)) * d / u_a.zw)), w);
@@ -80,7 +92,7 @@ void main() {
     float h = dec(texture2D(u_head, uv).rg) * TAU;
     float s = mod(c.y, u_b.x);
     float r = -u_b.y;
-    vec4 w = s < 0.5 ? vec4(1.0, r, r, 1.0) : (s < 1.5 ? vec4(r, 1.0, r, 1.0) : vec4(r, r, 1.0, 1.0));
+    vec4 w = s < 0.5 ? vec4(1.0, r, r, u_k.y) : (s < 1.5 ? vec4(r, 1.0, r, u_k.y) : vec4(r, r, 1.0, u_k.y));
     float sa = pick(u_sa, s), ra = pick(u_ra, s), so = pick(u_so, s);
     float F = sense(p, h, so, w), L = sense(p, h + sa, so, w), R = sense(p, h - sa, so, w);
     if (!(F > L && F > R)) {
@@ -89,17 +101,21 @@ void main() {
         else if (R > L) h -= ra;
     }
     h += (hash(c + 17.0, u_b.w) - 0.5) * 2.0 * u_b.z;
+    if (blocked(p, fract(p + vec2(cos(h), sin(h)) * pick(u_ss, s) / u_a.zw))) h = hash(c + 29.0, u_b.w) * TAU;
     gl_FragColor = vec4(enc(fract(h / TAU)), 0.0, 1.0);
 }
 )";
 
-// Move one step along the (new) heading; the trail map wraps round.
+// Move one step along the (new) heading; the trail map wraps round. "Made of slime": agents that
+// have wandered off the digits are now and then put back somewhere in the clock.
 const char* kMove = COMMON R"(
 uniform sampler2D u_pos;
 uniform sampler2D u_head;
+uniform sampler2D u_food;
 uniform vec4 u_a;      // agents w, h; trail w, h
 uniform vec4 u_ss;     // step per species (trail px)
-uniform vec4 u_m;      // species
+uniform vec4 u_m;      // species, respawn chance, seed, walls (as in kSense)
+uniform vec4 u_rect;   // the clock, in trail uv
 
 void main() {
     vec2 c = floor(gl_FragCoord.xy);
@@ -109,7 +125,21 @@ void main() {
     float h = dec(texture2D(u_head, uv).rg) * TAU;
     float s = mod(c.y, u_m.x);
     vec2 np = fract(p + vec2(cos(h), sin(h)) * pick(u_ss, s) / u_a.zw);
-    gl_FragColor = vec4(enc(np.x), enc(np.y));
+    if (u_m.w < 0.5) {
+        p = np;
+    } else {
+        float ia = texture2D(u_food, p).r, ib = texture2D(u_food, np).r;
+        bool wall = u_m.w < 1.5 ? (ia > 0.5 && ib < 0.5) : (ia < 0.5 && ib > 0.5);
+        if (!wall) p = np;
+        if (u_m.y > 0.0 && ia < 0.5 && hash(c, u_m.z) < u_m.y) {
+            for (int i = 0; i < 8; i++) {
+                p = u_rect.xy + u_rect.zw * vec2(hash(c + 3.1 + float(i) * 4.3, u_m.z),
+                                                 hash(c + 7.7 + float(i) * 2.9, u_m.z));
+                if (texture2D(u_food, p).r > 0.5) break;
+            }
+        }
+    }
+    gl_FragColor = vec4(enc(p.x), enc(p.y));
 }
 )";
 
@@ -138,14 +168,17 @@ varying vec4 v_col;
 void main() { gl_FragColor = v_col; }
 )";
 
-// Diffuse (3x3 mean, mixed in by u_t.w), decay, and feed: food sources (food G) add to the food
-// channel, which always diffuses fully and fades slowly so its scent reaches the slime. u_q is the
+// Diffuse (3x3 mean, mixed in by u_t.w), decay, and feed: food sources (food G) and the clock
+// digits (food R) add to the food channel, which always diffuses fully and fades slowly so its
+// scent reaches the slime; the trails off and on the digits are then scaled (made of slime: fade
+// faster off them; grows into: last longer on them; flows around: cleared). While the clock is off
+// the digit terms are zero and the scale is one, so this is the pass it always was. u_q is the
 // 8-bit floor that lets faint trails reach 0.
 const char* kDiffuse = R"(
 uniform sampler2D u_trail;
 uniform sampler2D u_food;
 uniform vec4 u_t;      // trail w, h, kept per step, diffusion
-uniform float u_node_food;
+uniform vec4 u_f;      // node food, digit food, trail kept off the digits, on them
 uniform vec4 u_q;      // 8-bit floor, food kept per step
 void main() {
     vec2 px = 1.0 / u_t.xy;
@@ -158,16 +191,20 @@ void main() {
     vec4 v = mix(centre, sum / 9.0, u_t.w) * u_t.z - u_q.x;
     v.a = sum.a / 9.0 * u_q.y - u_q.x;            // food spreads on its own terms
     vec4 f = texture2D(u_food, uv);
-    v.a += f.g * u_node_food;
+    v.a += f.g * u_f.x + f.r * u_f.y;
+    v.rgb *= mix(u_f.z, u_f.w, f.r);
     gl_FragColor = clamp(v, 0.0, 1.0);
 }
 )";
 
 // Starting positions (u_j.x 0) and headings (1), computed from the same hashes so they agree.
-// Unlike the full Physarum add-on there is no clock to start from.
+// The clock start (mode 6) is only used when the clock is on; restart() falls back to the disc
+// otherwise.
 const char* kInit = COMMON R"(
+uniform sampler2D u_food;
 uniform vec4 u_i;      // agents w, h, start mode, seed
 uniform vec4 u_j;      // what (0 position, 1 heading), species, trail aspect (w / h)
+uniform vec4 u_rect;   // the clock, in trail uv
 void main() {
     vec2 c = floor(gl_FragCoord.xy);
     float sd = u_i.w;
@@ -192,8 +229,14 @@ void main() {
     } else if (m < 4.5) {                           // big bang, facing out
         p = 0.5 + dir * 0.004 * r2;
         h = r1;
-    } else {                                        // each species in its own third
+    } else if (m < 5.5) {                           // each species in its own third
         p = vec2((s + r1) / n, r2);
+    } else {                                        // in the clock digits
+        p = u_rect.xy + u_rect.zw * vec2(r1, r2);
+        for (int i = 0; i < 16; i++) {
+            if (texture2D(u_food, p).r > 0.5) break;
+            p = u_rect.xy + u_rect.zw * vec2(hash(c + float(i) * 3.7 + 1.0, sd), hash(c + float(i) * 5.3 + 2.0, sd));
+        }
     }
     p = fract(p);
     gl_FragColor = u_j.x < 0.5 ? vec4(enc(p.x), enc(p.y)) : vec4(enc(fract(h)), 0.0, 1.0);
@@ -357,6 +400,25 @@ varying vec2 v_uv;
 void main() { gl_FragColor = texture2D(u_tex, v_uv); }
 )";
 
+// The clock drawn on top: a soft-edged mask with a drop shadow, as in the full add-on. It is only
+// used by the modes that show the clock (on top, and faintly while the slime grows into it).
+const char* kClock = R"(
+uniform sampler2D u_mask;
+uniform vec4 u_rect;           // x, y, w, h in viewport uv
+uniform vec4 u_ccol;           // rgb, opacity
+varying vec2 v_uv;
+float inside(vec2 q) { return step(0.0, q.x) * step(0.0, q.y) * step(q.x, 1.0) * step(q.y, 1.0); }
+void main() {
+    vec2 q = (v_uv - u_rect.xy) / u_rect.zw;
+    vec2 sq = q + vec2(-0.006, 0.03);
+    float m = inside(q) * smoothstep(0.4, 0.6, texture2D(u_mask, q).r);
+    float s = inside(sq) * smoothstep(0.15, 0.85, texture2D(u_mask, sq).r);
+    float a = clamp(m + s * 0.6 * (1.0 - m), 0.0, 1.0) * u_ccol.a;
+    if (a < 0.003) discard;
+    gl_FragColor = vec4(u_ccol.rgb * m * u_ccol.a, a);
+}
+)";
+
 bool has_extension(const char* name) {
 #if defined(SANDCLOCK_GLES) || (defined(SANDCLOCK_KODI) && defined(HAS_GLES))
     const char* e = (const char*)glGetString(GL_EXTENSIONS);
@@ -396,6 +458,17 @@ void palette_at(const uint32_t* p, double t, float* out) {
 Params params_for(const Settings& s, float px_scale) {
     if (s.preset >= PRESET_COUNT) return from_custom(s, px_scale);
     return from_def(PRESETS[std::max(0, std::min(PRESET_COUNT - 1, s.preset))], px_scale);
+}
+
+std::string clock_text(const Settings& s, double seconds) {
+    long t = (long)seconds % 86400;
+    if (t < 0) t += 86400;
+    int h = (int)(t / 3600), m = (int)(t / 60 % 60), sec = (int)(t % 60);
+    if (s.hours == 1) h = h % 12 == 0 ? 12 : h % 12;
+    char buf[16];
+    if (s.seconds) std::snprintf(buf, sizeof buf, s.hours == 1 ? "%d:%02d:%02d" : "%02d:%02d:%02d", h, m, sec);
+    else std::snprintf(buf, sizeof buf, s.hours == 1 ? "%d:%02d" : "%02d:%02d", h, m);
+    return buf;
 }
 
 bool App::force_rgba8 = false;
@@ -438,7 +511,7 @@ static void free_target(unsigned* tex, unsigned* fbo) {
     *tex = *fbo = 0;
 }
 
-bool App::init(const Settings& settings, unsigned seed, std::string* error) {
+bool App::init(const Settings& settings, unsigned seed, const std::string& fonts_json, std::string* error) {
     release();
     SavedState saved;
     s_ = settings;
@@ -457,9 +530,10 @@ bool App::init(const Settings& settings, unsigned seed, std::string* error) {
     int max_tex = 2048;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_tex);
 
-    const char* frag[] = {kSense, kMove, kDiffuse, kInit, kDraw, kUpscale};
-    unsigned* progs[] = {&prog_sense_, &prog_move_, &prog_diffuse_, &prog_init_, &prog_draw_, &prog_upscale_};
-    for (int i = 0; i < 6; ++i) {
+    const char* frag[] = {kSense, kMove, kDiffuse, kInit, kDraw, kUpscale, kClock};
+    unsigned* progs[] = {&prog_sense_, &prog_move_, &prog_diffuse_, &prog_init_, &prog_draw_, &prog_upscale_,
+                         &prog_clock_};
+    for (int i = 0; i < 7; ++i) {
         *progs[i] = glu::link(nullptr, frag[i], error);
         if (!*progs[i]) return false;
     }
@@ -528,6 +602,30 @@ bool App::init(const Settings& settings, unsigned seed, std::string* error) {
     glGenTextures(1, &pal_tex_);
     set_palette();
 
+    // The clock is optional. While it is off nothing here runs: no font is read and there is no
+    // clock texture to update or draw.
+    has_font_ = false;
+    if (s_.clock > 0 && !fonts_json.empty()) {
+        try {
+            font_ = sandclock::Font::load(fonts_json, sandclock::FONT_FOLDERS[std::max(0, std::min(8, s_.clock_font))],
+                                          std::max(0, std::min(2, s_.clock_weight)));
+            has_font_ = true;
+        } catch (const std::exception& e) {
+            *error = std::string("clock font: ") + e.what();   // not fatal: the clock stays off
+        }
+    }
+    if (has_font_) {
+        glGenTextures(1, &clock_tex_);
+        glBindTexture(GL_TEXTURE_2D, clock_tex_);
+        unsigned char blank[4] = {0, 0, 0, 0};
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, blank);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glActiveTexture(GL_TEXTURE0);
+    }
+
     glGenTextures(1, &food_tex_);
     glBindTexture(GL_TEXTURE_2D, food_tex_);
     unsigned char blank[4] = {0, 0, 0, 0};
@@ -537,12 +635,19 @@ bool App::init(const Settings& settings, unsigned seed, std::string* error) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     nodes_.clear();
+    clock_text_.clear();
+    clock_px_.clear();
+    clock_w_ = clock_h_ = 0;
+    clock_rect_[0] = clock_rect_[1] = clock_rect_[2] = clock_rect_[3] = 0;
     build_food();
 
     pace_ = std::max(1, std::min(4, s_.pace));
     frames_since_step_ = 0;
     ready_ = true;
-    restart();
+    // With the clock on, wait for the first render: only then is the time of day known, and the
+    // clock's digits must exist before the agents can start inside them.
+    clock_restart_ = has_font_ && s_.clock > 0;
+    if (!clock_restart_) restart();
     return true;
 }
 
@@ -551,7 +656,7 @@ void App::release() {
         free_target(&t->tex, &t->fbo);
         *t = Target();
     }
-    for (unsigned* t : {&pal_tex_, &food_tex_})
+    for (unsigned* t : {&pal_tex_, &food_tex_, &clock_tex_})
         if (*t) glDeleteTextures(1, t);
     for (unsigned* b : {&vbo_, &points_vbo_})
         if (*b) glDeleteBuffers(1, b);
@@ -559,11 +664,14 @@ void App::release() {
     if (vao_) glDeleteVertexArrays(1, &vao_);
 #endif
     for (unsigned* p : {&prog_sense_, &prog_move_, &prog_deposit_, &prog_diffuse_, &prog_init_, &prog_draw_,
-                        &prog_upscale_}) {
+                        &prog_upscale_, &prog_clock_}) {
         if (*p) glDeleteProgram(*p);
         *p = 0;
     }
-    vbo_ = points_vbo_ = vao_ = pal_tex_ = food_tex_ = 0;
+    vbo_ = points_vbo_ = vao_ = pal_tex_ = food_tex_ = clock_tex_ = 0;
+    clock_w_ = clock_h_ = 0;
+    has_font_ = false;
+    clock_restart_ = false;
     ready_ = false;
 }
 
@@ -604,9 +712,27 @@ static void bind(unsigned unit, unsigned tex) {
     glBindTexture(GL_TEXTURE_2D, tex);
 }
 
-// The food map (FOOD_W x FOOD_H over the whole screen): G is the food sources.
+// The food map (FOOD_W x FOOD_H over the whole screen): R the clock digits, G the food sources.
+// With the clock off clock_w_ is 0, so the digit pass is skipped and R stays black.
 void App::build_food() {
     std::vector<uint8_t> px((size_t)FOOD_W * FOOD_H * 4, 0);
+    if (clock_w_ > 0 && clock_rect_[2] > 0) {
+        int x0 = (int)std::floor(clock_rect_[0] * FOOD_W), x1 = (int)std::ceil((clock_rect_[0] + clock_rect_[2]) * FOOD_W);
+        int y0 = (int)std::floor(clock_rect_[1] * FOOD_H), y1 = (int)std::ceil((clock_rect_[1] + clock_rect_[3]) * FOOD_H);
+        for (int y = std::max(0, y0); y < std::min(FOOD_H, y1); ++y)
+            for (int x = std::max(0, x0); x < std::min(FOOD_W, x1); ++x) {
+                int hits = 0;
+                for (int sy = 0; sy < 3; ++sy)
+                    for (int sx = 0; sx < 3; ++sx) {
+                        double qx = ((x + (sx + 0.5) / 3) / FOOD_W - clock_rect_[0]) / clock_rect_[2];
+                        double qy = ((y + (sy + 0.5) / 3) / FOOD_H - clock_rect_[1]) / clock_rect_[3];
+                        if (qx < 0 || qy < 0 || qx >= 1 || qy >= 1) continue;
+                        int cx = (int)(qx * clock_w_), cy = (int)(qy * clock_h_);
+                        hits += clock_px_[((size_t)cy * clock_w_ + cx) * 4] > 127;
+                    }
+                px[((size_t)y * FOOD_W + x) * 4] = (uint8_t)(hits * 255 / 9);
+            }
+    }
     const double R = 5.0;                                      // food source radius, food px
     for (size_t i = 0; i + 1 < nodes_.size(); i += 2) {
         double cx = nodes_[i] * FOOD_W, cy = nodes_[i + 1] * FOOD_H;
@@ -624,6 +750,54 @@ void App::build_food() {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, FOOD_W, FOOD_H, 0, GL_RGBA, GL_UNSIGNED_BYTE, px.data());
     glActiveTexture(GL_TEXTURE0);
+}
+
+// Draws the time into the clock bitmap (from the font's glyph masks, 128 px high plus a margin),
+// uploads it, places it in the middle and redraws the food map from it. Called once a frame while
+// the clock is on; the string compare makes everything else a no-op until the minute (or second)
+// changes.
+void App::update_clock(double clock) {
+    if (!has_font_) return;
+    std::string text = clock_text(s_, clock);
+    if (text == clock_text_) return;
+    clock_text_ = text;
+    const int HC = 128, MARGIN = 6;
+    double tw = font_.width(text), widest = font_.width(s_.seconds ? "88:88:88" : "88:88");
+    int wc = (int)std::ceil(HC * tw / font_.h) + 2 * MARGIN, hc = HC + 2 * MARGIN;
+    clock_px_.assign((size_t)wc * hc * 4, 0);
+    double x0 = MARGIN;
+    for (char ch : text) {
+        double cw = font_.widths.at(ch) * HC / font_.h;
+        const sandclock::Mask& m = font_.masks.at(ch);
+        for (int x = (int)x0; x < (int)(x0 + cw) && x < wc; ++x) {
+            int mu = std::min(m.w - 1, std::max(0, (int)((x + 0.5 - x0) / cw * m.w)));
+            for (int y = 0; y < HC; ++y) {
+                int mv = std::min(m.h - 1, (int)((y + 0.5) / HC * m.h));
+                if (m.at(mu, mv)) {
+                    int row = hc - 1 - (MARGIN + y);                 // texture rows go up
+                    uint8_t* p = &clock_px_[((size_t)row * wc + x) * 4];
+                    p[0] = p[1] = p[2] = p[3] = 255;
+                }
+            }
+        }
+        x0 += cw;
+    }
+    clock_w_ = wc;
+    clock_h_ = hc;
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, clock_tex_);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, wc, hc, 0, GL_RGBA, GL_UNSIGNED_BYTE, clock_px_.data());
+    glActiveTexture(GL_TEXTURE0);
+
+    double w = s_.clock_size / 100.0 * tw / widest;
+    double h = w * hc / (double)wc * (16.0 / 9.0);
+    if (h > 0.6) { w *= 0.6 / h; h = 0.6; }
+    clock_rect_[0] = (float)(0.5 - w / 2);
+    clock_rect_[1] = (float)(0.5 - h / 2);
+    clock_rect_[2] = (float)w;
+    clock_rect_[3] = (float)h;
+    build_food();
 }
 
 void App::restart() {
@@ -657,8 +831,12 @@ void App::restart() {
 
     // Agents.
     int mode = std::max(0, std::min(LITE_START_COUNT - 1, s_.start));
+    if (mode == 6 && clock_w_ == 0) mode = 1;                 // from the clock, but there is none: a disc
     glUseProgram(prog_init_);
+    bind(3, food_tex_);
+    glUniform1i(u(prog_init_, "u_food"), 3);
     glUniform4f(u(prog_init_, "u_i"), (float)aw_, (float)ah_, (float)mode, (float)(rng_() % 1000));
+    glUniform4f(u(prog_init_, "u_rect"), clock_rect_[0], clock_rect_[1], clock_rect_[2], clock_rect_[3]);
     glViewport(0, 0, aw_, ah_);
     for (int what = 0; what < 2; ++what) {
         glUniform4f(u(prog_init_, "u_j"), (float)what, (float)species_, (float)tw_ / th_, 0.f);
@@ -696,7 +874,21 @@ void App::step_saved(int n, const Params& base) {
     if (n <= 0) return;
     Params sp[3];
     for (int i = 0; i < 3; ++i) sp[i] = for_species(base, i, s_.species_differ);
+
+    // The clock's effect on the simulation. While it is off (or has no font) every term below is
+    // the neutral one: no walls, no digit food, trails scaled by one.
+    bool clock_live = has_font_ && clock_w_ > 0;
+    int cm = s_.clock;
+    float strength = s_.food_strength / 100.0f;
+    bool grows = clock_live && (cm == CLOCK_GROWS || cm == CLOCK_GROWS_FAINT);
+    bool slime = clock_live && cm == CLOCK_SLIME, around = clock_live && cm == CLOCK_AROUND;
     float node_food = nodes_.empty() ? 0.0f : 0.06f;
+    float digit_food = grows ? strength * 0.25f : (slime ? 0.05f : 0.0f);
+    float food_weight = grows ? 1.0f + 3.0f * strength : 1.0f;
+    float off_digits = slime ? 0.8f : 1.0f;
+    float on_digits = around ? 0.0f : (grows ? 1.0f + 0.1f * strength : 1.0f);
+    float walls = slime ? 1.0f : (around ? 2.0f : 0.0f);
+    float respawn = slime ? 0.03f : 0.0f;
     float amount = deposit_amount(base);
 
     glUseProgram(prog_sense_);
@@ -708,14 +900,18 @@ void App::step_saved(int n, const Params& base) {
     glUniform4f(u(prog_sense_, "u_ra"), sp[0].ra, sp[1].ra, sp[2].ra, 0);
     glUniform4f(u(prog_sense_, "u_so"), sp[0].so, sp[1].so, sp[2].so, 0);
     glUniform4f(u(prog_sense_, "u_ss"), sp[0].ss, sp[1].ss, sp[2].ss, 0);
+    glUniform4f(u(prog_sense_, "u_k"), walls, food_weight, 0, 0);
+    glUniform1i(u(prog_sense_, "u_food"), 3);
     int sense_b = u(prog_sense_, "u_b");
 
     glUseProgram(prog_move_);
     glUniform1i(u(prog_move_, "u_pos"), 0);
     glUniform1i(u(prog_move_, "u_head"), 1);
+    glUniform1i(u(prog_move_, "u_food"), 3);
     glUniform4f(u(prog_move_, "u_a"), (float)aw_, (float)ah_, (float)tw_, (float)th_);
     glUniform4f(u(prog_move_, "u_ss"), sp[0].ss, sp[1].ss, sp[2].ss, 0);
-    glUniform4f(u(prog_move_, "u_m"), (float)species_, 0, 0, 0);
+    glUniform4f(u(prog_move_, "u_rect"), clock_rect_[0], clock_rect_[1], clock_rect_[2], clock_rect_[3]);
+    int move_m = u(prog_move_, "u_m");
 
     glUseProgram(prog_deposit_);
     glUniform1i(u(prog_deposit_, "u_pos"), 0);
@@ -725,7 +921,7 @@ void App::step_saved(int n, const Params& base) {
     glUniform1i(u(prog_diffuse_, "u_trail"), 2);
     glUniform1i(u(prog_diffuse_, "u_food"), 3);
     glUniform4f(u(prog_diffuse_, "u_t"), (float)tw_, (float)th_, base.decay, base.diffuse);
-    glUniform1f(u(prog_diffuse_, "u_node_food"), node_food);
+    glUniform4f(u(prog_diffuse_, "u_f"), node_food, digit_food, off_digits, on_digits);
     glUniform4f(u(prog_diffuse_, "u_q"), half_ ? 0.0f : 0.5f / 255.0f, 0.97f, 0, 0);
 
     bind(3, food_tex_);
@@ -743,6 +939,7 @@ void App::step_saved(int n, const Params& base) {
 
         // 2. Move.
         glUseProgram(prog_move_);
+        glUniform4f(move_m, (float)species_, respawn, (float)(rng_() % 1000) + 0.25f, walls);
         glBindFramebuffer(GL_FRAMEBUFFER, pos_[1 - cp_].fbo);
         bind(1, head_[ch_].tex);
         draw_quad();
@@ -874,8 +1071,12 @@ void App::update_camera(double dt) {
     }
 }
 
-void App::render(double now, int fb_w, int fb_h) {
+void App::render(double now, double clock, int fb_w, int fb_h) {
     if (!ready_) return;
+    if (s_.clock > 0 && has_font_) {
+        update_clock(clock);
+        if (clock_restart_) { restart(); clock_restart_ = false; }
+    }
     double dt = last_now_ < 0 ? 0.016 : std::min(0.25, std::max(0.0, now - last_now_));
     last_now_ = now;
     update_camera(dt);
@@ -924,7 +1125,8 @@ void App::render(double now, int fb_w, int fb_h) {
     float colour[3], bg[3];
     colour3(s_.colour, colour);
     colour3(s_.background, bg);
-    bool food_visible = !nodes_.empty();
+    bool food_visible = !nodes_.empty() || (has_font_ && (s_.clock == CLOCK_GROWS || s_.clock == CLOCK_GROWS_FAINT ||
+                                                          s_.clock == CLOCK_SLIME));
 
     if (draw_.tex) {
         glBindFramebuffer(GL_FRAMEBUFFER, draw_.fbo);
@@ -956,19 +1158,41 @@ void App::render(double now, int fb_w, int fb_h) {
     glUniform3f(u(prog_draw_, "u_bg"), bg[0], bg[1], bg[2]);
     draw_quad();
 
-    if (!draw_.tex) return;
+    if (draw_.tex) {
+        // Scale the scene up into the letterboxed part of the framebuffer; the black bars are
+        // cleared behind it.
+        glBindFramebuffer(GL_FRAMEBUFFER, (unsigned)saved.fbo);
+        glViewport(saved.viewport[0], saved.viewport[1], fb_w, fb_h);
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glViewport(saved.viewport[0] + (fb_w - vw) / 2, saved.viewport[1] + (fb_h - vh) / 2, vw, vh);
+        glUseProgram(prog_upscale_);
+        bind(0, draw_.tex);
+        glUniform1i(u(prog_upscale_, "u_tex"), 0);
+        draw_quad();
+    }
 
-    // Scale the scene up into the letterboxed part of the framebuffer; the black bars are cleared
-    // behind it.
-    glBindFramebuffer(GL_FRAMEBUFFER, (unsigned)saved.fbo);
-    glViewport(saved.viewport[0], saved.viewport[1], fb_w, fb_h);
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glViewport(saved.viewport[0] + (fb_w - vw) / 2, saved.viewport[1] + (fb_h - vh) / 2, vw, vh);
-    glUseProgram(prog_upscale_);
-    bind(0, draw_.tex);
-    glUniform1i(u(prog_upscale_, "u_tex"), 0);
-    draw_quad();
+    // The clock on top (and the faint one while the slime grows into it). It is drawn after the
+    // scale-up, straight onto the framebuffer, so the text is as sharp as the screen. With the
+    // clock off this block does not run and no clock texture exists to sample.
+    bool overlay = has_font_ && clock_w_ > 0 && (s_.clock == CLOCK_ON_TOP || s_.clock == CLOCK_GROWS_FAINT);
+    if (overlay) {
+        float r = 1, g = 1, b = 1;
+        if (s_.clock_colour_mode == 1) { r = c[0][0]; g = c[0][1]; b = c[0][2]; }
+        else if (s_.clock_colour_mode == 2) { float cc[3]; colour3(s_.clock_colour, cc); r = cc[0]; g = cc[1]; b = cc[2]; }
+        float dimf = 1.0f - s_.dim / 100.0f;
+        float opacity = s_.clock_opacity / 100.0f * (s_.clock == CLOCK_GROWS_FAINT ? 0.3f : 1.0f);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        glUseProgram(prog_clock_);
+        bind(1, clock_tex_);
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(u(prog_clock_, "u_mask"), 1);
+        glUniform4f(u(prog_clock_, "u_rect"), clock_rect_[0], clock_rect_[1], clock_rect_[2], clock_rect_[3]);
+        glUniform4f(u(prog_clock_, "u_ccol"), r * dimf, g * dimf, b * dimf, opacity);
+        draw_quad();
+        glDisable(GL_BLEND);
+    }
 }
 
 }  // namespace lite

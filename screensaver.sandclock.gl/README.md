@@ -71,26 +71,36 @@ sa,ra,so,ss,decay,diffuse,deposit,jitter` tries a behaviour. Presets and setting
 
 ## Physarum Lite
 
-A separate, stripped-down Physarum for low-resource devices, published as its own add-on. The
-clock, the fonts and every timer are gone: no digits are drawn over the network, the food map's
-first channel and the wall/respawn logic that served them are removed, the simulation never starts
-over on a schedule and the behaviour never wanders on its own. The trail map's fourth channel now
-carries only food sources. What remains is the four-pass agent model and the draw pass, running
-continuously for as long as Kodi shows it.
+A separate, stripped-down Physarum for low-resource devices, published as its own add-on. Every
+timer is gone: the simulation never starts over on a schedule and the behaviour never wanders on
+its own. What is left is the four-pass agent model and the draw pass, running continuously for as
+long as Kodi shows it, plus an optional clock in the middle.
+
+The clock is **off by default**, and while it is off nothing about it runs: no font is loaded, no
+clock texture is created, the digit raster is skipped, the food map keeps only its food sources and
+the shaders take their ordinary path (the digit, wall and respawn terms are zero and early-out).
+When switched on, the same five modes as the full add-on are available: on top, grows into the
+digits, faintly on top while the slime grows in, made of slime (agents confined inside the digits,
+respawned into them), and flows around. The clock start option is appended at the end of the start
+list, so no saved setting index changed meaning. A debug build of the Lite app with the clock off
+measured 88 fps against 90 on top on an M2 desktop; on a real device the cost is the font texture
+and the overlay pass only while a mode is selected.
 
 The defaults are deliberately light (16 thousand agents, a 480 x 270 trail, no glow, no screen
-effect); the settings expose the same behaviour, size, food, colour, view and camera lists as the
-full add-on, plus a 320 x 180 trail below it. The simulation is locked to the display instead of a
-clock: one step runs on every rendered frame, and never more than one, so every frame asks the GPU
-for the same work and the frame rate either holds or settles evenly lower instead of alternating
-heavy and light frames. "Simulation updates" steps on every second, third or fourth frame to calm
-it down (still evenly spaced). The draw pass renders at no more than twice the trail size (960 x
-540 at the default) and scales that up, so the most per-pixel work in the add-on costs a quarter of
-a 1080p draw and a 4K output costs the same again; below that it draws straight to the screen.
+effect, no clock); the settings expose the same behaviour, size, food, clock, colour, view and
+camera lists as the full add-on, plus a 320 x 180 trail below it. The simulation is locked to the
+display instead of a clock: one step runs on every rendered frame, and never more than one, so
+every frame asks the GPU for the same work and the frame rate either holds or settles evenly lower
+instead of alternating heavy and light frames. "Simulation updates" steps on every second, third or
+fourth frame to calm it down (still evenly spaced). The draw pass renders at no more than twice
+the trail size (960 x 540 at the default) and scales that up, so the most per-pixel work in the
+add-on costs a quarter of a 1080p draw and a 4K output costs the same again; below that it draws
+straight to the screen.
 Files: `physarum_lite.hpp` (settings and the shared params), `physarum_lite_app.*`,
 `kodi_physarum_lite.cpp`, `main_physarum_lite_glfw.cpp`. `physarum_lite_glfw --selftest` runs the
 same move/deposit/turning checks as `physarum_glfw`; `--pace N` and `--draw-cap N` exercise the
-frame pacing and the scale-up path. Settings come from `tools/make_settings_physarum_lite.py`.
+frame pacing and the scale-up path, and `--clock-style N --time HH:MM:SS --fonts fonts.json` runs
+a clock mode against a fixed time. Settings come from `tools/make_settings_physarum_lite.py`.
 Add-on folder: `../screensaver.physarum.lite.armv7`.
 
 ## Build and test

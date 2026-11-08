@@ -1,8 +1,12 @@
 // Physarum Lite: the same agent model as the Physarum screensaver (Jones 2010, drawn as Sage
 // Jenson does), with everything but the simulation and its drawing stripped out.
 //
-// There is no clock and no font: the trail map's fourth channel carries food sources only. There
-// are no timers either: the screensaver does not restart itself every so many minutes and the
+// The clock is optional and off by default. When it is off nothing about it runs: no font is
+// loaded, no clock texture is made and the trail map's fourth channel carries food sources only,
+// exactly as it did before the clock was added. When it is on, the clock digits are drawn into
+// that channel (as food) and/or drawn on top, depending on the mode.
+//
+// There are no timers: the screensaver does not restart itself every so many minutes and the
 // behaviour never wanders on its own; it runs the one behaviour the user picked for as long as
 // Kodi shows it. The defaults in Settings are deliberately light, because this build is meant for
 // low-resource devices; every one of them can be raised in the add-on settings.
@@ -27,13 +31,15 @@ using sandclock::physarum::PRESET_COUNT;
 using sandclock::physarum::AGENT_COUNT;
 using sandclock::physarum::FOOD_COUNT;
 using sandclock::physarum::MODE_COUNT;
+using sandclock::physarum::CLOCK_COUNT;
 using sandclock::physarum::PALETTE_COUNT;
 using sandclock::physarum::VIEW_COUNT;
 using sandclock::physarum::CAMERA_COUNT;
 
-// The start options: the original list without "From the clock digits" (its index 5); the last
-// one (each species in its own third) moves down into that slot.
-constexpr int LITE_START_COUNT = 6;
+// The start options: the original list without "From the clock digits" (its index 5) plus that
+// same start appended at the end. The species-third start moves down into slot 5, and the clock
+// start is appended rather than inserted so no saved index changes meaning.
+constexpr int LITE_START_COUNT = 7;
 
 // The trail sizes: the shared list (so indices 0..6 mean what they mean in the full add-on) plus a
 // smaller map for very weak GPUs. The extra one is appended rather than inserted so a saved trail
@@ -66,6 +72,19 @@ struct Settings {
     int food = 0;                    // none, scattered, ring, grid
     int food_nodes = 12;
 
+    // The clock, off unless asked for. The defaults keep it entirely out of the way: while clock
+    // is CLOCK_OFF there is no font, no clock texture, no digit food and no overlay pass.
+    int clock = 0;                   // CLOCK_OFF; see enum Clock in physarum.hpp
+    int food_strength = 50;          // %: how strongly the digits draw the slime
+    int clock_font = 0;              // index into sandclock::FONT_FOLDERS
+    int clock_weight = 2;            // 0 light, 1 regular, 2 bold
+    bool seconds = false;
+    int hours = 0;                   // 0 = 24 hour, 1 = 12 hour
+    int clock_size = 60;             // % of the screen width
+    int clock_colour_mode = 0;       // 0 white, 1 follows the palette, 2 clock_colour
+    uint32_t clock_colour = 0xFFFFFF;
+    int clock_opacity = 85;          // %
+
     // Colours.
     int colour_mode = 0;             // species, density, fire, neon, ink, one colour, rainbow, plasma
     int palette = 0;
@@ -87,6 +106,9 @@ struct Settings {
 // The behaviour to run: the fixed preset or the Custom sliders, converted to simulation units.
 // px_scale: trail width / 960 * pattern scale.
 Params params_for(const Settings& s, float px_scale);
+
+// The time as the clock draws it: "17:52" (or "5:52", "17:52:03", "5:52:03").
+std::string clock_text(const Settings& s, double seconds);
 
 }  // namespace lite
 }  // namespace physarum
