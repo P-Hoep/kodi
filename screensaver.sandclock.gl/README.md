@@ -16,14 +16,20 @@ rest, so the CPU cost is a few hundred planner steps once a second.
 
 ## Liquid Clock
 
-A second screensaver from the same code: the digits shimmer, melt into stretched drops that run
-into streams and fall into a pool, and the pool is a 1-D shallow-water simulation (`src/liquid.*`:
-192 columns, wave speed from depth, ripples where drops land, a tilt "slosh" every few seconds, a
-drain that holds the level). Drops are evaluated on the GPU like the sand grains; the pool is one
-triangle strip uploaded per frame (about 6 KB), so it is cheap enough for a 32-bit set-top box.
-Files: `liquid.*`, `liquid_renderer.*`, `kodi_liquid.cpp`; test window `liquidclock_glfw`
-(`--slosh`, `--pile`); the add-on folder is `../screensaver.liquidclock.armv7`, whose settings
-come from `tools/make_settings_liquidclock.py`.
+A second screensaver from the same code: the digits shimmer, melt into threads that stretch and
+fall into a pool, and the pool is a conservative 1-D shallow-water simulation (`src/liquid.*`):
+256 columns, a depth per column and a velocity at every face, pressure from the surface slope,
+upwind momentum advection, linear and quadratic drag, viscosity and a CFL-clamped upwind transport
+of mass, stepped at 240 Hz. Every colour falling into the pool is a fluid of its own with its own
+depth array: the liquids never mix, so the pool settles into coloured strata (heavier colours
+sink), each drawn as its own band between cumulative interfaces with caustics, a meniscus at every
+interface and a specular waterline. Impacts deposit their volume over five columns, kick a ripple
+and throw ballistic spray droplets plus a short-lived foam crown; a tilt "slosh" rocks the pool
+every few seconds and a drain holds the level. Drops and spray are evaluated on the GPU like the
+sand grains; the pool is one triangle strip per fluid uploaded per frame (a few KB), so it is
+cheap enough for a 32-bit set-top box. Files: `liquid.*`, `liquid_renderer.*`, `kodi_liquid.cpp`;
+test window `liquidclock_glfw` (`--slosh`, `--pile`); the add-on folder is
+`../screensaver.liquidclock.armv7`, whose settings come from `tools/make_settings_liquidclock.py`.
 
 ## Cellular Automata
 
