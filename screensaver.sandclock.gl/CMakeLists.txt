@@ -87,6 +87,14 @@ if(SANDCLOCK_HARNESS)
   add_executable(physarum_lite_glfw src/main_physarum_lite_glfw.cpp)
   target_link_libraries(physarum_lite_glfw physarum_lite_render ${GLFW_TARGET})
 
+  add_library(automata_lite_render STATIC src/automata_lite_app.cpp)
+  target_link_libraries(automata_lite_render PUBLIC sandclock_core OpenGL::GL)
+  if(SANDCLOCK_GLES)
+    target_compile_definitions(automata_lite_render PUBLIC SANDCLOCK_GLES)
+  endif()
+  add_executable(automata_lite_glfw src/main_automata_lite_glfw.cpp)
+  target_link_libraries(automata_lite_glfw automata_lite_render ${GLFW_TARGET})
+
   if(APPLE)
     add_library(physarum_render_core STATIC src/physarum_app.cpp)
     target_link_libraries(physarum_render_core PUBLIC sandclock_core OpenGL::GL)
@@ -106,6 +114,11 @@ if(SANDCLOCK_HARNESS)
     target_compile_definitions(automata_render_core PUBLIC SANDCLOCK_CORE)
     add_executable(automata_glfw_core src/main_automata_glfw.cpp)
     target_link_libraries(automata_glfw_core automata_render_core ${GLFW_TARGET})
+    add_library(automata_lite_render_core STATIC src/automata_lite_app.cpp)
+    target_link_libraries(automata_lite_render_core PUBLIC sandclock_core OpenGL::GL)
+    target_compile_definitions(automata_lite_render_core PUBLIC SANDCLOCK_CORE)
+    add_executable(automata_lite_glfw_core src/main_automata_lite_glfw.cpp)
+    target_link_libraries(automata_lite_glfw_core automata_lite_render_core ${GLFW_TARGET})
     add_library(liquid_render_core STATIC src/liquid_renderer.cpp)
     target_link_libraries(liquid_render_core PUBLIC sandclock_core OpenGL::GL)
     target_compile_definitions(liquid_render_core PUBLIC SANDCLOCK_CORE)
@@ -192,4 +205,8 @@ if(SANDCLOCK_KODI)
   # Physarum Lite: the same simulation with the timers removed and an optional clock (off by
   # default); the add-on folder is ../screensaver.physarum.lite.armv7.
   sandclock_kodi_module(screensaver.physarum_lite src/kodi_physarum_lite.cpp src/physarum_lite_app.cpp)
+
+  # Cellular Automata Lite: the same automaton without the clock, with specialised shaders and a
+  # capped draw resolution; the add-on folder is ../screensaver.automata.lite.armv7.
+  sandclock_kodi_module(screensaver.automata_lite src/kodi_automata_lite.cpp src/automata_lite_app.cpp)
 endif()

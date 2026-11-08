@@ -40,6 +40,7 @@ struct Settings {
     int background_style = 0;        // solid, gradient, plasma
     int glow = 0;                    // 0..100
     int screen_fx = 0;               // none, vignette, CRT
+    int draw = 0;                    // Lite only: auto, 1080p, 720p, 540p, 360p, full screen
 
     // The clock in the middle.
     int clock = 1;                   // off, on top, on top + digits burst into life, cut out, made of living cells

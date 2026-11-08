@@ -49,6 +49,51 @@ checked against GLSL ES 1.00 with `glslangValidator` (`brew install glslang`) be
 build. The rule, grid, speed and pattern lists come from `tools/make_settings_automata.py`, which writes both the Kodi settings
 and `src/automata_tables.hpp`. Add-on folder: `../screensaver.automata.armv7`.
 
+## Cellular Automata Lite
+
+A separate, stripped-down Cellular Automata for weak devices (32-bit ARM boxes), published as its
+own add-on: `../screensaver.automata.lite.armv7`. It has no clock at all -- no font, no clock
+texture, no mask in the update shader and no overlay pass -- and the shaders are written for speed.
+
+What changed, and what it bought on an Apple M2 (same board, same settings, measured in one
+process):
+
+- **Specialised shaders.** The update and draw shaders are generated at start with the rule,
+  wrap, colour mode, view, background, shape, glow and screen effect compiled in as `#define`s,
+  so the options not in use cost nothing: no branches on the view or colour mode, no palette or
+  neighbour lookups for the ones not selected. The fixed 16-uniform budget is kept.
+- **Cheaper wrapping.** A torus cell lookup is `fract((c + 0.5) * u_inv)` -- one multiply-add and
+  a fract per neighbour -- instead of a `mod` and a divide.
+- **Uniform locations cached** and one `glu::SavedState` per frame instead of one per pass.
+- **Draw resolution cap.** The scene is drawn into a target no larger than twice the grid and no
+  more than 1920 x 1080, then one cheap pass scales it up. On a 4K output that is one copy pass
+  instead of shading every pixel. The setting "Draw the scene at" (Automatic, 1080p, 720p, 540p,
+  360p, full screen) exposes it; lower it first if the picture stutters.
+- **Lighter defaults.** 640 x 360 cells (230 thousand) instead of 960 x 540, same 30 generations a
+  second, with the same governor that lowers generations per frame if the display slows.
+- **Glow** reuses the already-fetched cell colour for the halo instead of calling the shader twice.
+
+Measured against the full add-on, the update pass (the part that fixes how large a grid the box can
+run) is 1.7-1.9x faster: 9,400 generations/s against 5,300 at 960 x 540, and 960 against 660 at
+3840 x 2160. The draw pass at the default 640 x 360 grid costs 0.57 ms a frame at 1080p instead of
+0.86 (and 1.12 instead of 1.53 at 4K); with glow at 100 the two are even. Absolute numbers vary with
+machine load; the ratios held across grid sizes, views, colour modes and shapes.
+
+Files: `automata_lite_app.*` (shaders, targets, restarts), `kodi_automata_lite.cpp`,
+`main_automata_lite_glfw.cpp`; it shares `automata.*` (rules, patterns, the CPU reference). The
+harness's `--selftest` compares the GPU states with the CPU reference for 10 rule/wrap
+combinations, and `--dump-shaders DIR` writes the update, draw and present shaders for the flags
+given, which every variant is checked as GLSL ES 1.00 with `glslangValidator` before an Android
+build. Settings come from `tools/make_settings_automata_lite.py`, which reuses the rule and option
+lists from `tools/make_settings_automata.py`, so a setting index means the same thing in both
+add-ons; the only list of its own is "Draw the scene at".
+
+The 32-bit library is built with the NDK in `build-android32` (`-DANDROID_ABI=armeabi-v7a
+-DANDROID_PLATFORM=android-21 -DANDROID_STL=c++_static -DSANDCLOCK_HARNESS=OFF -DSANDCLOCK_KODI=ON`)
+and stripped with `llvm-strip --strip-unneeded`; the built
+`screensaver.automata.lite.armv7.so` is committed in the add-on folder. It was also run in Kodi
+21.1 on macOS (a universal dylib from the same sources) in the flat and globe views.
+
 ## Physarum
 
 A fourth: the slime mould model of Jeff Jones ("Characteristics of pattern formation and evolution
