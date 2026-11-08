@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Empty full-screen window; Python adds the background and the logo. -->
+<window>
+  <backgroundcolor>0xff000000</backgroundcolor>
+  <controls/>
+</window>

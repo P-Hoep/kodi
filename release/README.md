@@ -15,6 +15,7 @@ repository so Kodi installs them and keeps them up to date.
 | [Word Clock](#word-clock) | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 | [Sand Clock](#sand-clock) | 1.0.1 | A clock whose digits crumble into falling sand every second |
 | [Jeopkodi](#jeopkodi) | 1.0.0 | An endless Jeopardy! slideshow: clue, then the response |
+| [DVD Logo](#dvd-logo) | 1.0.0 | The classic bouncing DVD logo, with corner tricks |
 
 All of them are pure Python with no compiled code. They run on Kodi 19 (Matrix) and later,
 on any platform. They were developed and tested on Kodi 21 on macOS. God's Eye Map has
@@ -315,6 +316,30 @@ it never runs out.
 
 It is under **Look and feel → Screensaver**. An unofficial fan project, not affiliated with
 Jeopardy Productions, Inc.
+
+---
+
+## DVD Logo
+
+![DVD Logo: the white logo bouncing across a black screen, landing exactly in a corner, then lining up another corner and veering away at the last second](gifs/dvd-logo.gif)
+
+The classic DVD screensaver: the white logo drifts across a black screen and bounces off the
+edges. Left alone it behaves like the real thing, so a corner hit is rare — but the corner
+tricks can make it happen.
+
+- **Corner tricks:** *Off*, *Hit the corner* (it quietly bends its path by a few degrees at a
+  bounce and then lands exactly in the corner), *Veer off at the last second* (it lines up a
+  perfect hit and swerves away from the corner half a second before arriving), or *Alternate*
+  (the default: hit a corner, then fake the next one). A slider sets how often it tries.
+- **The logo:** any size, from a slow drift to a quick scoot.
+- **Colours:** white, a new colour on every bounce (the classic), a new colour only when it
+  hits a corner, a slow rainbow, or one colour of your choice; the background is any colour too.
+
+Every move is a Kodi animation, so it is light enough for a Fire TV Stick, and any key or click
+ends it at once.
+
+It is under **Look and feel → Screensaver**. The DVD logo is a trademark of DVD Format/Logo
+Licensing Corporation; this is an unaffiliated fan project.
 
 ---
 

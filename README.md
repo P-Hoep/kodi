@@ -511,6 +511,46 @@ of `doModal()`: when Kodi wakes a screensaver itself (a `RunScript` or a screens
 window without telling Python, `doModal()` never returns and Kodi kills the script after 5 seconds.
 The loop also watches `System.ScreenSaverActive`, so it always exits.
 
+## DVD Logo (new, v1.0)
+
+![DVD Logo: the white logo bouncing across a black screen, landing exactly in a corner, then lining up another corner and veering away at the last second](release/gifs/dvd-logo.gif)
+
+`screensaver.dvdlogo`: the classic waiting game. The white DVD logo — the picture in
+`dvd-asset/image.png`, trimmed and rendered white-on-transparent by `tools/make_dvd_media.py` —
+drifts across a black screen and bounces off the edges, changing colour when it lands a corner.
+
+- **Corner tricks:** *Off*, *Hit the corner*, *Veer off at the last second*, or *Alternate*
+  (the default: hit a corner, then fake the next one). A slider sets how often it tries
+  (every 10 seconds by default).
+- **Logo:** size and speed, from a slow drift to a quick scoot.
+- **Colours:** white, a new colour on every bounce (the classic), a new colour only at corner
+  hits, a slow rainbow, or one fixed colour; the background is any colour too.
+
+How the corner hits work: in a rectangle a bouncing diagonal is a straight line folded back into
+the screen, so a corner is a lattice point of the unfolded plane. `aim()` turns the direction onto
+one of those points by at most 12° at a bounce, where it reads as part of the bounce, and the
+logo then really does land exactly in the corner, however many walls later. The fake-out uses the
+same aim but starts a six-step swerve half a second before arrival: the logo gets within about
+100 px and then turns away. `bounce.py` has no Kodi imports, and `tests/test_dvdlogo.py`
+simulates whole screens against it, including that a plain run never hits a corner and a fake-out
+never does either.
+
+```bash
+python3 tools/make_dvd_media.py              # media, icon and fanart from dvd-asset/image.png
+python3 tools/make_settings_dvdlogo.py       # settings.xml + strings.po from resources/lib/config.py
+python3 tools/make_dvdlogo_gif.py release/gifs/dvd-logo.gif   # demo frames from the same motion code
+python3 tools/build_zip.py screensaver.dvdlogo
+KODI_ADDON=screensaver.dvdlogo python3 tools/kodi.py install   # then select / run
+python3 -m unittest tests.test_dvdlogo       # fold, aiming, fake-outs, settings and media
+```
+
+The logo moves as one Kodi slide animation per wall, so Python wakes only a few times a minute.
+The window is shown with `show()` and a `System.ScreenSaverActive` loop rather than `doModal()`,
+so it always exits, and `Dialog.Close` closes it without waiting for Kodi's main thread.
+
+The DVD logo is a trademark of DVD Format/Logo Licensing Corporation; this is an unaffiliated
+fan project.
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full

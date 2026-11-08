@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.dvdlogo" name="DVD Logo" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library="default.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">The classic bouncing DVD logo, with corner tricks: it can always find a corner or fake you out at the last second</summary>
+    <description lang="en_GB">The waiting game from every DVD player, remastered: the white DVD logo drifts across a black screen and bounces off the edges, changing colour as it goes.
+
+Left alone it bounces like the real thing, so a corner hit is rare. The corner tricks make it happen: the logo quietly bends its path by a few degrees at a bounce and then really does arrive exactly in a corner, or it lines the shot up and veers away at the last second. Choose Off, Hit the corner, Veer off at the last second, or (the default) hit the corner and fake the next one. A slider sets how often it tries.
+
+The logo can be any size, the speed set from a slow drift to a quick scoot, and the colours can stay white, change on every bounce (the classic), change only when it hits a corner, cycle through the rainbow, or be one fixed colour of your choice. The background colour is yours too. Every move is a Kodi animation, so a Fire TV Stick runs it without effort, and any key or click ends it at once.</description>
+    <disclaimer lang="en_GB">The DVD logo is a trademark of DVD Format/Logo Licensing Corporation. This is a personal, unaffiliated fan project; the logo image is a white-on-transparent render made from the picture in this repository. Pure Python, no compiled parts, works on Kodi 19 and newer.</disclaimer>
+    <platform>all</platform>
+    <license>MIT</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>
