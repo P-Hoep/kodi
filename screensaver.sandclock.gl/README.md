@@ -166,6 +166,47 @@ frame pacing and the scale-up path, and `--clock-style N --time HH:MM:SS --fonts
 a clock mode against a fixed time. Settings come from `tools/make_settings_physarum_lite.py`.
 Add-on folder: `../screensaver.physarum.lite.armv7`.
 
+## Physarum Visualisation
+
+Physarum Lite as a music visualisation, published as its own add-on: the same four-pass agent
+model, with no clock and no timers, but Kodi hands it the track's samples and the simulation
+listens. It is a `xbmc.player.musicviz` add-on, not a screensaver, so it is chosen under
+**Settings → Player → Music → Visualisation** (or from the music OSD) and it starts and stops with
+each track.
+
+An analyser (`audio_react.*`, no GL and no Kodi) turns the 44.1 kHz stereo float stream into an
+overall level, five broad bands (30–140, 140–400, 400–1200, 1200–4000, 4000–12000 Hz), a beat
+impulse and a 32-band log spectrum (40 Hz to min(16 kHz, 0.45 x the sample rate)). It keeps a
+1024-sample ring, applies a Hann window and an iterative radix-2 FFT, then a per-band automatic
+gain, separate attack and release smoothing, and a bass-energy beat detector with a 160 ms
+refractory period. When audio stops arriving (pause, or the end of a track) everything decays to
+zero after 0.25 s and the scene settles.
+
+Reactivity (one slider, 0–150%, default 70%) decides how much the music does: loud passages shorten
+the step so the agents travel further, bass multiplies the deposit and slows the fade, beats add a
+jolt to the jitter and widen the turn; each of these has its own switch. The draw pass also
+brightens with the level, pulses the zoom on a beat, sends a ring from the centre that drags the
+trail with it, drifts the hue with the music, and can draw the spectrum as bars along the bottom or
+as a ring around the edge (bars by default). The analyser's sensitivity sets the automatic gain, so
+quiet tracks still move the picture.
+
+Files: `physarum_audio.hpp` (settings, trail sizes, spectrum styles), `physarum_audio.cpp` (the
+audio-to-params mapping), `physarum_audio_app.*` (shaders, targets and the draw additions),
+`kodi_physarum_audio.cpp` (the `CInstanceVisualization`), `main_physarum_audio_glfw.cpp` (the
+harness, with a synthetic 120 bpm track). `physarum_audio_glfw --selftest` checks the analyser
+(tone, beat count, silence decay, reactivity) and renders 240 frames of the synthetic track;
+`--silent`, `--bpm N`, `--reactivity N`, `--sensitivity N`, `--spectrum 0|1|2`, `--beat-zoom N`,
+`--beat-wave N`, `--no-react-speed|trails|beat|colour`, `--rgba8` and `--draw-cap N` exercise the
+rest. Settings come from `tools/make_settings_physarum_audio.py`, which reuses the Lite lists
+(without "From the clock digits") and adds the Music category. Add-on folders:
+`../visualization.physarum.lite` (macOS universal dylib and Android arm64 library) and
+`../visualization.physarum.lite.armv7` (32-bit Android).
+
+The libraries are built from the `visualization.physarum.lite` module in `build-uni`,
+`build-android` and `build-android32` with the commands above and committed in those folders. It
+was run in Kodi 21.1 on macOS: the instance starts and stops with each track, the log reports about
+110 steps/s and the analyser's level, bass and beat, and the picture reacts to the test track.
+
 ## Cellular Automata 3D
 
 The 2D cellular automata taken into a cube: an N x N x N volume of voxels running Life-like rules

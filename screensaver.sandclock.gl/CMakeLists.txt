@@ -12,7 +12,7 @@ option(SANDCLOCK_FETCH_GLFW "Download GLFW instead of using an installed one" OF
 option(SANDCLOCK_KODI "Build the Kodi add-on (needs the kodi-addon-dev-kit headers)" OFF)
 set(KODI_DEVKIT_INCLUDE "" CACHE PATH "xbmc/addons/kodi-dev-kit/include, if Kodi's cmake package is not installed")
 
-add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp src/liquid.cpp src/automata.cpp src/physarum.cpp src/voxel.cpp src/tetris.cpp)
+add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp src/liquid.cpp src/automata.cpp src/physarum.cpp src/voxel.cpp src/tetris.cpp src/audio_react.cpp src/physarum_audio.cpp)
 target_include_directories(sandclock_core PUBLIC src)
 target_compile_options(sandclock_core PRIVATE -Wall -Wextra)
 
@@ -34,6 +34,9 @@ add_test(NAME voxel COMMAND test_voxel)
 add_executable(test_tetris tests/test_tetris.cpp)
 target_link_libraries(test_tetris sandclock_core)
 add_test(NAME tetris COMMAND test_tetris)
+add_executable(test_audio tests/test_audio.cpp)
+target_link_libraries(test_audio sandclock_core)
+add_test(NAME audio COMMAND test_audio)
 add_test(NAME liquid COMMAND test_liquid ${CMAKE_SOURCE_DIR}/../screensaver.sandclock/resources/media/fonts/fonts.json)
 
 if(SANDCLOCK_HARNESS)
@@ -93,6 +96,14 @@ if(SANDCLOCK_HARNESS)
   add_executable(physarum_lite_glfw src/main_physarum_lite_glfw.cpp)
   target_link_libraries(physarum_lite_glfw physarum_lite_render ${GLFW_TARGET})
 
+  add_library(physarum_audio_render STATIC src/physarum_audio_app.cpp)
+  target_link_libraries(physarum_audio_render PUBLIC sandclock_core OpenGL::GL)
+  if(SANDCLOCK_GLES)
+    target_compile_definitions(physarum_audio_render PUBLIC SANDCLOCK_GLES)
+  endif()
+  add_executable(physarum_audio_glfw src/main_physarum_audio_glfw.cpp)
+  target_link_libraries(physarum_audio_glfw physarum_audio_render ${GLFW_TARGET})
+
   add_library(automata_lite_render STATIC src/automata_lite_app.cpp)
   target_link_libraries(automata_lite_render PUBLIC sandclock_core OpenGL::GL)
   if(SANDCLOCK_GLES)
@@ -129,6 +140,12 @@ if(SANDCLOCK_HARNESS)
     target_compile_definitions(physarum_lite_render_core PUBLIC SANDCLOCK_CORE)
     add_executable(physarum_lite_glfw_core src/main_physarum_lite_glfw.cpp)
     target_link_libraries(physarum_lite_glfw_core physarum_lite_render_core ${GLFW_TARGET})
+
+    add_library(physarum_audio_render_core STATIC src/physarum_audio_app.cpp)
+    target_link_libraries(physarum_audio_render_core PUBLIC sandclock_core OpenGL::GL)
+    target_compile_definitions(physarum_audio_render_core PUBLIC SANDCLOCK_CORE)
+    add_executable(physarum_audio_glfw_core src/main_physarum_audio_glfw.cpp)
+    target_link_libraries(physarum_audio_glfw_core physarum_audio_render_core ${GLFW_TARGET})
 
     # The same thing with the 3.2 core profile Kodi runs on macOS, to test that shader dialect.
     add_library(automata_render_core STATIC src/automata_app.cpp)
@@ -238,6 +255,10 @@ if(SANDCLOCK_KODI)
   # Physarum Lite: the same simulation with the timers removed and an optional clock (off by
   # default); the add-on folder is ../screensaver.physarum.lite.armv7.
   sandclock_kodi_module(screensaver.physarum_lite src/kodi_physarum_lite.cpp src/physarum_lite_app.cpp)
+
+  # Physarum Visualisation: Physarum Lite as a music visualisation, driven by Kodi's audio; the
+  # add-on folders are ../visualization.physarum.lite and ../visualization.physarum.lite.armv7.
+  sandclock_kodi_module(visualization.physarum.lite src/kodi_physarum_audio.cpp src/physarum_audio_app.cpp)
 
   # Cellular Automata Lite: the same automaton without the clock, with specialised shaders and a
   # capped draw resolution; the add-on folder is ../screensaver.automata.lite.armv7.

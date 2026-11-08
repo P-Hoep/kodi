@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="visualization.physarum.lite" name="Physarum Visualisation (macOS and 64-bit Android)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.visualization" version="4.0.0"/>
+  </requires>
+  <extension point="xbmc.player.musicviz" library_osx="visualization.physarum.lite.dylib"
+             library_android="visualization.physarum.lite.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">The Physarum slime mould as a music visualisation: the network grows, brightens and pulses with the song. For macOS and 64-bit Android; on a 32-bit Android Kodi (Fire TV, Google TV) install "Physarum Visualisation (32-bit Android)" instead.</summary>
+    <description lang="en_GB">Physarum Lite, listening to the music. The same GPU agent model as the Physarum screensaver — every agent senses the trail ahead, ahead-left and ahead-right, turns towards the strongest scent, moves and leaves its own trail, which spreads and fades — but here Kodi's audio drives it.
+
+An analyser reads Kodi's samples and measures an overall level, five bands (bass, low, mid, treble, air), a beat and a 32-band spectrum, with automatic gain so quiet tracks still move the picture. Loud passages make the agents travel further each step; bass strengthens the deposit and slows the fade, so the network thickens and lingers; a beat gives every agent a small jolt and widens its turn. The picture reacts too: brightness rises with the level, the zoom pulses on a beat, a ring travels out from the centre and drags the trail with it, and the palette drifts with the music. The spectrum is drawn as bars along the bottom by default, and can also be a ring around the edge or hidden.
+
+Reactivity is one slider: at 0 the music changes nothing and this is exactly the Physarum Lite screensaver, running its one behaviour for as long as it is shown; at 100 the music moves everything. Each kind of reaction — speed, trails, beat, colour — can be switched off on its own, the sensitivity sets the analyser's automatic gain, and the strength of the zoom pulse and the beat ring are separate settings.
+
+There is no clock and there are no timers. The scene is drawn at no more than twice the trail resolution and scaled up, so a 4K output costs little more than 1080p. The defaults are light (16 thousand agents on a 480 x 270 trail, one step per displayed frame); the agent count and the trail resolution are the two levers if your device cannot hold a steady frame rate. On a 32-bit Android Kodi (many Google TV boxes) install "Physarum Visualisation (32-bit Android)" instead.</description>
+    <disclaimer lang="en_GB">A native add-on built for Kodi 21 Omega on macOS (Apple Silicon and Intel) and 64-bit Android. It needs OpenGL ES 2.0 / OpenGL 3.2 with vertex texture fetch and high-precision floats in fragment shaders. Kodi plays each track's audio through the visualisation; the add-on analyses it and never stores or sends it anywhere.</disclaimer>
+    <platform>osx android</platform>
+    <license>MIT</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

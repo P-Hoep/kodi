@@ -655,6 +655,54 @@ python3 tools/make_settings_tetris_gl.py        # settings.xml + strings.po for 
 
 Tetris is a trademark of The Tetris Company; this is an unaffiliated fan project.
 
+## Physarum Visualisation (new, v1.0.0)
+
+`visualization.physarum.lite` is Physarum Lite as a **music visualisation**: the same GPU slime
+mould, with no clock and no timers, driven by whatever Kodi is playing. An analyser in the add-on
+reads Kodi's samples and measures the overall level, five bands (bass, low, mid, treble, air), a
+beat and a 32-band spectrum, with automatic gain so quiet tracks still move the picture. Loud
+passages make the agents travel further, bass thickens the trails and slows their fade, and a beat
+jolts the agents, pulses the zoom and sends a ring across the screen that drags the network with
+it; the palette drifts with the music. The spectrum is drawn as bars along the bottom by default,
+and can also be a ring around the edge or hidden. One Reactivity slider sets how much the music
+does — at 0 it is exactly the Physarum Lite screensaver running still — and each reaction (speed,
+trails, beat, colour) can be switched off on its own.
+
+It is a native add-on (C++ / OpenGL, 2.1 and GLES 2.0), so it is built per platform, and there are
+two Kodi add-ons for it:
+
+- **Physarum Visualisation (macOS and 64-bit Android)** — macOS (universal, Intel and Apple
+  Silicon) and 64-bit Android.
+- **Physarum Visualisation (32-bit Android)** — for 32-bit Android Kodi, which the Fire TV, many
+  Google TV boxes and the Chromecast with Google TV use. The 64-bit library cannot load there.
+
+Pick it under **Settings → Player → Music → Visualisation** (or from the music OSD) while a song
+plays; Kodi starts and stops it with each track. It is not a screensaver, so `tools/kodi.py
+select` does not apply. The code lives in `screensaver.sandclock.gl` with the other GPU add-ons and
+is documented in
+[screensaver.sandclock.gl/README.md](screensaver.sandclock.gl/README.md#physarum-visualisation).
+
+```bash
+cd screensaver.sandclock.gl
+cmake -S . -B build && cmake --build build      # physarum_audio_glfw test window
+./build/physarum_audio_glfw --selftest          # analyser + a rendered synthetic track
+./build/physarum_audio_glfw --spectrum 2 --shot out.ppm --shot-after 20
+
+# Kodi add-on: macOS universal dylib
+cmake -S . -B build-uni -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+  -DSANDCLOCK_KODI=ON -DSANDCLOCK_HARNESS=OFF \
+  -DKODI_DEVKIT_INCLUDE=<xbmc>/xbmc/addons/kodi-dev-kit/include && cmake --build build-uni
+
+# Kodi add-on: Android (arm64-v8a, or armeabi-v7a for the 32-bit add-on)
+cmake -S . -B build-android -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+  -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-21 -DANDROID_STL=c++_static \
+  -DSANDCLOCK_KODI=ON -DSANDCLOCK_HARNESS=OFF \
+  -DKODI_DEVKIT_INCLUDE=<xbmc>/xbmc/addons/kodi-dev-kit/include && cmake --build build-android
+
+python3 tools/make_settings_physarum_audio.py   # settings.xml + strings.po for both add-on folders
+KODI_ADDON=visualization.physarum.lite python3 tools/kodi.py install
+```
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full
