@@ -25,7 +25,6 @@ using Params = sandclock::physarum::Params;
 // steps once per displayed frame; see Settings::pace.)
 using sandclock::physarum::PRESET_COUNT;
 using sandclock::physarum::AGENT_COUNT;
-using sandclock::physarum::TRAIL_COUNT;
 using sandclock::physarum::FOOD_COUNT;
 using sandclock::physarum::MODE_COUNT;
 using sandclock::physarum::PALETTE_COUNT;
@@ -36,6 +35,13 @@ using sandclock::physarum::CAMERA_COUNT;
 // one (each species in its own third) moves down into that slot.
 constexpr int LITE_START_COUNT = 6;
 
+// The trail sizes: the shared list (so indices 0..6 mean what they mean in the full add-on) plus a
+// smaller map for very weak GPUs. The extra one is appended rather than inserted so a saved trail
+// index never changes meaning. tools/make_settings_physarum_lite.py mirrors this list.
+constexpr Size LITE_TRAIL_SIZES[] = {{480, 270}, {640, 360}, {960, 540}, {1280, 720}, {1920, 1080},
+                                     {2560, 1440}, {3840, 2160}, {320, 180}};
+constexpr int LITE_TRAIL_COUNT = 8;
+
 struct Settings {
     // Behaviour. preset 0..PRESET_COUNT-1 is a fixed preset; PRESET_COUNT is Custom.
     int preset = 0;
@@ -45,13 +51,14 @@ struct Settings {
     // The Custom behaviour, in the PresetDef units.
     float sa = 22.5f, ra = 45, so = 9, ss = 10, decay = 90, diffuse = 100, deposit = 30, jitter = 0, repel = 50;
 
-    // Size and speed. The light defaults: 65 thousand agents on a 480 x 270 trail.
+    // Size and speed. The light defaults: 16 thousand agents on a 480 x 270 trail. The scene is
+    // drawn at twice the trail resolution and scaled up, so the draw pass stays cheap on any screen.
     // The simulation is locked to the display: one step on every pace-th rendered frame (1 = every
     // frame). At pace 1 every frame does exactly the same amount of GPU work, which is what keeps
     // the frame rate even; a steps-per-second accumulator makes some frames do twice the work of
     // others, which shows up as judder. At 60 Hz, pace 1 is 60 steps/s and pace 2 is 30.
-    int agents = 1;                  // index into AGENT_SIZES
-    int trail = 0;                   // index into TRAIL_SIZES
+    int agents = 0;                  // index into AGENT_SIZES
+    int trail = 0;                   // index into LITE_TRAIL_SIZES
     int pace = 1;                    // frames per step: 1..4 (1 = every frame, the smoothest)
 
     // Start and food.

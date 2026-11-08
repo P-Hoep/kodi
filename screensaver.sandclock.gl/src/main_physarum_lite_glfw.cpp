@@ -4,9 +4,9 @@
 //                      [--view N] [--camera N] [--cam-speed N] [--zoom N] [--no-differ]
 //                      [--fullscreen] [--draw-cap N] [--shot out.ppm --shot-after SECONDS] [--selftest]
 // N is the index in the settings lists (tools/make_settings_physarum_lite.py). --pace is frames per
-// step (1 = a step on every frame). --draw-cap lowers App::draw_cap_w (and h, in 16:9) to exercise
-// the scale-up path. --selftest checks the sense / move / deposit passes against the model computed
-// on the CPU.
+// step (1 = a step on every frame). The draw pass renders at no more than 2 x the trail size;
+// --draw-cap lowers that further (and h, in 16:9) to exercise the scale-up path. --selftest checks
+// the sense / move / deposit passes against the model computed on the CPU.
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 

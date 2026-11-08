@@ -44,7 +44,7 @@ sandclock::physarum::lite::Settings read_settings() {
     s.jitter = (float)get_int("jitter", (int)s.jitter, 0, 45);
     s.repel = (float)get_int("repel", (int)s.repel, 0, 100);
     s.agents = get_int("agents", s.agents, 0, AGENT_COUNT - 1);
-    s.trail = get_int("trail", s.trail, 0, TRAIL_COUNT - 1);
+    s.trail = get_int("trail", s.trail, 0, LITE_TRAIL_COUNT - 1);
     s.pace = get_int("pace", s.pace, 1, 4);
     s.start = get_int("start", s.start, 0, LITE_START_COUNT - 1);
     s.food = get_int("food", s.food, 0, FOOD_COUNT - 1);
@@ -82,9 +82,10 @@ public:
         }
         if (!error.empty()) kodi::Log(ADDON_LOG_WARNING, "Physarum Lite: %s", error.c_str());
         started_ = std::chrono::steady_clock::now();
-        kodi::Log(ADDON_LOG_INFO, "Physarum Lite: started, %d agents, %d x %d trail (%s), GL %s",
+        kodi::Log(ADDON_LOG_INFO, "Physarum Lite: started, %d agents, %d x %d trail (%s), pace %d, GL %s",
                   app_->agents_w() * app_->agents_h(), app_->trail_w(), app_->trail_h(),
-                  app_->half_float() ? "half float" : "8 bit", (const char*)glGetString(GL_VERSION));
+                  app_->half_float() ? "half float" : "8 bit", app_->pace(),
+                  (const char*)glGetString(GL_VERSION));
         return true;
     }
 
@@ -97,11 +98,29 @@ public:
         if (!app_) return;
         double now = std::chrono::duration<double>(std::chrono::steady_clock::now() - started_).count();
         app_->render(now, Width(), Height());
+
+        // A frame rate line in the log: the only way to tell a device that holds 60 from one that
+        // alternates between 60 and 30 (which is what a missed frame looks like). Ten-second
+        // samples for the first minute, then one a minute so a screensaver left on overnight does
+        // not fill the log.
+        ++frames_;
+        double span = now - last_log_;
+        if (span >= (samples_ < 6 ? 10.0 : 60.0)) {
+            kodi::Log(ADDON_LOG_INFO, "Physarum Lite: %.1f fps, %.1f steps/s (pace %d)", (frames_ - frames_at_log_) / span,
+                      (app_->steps() - steps_at_log_) / span, app_->pace());
+            last_log_ = now;
+            frames_at_log_ = frames_;
+            steps_at_log_ = app_->steps();
+            ++samples_;
+        }
     }
 
 private:
     std::unique_ptr<sandclock::physarum::lite::App> app_;
     std::chrono::steady_clock::time_point started_;
+    double last_log_ = 0;                    // seconds on the same clock as Render's `now`
+    long frames_ = 0, frames_at_log_ = 0, steps_at_log_ = 0;
+    int samples_ = 0;
 };
 
 class ATTR_DLL_LOCAL CPhysarumLiteAddon : public kodi::addon::CAddonBase {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.physarum.lite.armv7" name="Physarum Lite (32-bit Android)" version="1.1.0" provider-name="P-Hoep">
+<addon id="screensaver.physarum.lite.armv7" name="Physarum Lite (32-bit Android)" version="1.2.0" provider-name="P-Hoep">
   <requires>
     <c-pluff version="1.0"/>
     <import addon="kodi.binary.global.main" version="2.0.2"/>
@@ -12,7 +12,7 @@
 
 Every agent senses the trail ahead, ahead-left and ahead-right, turns towards the strongest scent, moves and leaves its own trail, which spreads and fades; together they weave networks that branch, merge and keep reorganising. The slime can start everywhere at random, from a disc, a ring, scattered colonies, a big bang, or each species in its own third. Food sources can be scattered so the network links them like a rail map. Eleven behaviours, or Custom (set the sensor angle, turn, sensor distance, step, decay, diffusion, deposit, wobble and repellence yourself), and up to three species that follow their own trail and avoid the others.
 
-This build is made for low-resource devices and its defaults are deliberately light: 65 thousand agents on a 480 x 270 trail, no glow and no screen effect. The simulation advances one step on every displayed frame, so every frame costs the GPU the same and the picture stays even; if the device cannot keep up, the display rate and the simulation slow together rather than juddering. The scene is drawn at no more than 1920 x 1080 and scaled up, which keeps a 4K output as cheap as a 1080p one. Raise the agent count, the trail resolution and the glow in the settings if your device can take it, up to 8 million agents on a 3840 x 2160 trail.</description>
+This build is made for low-resource devices and its defaults are deliberately light: 16 thousand agents on a 480 x 270 trail, no glow and no screen effect. The simulation advances one step on every displayed frame, so every frame costs the GPU the same and the picture stays even; if the device cannot keep up, the display rate and the simulation slow together rather than juddering. The scene is drawn at no more than twice the trail resolution (960 x 540 by default) and scaled up, so the most expensive pass costs a quarter of a 1080p draw and a 4K output costs the same again. Raise the agent count, the trail resolution and the glow in the settings if your device can take it, up to 8 million agents on a 3840 x 2160 trail; the agent count and the trail size are the two levers if it still cannot hold a steady frame rate.</description>
     <disclaimer lang="en_GB">Native add-on built for Kodi 21 Omega, 32-bit ARM Android (armeabi-v7a), as on many Google TV boxes. It needs OpenGL ES 2.0 with vertex texture fetch and high-precision floats in fragment shaders. Millions of agents need a strong GPU; start with the default and raise it. The full Physarum screensaver, with the clock in the middle, is a separate add-on.</disclaimer>
     <platform>android</platform>
     <license>MIT</license>
