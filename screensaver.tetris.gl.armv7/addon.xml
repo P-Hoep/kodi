@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.tetris.gl.armv7" name="Tetris AI (OpenGL, 32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_android="screensaver.tetris.gl.armv7.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Tetris AI (OpenGL) for 32-bit Android Kodi (many Google TV boxes, Chromecast with Google TV)</summary>
+    <description lang="en_GB">The same OpenGL Tetris AI as "Tetris AI (OpenGL)", built for 32-bit Android (armeabi-v7a). Install this one if your Android or Google TV Kodi is a 32-bit app, which is the case on many Google TV boxes and the Chromecast with Google TV; install "Tetris AI (OpenGL)" on 64-bit Android, macOS and Intel/Apple Macs. An AI plays Tetris on a playfield that fills the screen, drawn on the GPU in continuous, sub-pixel motion: eased slides, a smooth fall, a twice-flashing collapse on line clears and pieces sliding down when the block clock changes. The seven tetrominoes, nine colour schemes or your own colours, block sizes up to 60 columns, skill levels, speed, a 12/24-hour text or block clock, ghost, grid, HUD and next-piece settings are all there, with the same settings as Tetris AI.</description>
+    <disclaimer lang="en_GB">Tetris is a trademark of The Tetris Company. This is a personal, unaffiliated fan project with no official artwork or assets. Native add-on built for Kodi 21 Omega, 32-bit ARM Android.</disclaimer>
+    <platform>android</platform>
+    <license>MIT</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

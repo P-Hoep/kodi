@@ -210,6 +210,33 @@ the same sources) with the presets (including Inside the Torus), from inside the
 endless cube on; the settings, screenshots and a 15 s preset rotation were checked in the harness,
 where rotation can be observed without Kodi restarting the screensaver after each screenshot.
 
+## Tetris AI (OpenGL)
+
+The Python `../screensaver.tetris` screensaver ported to the same native renderer, because Kodi's
+image-control animation makes the Python version move in cell-sized steps. The engine is a
+straight port (`src/tetris.*`: 18 rows, the column count from the block size, the seven-bag, the
+Guideline rotations, the El-Tetris placement search, the score and level, the fixed block-clock
+cells, settle/row-clear bitmasks), with no Kodi or GL in it, and `tests/test_tetris.cpp` checks it.
+`src/tetris_app.*` draws everything: a rounded-tile SDF shader for the blocks, the background
+gradient, veil, border and vignette, and a 5 x 7 bitmap font atlas for the HUD, all in a few
+textured batches.
+
+The active piece is the point. It moves at sub-pixel positions along eased curves (a smoothstep
+on the slide and the fall), not one cell per frame, and the four phases of a move (think, slide,
+drop, flash, fall) run off a continuous clock, so a 60/90/120 Hz display gets 60/90/120 distinct
+intermediate positions. A drop lands exactly on the ghost, line clears flash twice for 0.24 s
+and collapse into place, and when the block clock changes, a piece left resting on a vanishing
+digit slides down into the gap.
+
+Settings, defaults and option indices are generated from the Python add-on's table by
+`tools/make_settings_tetris_gl.py`, so both add-ons have the same 25 settings. The test window is
+`tetris_glfw` (`tetris_glfw_core` on macOS), with `--skill --speed --start --scheme --block
+--no-grid --no-hud --no-clock --clock-style --clock-seconds --24h --floating --time --seed
+--shot out.ppm --shot-after SECONDS` and the rest. Add-on folders: `../screensaver.tetris.gl`
+(macOS universal dylib and Android arm64) and `../screensaver.tetris.gl.armv7` (32-bit Android
+arms). Both are built here in `build-uni` and `build-android` / `build-android32` from the
+`screensaver.tetris.gl` module and the libraries are committed in those folders.
+
 ## Build and test
 
 ```sh

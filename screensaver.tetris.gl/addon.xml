@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.tetris.gl" name="Tetris AI (OpenGL)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.tetris.gl.dylib"
+             library_android="screensaver.tetris.gl.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">The Tetris AI screensaver drawn on the GPU, with motion as smooth as the display</summary>
+    <description lang="en_GB">The same AI plays Tetris on the same full-screen playfield as "Tetris AI", but drawn in native code and OpenGL, so every move is continuous instead of jumping cell to cell: the active piece slides and falls at sub-pixel positions with eased motion, dropped pieces land exactly where the ghost showed, line clears flash twice and collapse into place, and blocks stranded on a clock digit that changes slide down into the gap it leaves. Everything is drawn as antialiased rounded tiles, so the blocks look the same at any size and scale cleanly on high-DPI screens.
+
+An AI watches the stack, tries every rotation and column, and keeps the pile flat by clearing lines. The skill setting is how often it takes the best move; Overall speed runs from a slow, meditative fall to a rapid-fire game, and the speed can climb as lines are cleared. The blocks can be Classic, NES, Neon, Pastel, Monochrome, Game Boy, Sunset, Ocean or Vaporwave, or your own seven colours; the block size sets how wide the blocks are (96 px keeps a close-up 20-column view, smaller blocks fit up to 60 columns across the screen). The HUD shows the score, lines, level and best, and can be dimmed or hidden. An optional clock (12 or 24 hour, with seconds when the board has room) is text in the corner or HH:MM built from blocks, resting on the bottom of the playfield or suspended in mid-air; the block clock is part of the game, so pieces collide with its digits and a piece resting on a digit that changes falls into the gap. On a 32-bit Android Kodi (many Google TV boxes) install "Tetris AI (OpenGL, 32-bit Android)" instead.</description>
+    <disclaimer lang="en_GB">Tetris is a trademark of The Tetris Company. This is a personal, unaffiliated fan project with no official artwork or assets: the pieces are plain geometric blocks. This is a native add-on, built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Apple Silicon and Intel, and 64-bit Android).</disclaimer>
+    <platform>osx android</platform>
+    <license>MIT</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

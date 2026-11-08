@@ -12,7 +12,7 @@ option(SANDCLOCK_FETCH_GLFW "Download GLFW instead of using an installed one" OF
 option(SANDCLOCK_KODI "Build the Kodi add-on (needs the kodi-addon-dev-kit headers)" OFF)
 set(KODI_DEVKIT_INCLUDE "" CACHE PATH "xbmc/addons/kodi-dev-kit/include, if Kodi's cmake package is not installed")
 
-add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp src/liquid.cpp src/automata.cpp src/physarum.cpp src/voxel.cpp)
+add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp src/liquid.cpp src/automata.cpp src/physarum.cpp src/voxel.cpp src/tetris.cpp)
 target_include_directories(sandclock_core PUBLIC src)
 target_compile_options(sandclock_core PRIVATE -Wall -Wextra)
 
@@ -31,6 +31,9 @@ add_test(NAME physarum COMMAND test_physarum)
 add_executable(test_voxel tests/test_voxel.cpp)
 target_link_libraries(test_voxel sandclock_core)
 add_test(NAME voxel COMMAND test_voxel)
+add_executable(test_tetris tests/test_tetris.cpp)
+target_link_libraries(test_tetris sandclock_core)
+add_test(NAME tetris COMMAND test_tetris)
 add_test(NAME liquid COMMAND test_liquid ${CMAKE_SOURCE_DIR}/../screensaver.sandclock/resources/media/fonts/fonts.json)
 
 if(SANDCLOCK_HARNESS)
@@ -106,6 +109,14 @@ if(SANDCLOCK_HARNESS)
   add_executable(voxel_glfw src/main_voxel_glfw.cpp)
   target_link_libraries(voxel_glfw voxel_render ${GLFW_TARGET})
 
+  add_library(tetris_render STATIC src/tetris_app.cpp)
+  target_link_libraries(tetris_render PUBLIC sandclock_core OpenGL::GL)
+  if(SANDCLOCK_GLES)
+    target_compile_definitions(tetris_render PUBLIC SANDCLOCK_GLES)
+  endif()
+  add_executable(tetris_glfw src/main_tetris_glfw.cpp)
+  target_link_libraries(tetris_glfw tetris_render ${GLFW_TARGET})
+
   if(APPLE)
     add_library(physarum_render_core STATIC src/physarum_app.cpp)
     target_link_libraries(physarum_render_core PUBLIC sandclock_core OpenGL::GL)
@@ -147,6 +158,12 @@ if(SANDCLOCK_HARNESS)
     target_compile_definitions(sandclock_render_core PUBLIC SANDCLOCK_CORE)
     add_executable(sandclock_glfw_core src/main_glfw.cpp)
     target_link_libraries(sandclock_glfw_core sandclock_render_core ${GLFW_TARGET})
+
+    add_library(tetris_render_core STATIC src/tetris_app.cpp)
+    target_link_libraries(tetris_render_core PUBLIC sandclock_core OpenGL::GL)
+    target_compile_definitions(tetris_render_core PUBLIC SANDCLOCK_CORE)
+    add_executable(tetris_glfw_core src/main_tetris_glfw.cpp)
+    target_link_libraries(tetris_glfw_core tetris_render_core ${GLFW_TARGET})
   endif()
 endif()
 
@@ -229,4 +246,9 @@ if(SANDCLOCK_KODI)
   # Cellular Automata 3D: Life-like rules on a cube of voxels, ray-marched, no clock; the add-on
   # folder is ../screensaver.automata3d.armv7.
   sandclock_kodi_module(screensaver.automata3d src/kodi_voxel.cpp src/voxel_app.cpp)
+
+  # Tetris AI (OpenGL): the same game as the Python screensaver.tetris, drawn on the GPU in
+  # continuous motion; the add-on folders are ../screensaver.tetris.gl and
+  # ../screensaver.tetris.gl.armv7.
+  sandclock_kodi_module(screensaver.tetris.gl src/kodi_tetris.cpp src/tetris_app.cpp)
 endif()

@@ -608,6 +608,51 @@ python3 -m unittest tests.test_tetris        # engine, clock, settings, AI and m
 
 Tetris is a trademark of The Tetris Company; this is an unaffiliated fan project.
 
+## Tetris AI (OpenGL) (new, v1.0)
+
+`screensaver.tetris.gl` is the same game drawn by the GPU instead of by Kodi image controls:
+everything about the rules, the AI, the colours, the clock and the settings is the same, but the
+piece does not jump cell to cell. It slides and falls at sub-pixel positions on eased curves, so
+the motion is as smooth as the display, dropped pieces land exactly on the ghost, a line clear
+flashes twice and collapses, and a piece resting on a clock digit that changes slides down into
+the gap. Blocks are antialiased rounded tiles, so they look right at any block size and stay
+sharp on a high-DPI screen.
+
+It is a native add-on (C++ / OpenGL, 2.1 and GLES 2.0), so it is built per platform, and there
+are two Kodi add-ons for it:
+
+- **Tetris AI (OpenGL)** — macOS (universal, Intel and Apple Silicon) and 64-bit Android.
+- **Tetris AI (OpenGL, 32-bit Android)** — the same build for 32-bit Android Kodi, which many
+  Google TV boxes and the Chromecast with Google TV use.
+
+The code lives in `screensaver.sandclock.gl` with the other GPU add-ons and is documented in
+[screensaver.sandclock.gl/README.md](screensaver.sandclock.gl/README.md#tetris-ai-opengl). The
+engine is a plain C++ port of the Python one (`src/tetris.*`, tested by
+`screensaver.sandclock.gl/tests/test_tetris.cpp`), the renderer is `src/tetris_app.*`, and the
+settings are generated from the Python add-on's table so both have the same 25 settings:
+
+```bash
+cd screensaver.sandclock.gl
+cmake -S . -B build && cmake --build build      # tetris_glfw test window (macOS also tetris_glfw_core)
+./build/tetris_glfw --no-clock --shot out.ppm --shot-after 8
+ctest --test-dir build -R tetris                # engine, rotations, AI, clock cells
+
+# Kodi add-on: macOS universal dylib
+cmake -S . -B build-uni -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+  -DSANDCLOCK_KODI=ON -DSANDCLOCK_HARNESS=OFF \
+  -DKODI_DEVKIT_INCLUDE=<xbmc>/xbmc/addons/kodi-dev-kit/include && cmake --build build-uni
+
+# Kodi add-on: Android (arm64-v8a, or armeabi-v7a for the 32-bit add-on)
+cmake -S . -B build-android -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+  -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-21 -DANDROID_STL=c++_static \
+  -DSANDCLOCK_KODI=ON -DSANDCLOCK_HARNESS=OFF \
+  -DKODI_DEVKIT_INCLUDE=<xbmc>/xbmc/addons/kodi-dev-kit/include && cmake --build build-android
+
+python3 tools/make_settings_tetris_gl.py        # settings.xml + strings.po for both add-on folders
+```
+
+Tetris is a trademark of The Tetris Company; this is an unaffiliated fan project.
+
 ## Documentation
 
 - **[docs/godseye-screensaver.md](docs/godseye-screensaver.md)**: full

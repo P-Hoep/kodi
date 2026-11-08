@@ -17,10 +17,13 @@ repository so Kodi installs them and keeps them up to date.
 | [Jeopkodi](#jeopkodi) | 1.0.0 | An endless Jeopardy! slideshow: clue, then the response |
 | [DVD Logo](#dvd-logo) | 1.0.1 | The classic bouncing DVD logo, with corner tricks |
 | [Tetris AI](#tetris-ai) | 1.1.1 | An AI plays Tetris edge to edge, with a clock made of blocks |
+| [Tetris AI (OpenGL)](#tetris-ai-opengl) | 1.0.0 | The same AI in native code and OpenGL: the motion is as smooth as the display |
 
-All of them are pure Python with no compiled code. They run on Kodi 19 (Matrix) and later,
-on any platform. They were developed and tested on Kodi 21 on macOS. God's Eye Map has
-also been tested on Amazon Fire TV Sticks.
+All of them are pure Python with no compiled code, except Tetris AI (OpenGL), which is a native
+add-on. The Python add-ons run on Kodi 19 (Matrix) and later, on any platform; Tetris AI
+(OpenGL) is built for macOS (Intel and Apple Silicon) and Android, in a 64-bit and a 32-bit
+build. They were developed and tested on Kodi 21 on macOS. God's Eye Map has also been tested
+on Amazon Fire TV Sticks.
 
 ---
 
@@ -373,6 +376,33 @@ Any key or click ends it at once.
 
 It is under **Look and feel → Screensaver**. Tetris is a trademark of The Tetris Company;
 this is an unaffiliated fan project.
+
+---
+
+## Tetris AI (OpenGL)
+
+The same AI plays the same game, but the screen is drawn in native code and OpenGL instead of by
+Kodi image controls, so nothing moves in cell-sized steps: the active piece slides and falls at
+sub-pixel positions on eased curves, dropped pieces land exactly where the ghost showed, a line
+clear flashes twice and collapses into place, and a piece stranded on a clock digit that changes
+slides down into the gap it leaves. Everything is drawn as antialiased rounded tiles, so it
+stays sharp at every block size and on high-DPI screens.
+
+It has the same 25 settings as Tetris AI: the five skill levels, speed and progressive levels,
+nine colour schemes or your own seven colours, the block size (96 pixels down to 32, so 20 to 60
+columns), the grid, the score panel and its opacity, the ghost and next-piece preview, the
+background colour, and the clock (text or blocks, 12/24 hour, seconds, on the floor or floating,
+any colour). The engine is a C++ port of the Python one, so the AI behaves the same.
+
+This is a native add-on, so Kodi needs the build for its platform:
+
+- **Tetris AI (OpenGL)** — macOS (Intel and Apple Silicon) and 64-bit Android.
+- **Tetris AI (OpenGL, 32-bit Android)** — 32-bit Android Kodi: many Google TV boxes and the
+  Chromecast with Google TV. Install this one on those devices; the other one is for 64-bit
+  Android.
+
+Any key or click ends it at once. It is under **Look and feel → Screensaver**. Tetris is a
+trademark of The Tetris Company; this is an unaffiliated fan project.
 
 ---
 
