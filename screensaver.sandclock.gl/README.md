@@ -78,14 +78,15 @@ over on a schedule and the behaviour never wanders on its own. The trail map's f
 carries only food sources. What remains is the four-pass agent model and the draw pass, running
 continuously for as long as Kodi shows it.
 
-The defaults are deliberately light (65 thousand agents, a 480 x 270 trail, no glow, no screen
+The defaults are deliberately light (16 thousand agents, a 480 x 270 trail, no glow, no screen
 effect); the settings expose the same behaviour, size, food, colour, view and camera lists as the
-full add-on. The simulation is locked to the display instead of a clock: one step runs on every
-rendered frame, and never more than one, so every frame asks the GPU for the same work and the
-frame rate either holds or settles evenly lower instead of alternating heavy and light frames.
-"Simulation updates" steps on every second, third or fourth frame to calm it down (still evenly
-spaced). The draw pass renders into a target of at most 1920 x 1080 and scales it up, so a 4K
-output costs about what a 1080p one does; below that resolution it draws straight to the screen.
+full add-on, plus a 320 x 180 trail below it. The simulation is locked to the display instead of a
+clock: one step runs on every rendered frame, and never more than one, so every frame asks the GPU
+for the same work and the frame rate either holds or settles evenly lower instead of alternating
+heavy and light frames. "Simulation updates" steps on every second, third or fourth frame to calm
+it down (still evenly spaced). The draw pass renders at no more than twice the trail size (960 x
+540 at the default) and scales that up, so the most per-pixel work in the add-on costs a quarter of
+a 1080p draw and a 4K output costs the same again; below that it draws straight to the screen.
 Files: `physarum_lite.hpp` (settings and the shared params), `physarum_lite_app.*`,
 `kodi_physarum_lite.cpp`, `main_physarum_lite_glfw.cpp`. `physarum_lite_glfw --selftest` runs the
 same move/deposit/turning checks as `physarum_glfw`; `--pace N` and `--draw-cap N` exercise the

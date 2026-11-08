@@ -196,245 +196,249 @@ msgid "3840 x 2160"
 msgstr ""
 
 msgctxt "#30147"
-msgid "Simulation updates"
+msgid "320 x 180"
 msgstr ""
 
 msgctxt "#30148"
-msgid "Every frame (smoothest)"
+msgid "Simulation updates"
 msgstr ""
 
 msgctxt "#30149"
-msgid "Every other frame"
+msgid "Every frame (smoothest)"
 msgstr ""
 
 msgctxt "#30150"
-msgid "Every third frame"
+msgid "Every other frame"
 msgstr ""
 
 msgctxt "#30151"
-msgid "Every fourth frame"
+msgid "Every third frame"
 msgstr ""
 
 msgctxt "#30152"
-msgid "Start and food"
+msgid "Every fourth frame"
 msgstr ""
 
 msgctxt "#30153"
-msgid "Starting pattern"
+msgid "Start and food"
 msgstr ""
 
 msgctxt "#30154"
-msgid "Everywhere at random"
+msgid "Starting pattern"
 msgstr ""
 
 msgctxt "#30155"
-msgid "A disc in the middle (it grows outwards)"
+msgid "Everywhere at random"
 msgstr ""
 
 msgctxt "#30156"
-msgid "A ring, facing inwards"
+msgid "A disc in the middle (it grows outwards)"
 msgstr ""
 
 msgctxt "#30157"
-msgid "Scattered colonies"
+msgid "A ring, facing inwards"
 msgstr ""
 
 msgctxt "#30158"
-msgid "Big bang (all from the centre, facing out)"
+msgid "Scattered colonies"
 msgstr ""
 
 msgctxt "#30159"
-msgid "Each species in its own third of the screen"
+msgid "Big bang (all from the centre, facing out)"
 msgstr ""
 
 msgctxt "#30160"
-msgid "Food"
+msgid "Each species in its own third of the screen"
 msgstr ""
 
 msgctxt "#30161"
-msgid "None"
+msgid "Food"
 msgstr ""
 
 msgctxt "#30162"
-msgid "Scattered food (the network links them, as in the Tokyo rail experiment)"
+msgid "None"
 msgstr ""
 
 msgctxt "#30163"
-msgid "A ring of food"
+msgid "Scattered food (the network links them, as in the Tokyo rail experiment)"
 msgstr ""
 
 msgctxt "#30164"
-msgid "A grid of food"
+msgid "A ring of food"
 msgstr ""
 
 msgctxt "#30165"
-msgid "Food sources"
+msgid "A grid of food"
 msgstr ""
 
 msgctxt "#30166"
-msgid "Colours"
+msgid "Food sources"
 msgstr ""
 
 msgctxt "#30167"
-msgid "Colour"
+msgid "Colours"
 msgstr ""
 
 msgctxt "#30168"
-msgid "Density (palette gradient)"
+msgid "Colour"
 msgstr ""
 
 msgctxt "#30169"
-msgid "Species colours (palette)"
+msgid "Density (palette gradient)"
 msgstr ""
 
 msgctxt "#30170"
-msgid "Fire"
+msgid "Species colours (palette)"
 msgstr ""
 
 msgctxt "#30171"
-msgid "Neon (white-hot cores)"
+msgid "Fire"
 msgstr ""
 
 msgctxt "#30172"
-msgid "Ink on paper"
+msgid "Neon (white-hot cores)"
 msgstr ""
 
 msgctxt "#30173"
-msgid "One colour"
+msgid "Ink on paper"
 msgstr ""
 
 msgctxt "#30174"
-msgid "Rainbow (drifts across the screen)"
+msgid "One colour"
 msgstr ""
 
 msgctxt "#30175"
-msgid "Plasma (a moving colour field)"
+msgid "Rainbow (drifts across the screen)"
 msgstr ""
 
 msgctxt "#30176"
-msgid "Palette"
+msgid "Plasma (a moving colour field)"
 msgstr ""
 
 msgctxt "#30177"
-msgid "Neon (as in video)"
+msgid "Palette"
 msgstr ""
 
 msgctxt "#30178"
-msgid "Desert sand"
+msgid "Neon (as in video)"
 msgstr ""
 
 msgctxt "#30179"
-msgid "Ocean"
+msgid "Desert sand"
 msgstr ""
 
 msgctxt "#30180"
-msgid "Sunset"
+msgid "Ocean"
 msgstr ""
 
 msgctxt "#30181"
-msgid "Candy"
+msgid "Sunset"
 msgstr ""
 
 msgctxt "#30182"
-msgid "Forest"
+msgid "Candy"
 msgstr ""
 
 msgctxt "#30183"
-msgid "Ice"
+msgid "Forest"
 msgstr ""
 
 msgctxt "#30184"
-msgid "Greyscale"
+msgid "Ice"
 msgstr ""
 
 msgctxt "#30185"
-msgid "Colour of the slime"
+msgid "Greyscale"
 msgstr ""
 
 msgctxt "#30186"
-msgid "Background"
+msgid "Colour of the slime"
 msgstr ""
 
 msgctxt "#30187"
-msgid "Brightness (%)"
+msgid "Background"
 msgstr ""
 
 msgctxt "#30188"
-msgid "Colour cycling speed"
+msgid "Brightness (%)"
 msgstr ""
 
 msgctxt "#30189"
-msgid "Glow (costs speed)"
+msgid "Colour cycling speed"
 msgstr ""
 
 msgctxt "#30190"
-msgid "Screen effect"
+msgid "Glow (costs speed)"
 msgstr ""
 
 msgctxt "#30191"
-msgid "Vignette"
+msgid "Screen effect"
 msgstr ""
 
 msgctxt "#30192"
-msgid "CRT (scanlines and vignette)"
+msgid "Vignette"
 msgstr ""
 
 msgctxt "#30193"
-msgid "Dim (%)"
+msgid "CRT (scanlines and vignette)"
 msgstr ""
 
 msgctxt "#30194"
-msgid "Camera and 3D"
+msgid "Dim (%)"
 msgstr ""
 
 msgctxt "#30195"
-msgid "View"
+msgid "Camera and 3D"
 msgstr ""
 
 msgctxt "#30196"
-msgid "Flat"
+msgid "View"
 msgstr ""
 
 msgctxt "#30197"
-msgid "Relief (lit, embossed)"
+msgid "Flat"
 msgstr ""
 
 msgctxt "#30198"
-msgid "Landscape (flying over it)"
+msgid "Relief (lit, embossed)"
 msgstr ""
 
 msgctxt "#30199"
-msgid "Tunnel (flying through it)"
+msgid "Landscape (flying over it)"
 msgstr ""
 
 msgctxt "#30200"
-msgid "Globe (a spinning planet)"
+msgid "Tunnel (flying through it)"
 msgstr ""
 
 msgctxt "#30201"
-msgid "Camera"
+msgid "Globe (a spinning planet)"
 msgstr ""
 
 msgctxt "#30202"
-msgid "Still"
+msgid "Camera"
 msgstr ""
 
 msgctxt "#30203"
-msgid "Drift"
+msgid "Still"
 msgstr ""
 
 msgctxt "#30204"
-msgid "Zoom in and out"
+msgid "Drift"
 msgstr ""
 
 msgctxt "#30205"
-msgid "Fly through (drift, zoom and turn)"
+msgid "Zoom in and out"
 msgstr ""
 
 msgctxt "#30206"
-msgid "Camera speed"
+msgid "Fly through (drift, zoom and turn)"
 msgstr ""
 
 msgctxt "#30207"
+msgid "Camera speed"
+msgstr ""
+
+msgctxt "#30208"
 msgid "Deepest zoom (x)"
 msgstr ""

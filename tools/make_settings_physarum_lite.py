@@ -3,14 +3,16 @@
 Physarum Lite is the Physarum simulation with the clock, the fonts and every timer removed: no
 clock in the middle, no start over every so many minutes, no wandering between behaviours. What is
 left is the agent model and its drawing, running continuously. It is meant for low-resource
-devices, so its defaults are light: 65 thousand agents on a 480 x 270 trail, no glow, no screen
+devices, so its defaults are light: 16 thousand agents on a 480 x 270 trail, no glow, no screen
 effect, and one simulation step on every displayed frame (which is what keeps the frame rate even:
-every frame costs the same).
+every frame costs the same). The scene itself is drawn at twice the trail resolution and scaled up,
+so the draw pass costs a fraction of a screen-sized one whatever the output.
 
-It shares the behaviour, agent-size, trail-size, food, colour, view and camera lists with the
-Physarum add-on, so the two cannot disagree about what option 3 means. Only the start list and the
-step rate differ (the clock digit start is gone, and the step rate is frames per step instead of
-steps per second). Run: python3 tools/make_settings_physarum_lite.py
+It shares the behaviour, agent-size, food, colour, view and camera lists with the Physarum add-on,
+so the two cannot disagree about what option 3 means. The start list differs (the clock digit start
+is gone), the step rate is frames per step instead of steps per second, and one 320 x 180 trail map
+is added below the shared list for very weak GPUs. Run:
+python3 tools/make_settings_physarum_lite.py
 """
 
 import os
@@ -36,6 +38,11 @@ LITE_STARTS = ['Everywhere at random', 'A disc in the middle (it grows outwards)
                'Scattered colonies', 'Big bang (all from the centre, facing out)',
                'Each species in its own third of the screen']
 
+# The shared trail list plus one smaller map for very weak GPUs, appended so that the shared
+# indices keep their meaning (a saved trail index must not change resolution on an update). The
+# shader-side list is LITE_TRAIL_SIZES in physarum_lite.hpp; keep the two in step.
+LITE_TRAILS = TRAILS + [(320, 180)]
+
 
 def categories():
     O, S, B, C = config.O, config.S, config.B, config.C
@@ -59,8 +66,8 @@ def categories():
             S('repel', 'How much species avoid each other (%)', first['repel'], 0, 100, 10, visible=is_custom),
         ]),
         ('Size and speed', [
-            O('agents', 'Agents', 1, [count_text(w, h) for w, h in AGENTS]),
-            O('trail', 'Trail map resolution', 0, ['%d x %d' % t for t in TRAILS]),
+            O('agents', 'Agents', 0, [count_text(w, h) for w, h in AGENTS]),
+            O('trail', 'Trail map resolution', 0, ['%d x %d' % t for t in LITE_TRAILS]),
             # One step per displayed frame costs the same on every frame, so the frame rate stays
             # even. A steps-per-second setting would make some frames twice as heavy as others.
             O('pace', 'Simulation updates', 0, ['Every frame (smoothest)', 'Every other frame',

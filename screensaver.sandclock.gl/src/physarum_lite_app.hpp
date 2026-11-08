@@ -25,7 +25,8 @@ class App {
 public:
     ~App();
     static bool force_rgba8;          // tests: use the 8-bit trail map even where half floats work
-    // The draw pass renders into a target no larger than this and scales it up (tests lower it).
+    // Absolute ceilings for the draw pass, which never renders above twice the trail size either
+    // (tests lower them to exercise the scale-up path).
     static int draw_cap_w, draw_cap_h;
 
     // GL context must be current. No fonts, no clock: the simulation starts at once.

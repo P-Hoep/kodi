@@ -476,10 +476,10 @@ bool App::init(const Settings& settings, unsigned seed, std::string* error) {
 
     // The trail map: half floats where the device can render and blend them (smoother faint
     // trails), otherwise RGBA8.
-    int ti = std::max(0, std::min(TRAIL_COUNT - 1, s_.trail));
-    while (ti > 0 && TRAIL_SIZES[ti].w > max_tex) --ti;
-    tw_ = TRAIL_SIZES[ti].w;
-    th_ = TRAIL_SIZES[ti].h;
+    int ti = std::max(0, std::min(LITE_TRAIL_COUNT - 1, s_.trail));
+    while (ti > 0 && LITE_TRAIL_SIZES[ti].w > max_tex) --ti;
+    tw_ = LITE_TRAIL_SIZES[ti].w;
+    th_ = LITE_TRAIL_SIZES[ti].h;
     bool half_ok = gles() ? has_extension("GL_OES_texture_half_float") && has_extension("GL_EXT_color_buffer_half_float")
                           : true;
     bool half_linear = !gles() || has_extension("GL_OES_texture_half_float_linear");
@@ -894,16 +894,19 @@ void App::render(double now, int fb_w, int fb_h) {
     }
 
     // Draw. The draw pass is the most per-pixel work in the add-on, and the trail map underneath it
-    // is far smaller than the screen, so it renders into a target of at most draw_cap_w x
-    // draw_cap_h and that is scaled up with one bilinear sample a pixel. A 4K output then costs
-    // about what a 1080p one does.
+    // is far smaller than the screen: drawing at more than twice the trail's resolution shows no
+    // more detail than drawing at twice it (the trail is the only source of what is on screen) and
+    // costs four times as much at 1080p. So the scene is rendered into a target no larger than
+    // 2 x the trail map, and never above draw_cap_w x draw_cap_h, then scaled up with one bilinear
+    // sample a pixel. A 1080p or 4K output then costs about a quarter of what it did.
     int vw = fb_w, vh = fb_w * 9 / 16;
     if (vh > fb_h) { vh = fb_h; vw = fb_h * 16 / 9; }
+    const int cap_w = std::min(draw_cap_w, tw_ * 2), cap_h = std::min(draw_cap_h, th_ * 2);
     int dw = vw, dh = vh;
-    bool scaled = vw > draw_cap_w || vh > draw_cap_h;
+    bool scaled = vw > cap_w || vh > cap_h;
     if (scaled) {
-        if (dw > draw_cap_w) { dh = std::max(1, dh * draw_cap_w / dw); dw = draw_cap_w; }
-        if (dh > draw_cap_h) { dw = std::max(1, dw * draw_cap_h / dh); dh = draw_cap_h; }
+        if (dw > cap_w) { dh = std::max(1, dh * cap_w / dw); dw = cap_w; }
+        if (dh > cap_h) { dw = std::max(1, dw * cap_h / dh); dh = cap_h; }
     }
     if (scaled && (!draw_.tex || draw_.w != dw || draw_.h != dh) && !make_target(&draw_, dw, dh, true, false)) {
         free_target(&draw_.tex, &draw_.fbo);   // no render targets: draw straight to the framebuffer
