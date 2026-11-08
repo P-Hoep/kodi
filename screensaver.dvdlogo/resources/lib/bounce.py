@@ -31,6 +31,18 @@ def fold(u, length):
     return r if r <= length else 2.0 * length - r
 
 
+def slide_offsets(base, start, end):
+    """A Kodi slide's start and end offsets for a leg from `start` to `end`.
+
+    The control stays at `base`; Kodi draws it at base + offset. Moving the control to the
+    far end of the leg and then starting the animation is two calls, and a frame rendered
+    between them shows the logo at that far end for a flash. Absolute offsets from one fixed
+    base need only the animation call, and consecutive legs meet exactly.
+    """
+    return (int(round(start[0])) - base[0], int(round(start[1])) - base[1],
+            int(round(end[0])) - base[0], int(round(end[1])) - base[1])
+
+
 def _next_multiple(u, length, v):
     """(seconds, coordinate) of the next multiple of `length` strictly ahead along v."""
     if v > 0:

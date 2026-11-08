@@ -157,6 +157,40 @@ class AimTest(unittest.TestCase):
         self.assertGreaterEqual(kinds.count('turn'), 1)
 
 
+class SlideOffsetsTest(unittest.TestCase):
+    def test_offsets_draw_each_leg_where_the_logo_is(self):
+        base = (137, 42)
+        motion = new_motion(3)
+        now = 0.0
+        while now < 30:
+            dt, kind = motion.next_leg()
+            before = motion.point()
+            motion.advance(dt, kind)
+            after = motion.point()
+            now += dt
+            x0, y0, x1, y1 = bounce.slide_offsets(base, before, after)
+            self.assertEqual((base[0] + x0, base[1] + y0),
+                             (int(round(before[0])), int(round(before[1]))))
+            self.assertEqual((base[0] + x1, base[1] + y1),
+                             (int(round(after[0])), int(round(after[1]))))
+
+    def test_consecutive_legs_meet_where_the_last_ended(self):
+        base = (137, 42)
+        motion = new_motion(3)
+        previous = None
+        now = 0.0
+        while now < 30:
+            dt, kind = motion.next_leg()
+            before = motion.point()
+            motion.advance(dt, kind)
+            after = motion.point()
+            now += dt
+            offsets = bounce.slide_offsets(base, before, after)
+            if previous is not None:
+                self.assertEqual(previous[2:], offsets[:2])
+            previous = offsets
+
+
 def png_size(path):
     with open(path, 'rb') as handle:
         head = handle.read(26)
@@ -223,7 +257,7 @@ class SettingsTest(unittest.TestCase):
         tree = ET.parse(os.path.join(ROOT, 'addon.xml'))
         addon = tree.getroot()
         self.assertEqual(addon.get('id'), config.ADDON_ID)
-        self.assertEqual(addon.get('version'), '1.0.0')
+        self.assertEqual(addon.get('version'), '1.0.1')
         ext = addon.find("extension[@point='xbmc.ui.screensaver']")
         self.assertEqual(ext.get('library'), 'default.py')
         self.assertTrue(os.path.isfile(os.path.join(ROOT, 'resources', 'skins', 'Default', '1080i',

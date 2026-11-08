@@ -127,12 +127,13 @@ class Screensaver(object):
         self.next_try_at = time.time() + min(config.FIRST_TRY_SECONDS, s['trick_every'])
         x, y = self.rng.uniform(0, self.field_w), self.rng.uniform(0, self.field_h)
         self.motion.start(x, y)
+        self.base = (int(round(x)), int(round(y)))   # the control never leaves this spot
         self.home.setProperty(PROP + 'bg', s['background'])
         white = os.path.join(self.media, 'white.png')
         self.background = xbmcgui.ControlImage(-60, -60, config.W + 120, config.H + 120, white,
                                                aspectRatio=0)
         self.background.setColorDiffuse(s['background'])
-        self.logo = xbmcgui.ControlImage(int(round(x)), int(round(y)), self.logo_w, self.logo_h,
+        self.logo = xbmcgui.ControlImage(self.base[0], self.base[1], self.logo_w, self.logo_h,
                                          os.path.join(self.media, 'dvd.png'), aspectRatio=0)
         self.set_colour(self.initial_colour())
         window.addControls([self.background, self.logo])
@@ -218,14 +219,19 @@ class Screensaver(object):
             self.event(kind)
 
     def slide(self, before, after, seconds):
-        """Animate the logo from `before` to `after`; Kodi does the interpolation."""
-        x0, y0 = int(round(before[0])), int(round(before[1]))
-        x1, y1 = int(round(after[0])), int(round(after[1]))
+        """Animate the logo from `before` to `after`; Kodi does the interpolation.
+
+        The control itself stays where it was created. Kodi draws it at its position plus the
+        slide's offset, so the offsets are the absolute screen positions relative to that
+        base. One call starts each leg: moving the control and then animating it are two
+        calls, and a frame rendered between them draws the logo at the far end of the new
+        leg for a flash.
+        """
+        x0, y0, x1, y1 = bounce.slide_offsets(self.base, before, after)
         ms = max(1, int(round(seconds * 1000)))
-        self.logo.setPosition(x1, y1)
         self.logo.setAnimations([
-            ('conditional', 'effect=slide start=%d,%d end=0,0 time=%d tween=linear condition=true'
-             % (x0 - x1, y0 - y1, ms))])
+            ('conditional', 'effect=slide start=%d,%d end=%d,%d time=%d tween=linear condition=true'
+             % (x0, y0, x1, y1, ms))])
 
     def wait(self, seconds):
         deadline = time.time() + seconds
