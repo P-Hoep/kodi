@@ -12,7 +12,7 @@ option(SANDCLOCK_FETCH_GLFW "Download GLFW instead of using an installed one" OF
 option(SANDCLOCK_KODI "Build the Kodi add-on (needs the kodi-addon-dev-kit headers)" OFF)
 set(KODI_DEVKIT_INCLUDE "" CACHE PATH "xbmc/addons/kodi-dev-kit/include, if Kodi's cmake package is not installed")
 
-add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp src/liquid.cpp src/automata.cpp src/physarum.cpp)
+add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp src/liquid.cpp src/automata.cpp src/physarum.cpp src/voxel.cpp)
 target_include_directories(sandclock_core PUBLIC src)
 target_compile_options(sandclock_core PRIVATE -Wall -Wextra)
 
@@ -28,6 +28,9 @@ add_test(NAME automata COMMAND test_automata)
 add_executable(test_physarum tests/test_physarum.cpp)
 target_link_libraries(test_physarum sandclock_core)
 add_test(NAME physarum COMMAND test_physarum)
+add_executable(test_voxel tests/test_voxel.cpp)
+target_link_libraries(test_voxel sandclock_core)
+add_test(NAME voxel COMMAND test_voxel)
 add_test(NAME liquid COMMAND test_liquid ${CMAKE_SOURCE_DIR}/../screensaver.sandclock/resources/media/fonts/fonts.json)
 
 if(SANDCLOCK_HARNESS)
@@ -95,6 +98,14 @@ if(SANDCLOCK_HARNESS)
   add_executable(automata_lite_glfw src/main_automata_lite_glfw.cpp)
   target_link_libraries(automata_lite_glfw automata_lite_render ${GLFW_TARGET})
 
+  add_library(voxel_render STATIC src/voxel_app.cpp)
+  target_link_libraries(voxel_render PUBLIC sandclock_core OpenGL::GL)
+  if(SANDCLOCK_GLES)
+    target_compile_definitions(voxel_render PUBLIC SANDCLOCK_GLES)
+  endif()
+  add_executable(voxel_glfw src/main_voxel_glfw.cpp)
+  target_link_libraries(voxel_glfw voxel_render ${GLFW_TARGET})
+
   if(APPLE)
     add_library(physarum_render_core STATIC src/physarum_app.cpp)
     target_link_libraries(physarum_render_core PUBLIC sandclock_core OpenGL::GL)
@@ -119,6 +130,11 @@ if(SANDCLOCK_HARNESS)
     target_compile_definitions(automata_lite_render_core PUBLIC SANDCLOCK_CORE)
     add_executable(automata_lite_glfw_core src/main_automata_lite_glfw.cpp)
     target_link_libraries(automata_lite_glfw_core automata_lite_render_core ${GLFW_TARGET})
+    add_library(voxel_render_core STATIC src/voxel_app.cpp)
+    target_link_libraries(voxel_render_core PUBLIC sandclock_core OpenGL::GL)
+    target_compile_definitions(voxel_render_core PUBLIC SANDCLOCK_CORE)
+    add_executable(voxel_glfw_core src/main_voxel_glfw.cpp)
+    target_link_libraries(voxel_glfw_core voxel_render_core ${GLFW_TARGET})
     add_library(liquid_render_core STATIC src/liquid_renderer.cpp)
     target_link_libraries(liquid_render_core PUBLIC sandclock_core OpenGL::GL)
     target_compile_definitions(liquid_render_core PUBLIC SANDCLOCK_CORE)
@@ -209,4 +225,8 @@ if(SANDCLOCK_KODI)
   # Cellular Automata Lite: the same automaton without the clock, with specialised shaders and a
   # capped draw resolution; the add-on folder is ../screensaver.automata.lite.armv7.
   sandclock_kodi_module(screensaver.automata_lite src/kodi_automata_lite.cpp src/automata_lite_app.cpp)
+
+  # Cellular Automata 3D: Life-like rules on a cube of voxels, ray-marched, no clock; the add-on
+  # folder is ../screensaver.automata3d.armv7.
+  sandclock_kodi_module(screensaver.automata3d src/kodi_voxel.cpp src/voxel_app.cpp)
 endif()

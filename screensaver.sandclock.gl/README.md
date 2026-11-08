@@ -166,6 +166,50 @@ frame pacing and the scale-up path, and `--clock-style N --time HH:MM:SS --fonts
 a clock mode against a fixed time. Settings come from `tools/make_settings_physarum_lite.py`.
 Add-on folder: `../screensaver.physarum.lite.armv7`.
 
+## Cellular Automata 3D
+
+The 2D cellular automata taken into a cube: an N x N x N volume of voxels running Life-like rules
+on all 26 neighbours (faces, edges and corners), drawn by ray marching, with no clock. Published
+as its own add-on for 32-bit Android boxes: `../screensaver.automata3d.armv7`.
+
+OpenGL ES 2.0 has no 3D textures, so the volume lives in a 2D RGBA8 texture as N slices laid
+eight to a row, each slice surrounded by a one-cell border. The borders are filled with the
+wrapped opposite face, so the update shader (one fragment pass per generation) reads 26 fixed
+offsets with no wrap arithmetic and no branches; the birth/survive sets are one 32 x 1 RGBA LUT
+sampled with `NEAREST`. Without wrapping the border is dead, which is exactly an open edge. The
+draw pass is a ray-box slab through the volume, stepping at 0.75 of a cell and stopping at the
+first living voxel, with the face normal taken from the nearest cell side, one directional light,
+depth fog and an optional glow sample. The scene is drawn at a capped resolution and scaled up
+once, because the raymarch is the expensive part.
+
+Nine presets set a whole look (rule, cube, starting pattern, colour mode and palette, glow,
+background, screen effect, camera and closeness) and the settings offer them one by one or as
+"Rotate through the presets", which shows them in a shuffled order and changes on a timer of 15 s
+to 5 min. A preset never touches speed, draw resolution, sparks or the restart timers, so it
+cannot make a weak device stutter; a rotation rebuilds the GL objects (shader compile and
+allocations included) between presets. Two camera modes put the eye inside the volume (drifting or
+tumbling) at a wider field of view, and the Endless cube option, with wrapping on, repeats the
+volume for ever instead of drawing a box: cell lookups are taken modulo the grid and the view is
+limited by fog rather than by a wall. In a truly periodic world there is no outside, so inside is
+how the endless mode is meant to be seen.
+
+Files: `voxel.*` (rules, atlas, starting patterns, presets, the CPU reference, no GL),
+`voxel_app.*` (shaders, textures, camera, rotation), `kodi_voxel.cpp`,
+`main_voxel_glfw.cpp`; the rule, cube, start, colour, camera and preset lists come from
+`tools/make_settings_voxel.py`, which writes both the Kodi settings and `src/voxel_tables.hpp`.
+`voxel_glfw --selftest` compares the GPU updates with the CPU reference for every rule with and
+without wrapping, and builds and draws every preset; `--dump-shaders DIR` writes the update, draw
+and present shaders for the flags given, which `glslangValidator` checks as GLSL ES 1.00 and as the
+core profile before an Android build (1,272 files, no failures). On an Apple M2 at 2560 x 1440 with
+the automatic 360p draw cap: 0.59 ms a frame for the default, 0.63 with the inside camera, 1.22
+for the dense Inside the Torus preset and 1.58 for the endless cube (no box to clip the march
+against). The 32-bit library is built in `build-android32` with the flags above and stripped with
+`llvm-strip --strip-unneeded`, and the built `screensaver.automata3d.armv7.so` is committed in the
+add-on folder, as with the Lite add-ons. It was run in Kodi 21.1 on macOS (a universal dylib from
+the same sources) with the presets (including Inside the Torus), from inside the cube and with the
+endless cube on; the settings, screenshots and a 15 s preset rotation were checked in the harness,
+where rotation can be observed without Kodi restarting the screensaver after each screenshot.
+
 ## Build and test
 
 ```sh

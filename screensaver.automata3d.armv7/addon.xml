@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.automata3d.armv7" name="Cellular Automata 3D (32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_android="screensaver.automata3d.armv7.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Conway's Game of Life in three dimensions: a voxel automaton on the GPU, with nine presets, an inside view and an endless cube, and no clock</summary>
+    <description lang="en_GB">Life in a cube instead of on a grid. Every cell sees all 26 neighbours around it -- the faces, the edges and the corners -- and one rule decides which dead cells are born and which living cells survive. Choose from eight 3D rules (Bays' Life, Frost, Coral, Clouds, Growth, Crystal, Sprawl and Reef) or type your own, such as B4/S45 or B6,7/S3,4; the cube can wrap around, so a glider that leaves one face comes back on the opposite one.
+
+The whole volume is computed on the GPU. OpenGL ES 2.0 has no 3D textures, so the cube is packed into a 2D texture as N slices laid out eight to a row, each slice surrounded by a one-cell border cell that copies the wrapped opposite face -- that means one shader pass per generation updates every cell, border included, with fixed neighbour offsets and no wrap arithmetic. The cube goes from 24 x 24 x 24 (14 thousand cells) to 64 x 64 x 64 (262 thousand), at 1 to 960 generations per second or "Maximum", which does as many as the device can without stuttering. Start from random or sparse soup, clusters, a centre sphere, a hollow sphere, a lattice, random walkers, a cube frame or a crystal seed; it starts over by itself when the volume dies out or settles.
+
+It is drawn as actual voxels: each pixel is a ray marched through the cube, stopping at the first living cell, lit from the top left with depth darkening and a little fog -- lit blocks with real corners and shading, not a flat grid. Because a 3D view costs far more per pixel than a 2D one, the scene is drawn at a capped resolution (automatic is up to 360p) and scaled up once, which is the setting to lower first if the picture stutters. The camera can stay still, orbit slowly around the cube, tumble on both axes, breathe in and out, or go inside the volume and drift or tumble through the cells at a wider angle. With wrapping on, the Endless cube option repeats the volume for ever in every direction instead of drawing a box: cells that leave one face come back on the opposite one, and the view never reaches an edge.
+
+Nine presets each set a whole look at once -- Bays' Ocean, Orchid Bloom, Ice Crystal, Neon Reef, Deep Space, Inside the Torus, Monolith, Candy Cloud and Sandstorm -- or choose Rotate through the presets to show them in a shuffled order, changing every 15 seconds to 5 minutes. A preset only sets the rule, cube, colours and camera; the speed, draw resolution, sparks and restart timers stay your own settings, so a preset can never make a weak device stutter.
+
+Colour by age, position or time from eight palettes (including ocean, sunset, fire and ice), or use one colour, a rainbow, fire, neighbour count or a moving plasma field; the background can be solid, a gradient or plasma. Add glow on exposed cells, a vignette or CRT look, dimming, and random sparks that keep a settled volume alive. There is no clock anywhere in this screensaver, and no clock code in it at all. This build is for 32-bit Android Kodi (armeabi-v7a), as on many Google TV boxes.</description>
+    <disclaimer lang="en_GB">Native add-on built for Kodi 21 Omega, 32-bit ARM Android (armeabi-v7a), as on many Google TV boxes. It needs OpenGL ES 2.0 with high-precision floats in fragment shaders, which GLES 2 devices Kodi runs on provide; it does not need 3D texture support. The 2D Cellular Automata and Cellular Automata Lite screensavers are separate add-ons.</disclaimer>
+    <platform>android</platform>
+    <license>MIT</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>
