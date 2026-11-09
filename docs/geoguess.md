@@ -135,8 +135,13 @@ The display size is computed from the image header when the dataset row does not
 - If the file is not a readable JPEG or PNG, the image fills the screen instead of crashing.
 
 Kodi's GUI runs at a fixed virtual resolution, so the same sizes are used on 720p, 1080p and 4K
-displays; the GPU scales the whole GUI. The image is decoded by Kodi, not by Python, so the
-screensaver's own CPU use is a few position updates a second.
+displays; the GPU scales the whole GUI. The image is decoded by Kodi, not by Python.
+
+The pan is stepped from Python because Kodi's own `slide` animation does not move a control that
+was created from Python (tested on Kodi 21; the control stays where it was put). The positions
+are computed from the clock rather than accumulated, and the display loop ticks at 120 Hz, faster
+than a 50, 60 or 120 Hz refresh, so each rendered frame gets its own evenly spaced position. The
+cost is one `setPosition` call per frame, which is negligible next to decoding the image.
 
 ## Offline and errors
 

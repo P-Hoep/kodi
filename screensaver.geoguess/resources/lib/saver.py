@@ -22,7 +22,10 @@ from . import config, downloader, hf_client, labels, layout, net
 W, H = 1920, 1080
 CROSSFADE_MS = 1000
 LABEL_FADE_MS = 800
-TICK = 0.05
+# The image control is moved by Python, so the tick has to be at least as fast as the display
+# refresh or the pan visibly steps. 120 Hz keeps a fresh position ready for every rendered frame
+# on 50, 60 and 120 Hz screens; the loop does almost nothing per tick.
+TICK = 1.0 / 120.0
 RETRY_SECONDS = 10
 RECENT = 200
 SHADE_HEIGHT = 460
@@ -274,11 +277,6 @@ class Saver(object):
             return result
         return None
 
-    def _offset(self, width, elapsed):
-        if width <= W:
-            return layout.centre_offset(width, W)
-        return layout.pan_offset(width, W, elapsed, self.show_for, self.pan_enabled)
-
     def _cycle(self, downloaded):
         width, height = layout.display_size(downloaded.width or W, downloaded.height or H, W, H)
         if downloaded.width <= 0 or downloaded.height <= 0:
@@ -286,11 +284,11 @@ class Saver(object):
         slot = 1 - self.active
         coming = self.images[slot]
         going = self.images[self.active]
+        start_x = layout.centre_offset(width, W) if width <= W else 0
         coming.setImage(downloaded.path, False)
         coming.setWidth(int(width))
         coming.setHeight(int(height))
-        x = self._offset(width, 0)
-        coming.setPosition(x, 0)
+        coming.setPosition(start_x, 0)
         coming.setVisible(True)
         going.setVisible(False)
         debug('cycle row %d, %dx%d' % (downloaded.item.row_idx, width, height))
@@ -310,15 +308,19 @@ class Saver(object):
         text = labels.display_label(downloaded.item.address, downloaded.item.country,
                                     self.show_country)
         revealed = False
-        last = x
+        x = start_x
         while not self.stopped():
             elapsed = time.time() - started
             if elapsed >= self.show_for:
                 break
-            position = self._offset(width, elapsed)
-            if position != last:
-                coming.setPosition(position, 0)
-                last = position
+            # Kodi's slide animation does not move a control created from Python, so the pan is
+            # stepped here. The tick is faster than the display refresh and the position comes
+            # from the clock rather than the tick count, so every rendered frame gets a fresh,
+            # evenly spaced position and a late wake-up never makes the pan drift.
+            moved = start_x + layout.pan_offset(width, W, elapsed, self.show_for, self.pan_enabled)
+            if moved != x:
+                coming.setPosition(moved, 0)
+                x = moved
             if not revealed and elapsed >= self.reveal:
                 self._show_label(text)
                 debug('label: %s' % text)
