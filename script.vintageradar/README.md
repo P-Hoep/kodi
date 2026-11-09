@@ -1,17 +1,19 @@
-# Vintage Radar
+# Vintage Radar (app)
 
-A Kodi program add-on that puts the [Vintage Radar](../screensaver.vintageradar.gl/README.md)
-scope in a window you can drive with the remote. It shows the aircraft actually overhead right now,
-fetched live from [adsb.lol](https://adsb.lol/) with the [OpenSky Network](https://opensky-network.org/)
-as a fallback, centred on the place and range you choose.
+A Kodi program add-on that puts the [Vintage Radar](../docs/vintageradar.md) scope in a window
+you can drive with the remote. It shows the aircraft actually overhead right now, fetched live from
+[adsb.lol](https://adsb.lol/) with the [OpenSky Network](https://opensky-network.org/) as a
+fallback, centred on the place and range you choose.
 
 The same phosphor disc, range rings, compass rose, sweeping beam, echoing blips and short scope
 labels as the screensaver, plus a nearest-first contact list and a spotlight card. Clicking a
 contact, a list row or a blip (or pointing the spotlight at it and pressing Select) opens the full
 contact sheet: every field the transponder reports, laid out in three columns.
 
-The app is pure Python and runs on Kodi 20 (Nexus) or later. The companion OpenGL screensaver puts
-the same scope on the idle TV.
+The app is pure Python and runs on Kodi 20 (Nexus) or later. The companion screensaver puts the
+same scope on the idle TV. Both are thin front-ends over the shared library
+[`script.module.vintageradar`](../script.module.vintageradar), which Kodi installs with them and
+which holds the model, window, media and settings defaults.
 
 ## Controls
 
@@ -30,36 +32,37 @@ and the list follows it for *List follow* seconds before paging back.
 
 ## The window
 
-Kodi's WindowXML skins cannot use an add-on's own font unless the active skin declares it, so every
-string is drawn into a PNG by `fontdraw` and shown through a `ControlImage`. `ui.py` builds all the
-controls at runtime: the radar art, panel frames, a pool of blips and echo images, twelve list rows,
-the spotlight card and the full contact sheet. The main loop only updates positions, images and
-colours.
+The window is the library's `ui.Scene`, the same one the screensaver shows. Kodi's WindowXML skins
+cannot use an add-on's own font unless the active skin declares it, so every string is drawn into a
+PNG by `fontdraw` and shown through a `ControlImage`. `ui.py` builds all the controls at runtime:
+the radar art, panel frames, a pool of blips and echo images, twelve list rows, the spotlight card
+and the full contact sheet. The main loop only updates positions, images and colours.
 
 | Part | File |
 |---|---|
-| Main loop: model cadence, feed pump, input, settings reload | `resources/lib/app.py` |
-| Window, controls, layout, labels, contact sheet | `resources/lib/ui.py` |
-| Geometry, aircraft model, ordering, spotlight, echoes, formatting | `resources/lib/radar_core.py` |
-| Feed URLs, JSON parsing, background fetch on a thread | `resources/lib/radar_feed.py` |
-| Settings and `defaults.py` | `resources/lib/config.py`, `defaults.py` |
-| Text rendering: font atlases to PNG | `resources/lib/fontdraw.py`, `pngcodec.py` |
-| Phosphor palettes | `resources/lib/theme.py` |
-| HTTP and the place search | `resources/lib/net.py` |
-| The "Find a place by name" action | `resources/lib/setup.py` |
-| Window XML, generated media, fonts | `resources/skins/Default/1080i/`, `resources/media/` |
+| App entry point | `default.py`, `resources/lib/app.py` |
+| Main loop: model cadence, feed pump, input, settings reload | `script.module.vintageradar/lib/vintageradar/session.py` |
+| Window, controls, layout, labels, contact sheet | `script.module.vintageradar/lib/vintageradar/ui.py` |
+| Geometry, aircraft model, ordering, spotlight, echoes, formatting | `script.module.vintageradar/lib/vintageradar/radar_core.py` |
+| Feed URLs, JSON parsing, background fetch on a thread | `script.module.vintageradar/lib/vintageradar/radar_feed.py` |
+| Settings and generated `defaults.py` | `script.module.vintageradar/lib/vintageradar/config.py`, `defaults.py` |
+| Text rendering: font atlases to PNG | `script.module.vintageradar/lib/vintageradar/fontdraw.py`, `pngcodec.py` |
+| Phosphor palettes | `script.module.vintageradar/lib/vintageradar/theme.py` |
+| HTTP and the place search | `script.module.vintageradar/lib/vintageradar/net.py` |
+| The "Find a place by name" action | `script.module.vintageradar/lib/vintageradar/setup.py` |
+| Window XML, generated media, fonts | `script.module.vintageradar/resources/skins/`, `resources/media/` |
 | Offline tests | `../tests/test_vintageradar.py` |
 
 The text images go in a per-session directory under `special://temp/vintageradar/` (keyed by process
-id and start time), so two copies of the window never overwrite each other. Directories older than
-a day are removed at start.
+id and start time), so the app and the screensaver never overwrite each other. Directories older
+than a day are removed at start.
 
 ## Settings
 
 The app and the screensaver share one settings table in
 [`tools/make_settings_vintageradar.py`](../tools/make_settings_vintageradar.py), which generates
-this app's `resources/settings.xml`, its strings, `defaults.py`, and the screensaver's copy. Run it
-after changing the table:
+each add-on's `resources/settings.xml` and strings, plus the library's `defaults.py`. Run it after
+changing the table:
 
 ```sh
 python3 tools/make_settings_vintageradar.py
@@ -68,7 +71,7 @@ python3 tools/make_settings_vintageradar.py
 | Category | Setting | Default | Meaning |
 |---|---|---|---|
 | Location | Place name | Home | The name shown in the header |
-| Location | Find a place by name | — | Searches Photon (or takes "lat, lon") and writes the coordinates to every installed Vintage Radar add-on |
+| Location | Find a place by name | — | Searches Photon (or takes "lat, lon") and writes the coordinates to both add-ons |
 | Location | Latitude / Longitude | 44.9031, -93.3096 | The centre of the scope |
 | Scope | Range | 60 km | Radius of the scope, 5-400 km |
 | Scope | Units | Aviation | Metric (km, m, km/h) or aviation (nm, ft, kt) |
@@ -98,9 +101,9 @@ reloads them.
 ## Data
 
 The feed is adsb.lol's `/v2/point/<lat>/<lon>/<radius>` endpoint, with a radius in nautical miles
-derived from the range and a margin for dead reckoning. If adsb.lol fails, the app tries the OpenSky
-`/api/states/all` bounding box and labels the source `OpenSky`; if both fail it keeps the last
-contacts and shows the feed age. The network request runs on a background thread and only the
+derived from the range and a margin for dead reckoning. If adsb.lol fails, the add-on tries the
+OpenSky `/api/states/all` bounding box and labels the source `OpenSky`; if both fail it keeps the
+last contacts and shows the feed age. The network request runs on a background thread and only the
 result crosses back to the Kodi thread.
 
 Aircraft are filtered by range, ground state and the lowest-altitude setting, then ordered nearest
@@ -111,8 +114,9 @@ reported is held briefly and then dropped.
 Aircraft data comes from the volunteer-run adsb.lol and OpenSky Network APIs and is used as-is. It
 is not for navigation or flight safety. adsb.lol data is ODbL; see the providers' terms.
 
-The app code is MIT licensed. The typeface is [Doto](https://fonts.google.com/specimen/Doto) under
-the SIL Open Font License 1.1, baked into the texture atlases under `resources/media/fonts`.
+The add-on code is MIT licensed. The typeface is [Doto](https://fonts.google.com/specimen/Doto)
+under the SIL Open Font License 1.1, baked into the texture atlases under
+`script.module.vintageradar/resources/media/fonts`.
 
 ## Tests
 
@@ -124,5 +128,4 @@ python3 -m unittest tests.test_vintageradar -v
 
 The tests cover geometry, ADS-B and OpenSky parsing, filtering, ordering, the spotlight and
 pinning, echo crossings, formatting, config defaults and stored values, the PNG codec, the theme,
-and renderer cache protection. The native screensaver's C++ tests are in
-`screensaver.vintageradar.gl/tests/`.
+and renderer cache protection.

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Generate the vintage radar add-ons' media: the Doto font atlases (GL: core + glow in R/G,
-app: white alpha), the radar disc and sweep art for the Python app, blips, panels, the CRT
-overlay, and the icon/fanart.
+"""Generate the Vintage Radar media: the Doto font atlases (white alpha), the radar disc and
+sweep art, blips, panels, the CRT overlay, and the icons and fanart of the library and both
+front-ends.
 
-The GL atlas metrics JSON is read by screensaver.vintageradar.gl/src/radar_app.cpp. The app
-atlas is written with PNG filter 0 only, so the add-on's pure-Python decoder stays small.
+The atlases and artwork live in script.module.vintageradar and are read by the app and the
+screensaver alike. The atlas JSON is read by the pure-Python fontdraw renderer, and the PNGs are
+written with filter 0 only so the add-on's decoder stays small.
 
 Run:  python3 tools/make_vintageradar_media.py
 """
@@ -21,15 +22,13 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_PATH = os.path.join(ROOT, "tools", ".wordclock-fonts", "Doto[ROND,wght].ttf")
-SAVER_MEDIA = os.path.join(ROOT, "screensaver.vintageradar.gl", "resources", "media")
-APP_MEDIA = os.path.join(ROOT, "script.vintageradar", "resources", "media")
+MEDIA = os.path.join(ROOT, "script.module.vintageradar", "resources", "media")
 
 ROUNDNESS = 100
 WEIGHT = 900
 
 # cp, advance at the current atlas size
 CHARSET = [32] + list(range(33, 127)) + [0xB0, 0xB7]
-GL_SIZES = [("small", 44), ("mid", 64), ("big", 104)]
 APP_SIZES = [("tiny", 15), ("small", 22), ("mid", 32), ("big", 52)]
 
 
@@ -384,45 +383,38 @@ def draw_fanart(w: int = 1920, h: int = 1080) -> Image.Image:
 
 
 def main() -> None:
-    os.makedirs(os.path.join(SAVER_MEDIA, "fonts"), exist_ok=True)
-    os.makedirs(os.path.join(APP_MEDIA, "fonts"), exist_ok=True)
-
-    for name, size in GL_SIZES:
-        a = build_atlas(name, size, True)
-        img = a["image"]
-        png = os.path.join(SAVER_MEDIA, "fonts", "font_%s.png" % name)
-        img.save(png, optimize=True)
-        with open(os.path.join(SAVER_MEDIA, "fonts", "font_%s.json" % name), "w") as f:
-            json.dump(a["json"], f, indent=1)
-        print("gl", name, size, img.size)
+    os.makedirs(os.path.join(MEDIA, "fonts"), exist_ok=True)
 
     for name, size in APP_SIZES:
         a = build_atlas(name, size, False)
         img = a["image"]
-        png = os.path.join(APP_MEDIA, "fonts", "app_%s.png" % name)
+        png = os.path.join(MEDIA, "fonts", "app_%s.png" % name)
         write_png_filter0(png, img)
-        with open(os.path.join(APP_MEDIA, "fonts", "app_%s.json" % name), "w") as f:
+        with open(os.path.join(MEDIA, "fonts", "app_%s.json" % name), "w") as f:
             json.dump(a["json"], f, indent=1)
-        print("app", name, size, img.size)
+        print("atlas", name, size, img.size)
 
-    draw_radar_disc().save(os.path.join(APP_MEDIA, "radar.png"), optimize=True)
-    draw_sweep().save(os.path.join(APP_MEDIA, "sweep.png"), optimize=True)
-    draw_glow(96, 0.16, 0.46).save(os.path.join(APP_MEDIA, "blip.png"), optimize=True)
-    draw_glow(48, 0.24, 0.62).save(os.path.join(APP_MEDIA, "echo.png"), optimize=True)
-    draw_ring(96).save(os.path.join(APP_MEDIA, "ring.png"), optimize=True)
-    draw_panel(908, 540).save(os.path.join(APP_MEDIA, "panel_list.png"), optimize=True)
-    draw_panel(908, 316).save(os.path.join(APP_MEDIA, "panel_detail.png"), optimize=True)
-    draw_panel(1400, 780).save(os.path.join(APP_MEDIA, "panel_overlay.png"), optimize=True)
+    draw_radar_disc().save(os.path.join(MEDIA, "radar.png"), optimize=True)
+    draw_sweep().save(os.path.join(MEDIA, "sweep.png"), optimize=True)
+    draw_glow(96, 0.16, 0.46).save(os.path.join(MEDIA, "blip.png"), optimize=True)
+    draw_glow(48, 0.24, 0.62).save(os.path.join(MEDIA, "echo.png"), optimize=True)
+    draw_ring(96).save(os.path.join(MEDIA, "ring.png"), optimize=True)
+    draw_panel(908, 540).save(os.path.join(MEDIA, "panel_list.png"), optimize=True)
+    draw_panel(908, 316).save(os.path.join(MEDIA, "panel_detail.png"), optimize=True)
+    draw_panel(1400, 780).save(os.path.join(MEDIA, "panel_overlay.png"), optimize=True)
     Image.new("RGBA", (4, 4), (0, 0, 0, 0)).save(
-        os.path.join(APP_MEDIA, "transparent.png"), optimize=True)
-    draw_scanlines(1920, 1080).save(os.path.join(APP_MEDIA, "scanlines.png"), optimize=True)
+        os.path.join(MEDIA, "transparent.png"), optimize=True)
+    draw_scanlines(1920, 1080).save(os.path.join(MEDIA, "scanlines.png"), optimize=True)
     solid = Image.new("RGB", (8, 8), (255, 255, 255))
-    solid.save(os.path.join(APP_MEDIA, "solid.png"))
+    solid.save(os.path.join(MEDIA, "solid.png"))
 
-    draw_icon(512).save(os.path.join(APP_MEDIA, "icon.png"), optimize=True)
-    draw_icon(512).save(os.path.join(SAVER_MEDIA, "icon.png"), optimize=True)
-    draw_fanart().save(os.path.join(SAVER_MEDIA, "fanart.jpg"), quality=90)
-    draw_fanart().save(os.path.join(APP_MEDIA, "fanart.jpg"), quality=90)
+    draw_icon(512).save(os.path.join(MEDIA, "icon.png"), optimize=True)
+    draw_fanart().save(os.path.join(MEDIA, "fanart.jpg"), quality=90)
+    for addon in ("script.module.vintageradar", "script.vintageradar",
+                  "screensaver.vintageradar"):
+        folder = os.path.join(ROOT, addon)
+        draw_icon(512).save(os.path.join(folder, "icon.png"), optimize=True)
+        draw_fanart().save(os.path.join(folder, "fanart.jpg"), quality=90)
     print("done")
 
 

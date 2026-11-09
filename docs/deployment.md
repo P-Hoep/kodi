@@ -241,9 +241,8 @@ strings, so labels show blank or shift until it reloads them.
 
 The native add-ons draw with OpenGL / OpenGL ES (not WebGL). Their source lives in
 `screensaver.sandclock.gl` (Sand Clock, Liquid Clock, Cellular Automata, Physarum, Tetris AI),
-`screensaver.infworld.gl` (Endless World), `screensaver.plant.gl` (Growing Plant) and
-`screensaver.vintageradar.gl` (Vintage Radar). The Kodi-facing folders at the top level contain
-`addon.xml`, resources AND the built library.
+`screensaver.infworld.gl` (Endless World) and `screensaver.plant.gl` (Growing Plant). The
+Kodi-facing folders at the top level contain `addon.xml`, resources AND the built library.
 
 ### What each add-on needs
 
@@ -253,7 +252,6 @@ The native add-ons draw with OpenGL / OpenGL ES (not WebGL). Their source lives 
 | `screensaver.tetris.gl` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `screensaver.infworld.gl` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `screensaver.plant.gl` | `.dylib` | `.so` | separate `.armv7` add-on |
-| `screensaver.vintageradar.gl` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `visualization.physarum.lite` | `.dylib` | `.so` | separate `.armv7` add-on |
 
 Some GL add-ons exist **only** as 32-bit Android companions in this repository
@@ -277,7 +275,6 @@ The full commands for each project are in its own README:
   Liquid Clock, Cellular Automata / Lite / 3D, Physarum / Lite, Physarum Visualisation, Tetris AI
 - [screensaver.infworld.gl/README.md](../screensaver.infworld.gl/README.md): Endless World
 - [screensaver.plant.gl/README.md](../screensaver.plant.gl/README.md): Growing Plant
-- [screensaver.vintageradar.gl/README.md](../screensaver.vintageradar.gl/README.md): Vintage Radar
 
 The shape of every build:
 

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.module.vintageradar" name="Vintage Radar library" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <import addon="xbmc.python" version="3.0.1"/>
+  </requires>
+  <extension point="xbmc.python.module" library="lib"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Shared code, artwork and window for the Vintage Radar screensaver and app</summary>
+    <description lang="en_GB">The aircraft model and feed, the phosphor radar scope, its text renderer and window, and the shared font atlases and radar artwork used by both Vintage Radar front-ends. Installed automatically with Vintage Radar or the Vintage Radar screensaver. Aircraft data comes from the volunteer-run adsb.lol and OpenSky Network APIs and is used as-is; the typeface is Doto (SIL Open Font License 1.1).</description>
+    <disclaimer lang="en_GB">Aircraft data is not for navigation or flight safety. The typeface is Doto under the SIL Open Font License 1.1; its licence text is included with the font atlases.</disclaimer>
+    <platform>all</platform>
+    <license>MIT</license>
+    <source>https://github.com/P-Hoep/kodi</source>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

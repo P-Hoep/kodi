@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.vintageradar" name="Vintage Radar" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <import addon="xbmc.python" version="3.0.1"/>
+    <import addon="script.module.vintageradar" version="1.0.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library="default.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">A green-phosphor radar scope showing the aircraft flying over you right now</summary>
+    <description lang="en_GB">The Vintage Radar app's scope on your idle TV: a green (or amber, ice-blue or white) phosphor disc with range rings, a compass rose, a glowing sweep and aircraft blips that glide between updates and keep three sweep echoes. It shows the aircraft actually overhead, live from adsb.lol with OpenSky as a fallback, centred on the place and range you choose. The right side carries a nearest-first contact list and a spotlight card that rotates through every contact showing what the transponder reports: callsign, registration, type, squawk, category, altitude, speeds, headings, vertical rates, navigation settings, position, signal quality and the fix source. Four phosphors, CRT scanlines and vignette, dimming, full-screen or panel layout, and display detail for slow boxes. Any key or click exits. The companion app, Vintage Radar, is the same scope in a driveable window where clicking a contact opens its full card and you can find your location by name.</description>
+    <disclaimer lang="en_GB">Aircraft data comes from the volunteer-run adsb.lol and OpenSky Network APIs and is used as-is; it is not for navigation or flight safety. The typeface is Doto (SIL Open Font License 1.1), baked into texture atlases in the Vintage Radar library add-on.</disclaimer>
+    <platform>all</platform>
+    <license>MIT</license>
+    <source>https://github.com/P-Hoep/kodi</source>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

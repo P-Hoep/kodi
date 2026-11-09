@@ -28,6 +28,7 @@ installed version in **Add-ons → My add-ons**.
 | [Math Clock](#math-clock) | `screensaver.math.clock` | 0.1.1 | The date and time as maths puzzles, typeset like LaTeX |
 | [Couchstronomy](#couchstronomy) | `screensaver.couchstronomy` | 0.1.3 | Your TV as a window onto the real night sky |
 | [SkyWatch](#skywatch) | `screensaver.skywatch` | 1.0.0 | A live weather station: radar, forecasts, warnings and conditions |
+| [Vintage Radar](#vintage-radar) | `screensaver.vintageradar` | 1.0.0 | A green-phosphor radar scope showing the aircraft flying over you right now (Kodi 20+) |
 | [Live Cams](#live-cams) | `screensaver.livecams` | 1.0.0 | A window onto public live cameras around the world |
 | [Word Clock](#word-clock) | `screensaver.wordclock` | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 | [Sand Clock](#sand-clock) | `screensaver.sandclock` | 1.0.1 | A clock whose digits crumble into falling sand every second |
@@ -50,8 +51,6 @@ installed version in **Add-ons → My add-ons**.
 | [Growing Plant (OpenGL, 32-bit Android)](#growing-plant-opengl) | `screensaver.plant.gl.armv7` | 1.0.1 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
 | [Sand Clock (OpenGL, 32-bit Android)](#sand-clock-opengl) | `screensaver.sandclock.gl.armv7` | 1.0.0 | Android 32-bit |
-| [Vintage Radar (OpenGL)](#vintage-radar-opengl) | `screensaver.vintageradar.gl` | 1.0.0 | macOS, Android 64-bit |
-| [Vintage Radar (OpenGL, 32-bit Android)](#vintage-radar-opengl) | `screensaver.vintageradar.gl.armv7` | 1.0.0 | Android 32-bit |
 | [Cellular Automata (32-bit Android)](#cellular-automata) | `screensaver.automata.armv7` | 1.1.0 | Android 32-bit |
 | [Cellular Automata Lite (32-bit Android)](#cellular-automata) | `screensaver.automata.lite.armv7` | 1.1.0 | Android 32-bit |
 | [Cellular Automata 3D (32-bit Android)](#cellular-automata-3d) | `screensaver.automata3d.armv7` | 1.0.0 | Android 32-bit |
@@ -68,7 +67,7 @@ installed version in **Add-ons → My add-ons**.
 | [Sheetcards](#sheetcards) | `script.sheetcards` | 1.0.0 | The flashcard study app (Kodi 20+) |
 | [RSS Live Tiles](#rss-live-tiles) | `script.rsslivetiles` | 1.0.0 | The live-tile news reader (Kodi 20+) |
 | [OpenTrivia](#opentrivia) | `script.opentrivia` | 1.0.0 | The trivia quiz you play with the remote (Kodi 20+) |
-| [Vintage Radar](#vintage-radar-opengl) | `script.vintageradar` | 1.0.0 | The Vintage Radar scope in a driveable window (Kodi 20+) |
+| [Vintage Radar](#vintage-radar) | `script.vintageradar` | 1.0.1 | The Vintage Radar scope in a driveable window (Kodi 20+) |
 | [Physarum Visualisation (macOS and 64-bit Android)](#physarum-visualisation) | `visualization.physarum.lite` | 1.0.0 | Physarum driven by Kodi's audio (Kodi 21) |
 | Physarum Visualisation (32-bit Android) | `visualization.physarum.lite.armv7` | 1.0.0 | The same visualisation for 32-bit Android Kodi |
 
@@ -79,6 +78,7 @@ installed version in **Add-ons → My add-ons**.
 | Sheetcards library | `script.module.sheetcards` | 1.0.0 | Shared code for the Sheetcards app and screensaver |
 | RSS Live Tiles library | `script.module.rsslivetiles` | 1.0.0 | Shared code for the RSS Live Tiles app and screensaver |
 | OpenTrivia library | `script.module.opentrivia` | 1.0.0 | The questions database, shared window and skin for the OpenTrivia add-ons |
+| Vintage Radar library | `script.module.vintageradar` | 1.0.0 | The scope's model, feeds, window, text renderer and textures, shared by the Vintage Radar app and screensaver |
 | P-Hoep Add-ons | `repository.phoep` | 1.0.8 | The Kodi repository that installs and updates everything |
 
 The library modules are installed automatically as dependencies; there is nothing to configure.
@@ -88,7 +88,7 @@ The library modules are installed automatically as dependencies; there is nothin
 | Add-ons | Kodi | Notes |
 |---|---|---|
 | Most Python add-ons | 19 (Matrix) or later | Pure Python, no compiled code; any platform |
-| Sheetcards, RSS Live Tiles, OpenTrivia and their modules | 20 (Nexus) or later | They require `xbmc.python` 3.0.1 |
+| Sheetcards, RSS Live Tiles, OpenTrivia, Vintage Radar and their modules | 20 (Nexus) or later | They require `xbmc.python` 3.0.1 |
 | Native OpenGL add-ons | 21 (Omega) | Compiled against the Kodi 21 add-on API |
 
 The Python add-ons need no imaging library at run time: all artwork is generated ahead of time and
@@ -119,7 +119,7 @@ installs them and updates them itself.
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.**
    - Screensavers are under **Look and feel → Screensaver**.
    - The Switcher is under **Services**.
-   - Sheetcards, RSS Live Tiles and OpenTrivia are under **Program add-ons**.
+   - Sheetcards, RSS Live Tiles, OpenTrivia and Vintage Radar are under **Program add-ons**.
    - Audioshelf is under **Music add-ons**.
    - Physarum Visualisation is under **Music → Visualisation** (inside Kodi's player settings, or
      from the music OSD while a song plays).
@@ -813,9 +813,9 @@ It is a native add-on (C++ / OpenGL 2.1, 3.2 core and OpenGL ES 2.0), with two K
 The code lives in [screensaver.sandclock.gl](screensaver.sandclock.gl/README.md), which also
 holds Liquid Clock, the Cellular Automata family, Physarum and Tetris AI (OpenGL).
 
-## Vintage Radar (OpenGL)
+## Vintage Radar
 
-`screensaver.vintageradar.gl` turns the idle TV into an old radar scope: a green (or amber,
+`screensaver.vintageradar` turns the idle TV into an old radar scope: a green (or amber,
 ice-blue or white) phosphor disc with range rings, a compass rose, a sweeping beam and glowing
 aircraft blips. It shows the aircraft actually overhead right now, live from
 [adsb.lol](https://adsb.lol/) with the [OpenSky Network](https://opensky-network.org/) as a
@@ -823,36 +823,46 @@ fallback, centred on the place and range you choose. Contacts are dead-reckoned 
 blips glide instead of jumping, and the last three sweep echoes stay on the glass. The right side
 carries a nearest-first contact list and a spotlight card that rotates through every contact:
 callsign, registration, type, squawk, category, altitude, speeds, headings, vertical rates,
-navigation settings, position, signal quality and the fix source. Four phosphors, CRT scanlines and
-vignette, dimming and a detail setting for slow boxes are included. The sweep is drawn with
-OpenGL, so it stays smooth at full screen.
+navigation settings, position, signal quality and the fix source. Four phosphors, CRT scanlines
+and vignette, dimming and a detail setting for slow boxes are included.
 
-It is a native add-on (C++ / OpenGL 2.1, 3.2 core and OpenGL ES 2.0), with two Kodi add-ons:
+The companion **Vintage Radar** app (`script.vintageradar`, Kodi 20+) puts the same scope in a
+window you can drive: click a blip, a label or a list row (or press Select) for a three-column
+contact sheet with every field the transponder reports; Left and Right step the spotlight, Page Up
+and Page Down turn the list, Menu opens the settings and Back leaves the scope. Both front-ends
+run the same session from the shared library `script.module.vintageradar`, which Kodi installs
+with them, and they share one settings table and one set of textures.
 
-- **Vintage Radar (OpenGL)** — macOS (universal, Intel and Apple Silicon) and 64-bit Android.
-- **Vintage Radar (OpenGL, 32-bit Android)** — for 32-bit Android Kodi, as on Fire TV and many
-  Google TV boxes.
+| Category | Settings |
+|---|---|
+| Location | Place name, **Find a place by name…** (Photon search, or `lat, lon`), latitude, longitude |
+| Scope | Range (5–400 km), metric or aviation units, fetch interval, sweep time, on-ground contacts, minimum altitude |
+| Contacts | Scope labels and what they show, sweep echoes, most contacts to track |
+| Information panel | Show the list and spotlight card, how long each contact holds the spotlight, how long the list follows it |
+| Look | Four phosphors, CRT scanlines and vignette, dimming, detail (Low / Normal / High) |
 
-The companion **Vintage Radar** app (`script.vintageradar`, pure Python, Kodi 20+) puts the same
-scope in a window you can drive: click a blip, a label or a list row (or press Select) for a
-three-column contact sheet with every field the transponder reports; Left and Right step the
-spotlight, Page Up and Page Down turn the list, Menu opens the settings and Back leaves the scope.
-
-The code and build notes are in [screensaver.vintageradar.gl](screensaver.vintageradar.gl/README.md)
-and [script.vintageradar](script.vintageradar/README.md); the full settings reference, data notes
-and troubleshooting are in [docs/vintageradar.md](docs/vintageradar.md).
+**Find a place by name** writes the coordinates to both add-ons (`script.vintageradar` searches,
+so it must be installed). Aircraft data is volunteer-run and used as-is; it is not for navigation
+or flight safety.
 
 ```bash
-cd screensaver.vintageradar.gl
-cmake -S . -B build && cmake --build build && ctest --test-dir build
-./build/radar_glfw --live                       # live data, no Kodi
-./build/radar_glfw_core --fixture tests/fixtures/adsblol.json   # what Kodi uses on macOS
-cd .. && python3 -m unittest tests.test_vintageradar        # the app's offline tests
+python3 tools/make_vintageradar_media.py     # radar art, panels, font atlases, icon, fanart (Pillow)
+python3 tools/make_settings_vintageradar.py  # both settings.xml + strings.po + the library defaults
+for a in script.module.vintageradar screensaver.vintageradar script.vintageradar; do python3 tools/build_zip.py $a; done
+for a in script.module.vintageradar screensaver.vintageradar script.vintageradar; do KODI_ADDON=$a python3 tools/kodi.py install; done
+python3 -m unittest tests.test_vintageradar # offline: geometry, parsing, model, formatting, settings, media
 ```
 
-Aircraft data comes from the volunteer-run adsb.lol and OpenSky Network APIs and is used as-is; it
-is not for navigation or flight safety. adsb.lol data is ODbL. The Doto typeface is under the SIL
-Open Font License 1.1.
+Notes from building it (Kodi 21.1, macOS): the window is built at run time from `ControlImage`
+and invisible `ControlButton` controls, and every string is drawn into a PNG by a pure-Python
+renderer (`fontdraw.py`, `pngcodec.py`) because a WindowXML skin cannot load an add-on's own
+font. The sweep is one image control with a `rotate` animation, so Kodi animates it at display
+rate and Python only updates positions twice a second. Both front-ends run the session on a worker
+thread and read an event queue fed by `onAction`/`onClick`; the screensaver closes on any input
+or when Kodi deactivates it. The typeface is Doto (SIL Open Font License 1.1), baked into the
+atlases. adsb.lol data is ODbL.
+
+Full documentation: **[docs/vintageradar.md](docs/vintageradar.md)**.
 
 ## Cellular Automata
 
@@ -1191,8 +1201,7 @@ Full documentation: **[docs/RSSliveTiles.md](docs/RSSliveTiles.md)**.
 - Native projects: [sandclock.gl](screensaver.sandclock.gl/README.md) (Sand Clock, Liquid Clock,
   Cellular Automata, Physarum, Tetris AI),
   [infworld.gl](screensaver.infworld.gl/README.md),
-  [plant.gl](screensaver.plant.gl/README.md),
-  [vintageradar.gl](screensaver.vintageradar.gl/README.md).
+  [plant.gl](screensaver.plant.gl/README.md).
 
 ## Develop
 

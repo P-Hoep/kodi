@@ -1,4 +1,4 @@
-"""Offline tests for the Vintage Radar app's pure Python modules (no Kodi needed).
+"""Offline tests for the Vintage Radar library's pure Python modules (no Kodi needed).
 
 Run with:  python3 -m unittest tests.test_vintageradar -v
 """
@@ -11,16 +11,18 @@ import types
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.join(os.path.dirname(HERE), 'script.vintageradar')
-if ROOT not in sys.path:
-    sys.path.insert(0, ROOT)
+ADDON = os.path.join(os.path.dirname(HERE), 'script.module.vintageradar')
+MEDIA = os.path.join(ADDON, 'resources', 'media')
+LIB = os.path.join(ADDON, 'lib')
+if LIB not in sys.path:
+    sys.path.insert(0, LIB)
 
 # config.read imports xbmcaddon at module load; nothing else here needs Kodi, so provide a
 # module object that the test can swap out.
 if 'xbmcaddon' not in sys.modules:
     sys.modules['xbmcaddon'] = types.ModuleType('xbmcaddon')
 
-from resources.lib import config, fontdraw, pngcodec, radar_core, radar_feed, theme
+from vintageradar import config, fontdraw, pngcodec, radar_core, radar_feed, theme
 
 
 def feed_json(*aircraft):
@@ -308,7 +310,7 @@ class MediaTests(unittest.TestCase):
         self.assertEqual(theme.argb((1, 2, 3), 4), '04010203')
 
     def test_renderer_and_cache(self):
-        media = os.path.join(ROOT, 'resources', 'media')
+        media = MEDIA
         renderer = fontdraw.Renderer(media, self.workdir, max_entries=20)
         first = renderer.image('UAL123', 'small', (10, 200, 30), 0.4, 0.9)
         again = renderer.image('UAL123', 'small', (10, 200, 30), 0.4, 0.9)
@@ -321,7 +323,7 @@ class MediaTests(unittest.TestCase):
         self.assertTrue(any(pixels[index] for index in range(3, len(pixels), 4)))
 
     def test_protected_images_survive_trimming(self):
-        media = os.path.join(ROOT, 'resources', 'media')
+        media = MEDIA
         renderer = fontdraw.Renderer(media, self.workdir, max_entries=4)
         images = []
         for index in range(12):

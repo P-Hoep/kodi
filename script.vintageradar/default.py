@@ -2,7 +2,8 @@ import sys
 
 import xbmc
 
-from resources.lib import app, setup
+from resources.lib import app
+from vintageradar import setup
 
 if __name__ == '__main__':
     if 'find_location' in sys.argv[1:]:
