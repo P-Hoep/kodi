@@ -1,9 +1,9 @@
 # P-Hoep Kodi Add-ons
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
-live-camera window, a street-view guessing game, a scheduler, a flashcard app, a trivia quiz, a
-news reader, audiobooks and GPU-drawn visuals for Kodi, published as one Kodi repository so Kodi
-installs them and keeps them up to date.
+live-camera window, a street-view guessing game, an old radar scope, a scheduler, a flashcard
+app, a trivia quiz, a news reader, audiobooks and GPU-drawn visuals for Kodi, published as one
+Kodi repository so Kodi installs them and keeps them up to date.
 
 ### Python screensavers
 
@@ -16,6 +16,7 @@ installs them and keeps them up to date.
 | [SkyWatch](#skywatch) | 1.0.0 | A live weather station: radar, forecasts, warnings and conditions |
 | [Live Cams](#live-cams) | 1.0.0 | A window onto public live cameras around the world |
 | [GeoGuess](#geoguess) | 0.4.0 | A random street-view panorama, answered after a few sweeps |
+| [Vintage Radar](#vintage-radar) | 1.0.1 | An old radar scope showing the aircraft flying over you right now |
 | [Word Clock](#word-clock) | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 | [Sand Clock](#sand-clock) | 1.0.1 | A clock whose digits crumble into falling sand every second |
 | [Jeopkodi](#jeopkodi) | 1.1.0 | An endless Jeopardy! slideshow: clue, then the response |
@@ -54,17 +55,18 @@ installs them and keeps them up to date.
 | [Audioshelf](#audioshelf) | 1.1.0 | Audiobooks from an Audiobookshelf server |
 | [Sheetcards](#sheetcards) | 1.0.0 | The flashcard study app |
 | [OpenTrivia](#opentrivia) | 1.0.0 | The trivia quiz you play with the remote |
+| [Vintage Radar](#vintage-radar) | 1.0.2 | The radar scope in a window you can drive with the remote |
 | [RSS Live Tiles](#rss-live-tiles) | 1.0.0 | The live-tile news reader |
 
-The library modules `script.module.sheetcards`, `script.module.rsslivetiles` and
-`script.module.opentrivia`, and the repository `repository.phoep`, are installed automatically as
-dependencies.
+The library modules `script.module.sheetcards`, `script.module.rsslivetiles`,
+`script.module.opentrivia` and `script.module.vintageradar`, and the repository
+`repository.phoep`, are installed automatically as dependencies.
 
 Most add-ons are pure Python with no compiled code and run on Kodi 19 (Matrix) or later, on any
-platform. Sheetcards, RSS Live Tiles and OpenTrivia need Kodi 20 or later. The OpenGL add-ons are native,
-built for macOS (Intel and Apple Silicon) and Android in 64-bit and 32-bit builds, and need
-Kodi 21. They were developed and tested on Kodi 21 on macOS; several also on Amazon Fire TV
-Sticks.
+platform. Sheetcards, RSS Live Tiles, OpenTrivia and Vintage Radar need Kodi 20 or later. The
+OpenGL add-ons are native, built for macOS (Intel and Apple Silicon) and Android in 64-bit and
+32-bit builds, and need Kodi 21. They were developed and tested on Kodi 21 on macOS; several also
+on Amazon Fire TV Sticks.
 
 The full descriptions, requirements and per-platform build matrix are in the
 [repository README](../README.md). Build and publishing steps are in the
@@ -85,10 +87,10 @@ The add-ons are in a Kodi repository hosted on GitHub Pages:
    Kodi shows "P-Hoep Add-ons — Add-on installed".
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** Screensavers are under
    **Look and feel → Screensaver**; the Switcher is under **Services**; Sheetcards, RSS Live
-   Tiles and OpenTrivia are under **Program add-ons**; Audioshelf is under **Music add-ons**;
-   Physarum Visualisation is chosen from **Settings → Player → Music → Visualisation** while a
-   song plays. Sheetcards, RSS Live Tiles and OpenTrivia need Kodi 20+, and the OpenGL add-ons
-   need Kodi 21.
+   Tiles, OpenTrivia and Vintage Radar are under **Program add-ons**; Audioshelf is under
+   **Music add-ons**; Physarum Visualisation is chosen from **Settings → Player → Music →
+   Visualisation** while a song plays. Sheetcards, RSS Live Tiles, OpenTrivia and Vintage Radar
+   need Kodi 20+, and the OpenGL add-ons need Kodi 21.
 5. To turn one on, go to **Settings → Interface → Screensaver → Screensaver mode**, pick it,
    then open **Settings** below it to configure it. **Preview** starts it straight away.
 
@@ -264,6 +266,8 @@ The default pool is about 282 playable cameras; health tracking learns the dead 
 
 ## GeoGuess
 
+![GeoGuess: a street-view panorama panning, then a zoomed satellite answer map with a pin and the country name](gifs/geoguess.gif)
+
 A guessing game on the idle screen. Each location is a random street-view panorama from around
 the world, filling the screen height and panning slowly, as many times back and forth as you
 choose. The answer appears only when the final pass begins, so every earlier sweep is played
@@ -289,6 +293,37 @@ The panoramas, place names and answer maps are streamed at run time from the Hug
 dataset `yunusserhat/random_streetview_images` and NASA GIBS. The street-view imagery is © Google
 and its contributors and is subject to Google's terms; the add-on is not affiliated with Google.
 The Blue Marble map imagery is in the public domain.
+
+## Vintage Radar
+
+![Vintage Radar: a green phosphor scope with a sweeping beam, aircraft blips trailing echoes, a nearest-first contact list and a spotlight card of one aircraft's transponder data](gifs/vintage-radar.gif)
+
+An old radar scope for the idle screen, showing the aircraft flying over you right now: a green
+(or amber, ice-blue or white) phosphor disc with range rings, a compass rose, a sweeping beam and
+glowing blips. Contacts are dead-reckoned between feeds so they glide instead of jumping, and the
+last three sweep echoes stay on the glass.
+
+- **The scope:** range rings with distance labels, a rotating sweep, aircraft-shaped blips with
+  short labels, and ground traffic and low-altitude filters.
+- **The contacts panel:** a nearest-first list (callsign, type, altitude, ground speed, distance,
+  bearing) and a spotlight card that rotates through every contact with the full transponder
+  picture: registration, squawk, category, hex, speeds, headings, vertical rates, position,
+  QNH, signal quality and the fix source. Turn the panel off for a full-screen scope.
+- **Looks:** four phosphors, CRT scanlines and vignette, dimming, and a detail setting for slow
+  boxes.
+- **The app** (`script.vintageradar`) is the same scope in a window you can drive: click a blip,
+  a label or a list row for a three-column contact sheet with every field; Left and Right step
+  the spotlight, Page Up and Page Down turn the list, Menu opens the settings and Back leaves
+  the scope. Both front-ends run the same session from the shared library
+  `script.module.vintageradar`, which Kodi installs with them.
+
+**Find a place by name** in the settings searches by name or takes `lat, lon`, and writes the
+coordinates to both add-ons. The feed is adsb.lol, with the OpenSky Network as a fallback; both
+are volunteer-run and used as-is, and are not for navigation or flight safety. adsb.lol data is
+ODbL.
+
+It needs Kodi 20 (Nexus) or later. The screensaver is under **Look and feel → Screensaver** and
+the app under **Program add-ons**.
 
 ## Screensaver Switcher
 
@@ -678,6 +713,8 @@ slow rainbow, night colours, dimming and an OLED drift. 32-bit Android only.
 ---
 
 ## Physarum
+
+![Physarum: pink and cyan slime trails weaving through black and growing into the clock digits, with food nodes linked like a rail map](gifs/physarum.gif)
 
 A GPU simulation of *Physarum polycephalum*, the slime mould, after Jeff Jones's agent model.
 Each agent senses the trail ahead, ahead-left and ahead-right, turns towards the strongest scent,

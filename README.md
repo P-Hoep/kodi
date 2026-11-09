@@ -425,6 +425,8 @@ Full documentation: **[docs/livecams-screensaver.md](docs/livecams-screensaver.m
 
 ## GeoGuess
 
+![GeoGuess: a street-view panorama panning, then a zoomed satellite answer map with a pin and the country name](release/gifs/geoguess.gif)
+
 `screensaver.geoguess` turns the idle TV into a guessing game. Each location is a random
 street-view panorama from around the world, scaled to the full screen height and panned slowly
 across the screen, as many times back and forth as you choose. The answer appears only when the
@@ -866,6 +868,8 @@ holds Liquid Clock, the Cellular Automata family, Physarum and Tetris AI (OpenGL
 
 ## Vintage Radar
 
+![Vintage Radar: a green phosphor scope with a sweeping beam, aircraft blips trailing echoes, a nearest-first contact list and a spotlight card of one aircraft's transponder data](release/gifs/vintage-radar.gif)
+
 `screensaver.vintageradar` turns the idle TV into an old radar scope: a green (or amber,
 ice-blue or white) phosphor disc with range rings, a compass rose, a sweeping beam and glowing
 aircraft blips. It shows the aircraft actually overhead right now, live from
@@ -974,6 +978,8 @@ palettes or a custom colour or a slow rainbow, night colours, dimming and an OLE
 `tools/make_settings_liquidclock.py`.
 
 ## Physarum
+
+![Physarum: pink and cyan slime trails weaving through black and growing into the clock digits, with food nodes linked like a rail map](release/gifs/physarum.gif)
 
 `screensaver.physarum.armv7` simulates *Physarum polycephalum*, the slime mould, on the GPU after
 Jeff Jones's agent model (Artificial Life, 2010) and Sage Jenson's Physarum art. Each agent senses
