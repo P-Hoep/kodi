@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="repository.phoep" name="P-Hoep Add-ons" version="1.0.11" provider-name="P-Hoep">
+<addon id="repository.phoep" name="P-Hoep Add-ons" version="1.0.12" provider-name="P-Hoep">
   <extension point="xbmc.addon.repository" name="P-Hoep Add-ons">
     <dir>
       <info compressed="false">https://p-hoep.github.io/kodi/addons.xml</info>

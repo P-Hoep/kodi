@@ -48,13 +48,18 @@
           <default>false</default>
           <control type="toggle"/>
         </setting>
-        <setting id="label_size" type="integer" label="30109">
+        <setting id="show_map" type="boolean" label="30109">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="label_size" type="integer" label="30110">
           <level>0</level>
           <default>1</default>
           <constraints><options>
-            <option label="30110">0</option>
-            <option label="30111">1</option>
-            <option label="30112">2</option>
+            <option label="30111">0</option>
+            <option label="30112">1</option>
+            <option label="30113">2</option>
           </options></constraints>
           <control type="spinner" format="string"/>
         </setting>

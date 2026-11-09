@@ -6,7 +6,7 @@ strings.po; read() loads the values from an xbmcaddon.Addon in the glue layer.
 
 ADDON_ID = 'screensaver.geoguess'
 ADDON_NAME = 'GeoGuess Screensaver'
-VERSION = '0.2.0'
+VERSION = '0.3.0'
 
 # Both Hugging Face datasets hold the same 11,054 rows with the same five columns and the same
 # row order. The first one's /rows endpoint works; the second's parquet row groups are larger
@@ -36,7 +36,7 @@ def O(sid, label, default, options, **kw):
 
 CATEGORIES = [
     ('Playback', [
-        S('reveal_after', 'Reveal the location after (seconds)', 8, 1, 60),
+        S('reveal_after', 'Reveal the location (seconds into the last pass)', 8, 1, 60),
         S('show_for', 'Seconds per panorama pass', 25, 5, 120),
         S('batch_size', 'Locations fetched per request', 40, 10, 100, step=10),
     ]),
@@ -45,6 +45,7 @@ CATEGORIES = [
         B('pan_enabled', 'Pan slowly across each panorama', True),
         S('pan_passes', 'Passes across each panorama', 1, 1, 10, visible='pan_enabled'),
         B('show_clock', 'Show a clock in the top right corner', False),
+        B('show_map', 'Show a map of the location instead of its name', False),
         O('label_size', 'Location label size', 1, ['Small', 'Medium', 'Large']),
     ]),
 ]
@@ -90,11 +91,24 @@ def read(addon):
 
 
 def timing(settings):
-    """(reveal, show_for) in seconds, clamped so the label always gets a moment on screen."""
+    """(reveal, show_for) in seconds, clamped so the answer always gets a moment on screen.
+
+    reveal is measured into the final pass, not the start of the cycle: see reveal_time().
+    """
     show_for = max(5, min(120, int(settings.get('show_for', 25))))
     reveal = float(settings.get('reveal_after', 8))
     reveal = max(0.5, min(reveal, show_for - 1.0))
     return reveal, show_for
+
+
+def reveal_time(reveal, show_for, passes):
+    """When the answer appears, in seconds from the start of the cycle.
+
+    The delay is counted into the final pass, so every earlier pass is played without the
+    answer: with three passes the name appears after two full sweeps, not a few seconds into
+    the first. A single pass keeps the plain "reveal after N seconds" behaviour.
+    """
+    return float(show_for) * (max(1, int(passes)) - 1) + float(reveal)
 
 
 def pan_passes(settings):

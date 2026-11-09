@@ -1,9 +1,9 @@
 """The screensaver window and its display loop: Kodi glue only.
 
 Every control is created from Python, bottom to top: a black backdrop, two image controls so one
-can crossfade into the other, a bottom shade, the three label sizes and the status line. The
-display loop runs on its own thread; any input or the screensaver being woken stops it and the
-window closes straight away.
+can crossfade into the other, a bottom shade, the three label sizes, the status line, and
+optionally the clock and the world map with its pin. The display loop runs on its own thread;
+any input or the screensaver being woken stops it and the window closes straight away.
 """
 
 import collections
@@ -29,6 +29,12 @@ TICK = 1.0 / 120.0
 RETRY_SECONDS = 10
 RECENT = 200
 SHADE_HEIGHT = 460
+
+# The optional answer panel: an equirectangular world map with a pin at the row's latitude and
+# longitude, in the bottom left corner where the place name would be. The map file is drawn at
+# twice its display size and the pin is rendered at 4x and downsampled, so their edges are smooth.
+MAP_X, MAP_Y, MAP_W, MAP_H = 60, 680, 720, 360
+PIN_W, PIN_H = 44, 62
 
 LABEL_BOXES = ((60, 946, 1500, 90),      # font28
                (60, 930, 1500, 110),     # font37
@@ -81,6 +87,7 @@ class Saver(object):
         self.passes = config.pan_passes(self.settings)
         self.show_country = bool(self.settings.get('show_country_name', True))
         self.show_clock = bool(self.settings.get('show_clock', False))
+        self.show_map = bool(self.settings.get('show_map', False))
         self.label_index = max(0, min(2, int(self.settings.get('label_size', 1))))
         self.stop = threading.Event()
         self.monitor = ExitMonitor(self.wake)
@@ -91,9 +98,10 @@ class Saver(object):
         self.images = []
         self.label = None
         self.status_label = None
-        self.clock_back = None
         self.clock_label = None
         self._clock_shown = None
+        self.map_controls = []
+        self.map_pin = None
         self.active = 0
         self.recent = collections.deque(maxlen=RECENT)
         self.candidates = []
@@ -172,18 +180,25 @@ class Saver(object):
                                                  textColor='CCFFFFFF', alignment=2)
         self.controls = ([backdrop] + self.images + [shade] + self.label_boxes + [self.status_label])
         if self.show_clock:
-            # Fixed in the corner: separate controls, so the pan moves the image behind them.
-            # The panel is a soft-edged translucent black PNG, which keeps the white text
-            # readable over bright skies, and alignment 1 is right.
-            self.clock_back = xbmcgui.ControlImage(W - 460, 10, 420, 140, self.media('clock.png'))
+            # Fixed in the corner: a separate control, so the pan moves the image behind it.
+            # Plain white text; alignment 1 is right.
             self.clock_label = xbmcgui.ControlLabel(W - 450, 25, 390, 110, '', font='font45',
-                                                    textColor='F2FFFFFF', alignment=1)
-            self.controls.append(self.clock_back)
+                                                    textColor='FFFFFFFF', alignment=1)
             self.controls.append(self.clock_label)
             self._tick_clock()
+        if self.show_map:
+            # The map replaces the place name at reveal time. Both controls start hidden and are
+            # shown when the answer comes; the pin is moved to the row's coordinates each cycle.
+            window_image = xbmcgui.ControlImage(MAP_X, MAP_Y, MAP_W, MAP_H, self.media('world.png'))
+            self.map_pin = xbmcgui.ControlImage(MAP_X, MAP_Y, PIN_W, PIN_H, self.media('pin.png'))
+            self.map_controls = [window_image, self.map_pin]
+            for control in self.map_controls:
+                control.setAnimations(LABEL_ANIMS)
+                control.setVisible(False)
+            self.controls.extend(self.map_controls)
         window.addControls(self.controls)
-        debug('attached: reveal %.1f s, show_for %d s, passes %d, clock %s, label %s'
-              % (self.reveal, self.show_for, self.passes, self.show_clock,
+        debug('attached: reveal %.1f s, show_for %d s, passes %d, clock %s, map %s, label %s'
+              % (self.reveal, self.show_for, self.passes, self.show_clock, self.show_map,
                  config.LABEL_FONTS[self.label_index]))
         self.show_status(self.tr(32000))
         self.thread = threading.Thread(target=self.display_loop, name='geoguess-display')
@@ -223,12 +238,27 @@ class Saver(object):
         if self.status_label is not None:
             self.status_label.setVisible(False)
 
-    def _show_label(self, text):
+    def _show_answer(self, text, item):
+        """Reveal the place name, or the map with a pin when that is switched on.
+
+        Rows carry coordinates, but one without them falls back to the name, so the answer is
+        never missing.
+        """
+        if self.map_controls and item.latitude is not None and item.longitude is not None:
+            x, y = layout.world_point(item.latitude, item.longitude, MAP_W, MAP_H)
+            self.map_pin.setPosition(MAP_X + int(round(x)) - PIN_W // 2,
+                                     MAP_Y + int(round(y)) - PIN_H)
+            for control in self.map_controls:
+                control.setVisible(True)
+            return 'map %+.4f, %+.4f' % (item.latitude, item.longitude)
         self.label.setText(text)
         self.label.setVisible(True)
+        return text
 
     def _hide_label(self):
         self.label.setVisible(False)
+        for control in self.map_controls:
+            control.setVisible(False)
 
     # ------------------------------------------------------------ display
 
@@ -345,6 +375,9 @@ class Saver(object):
         # or the pan switched off keeps the location on screen for one pass.
         passes = self.passes if self.pan_enabled and width > W else 1
         end_after = self.show_for * passes
+        # The answer is revealed in the final pass, so the earlier passes are all played
+        # without the name: with three passes it comes after two full sweeps.
+        reveal_at = config.reveal_time(self.reveal, self.show_for, passes)
         revealed = False
         x = start_x
         while not self.stopped():
@@ -361,9 +394,8 @@ class Saver(object):
                 coming.setPosition(moved, 0)
                 x = moved
             self._tick_clock()
-            if not revealed and elapsed >= self.reveal:
-                self._show_label(text)
-                debug('label: %s' % text)
+            if not revealed and elapsed >= reveal_at:
+                debug('answer: %s' % self._show_answer(text, downloaded.item))
                 revealed = True
             if self.monitor.waitForAbort(TICK):
                 break

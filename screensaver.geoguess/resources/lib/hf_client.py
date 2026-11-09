@@ -23,17 +23,21 @@ class Aborted(Exception):
 
 
 class Item(object):
-    """One row: enough to download, place and name the image."""
+    """One row: enough to download, place, name and put on a map."""
 
-    __slots__ = ('row_idx', 'src', 'width', 'height', 'country', 'address')
+    __slots__ = ('row_idx', 'src', 'width', 'height', 'country', 'address', 'latitude',
+                 'longitude')
 
-    def __init__(self, row_idx, src, country='', address='', width=0, height=0):
+    def __init__(self, row_idx, src, country='', address='', width=0, height=0, latitude=None,
+                 longitude=None):
         self.row_idx = row_idx
         self.src = src
         self.country = (country or '').strip().upper()
         self.address = address or ''
         self.width = width
         self.height = height
+        self.latitude = latitude
+        self.longitude = longitude
 
     def __repr__(self):
         return 'Item(%d, %s)' % (self.row_idx, self.country)
@@ -44,6 +48,17 @@ def _int(value):
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _coord(value, limit):
+    """A coordinate as a float in range, or None. The dataset stores them as strings."""
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if number != number or not -limit <= number <= limit:   # NaN or out of range
+        return None
+    return number
 
 
 def parse_rows(payload):
@@ -60,7 +75,8 @@ def parse_rows(payload):
             width = _int(image.get('width')) if isinstance(image, dict) else 0
             height = _int(image.get('height')) if isinstance(image, dict) else 0
             items.append(Item(row_idx, src, row.get('country_iso_alpha2') or row.get('country'),
-                              row.get('address'), width, height))
+                              row.get('address'), width, height,
+                              _coord(row.get('latitude'), 90), _coord(row.get('longitude'), 180)))
         except (KeyError, TypeError, ValueError):
             continue        # a malformed row is skipped, not fatal
     return items

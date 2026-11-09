@@ -55,3 +55,17 @@ def centre_offset(display_width, screen_width):
     if display_width >= screen_width:
         return 0
     return int((screen_width - display_width) / 2)
+
+
+def world_point(latitude, longitude, width, height):
+    """Pixel position of (latitude, longitude) on an equirectangular world map.
+
+    The map spans 180 degrees west to east across `width` and 90 north to south across
+    `height`. Out-of-range values are clamped to the edge rather than wrapped, so a bad row
+    puts the pin at the border instead of somewhere unrelated.
+    """
+    lat = max(-90.0, min(90.0, float(latitude)))
+    lon = max(-180.0, min(180.0, float(longitude)))
+    x = (lon + 180.0) / 360.0 * width
+    y = (90.0 - lat) / 180.0 * height
+    return x, y

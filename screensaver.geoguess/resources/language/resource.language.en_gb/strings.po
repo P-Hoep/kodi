@@ -12,7 +12,7 @@ msgid "Playback"
 msgstr ""
 
 msgctxt "#30101"
-msgid "Reveal the location after (seconds)"
+msgid "Reveal the location (seconds into the last pass)"
 msgstr ""
 
 msgctxt "#30102"
@@ -44,18 +44,22 @@ msgid "Show a clock in the top right corner"
 msgstr ""
 
 msgctxt "#30109"
-msgid "Location label size"
+msgid "Show a map of the location instead of its name"
 msgstr ""
 
 msgctxt "#30110"
-msgid "Small"
+msgid "Location label size"
 msgstr ""
 
 msgctxt "#30111"
-msgid "Medium"
+msgid "Small"
 msgstr ""
 
 msgctxt "#30112"
+msgid "Medium"
+msgstr ""
+
+msgctxt "#30113"
 msgid "Large"
 msgstr ""
 

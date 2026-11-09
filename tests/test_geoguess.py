@@ -1,7 +1,7 @@
-"""Offline tests for the GeoGuess screensaver: the settings table, label cleaning and country
-names, the pan geometry, the datasets-server client (batching, recent rows, backoff, source
-rotation, abort), image header parsing, the temp store, expired-URL re-requests and the files
-Kodi needs. No network, no Kodi.
+"""Offline tests for the GeoGuess screensaver: the settings table, reveal timing, label cleaning
+and country names, the pan geometry and the map projection, the datasets-server client
+(batching, recent rows, coordinates, backoff, source rotation, abort), image header parsing,
+the temp store, expired-URL re-requests and the files Kodi needs. No network, no Kodi.
 
 python3 -m unittest tests.test_geoguess
 """
@@ -38,10 +38,15 @@ class FakeRandom(object):
         items.reverse()
 
 
-def row(idx, country='SI', address='A place', src='https://example/img.jpg', width=100, height=50):
-    return {'row_idx': idx,
-            'row': {'image': {'src': src, 'width': width, 'height': height},
-                    'country_iso_alpha2': country, 'address': address}}
+def row(idx, country='SI', address='A place', src='https://example/img.jpg', width=100, height=50,
+        latitude=None, longitude=None):
+    data = {'image': {'src': src, 'width': width, 'height': height},
+            'country_iso_alpha2': country, 'address': address}
+    if latitude is not None:
+        data['latitude'] = latitude
+    if longitude is not None:
+        data['longitude'] = longitude
+    return {'row_idx': idx, 'row': data}
 
 
 def rows_payload(items, total=1000):
@@ -62,6 +67,7 @@ class SettingsTable(unittest.TestCase):
         self.assertTrue(values['pan_enabled'])
         self.assertEqual(values['pan_passes'], 1)
         self.assertFalse(values['show_clock'])
+        self.assertFalse(values['show_map'])
         self.assertEqual(values['label_size'], 1)
 
     def test_slider_ranges_match_the_spec(self):
@@ -86,12 +92,28 @@ class SettingsTable(unittest.TestCase):
         self.assertTrue(values['pan_enabled'])
         self.assertEqual(values['pan_passes'], 1)
         self.assertFalse(values['show_clock'])
+        self.assertFalse(values['show_map'])
         self.assertEqual(values['reveal_after'], 8)
 
     def test_timing_clamps(self):
         self.assertEqual(config.timing({'reveal_after': 8, 'show_for': 25}), (8.0, 25))
         self.assertEqual(config.timing({'reveal_after': 200, 'show_for': 10}), (9.0, 10))
         self.assertEqual(config.timing({'reveal_after': -4, 'show_for': 1}), (0.5, 5))
+
+    def test_reveal_is_measured_into_the_last_pass(self):
+        # One pass is unchanged; three passes hide the answer for two full sweeps.
+        self.assertEqual(config.reveal_time(8, 25, 1), 8.0)
+        self.assertEqual(config.reveal_time(8, 25, 2), 33.0)
+        self.assertEqual(config.reveal_time(8, 25, 3), 58.0)
+        self.assertEqual(config.reveal_time(1, 5, 10), 46.0)
+        self.assertEqual(config.reveal_time(4, 10, 0), 4.0)      # a bad pass count means one
+
+    def test_the_reveal_always_lands_in_the_last_pass(self):
+        reveal, show_for = config.timing({'reveal_after': 200, 'show_for': 10})
+        for passes in (1, 2, 5, 10):
+            at = config.reveal_time(reveal, show_for, passes)
+            self.assertGreaterEqual(at, show_for * (passes - 1))
+            self.assertLess(at, show_for * passes)
 
     def test_pan_passes_clamp(self):
         self.assertEqual(config.pan_passes({'pan_passes': 3}), 3)
@@ -234,6 +256,20 @@ class LayoutMath(unittest.TestCase):
         self.assertEqual(layout.ease(2), 1.0)
         self.assertAlmostEqual(layout.ease(0.5), 0.5)
 
+    def test_world_point_spans_the_map(self):
+        self.assertEqual(layout.world_point(90, -180, 720, 360), (0.0, 0.0))
+        self.assertEqual(layout.world_point(-90, 180, 720, 360), (720.0, 360.0))
+        x, y = layout.world_point(0, 0, 720, 360)
+        self.assertAlmostEqual(x, 360.0)
+        self.assertAlmostEqual(y, 180.0)
+        x, y = layout.world_point(48.3710587, 19.416553, 720, 360)
+        self.assertAlmostEqual(x, (19.416553 + 180.0) / 360.0 * 720)
+        self.assertAlmostEqual(y, (90.0 - 48.3710587) / 180.0 * 360)
+
+    def test_world_point_clamps_bad_coordinates_to_the_edge(self):
+        self.assertEqual(layout.world_point(120, -400, 720, 360), (0.0, 0.0))
+        self.assertEqual(layout.world_point(-120, 400, 720, 360), (720.0, 360.0))
+
 
 class ParseRows(unittest.TestCase):
     def test_valid_rows(self):
@@ -264,6 +300,24 @@ class ParseRows(unittest.TestCase):
     def test_missing_country_and_address(self):
         items = hf_client.parse_rows({'rows': [{'row_idx': 5, 'row': {'image': 'https://x/5.jpg'}}]})
         self.assertEqual((items[0].country, items[0].address), ('', ''))
+        self.assertIsNone(items[0].latitude)
+        self.assertIsNone(items[0].longitude)
+
+    def test_coordinates_are_parsed_from_strings(self):
+        items = hf_client.parse_rows(rows_payload([
+            row(1, latitude='48.3710587', longitude='19.416553')]))
+        self.assertAlmostEqual(items[0].latitude, 48.3710587)
+        self.assertAlmostEqual(items[0].longitude, 19.416553)
+
+    def test_bad_coordinates_are_none(self):
+        items = hf_client.parse_rows(rows_payload([
+            row(1, latitude='north', longitude='19.4'),
+            row(2, latitude='91', longitude='19.4'),
+            row(3, latitude='10', longitude='-181')]))
+        self.assertIsNone(items[0].latitude)
+        self.assertIsNone(items[1].latitude)
+        self.assertEqual(items[2].latitude, 10.0)      # the good half survives
+        self.assertIsNone(items[2].longitude)
 
 
 class Client(unittest.TestCase):
@@ -541,7 +595,7 @@ class AddonFiles(unittest.TestCase):
     def test_window_and_media_exist(self):
         self.assertTrue(os.path.isfile(os.path.join(
             ADDON_DIR, 'resources', 'skins', 'Default', '1080i', 'screensaver-geoguess.xml')))
-        for name in ('white.png', 'shade.png', 'clock.png'):
+        for name in ('white.png', 'shade.png', 'world.png', 'pin.png'):
             self.assertTrue(os.path.isfile(os.path.join(
                 ADDON_DIR, 'resources', 'skins', 'Default', 'media', name)))
 

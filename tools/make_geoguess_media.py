@@ -1,26 +1,44 @@
-"""Generate the GeoGuess media: icon, fanart, the white backdrop texture, the bottom shade and
-the soft panel behind the clock.
+"""Generate the GeoGuess media: icon, fanart, the white backdrop texture, the bottom shade, the
+answer map and its pin.
 
-The backdrop, shade and clock panel are drawn with Python in the add-on (resources/lib/saver.py):
-a plain white texture tinted black, a transparent-to-black gradient behind the location label,
-and a soft-edged translucent black panel that keeps the clock readable over bright skies.
+The backdrop and shade are drawn with Python in the add-on (resources/lib/saver.py): a plain
+white texture tinted black and a transparent-to-black gradient behind the answer. The map is an
+equirectangular world map rendered from Natural Earth 1:110m country polygons (public domain),
+downloaded once into tools/.world-cache when missing. The pin is drawn separately and placed at
+the row's coordinates by the screensaver.
 
 Run:  python3 tools/make_geoguess_media.py
 """
 
+import json
 import os
+import urllib.request
 
 from PIL import Image, ImageDraw, ImageFilter
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
 ADDON = os.path.join(ROOT, 'screensaver.geoguess')
 MEDIA = os.path.join(ADDON, 'resources', 'skins', 'Default', 'media')
+CACHE = os.path.join(HERE, '.world-cache')
+COUNTRIES = os.path.join(CACHE, 'ne_110m_admin_0_countries.geojson')
+NATURAL_EARTH = ('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/'
+                 'geojson/ne_110m_admin_0_countries.geojson')
 
 SKY_TOP = (7, 17, 28)
 SKY_BOTTOM = (38, 92, 122)
 GROUND_TOP = (22, 62, 64)
 GROUND_BOTTOM = (9, 24, 27)
 SUN = (244, 183, 110)
+
+# Map panel size on screen (Kodi's 1080i GUI); the file is drawn at twice that.
+MAP_W, MAP_H = 720, 360
+MAP_SCALE = 2
+OCEAN = (10, 18, 28, 255)
+GRID = (18, 31, 45, 255)
+LAND = (52, 68, 90, 255)
+EDGE = (92, 116, 145, 255)
+BORDER = (78, 100, 126, 255)
 
 
 def vertical_gradient(size, top, bottom):
@@ -132,21 +150,98 @@ def make_textures():
         for x in range(1920):
             pixels[x, y] = (0, 0, 0, alpha)
     shade.save(os.path.join(MEDIA, 'shade.png'), optimize=True)
-    make_clock()
+    make_world_map()
+    make_pin()
 
 
-def make_clock():
-    """A translucent black panel whose edges fade out, so the clock never sits on bare sky."""
-    width, height, feather = 420, 140, 36
-    clock = Image.new('RGBA', (width, height), (0, 0, 0, 0))
-    pixels = clock.load()
-    for y in range(height):
-        fy = min(y, height - 1 - y) / float(feather)
-        for x in range(width):
-            fx = min(x, width - 1 - x) / float(feather)
-            fade = max(0.0, min(1.0, fx)) * max(0.0, min(1.0, fy))
-            pixels[x, y] = (0, 0, 0, int(150 * fade ** 0.7))
-    clock.save(os.path.join(MEDIA, 'clock.png'), optimize=True)
+def countries():
+    """The Natural Earth country polygons, downloaded once into the build cache."""
+    if not os.path.exists(COUNTRIES):
+        os.makedirs(CACHE, exist_ok=True)
+        request = urllib.request.Request(NATURAL_EARTH,
+                                         headers={'User-Agent': 'GeoGuess-build/0.3'})
+        data = urllib.request.urlopen(request, timeout=180).read()
+        with open(COUNTRIES, 'wb') as handle:
+            handle.write(data)
+    with open(COUNTRIES) as handle:
+        return json.load(handle)
+
+
+def _polygons(geometry):
+    """The ring lists of a Polygon or of every polygon in a MultiPolygon."""
+    if geometry.get('type') == 'Polygon':
+        yield geometry.get('coordinates') or []
+    elif geometry.get('type') == 'MultiPolygon':
+        for polygon in geometry.get('coordinates') or []:
+            yield polygon or []
+
+
+def make_world_map():
+    """A dark equirectangular world map: oceans, a 30-degree graticule, land and borders."""
+    width, height = MAP_W * MAP_SCALE, MAP_H * MAP_SCALE
+    image = Image.new('RGBA', (width, height), OCEAN)
+    draw = ImageDraw.Draw(image)
+
+    def xy(point):
+        return ((point[0] + 180.0) / 360.0 * width, (90.0 - point[1]) / 180.0 * height)
+
+    for lon in range(-150, 180, 30):
+        x = (lon + 180.0) / 360.0 * width
+        draw.line([(x, 0), (x, height)], fill=GRID, width=1)
+    for lat in range(-60, 90, 30):
+        y = (90.0 - lat) / 180.0 * height
+        draw.line([(0, y), (width, y)], fill=GRID, width=1)
+
+    features = [f for f in countries().get('features') or [] if f.get('geometry')]
+    # Land first, then every outline on top, so borders are not covered by a neighbouring fill.
+    for feature in features:
+        for polygon in _polygons(feature['geometry']):
+            if not polygon:
+                continue
+            ring = [xy(point) for point in polygon[0]]
+            if len(ring) >= 3:
+                draw.polygon(ring, fill=LAND)
+            for hole in polygon[1:]:
+                inner = [xy(point) for point in hole]
+                if len(inner) >= 3:
+                    draw.polygon(inner, fill=OCEAN)
+    for feature in features:
+        for polygon in _polygons(feature['geometry']):
+            if polygon:
+                ring = [xy(point) for point in polygon[0]]
+                draw.line(ring + ring[:1], fill=EDGE, width=1, joint='curve')
+
+    draw.rectangle((0, 0, width - 1, height - 1), outline=BORDER, width=2)
+    image.convert('RGB').save(os.path.join(MEDIA, 'world.png'), optimize=True)
+
+
+def make_pin():
+    """A red map pin, its tip at the bottom centre so it can sit exactly on the coordinates."""
+    scale = 4
+    width, height = 44, 62
+    w, h = width * scale, height * scale
+    cx, head_y, r = w // 2, int(round(18 * scale)), int(round(14 * scale))
+    tip = (cx, h)
+
+    def shape(draw, fill, grow):
+        rr = int(round(r * grow))
+        stem = int(round(rr * 0.34))
+        draw.polygon([(cx - int(round(rr * 0.78)), head_y + stem), tip,
+                      (cx + int(round(rr * 0.78)), head_y + stem)], fill=fill)
+        draw.ellipse((cx - rr, head_y - rr, cx + rr, head_y + rr), fill=fill)
+
+    shadow = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    shape(ImageDraw.Draw(shadow), (0, 0, 0, 255), 1.0)
+    shadow = shadow.filter(ImageFilter.GaussianBlur(3 * scale))
+    shadow.putalpha(shadow.split()[3].point(lambda a: int(a * 0.4)))
+
+    image = Image.alpha_composite(Image.new('RGBA', (w, h), (0, 0, 0, 0)), shadow)
+    draw = ImageDraw.Draw(image)
+    shape(draw, (255, 255, 255, 255), 1.14)        # white rim
+    shape(draw, (224, 76, 56, 255), 0.9)           # red body
+    hole = int(round(4.6 * scale))
+    draw.ellipse((cx - hole, head_y - hole, cx + hole, head_y + hole), fill=(255, 255, 255, 255))
+    image.resize((width, height), Image.LANCZOS).save(os.path.join(MEDIA, 'pin.png'), optimize=True)
 
 
 def main():
