@@ -54,7 +54,7 @@ it again after changing the table:
 
 ```sh
 python3 tools/make_settings_plant_gl.py
-python3 tools/make_settings_plant_gl.py screensaver.plant.gl.armv7 'Growing Plant (OpenGL, 32-bit Android)'
+python3 tools/make_settings_plant_gl.py screensaver.plant.gl.armv7 'Growing Plant (OpenGL, 32-bit Android)' low
 ```
 
 ## Settings
@@ -69,11 +69,16 @@ python3 tools/make_settings_plant_gl.py screensaver.plant.gl.armv7 'Growing Plan
 | Camera | Camera movement | Automatic | Automatic / Orbit / Sway / Spiral / Crane / Still |
 | Camera | Camera speed | 100% | 10-200%, scales the movement |
 | Camera | Framing | Normal | Normal / Close / Wide |
-| Scene | Background | Automatic | Automatic / Dawn / Meadow / Dusk / Night / Studio / Aurora |
+| Scene | Background | Automatic | Automatic / Dawn / Meadow / Dusk / Night / Studio / Aurora / None |
 | Scene | Ground and contact shadow | on | Ground disc, light pool, contact shadow |
 | Scene | Drifting pollen | on | Small additive motes around the plant |
-| Display | Detail | Normal | Low for slow boxes / Normal / High (generations, segments, leaf density) |
+| Display | Detail | Normal (Low in the 32-bit build) | Low for slow boxes / Normal / High (generations, segments, leaf density; Low also turns off the sky's cloud noise and grain and drops the pollen count) |
 | Display | Dim the picture | 0% | Darkens the output, 0-80% |
+
+Background **None** draws no sky at all: the frame is cleared to a flat dark colour and the sky
+shader is skipped, which removes the most expensive full-screen pass. Together with Detail Low and
+pollen off it is the lightest configuration, and the 32-bit Android build defaults to Low detail
+for Fire TV-class boxes. Automatic never chooses None.
 
 Automatic mode rotates plant, background and camera move independently, so consecutive cycles do
 not repeat together. Studio is reserved for the L-system pattern (it has no ground), and automatic

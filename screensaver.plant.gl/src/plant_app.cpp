@@ -164,6 +164,7 @@ uniform vec2 u_sunUv;
 uniform float u_time;
 uniform float u_aspect;
 uniform vec2 u_resolution;
+uniform float u_effects;
 float hash21(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
 }
@@ -202,30 +203,40 @@ void main() {
   col += u_sunColor * disc * u_sunVisible * 0.85;
   float spot = exp(-length((uv - vec2(0.5, 0.66)) * asp) * 3.4);
   col += u_glow * spot * u_studioAmount * 0.32;
-  float n = fbm(uv * vec2(u_aspect * 2.2, 2.0) + vec2(t * 0.006, 0.0));
-  float cm = smoothstep(0.50, 0.82, n) * smoothstep(0.10, 0.55, uv.y) *
-             (1.0 - smoothstep(0.72, 1.0, uv.y));
-  col = mix(col, u_cloudColor, cm * u_cloudAmount);
-  vec2 star_uv = uv * vec2(u_aspect * 260.0, 260.0);
-  vec2 star_cell = floor(star_uv);
-  vec2 star_f = fract(star_uv) - 0.5;
-  float sh = hash21(star_cell);
-  float star = step(0.9970, sh) * smoothstep(0.45, 0.05, length(star_f)) *
-               smoothstep(0.20, 0.45, uv.y);
-  float tw = 0.55 + 0.45 * sin(t * 2.0 + sh * 120.0);
-  col += vec3(0.80, 0.89, 1.0) * star * tw * u_starAmount * 0.90;
-  float an = vnoise(vec2(uv.x * 2.6 * u_aspect + t * 0.012, t * 0.020));
-  // Curtain-like ribbons rather than blobs: narrow horizontal bands hung at a shared height.
-  float band1 = pow(max(sin(uv.x * 4.4 * u_aspect + an * 5.0 + t * 0.050), 0.0), 4.0);
-  float band2 =
-      pow(max(sin(uv.x * 7.9 * u_aspect - an * 3.0 + t * 0.032 + 1.7), 0.0), 6.0);
-  float curtain_y = 0.58 + 0.05 * sin(uv.x * 2.8 * u_aspect + an * 2.0 + t * 0.04);
-  float am = exp(-pow((uv.y - curtain_y) * 4.4, 2.0)) * smoothstep(0.18, 0.42, uv.y);
-  col += mix(vec3(0.08, 0.85, 0.50), vec3(0.42, 0.18, 0.90), an) *
-         (band1 * 0.75 + band2 * 0.45) * am * u_auroraAmount * 0.85;
+  // The 3-octave cloud noise and the grain are the expensive parts of the sky pass; Low detail
+  // skips them. Stars and the aurora are one hash each and keep the night skies recognisable.
+  if (u_effects > 0.5 && u_cloudAmount > 0.001) {
+    float n = fbm(uv * vec2(u_aspect * 2.2, 2.0) + vec2(t * 0.006, 0.0));
+    float cm = smoothstep(0.50, 0.82, n) * smoothstep(0.10, 0.55, uv.y) *
+               (1.0 - smoothstep(0.72, 1.0, uv.y));
+    col = mix(col, u_cloudColor, cm * u_cloudAmount);
+  }
+  if (u_starAmount > 0.001) {
+    vec2 star_uv = uv * vec2(u_aspect * 260.0, 260.0);
+    vec2 star_cell = floor(star_uv);
+    vec2 star_f = fract(star_uv) - 0.5;
+    float sh = hash21(star_cell);
+    float star = step(0.9970, sh) * smoothstep(0.45, 0.05, length(star_f)) *
+                 smoothstep(0.20, 0.45, uv.y);
+    float tw = 0.55 + 0.45 * sin(t * 2.0 + sh * 120.0);
+    col += vec3(0.80, 0.89, 1.0) * star * tw * u_starAmount * 0.90;
+  }
+  if (u_auroraAmount > 0.001) {
+    float an = vnoise(vec2(uv.x * 2.6 * u_aspect + t * 0.012, t * 0.020));
+    // Curtain-like ribbons rather than blobs: narrow horizontal bands hung at a shared height.
+    float band1 = pow(max(sin(uv.x * 4.4 * u_aspect + an * 5.0 + t * 0.050), 0.0), 4.0);
+    float band2 =
+        pow(max(sin(uv.x * 7.9 * u_aspect - an * 3.0 + t * 0.032 + 1.7), 0.0), 6.0);
+    float curtain_y = 0.58 + 0.05 * sin(uv.x * 2.8 * u_aspect + an * 2.0 + t * 0.04);
+    float am = exp(-pow((uv.y - curtain_y) * 4.4, 2.0)) * smoothstep(0.18, 0.42, uv.y);
+    col += mix(vec3(0.08, 0.85, 0.50), vec3(0.42, 0.18, 0.90), an) *
+           (band1 * 0.75 + band2 * 0.45) * am * u_auroraAmount * 0.85;
+  }
   vec2 vp = (uv - 0.5) * asp;
   col *= 1.0 - 0.30 * pow(clamp(length(vp) * 0.85, 0.0, 1.0), 1.8);
-  col += (hash21(uv * u_resolution + vec2(t * 3.1, t * 1.7)) - 0.5) / 255.0;
+  if (u_effects > 0.5) {
+    col += (hash21(uv * u_resolution + vec2(t * 3.1, t * 1.7)) - 0.5) / 255.0;
+  }
   gl_FragColor = vec4(col, 1.0);
 }
 )glsl";
@@ -346,6 +357,14 @@ const int kSkyOrder[6] = {1, 2, 3, 4, 6, 5};
 const int kDarkSkyOrder[4] = {4, 5, 6, 3};
 const int kMotionOrder[4] = {1, 2, 3, 4};
 
+// Background index 7: no sky pass at all. The plant is lit against a flat dark backdrop, which
+// is the cheapest option for low-power boxes and reads well on a TV in a dark room.
+const Look kFlatLook = {
+    {0.018f, 0.020f, 0.028f}, {0.018f, 0.020f, 0.028f}, {0.55f, 0.60f, 0.70f},
+    {0.0f, 0.0f, 0.0f},       {1.00f, 0.94f, 0.82f},     {0.34f, 0.36f, 0.42f},
+    {0.72f, 0.82f, 1.00f},    {0.035f, 0.040f, 0.048f},  {0.80f, 0.86f, 1.00f},
+    0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, {0.35f, 0.75f, 0.45f}};
+
 twol::PlantPreset preset_enum(const int index) {
   switch (index) {
     case 1: return twol::PlantPreset::Tree;
@@ -382,7 +401,7 @@ void Settings::sanitise() {
   motion = clamp_int(motion, 0, 5);
   camera_speed = clamp_int(camera_speed, 10, 200);
   framing = clamp_int(framing, 0, 2);
-  background = clamp_int(background, 0, 6);
+  background = clamp_int(background, 0, 7);
   dim = clamp_int(dim, 0, 80);
 }
 
@@ -468,6 +487,7 @@ bool App::make_programs(std::string* error) {
   background_u_.time = glGetUniformLocation(background_program_, "u_time");
   background_u_.aspect = glGetUniformLocation(background_program_, "u_aspect");
   background_u_.resolution = glGetUniformLocation(background_program_, "u_resolution");
+  background_u_.effects = glGetUniformLocation(background_program_, "u_effects");
 
   ground_u_.view_proj = glGetUniformLocation(ground_program_, "u_viewProj");
   ground_u_.ground_radius = glGetUniformLocation(ground_program_, "u_groundRadius");
@@ -677,7 +697,7 @@ void App::start_cycle(const double now) {
     motion_index_ = settings_.motion;
   }
   preset_index_ = std::clamp(preset_index_, 1, 5);
-  background_index_ = std::clamp(background_index_, 1, 6);
+  background_index_ = std::clamp(background_index_, 1, 7);
   motion_index_ = std::clamp(motion_index_, 1, 5);
 
   static const double kGrowSeconds[4] = {36.0, 25.0, 17.0, 11.0};
@@ -728,8 +748,8 @@ void App::start_cycle(const double now) {
   mesh_ = build_growth_mesh(graph_);
   upload_mesh();
 
-  particle_draw_count_ = settings_.quality == 0 ? 24 : (settings_.quality == 2 ? 72 : 48);
-  look_ = kLooks[background_index_ - 1];
+  particle_draw_count_ = settings_.quality == 0 ? 16 : (settings_.quality == 2 ? 72 : 48);
+  look_ = background_index_ == 7 ? kFlatLook : kLooks[background_index_ - 1];
   cycle_start_ = now;
   last_t_ = 0.0;
   fade_ = 0.0;
@@ -867,10 +887,15 @@ void App::render(const double now, const int width, const int height) {
   glu::SavedState saved;
   glViewport(0, 0, width, height);
   glDepthMask(GL_TRUE);
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  if (background_index_ == 7) {
+    // Flat backdrop: skip the full-screen sky shader entirely, just clear to its colour.
+    glClearColor(look_.horizon.x, look_.horizon.y, look_.horizon.z, 1.0f);
+  } else {
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  }
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  draw_background(width, height);
+  if (background_index_ != 7) draw_background(width, height);
   if (settings_.ground && preset_index_ != 5) draw_ground();
   draw_plant();
   if (settings_.particles && particle_draw_count_ > 0) draw_particles(width, height);
@@ -948,6 +973,7 @@ void App::draw_background(const int width, const int height) {
   glUniform1f(background_u_.aspect, aspect);
   glUniform2f(background_u_.resolution, static_cast<float>(width),
               static_cast<float>(height));
+  glUniform1f(background_u_.effects, settings_.quality == 0 ? 0.0f : 1.0f);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 

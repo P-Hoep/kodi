@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.plant.gl" name="Growing Plant (OpenGL)" version="1.0.0" provider-name="P-Hoep">
+<addon id="screensaver.plant.gl" name="Growing Plant (OpenGL)" version="1.0.1" provider-name="P-Hoep">
   <requires>
     <c-pluff version="1.0"/>
     <import addon="kodi.binary.global.main" version="2.0.2"/>
@@ -9,7 +9,7 @@
              library_android="screensaver.plant.gl.so"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en_GB">A procedural plant grows from a seed on the GPU, in front of a living sky</summary>
-    <description lang="en_GB">One plant at a time grows from nothing: a trunk extends, branches unfold, leaves open and the whole thing sways in the wind, then it holds while the camera circles, sways, spirals or climbs around it. Each plant is generated from an L-system / node graph, so every cycle is a different tree, bush, fern or fan-leaf plant, with an occasional L-system pattern drawn in glowing tubes. Six hand-tuned skies range from dawn to night to an aurora; pick one or let the screensaver rotate through them. The growth is done on the GPU: the plant is a single mesh whose vertices know when they are born, so it animates without rebuilding anything. Choose the plant, seed, leaf density, growth speed, camera movement, framing, background and detail; all are optional, the defaults are the screensaver.</description>
+    <description lang="en_GB">One plant at a time grows from nothing: a trunk extends, branches unfold, leaves open and the whole thing sways in the wind, then it holds while the camera circles, sways, spirals or climbs around it. Each plant is generated from an L-system / node graph, so every cycle is a different tree, bush, fern or fan-leaf plant, with an occasional L-system pattern drawn in glowing tubes. Six hand-tuned skies range from dawn to night to an aurora, plus a flat no-background option with no sky pass at all; pick one or let the screensaver rotate through them. The growth is done on the GPU: the plant is a single mesh whose vertices know when they are born, so it animates without rebuilding anything. Choose the plant, seed, leaf density, growth speed, camera movement, framing, background and detail; all are optional, the defaults are the screensaver. On a low-power TV box, Detail Low with Background None (and drifting pollen off) gives the lightest load.</description>
     <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Apple Silicon and Intel, and 64-bit Android). The plant generator is the TwoOL procedural plant / L-system core from this repository, vendored into src/twol under the MIT licence in LICENSE.txt.</disclaimer>
     <platform>osx android</platform>
     <license>MIT</license>

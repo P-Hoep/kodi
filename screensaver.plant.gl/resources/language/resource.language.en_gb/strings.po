@@ -160,29 +160,33 @@ msgid "Aurora"
 msgstr ""
 
 msgctxt "#30138"
-msgid "Draw the ground and the contact shadow"
+msgid "None (flat colour, fastest)"
 msgstr ""
 
 msgctxt "#30139"
-msgid "Drifting pollen"
+msgid "Draw the ground and the contact shadow"
 msgstr ""
 
 msgctxt "#30140"
-msgid "Display"
+msgid "Drifting pollen"
 msgstr ""
 
 msgctxt "#30141"
-msgid "Detail"
+msgid "Display"
 msgstr ""
 
 msgctxt "#30142"
-msgid "Low (for slow boxes)"
+msgid "Detail"
 msgstr ""
 
 msgctxt "#30143"
-msgid "High"
+msgid "Low (for slow boxes)"
 msgstr ""
 
 msgctxt "#30144"
+msgid "High"
+msgstr ""
+
+msgctxt "#30145"
 msgid "Dim the picture (%)"
 msgstr ""

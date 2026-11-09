@@ -29,7 +29,7 @@ plantgl::Settings read_settings() {
   s.camera_speed =
       clamp(kodi::addon::GetSettingInt("camera_speed", s.camera_speed), 10, 200);
   s.framing = clamp(kodi::addon::GetSettingInt("framing", s.framing), 0, 2);
-  s.background = clamp(kodi::addon::GetSettingInt("background", s.background), 0, 6);
+  s.background = clamp(kodi::addon::GetSettingInt("background", s.background), 0, 7);
   s.particles = kodi::addon::GetSettingBoolean("particles", s.particles);
   s.ground = kodi::addon::GetSettingBoolean("ground", s.ground);
   s.dim = clamp(kodi::addon::GetSettingInt("dim", s.dim), 0, 80);

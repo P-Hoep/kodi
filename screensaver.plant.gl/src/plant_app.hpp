@@ -23,7 +23,8 @@ struct Settings {
   int motion = 0;       // 0 auto, 1 orbit, 2 sway, 3 spiral, 4 crane, 5 still
   int camera_speed = 100;
   int framing = 0;      // 0 normal, 1 close, 2 wide
-  int background = 0;   // 0 auto, 1 dawn, 2 meadow, 3 dusk, 4 night, 5 studio, 6 aurora
+  int background = 0;   // 0 auto, 1 dawn, 2 meadow, 3 dusk, 4 night, 5 studio, 6 aurora,
+                        // 7 none (flat colour, no sky pass)
   bool particles = true;
   bool ground = true;
   int dim = 0;
@@ -75,7 +76,8 @@ class App {
   struct BackgroundUniforms {
     int zenith = -1, horizon = -1, glow = -1, cloud_color = -1, sun_color = -1;
     int cloud_amount = -1, star_amount = -1, aurora_amount = -1, studio_amount = -1;
-    int sun_size = -1, sun_visible = -1, sun_uv = -1, time = -1, aspect = -1, resolution = -1;
+    int sun_size = -1, sun_visible = -1, sun_uv = -1, time = -1, aspect = -1, resolution = -1,
+        effects = -1;
   };
   struct GroundUniforms {
     int view_proj = -1, ground_radius = -1, ground_color = -1, glow = -1, shadow = -1;

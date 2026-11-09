@@ -3,7 +3,10 @@ so the Kodi settings and screensaver.plant.gl/src/kodi_plant.cpp cannot disagree
 option 2 means.
 
 Run: python3 tools/make_settings_plant_gl.py
-     python3 tools/make_settings_plant_gl.py screensaver.plant.gl.armv7 'Growing Plant (OpenGL, 32-bit Android)'
+     python3 tools/make_settings_plant_gl.py screensaver.plant.gl.armv7 'Growing Plant (OpenGL, 32-bit Android)' low
+
+The optional third argument 'low' makes Low detail the default, for the builds aimed at low-power
+devices where the default Normal can be too heavy.
 """
 
 import os
@@ -12,6 +15,8 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON_ID = sys.argv[1] if len(sys.argv) > 1 else 'screensaver.plant.gl'
 NAME = sys.argv[2] if len(sys.argv) > 2 else 'Growing Plant (OpenGL)'
+LOW_POWER = len(sys.argv) > 3 and sys.argv[3] == 'low'
+QUALITY_DEFAULT = 0 if LOW_POWER else 1
 ROOT = os.path.normpath(os.path.join(HERE, '..', ADDON_ID))
 sys.path.insert(0, HERE)
 
@@ -54,12 +59,13 @@ CATEGORIES = [
                                           'Dusk',
                                           'Night',
                                           'Studio',
-                                          'Aurora']),
+                                          'Aurora',
+                                          'None (flat colour, fastest)']),
         B('ground', 'Draw the ground and the contact shadow', True),
         B('particles', 'Drifting pollen', True),
     ]),
     ('Display', [
-        O('quality', 'Detail', 1, ['Low (for slow boxes)', 'Normal', 'High']),
+        O('quality', 'Detail', QUALITY_DEFAULT, ['Low (for slow boxes)', 'Normal', 'High']),
         I('dim', 'Dim the picture (%)', 0, 0, 80, 10),
     ]),
 ]
