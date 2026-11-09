@@ -15,7 +15,7 @@ installs them and keeps them up to date.
 | [Couchstronomy](#couchstronomy) | 0.1.3 | Your TV as a window onto the real night sky |
 | [SkyWatch](#skywatch) | 1.0.0 | A live weather station: radar, forecasts, warnings and conditions |
 | [Live Cams](#live-cams) | 1.0.0 | A window onto public live cameras around the world |
-| [GeoGuess](#geoguess) | 0.1.1 | A random street-view panorama, named a few seconds later |
+| [GeoGuess](#geoguess) | 0.2.0 | A random street-view panorama, named a few seconds later |
 | [Word Clock](#word-clock) | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 | [Sand Clock](#sand-clock) | 1.0.1 | A clock whose digits crumble into falling sand every second |
 | [Jeopkodi](#jeopkodi) | 1.1.0 | An endless Jeopardy! slideshow: clue, then the response |
@@ -81,7 +81,7 @@ The add-ons are in a Kodi repository hosted on GitHub Pages:
 1. **Settings → System → Add-ons → Unknown sources → On.**
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/`
    and name it `phoep`.
-3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.10.zip`.
+3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.11.zip`.
    Kodi shows "P-Hoep Add-ons — Add-on installed".
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** Screensavers are under
    **Look and feel → Screensaver**; the Switcher is under **Services**; Sheetcards, RSS Live
@@ -270,7 +270,10 @@ fades in at the bottom left; after a while the next panorama crossfades in.
 
 - **Unseen places:** rows are fetched in a shuffled batch from a random offset, and the last 200
   shown are skipped.
-- **Timing:** reveal the name after 8 seconds (1–60) and show each place for 25 seconds (5–120).
+- **Timing:** reveal the name after 8 seconds (1–60) and show each place for 25 seconds (5–120)
+  per pass.
+- **Repeats:** pan one to ten times back and forth over the same panorama before moving on.
+- **Clock:** an optional fixed clock in the top right corner.
 - **Labels:** the country's English name is appended unless the address already ends with a known
   spelling of it; label size small, medium or large.
 - **Images:** wide panoramas pan with a sine ease, narrow ones are centred; the next image is

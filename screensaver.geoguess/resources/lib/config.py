@@ -6,7 +6,7 @@ strings.po; read() loads the values from an xbmcaddon.Addon in the glue layer.
 
 ADDON_ID = 'screensaver.geoguess'
 ADDON_NAME = 'GeoGuess Screensaver'
-VERSION = '0.1.1'
+VERSION = '0.2.0'
 
 # Both Hugging Face datasets hold the same 11,054 rows with the same five columns and the same
 # row order. The first one's /rows endpoint works; the second's parquet row groups are larger
@@ -37,12 +37,14 @@ def O(sid, label, default, options, **kw):
 CATEGORIES = [
     ('Playback', [
         S('reveal_after', 'Reveal the location after (seconds)', 8, 1, 60),
-        S('show_for', 'Time per location (seconds)', 25, 5, 120),
+        S('show_for', 'Seconds per panorama pass', 25, 5, 120),
         S('batch_size', 'Locations fetched per request', 40, 10, 100, step=10),
     ]),
     ('Display', [
         B('show_country_name', 'Append the full country name', True),
         B('pan_enabled', 'Pan slowly across each panorama', True),
+        S('pan_passes', 'Passes across each panorama', 1, 1, 10, visible='pan_enabled'),
+        B('show_clock', 'Show a clock in the top right corner', False),
         O('label_size', 'Location label size', 1, ['Small', 'Medium', 'Large']),
     ]),
 ]
@@ -93,6 +95,11 @@ def timing(settings):
     reveal = float(settings.get('reveal_after', 8))
     reveal = max(0.5, min(reveal, show_for - 1.0))
     return reveal, show_for
+
+
+def pan_passes(settings):
+    """How many times the pan sweeps across a panorama before the next location."""
+    return max(1, min(10, int(settings.get('pan_passes', 1))))
 
 
 def batch_size(settings):

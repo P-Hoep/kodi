@@ -16,7 +16,7 @@ msgid "Reveal the location after (seconds)"
 msgstr ""
 
 msgctxt "#30102"
-msgid "Time per location (seconds)"
+msgid "Seconds per panorama pass"
 msgstr ""
 
 msgctxt "#30103"
@@ -36,18 +36,26 @@ msgid "Pan slowly across each panorama"
 msgstr ""
 
 msgctxt "#30107"
-msgid "Location label size"
+msgid "Passes across each panorama"
 msgstr ""
 
 msgctxt "#30108"
-msgid "Small"
+msgid "Show a clock in the top right corner"
 msgstr ""
 
 msgctxt "#30109"
-msgid "Medium"
+msgid "Location label size"
 msgstr ""
 
 msgctxt "#30110"
+msgid "Small"
+msgstr ""
+
+msgctxt "#30111"
+msgid "Medium"
+msgstr ""
+
+msgctxt "#30112"
 msgid "Large"
 msgstr ""
 

@@ -1,7 +1,9 @@
-"""Generate the GeoGuess media: icon, fanart, the white backdrop texture and the bottom shade.
+"""Generate the GeoGuess media: icon, fanart, the white backdrop texture, the bottom shade and
+the soft panel behind the clock.
 
-The backdrop and shade are drawn with Python in the add-on (resources/lib/saver.py): a plain
-white texture tinted black, and a transparent-to-black gradient behind the location label.
+The backdrop, shade and clock panel are drawn with Python in the add-on (resources/lib/saver.py):
+a plain white texture tinted black, a transparent-to-black gradient behind the location label,
+and a soft-edged translucent black panel that keeps the clock readable over bright skies.
 
 Run:  python3 tools/make_geoguess_media.py
 """
@@ -130,6 +132,21 @@ def make_textures():
         for x in range(1920):
             pixels[x, y] = (0, 0, 0, alpha)
     shade.save(os.path.join(MEDIA, 'shade.png'), optimize=True)
+    make_clock()
+
+
+def make_clock():
+    """A translucent black panel whose edges fade out, so the clock never sits on bare sky."""
+    width, height, feather = 420, 140, 36
+    clock = Image.new('RGBA', (width, height), (0, 0, 0, 0))
+    pixels = clock.load()
+    for y in range(height):
+        fy = min(y, height - 1 - y) / float(feather)
+        for x in range(width):
+            fx = min(x, width - 1 - x) / float(feather)
+            fade = max(0.0, min(1.0, fx)) * max(0.0, min(1.0, fy))
+            pixels[x, y] = (0, 0, 0, int(150 * fade ** 0.7))
+    clock.save(os.path.join(MEDIA, 'clock.png'), optimize=True)
 
 
 def main():

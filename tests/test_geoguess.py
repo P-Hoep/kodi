@@ -60,6 +60,8 @@ class SettingsTable(unittest.TestCase):
         self.assertEqual(values['batch_size'], 40)
         self.assertTrue(values['show_country_name'])
         self.assertTrue(values['pan_enabled'])
+        self.assertEqual(values['pan_passes'], 1)
+        self.assertFalse(values['show_clock'])
         self.assertEqual(values['label_size'], 1)
 
     def test_slider_ranges_match_the_spec(self):
@@ -67,7 +69,12 @@ class SettingsTable(unittest.TestCase):
         self.assertEqual((by_id['reveal_after']['min'], by_id['reveal_after']['max']), (1, 60))
         self.assertEqual((by_id['show_for']['min'], by_id['show_for']['max']), (5, 120))
         self.assertEqual((by_id['batch_size']['min'], by_id['batch_size']['max']), (10, 100))
+        self.assertEqual((by_id['pan_passes']['min'], by_id['pan_passes']['max']), (1, 10))
         self.assertEqual(by_id['label_size']['options'], ['Small', 'Medium', 'Large'])
+
+    def test_pan_passes_are_hidden_while_panning_is_off(self):
+        by_id = dict((s['id'], s) for s in config.all_settings())
+        self.assertEqual(by_id['pan_passes']['visible'], 'pan_enabled')
 
     def test_read_keeps_defaults_when_a_setting_is_missing(self):
         class Empty(object):
@@ -77,12 +84,20 @@ class SettingsTable(unittest.TestCase):
         values = config.read(Empty())
         self.assertTrue(values['show_country_name'])
         self.assertTrue(values['pan_enabled'])
+        self.assertEqual(values['pan_passes'], 1)
+        self.assertFalse(values['show_clock'])
         self.assertEqual(values['reveal_after'], 8)
 
     def test_timing_clamps(self):
         self.assertEqual(config.timing({'reveal_after': 8, 'show_for': 25}), (8.0, 25))
         self.assertEqual(config.timing({'reveal_after': 200, 'show_for': 10}), (9.0, 10))
         self.assertEqual(config.timing({'reveal_after': -4, 'show_for': 1}), (0.5, 5))
+
+    def test_pan_passes_clamp(self):
+        self.assertEqual(config.pan_passes({'pan_passes': 3}), 3)
+        self.assertEqual(config.pan_passes({'pan_passes': 0}), 1)
+        self.assertEqual(config.pan_passes({'pan_passes': 40}), 10)
+        self.assertEqual(config.pan_passes({}), 1)
 
     def test_batch_size_clamps(self):
         self.assertEqual(config.batch_size({'batch_size': 3}), 10)
@@ -186,6 +201,33 @@ class LayoutMath(unittest.TestCase):
 
     def test_pan_can_be_switched_off(self):
         self.assertEqual(layout.pan_offset(5000, 1920, 10, 20, enabled=False), 0)
+
+    def test_each_pass_turns_around_at_the_edge(self):
+        width = 5835
+        extent = width - 1920
+        # Pass 1 goes left to right, pass 2 comes back, pass 3 goes right again.
+        self.assertEqual(layout.pan_offset(width, 1920, 0, 20, passes=3), 0)
+        self.assertEqual(layout.pan_offset(width, 1920, 20, 20, passes=3), -extent)
+        self.assertEqual(layout.pan_offset(width, 1920, 40, 20, passes=3), 0)
+        self.assertEqual(layout.pan_offset(width, 1920, 60, 20, passes=3), -extent)
+
+    def test_a_pass_moves_continuously_across_its_boundary(self):
+        width = 5835
+        extent = width - 1920
+        before = layout.pan_offset(width, 1920, 20 - 0.001, 20, passes=2)
+        after = layout.pan_offset(width, 1920, 20 + 0.001, 20, passes=2)
+        self.assertEqual(before, -extent)
+        self.assertEqual(after, -extent)
+        # Halfway back on the return pass.
+        self.assertAlmostEqual(layout.pan_offset(width, 1920, 30, 20, passes=2),
+                               -extent / 2.0, delta=1)
+
+    def test_an_odd_pass_count_ends_at_the_right_edge(self):
+        self.assertEqual(layout.pan_offset(4000, 1920, 15, 5, passes=3), -2080)
+        self.assertEqual(layout.pan_offset(4000, 1920, 10, 5, passes=2), 0)
+
+    def test_pan_is_clamped_after_all_passes(self):
+        self.assertEqual(layout.pan_offset(4000, 1920, 999, 5, passes=2), 0)
 
     def test_ease_is_clamped(self):
         self.assertEqual(layout.ease(-1), 0.0)
@@ -499,7 +541,7 @@ class AddonFiles(unittest.TestCase):
     def test_window_and_media_exist(self):
         self.assertTrue(os.path.isfile(os.path.join(
             ADDON_DIR, 'resources', 'skins', 'Default', '1080i', 'screensaver-geoguess.xml')))
-        for name in ('white.png', 'shade.png'):
+        for name in ('white.png', 'shade.png', 'clock.png'):
             self.assertTrue(os.path.isfile(os.path.join(
                 ADDON_DIR, 'resources', 'skins', 'Default', 'media', name)))
 

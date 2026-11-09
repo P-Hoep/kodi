@@ -78,7 +78,9 @@ class Saver(object):
         self.reveal, self.show_for = config.timing(self.settings)
         self.batch_size = config.batch_size(self.settings)
         self.pan_enabled = bool(self.settings.get('pan_enabled', True))
+        self.passes = config.pan_passes(self.settings)
         self.show_country = bool(self.settings.get('show_country_name', True))
+        self.show_clock = bool(self.settings.get('show_clock', False))
         self.label_index = max(0, min(2, int(self.settings.get('label_size', 1))))
         self.stop = threading.Event()
         self.monitor = ExitMonitor(self.wake)
@@ -89,6 +91,9 @@ class Saver(object):
         self.images = []
         self.label = None
         self.status_label = None
+        self.clock_back = None
+        self.clock_label = None
+        self._clock_shown = None
         self.active = 0
         self.recent = collections.deque(maxlen=RECENT)
         self.candidates = []
@@ -166,9 +171,20 @@ class Saver(object):
         self.status_label = xbmcgui.ControlLabel(0, 480, W, 100, '', font='font37',
                                                  textColor='CCFFFFFF', alignment=2)
         self.controls = ([backdrop] + self.images + [shade] + self.label_boxes + [self.status_label])
+        if self.show_clock:
+            # Fixed in the corner: separate controls, so the pan moves the image behind them.
+            # The panel is a soft-edged translucent black PNG, which keeps the white text
+            # readable over bright skies, and alignment 1 is right.
+            self.clock_back = xbmcgui.ControlImage(W - 460, 10, 420, 140, self.media('clock.png'))
+            self.clock_label = xbmcgui.ControlLabel(W - 450, 25, 390, 110, '', font='font45',
+                                                    textColor='F2FFFFFF', alignment=1)
+            self.controls.append(self.clock_back)
+            self.controls.append(self.clock_label)
+            self._tick_clock()
         window.addControls(self.controls)
-        debug('attached: reveal %.1f s, show_for %d s, label %s'
-              % (self.reveal, self.show_for, config.LABEL_FONTS[self.label_index]))
+        debug('attached: reveal %.1f s, show_for %d s, passes %d, clock %s, label %s'
+              % (self.reveal, self.show_for, self.passes, self.show_clock,
+                 config.LABEL_FONTS[self.label_index]))
         self.show_status(self.tr(32000))
         self.thread = threading.Thread(target=self.display_loop, name='geoguess-display')
         self.thread.daemon = True
@@ -180,6 +196,22 @@ class Saver(object):
         except Exception:
             text = ''
         return text or config.STRINGS.get(sid, '')
+
+    def _clock_text(self):
+        """The clock in the player's own time format, so 12/24-hour matches the rest of Kodi."""
+        try:
+            fmt = xbmc.getRegion('time') or '%H:%M'
+        except Exception:
+            fmt = '%H:%M'
+        return time.strftime(fmt)
+
+    def _tick_clock(self):
+        if self.clock_label is None:
+            return
+        text = self._clock_text()
+        if text != self._clock_shown:
+            self._clock_shown = text
+            self.clock_label.setLabel(text)
 
     def show_status(self, text):
         if self.status_label is None:
@@ -229,6 +261,7 @@ class Saver(object):
     def _pause(self, seconds):
         end = time.time() + seconds
         while time.time() < end:
+            self._tick_clock()
             if self.stopped():
                 return False
             if self.monitor.waitForAbort(min(0.2, max(0.0, end - time.time()))):
@@ -256,6 +289,7 @@ class Saver(object):
     def _next_ready(self):
         """A downloaded image for the next slide, or None when the screensaver is closing."""
         while not self.stopped():
+            self._tick_clock()
             if not self._in_flight:
                 item = self._next_item()
                 if item is None:
@@ -307,20 +341,26 @@ class Saver(object):
 
         text = labels.display_label(downloaded.item.address, downloaded.item.country,
                                     self.show_country)
+        # Repeated passes only make sense when there is something to pan across; a centred image
+        # or the pan switched off keeps the location on screen for one pass.
+        passes = self.passes if self.pan_enabled and width > W else 1
+        end_after = self.show_for * passes
         revealed = False
         x = start_x
         while not self.stopped():
             elapsed = time.time() - started
-            if elapsed >= self.show_for:
+            if elapsed >= end_after:
                 break
             # Kodi's slide animation does not move a control created from Python, so the pan is
             # stepped here. The tick is faster than the display refresh and the position comes
             # from the clock rather than the tick count, so every rendered frame gets a fresh,
             # evenly spaced position and a late wake-up never makes the pan drift.
-            moved = start_x + layout.pan_offset(width, W, elapsed, self.show_for, self.pan_enabled)
+            moved = start_x + layout.pan_offset(width, W, elapsed, self.show_for, self.pan_enabled,
+                                                passes)
             if moved != x:
                 coming.setPosition(moved, 0)
                 x = moved
+            self._tick_clock()
             if not revealed and elapsed >= self.reveal:
                 self._show_label(text)
                 debug('label: %s' % text)

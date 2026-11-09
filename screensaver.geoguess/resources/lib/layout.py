@@ -31,12 +31,23 @@ def ease(u):
     return 0.5 - 0.5 * math.cos(math.pi * u)
 
 
-def pan_offset(display_width, screen_width, elapsed, show_for, enabled=True):
-    """The image's left edge in screen pixels at `elapsed` seconds into the cycle."""
+def pan_offset(display_width, screen_width, elapsed, show_for, enabled=True, passes=1):
+    """The image's left edge in screen pixels at `elapsed` seconds into the pan.
+
+    One pass sweeps the panorama from its left edge to its right edge in `show_for` seconds,
+    easing in and out. With several passes the direction reverses at each end, so the same
+    panorama is shown back and forth; the last pass may end at either edge. `elapsed` past the
+    end keeps the last position.
+    """
     extent = pan_extent(display_width, screen_width)
+    passes = max(1, int(passes))
     if not enabled or extent <= 0 or show_for <= 0:
         return 0
-    return -int(round(extent * ease(elapsed / float(show_for))))
+    index = min(int(elapsed / float(show_for)), passes - 1)
+    u = (elapsed - index * float(show_for)) / float(show_for)
+    if index % 2:
+        u = 1.0 - u
+    return -int(round(extent * ease(u)))
 
 
 def centre_offset(display_width, screen_width):

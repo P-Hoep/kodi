@@ -30,7 +30,7 @@ installed version in **Add-ons → My add-ons**.
 | [SkyWatch](#skywatch) | `screensaver.skywatch` | 1.0.0 | A live weather station: radar, forecasts, warnings and conditions |
 | [Vintage Radar](#vintage-radar) | `screensaver.vintageradar` | 1.0.1 | A green-phosphor radar scope showing the aircraft flying over you right now (Kodi 20+) |
 | [Live Cams](#live-cams) | `screensaver.livecams` | 1.0.0 | A window onto public live cameras around the world |
-| [GeoGuess](#geoguess) | `screensaver.geoguess` | 0.1.1 | A random street-view panorama, named a few seconds later |
+| [GeoGuess](#geoguess) | `screensaver.geoguess` | 0.2.0 | A random street-view panorama, named a few seconds later |
 | [Word Clock](#word-clock) | `screensaver.wordclock` | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 | [Sand Clock](#sand-clock) | `screensaver.sandclock` | 1.0.1 | A clock whose digits crumble into falling sand every second |
 | [Jeopkodi](#jeopkodi) | `screensaver.jeopkodi` | 1.1.0 | An endless Jeopardy! slideshow: clue, then the response |
@@ -80,7 +80,7 @@ installed version in **Add-ons → My add-ons**.
 | RSS Live Tiles library | `script.module.rsslivetiles` | 1.0.0 | Shared code for the RSS Live Tiles app and screensaver |
 | OpenTrivia library | `script.module.opentrivia` | 1.0.0 | The questions database, shared window and skin for the OpenTrivia add-ons |
 | Vintage Radar library | `script.module.vintageradar` | 1.0.1 | The scope's model, feeds, window, text renderer and textures, shared by the Vintage Radar app and screensaver |
-| P-Hoep Add-ons | `repository.phoep` | 1.0.10 | The Kodi repository that installs and updates everything |
+| P-Hoep Add-ons | `repository.phoep` | 1.0.11 | The Kodi repository that installs and updates everything |
 
 The library modules are installed automatically as dependencies; there is nothing to configure.
 
@@ -116,7 +116,7 @@ installs them and updates them itself.
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/` and name it
    `phoep`.
 3. **Settings → Add-ons → Install from zip file → phoep →**
-   `repository.phoep-1.0.10.zip`.
+   `repository.phoep-1.0.11.zip`.
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.**
    - Screensavers are under **Look and feel → Screensaver**.
    - The Switcher is under **Services**.
@@ -434,7 +434,8 @@ streamed at run time from the Hugging Face dataset
 through its datasets server, with one metadata request per batch.
 
 - **Guessing:** reveal the location after 8 seconds (1–60) and show each place for 25 seconds
-  (5–120), all adjustable.
+  (5–120) per pass, all adjustable. Pan one to ten times back and forth over the same panorama
+  for another look before the next place arrives.
 - **Unseen places:** a batch is fetched from a random offset, shuffled, and the last 200 shown
   row indices are dropped, so the same street does not come back soon.
 - **Labels:** the address's coordinate suffix is stripped; the country's ISO alpha-2 code is
@@ -443,13 +444,14 @@ through its datasets server, with one metadata request per batch.
 - **Images:** a wide panorama pans with a sine ease; a narrow one is centred. The next image is
   prefetched while the current one is shown, at most three files are kept in Kodi's temp folder,
   and they are deleted on exit.
+- **Clock:** an optional fixed clock in the top right corner, in Kodi's own time format.
 - **Offline:** a black screen with **No connection. Retrying…**, retrying at 10, 20, 40 and 60
   seconds and resuming when the connection returns. Any input exits immediately.
 
 | Category | Settings |
 |---|---|
-| Playback | Reveal the location after, time per location, locations fetched per request |
-| Display | Append the full country name, pan the panorama, label size |
+| Playback | Reveal the location after, seconds per panorama pass, locations fetched per request |
+| Display | Append the full country name, pan the panorama, passes across each panorama, clock, label size |
 
 ```bash
 python3 tools/make_settings_geoguess.py  # settings.xml + strings.po from resources/lib/config.py

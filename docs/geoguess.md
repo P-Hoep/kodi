@@ -1,12 +1,13 @@
 # GeoGuess Screensaver
 
-`screensaver.geoguess` v0.1.0
+`screensaver.geoguess` v0.2.0
 
 A Kodi screensaver that turns the idle screen into a guessing game. Each location is a random
-street-view panorama from around the world, filling the screen height while it pans slowly. After
-a few seconds the place name fades in at the bottom left; after a while the next panorama
-crossfades in. It streams everything from a Hugging Face dataset at run time, so the add-on ships
-no images.
+street-view panorama from around the world, filling the screen height while it pans slowly — as
+many times back and forth as you like, to give you another look. After a few seconds the place
+name fades in at the bottom left; a fixed clock in the top right corner is optional. After a
+while the next panorama crossfades in. It streams everything from a Hugging Face dataset at run
+time, so the add-on ships no images.
 
 It is pure Python (Kodi 19 or later), with no compiled code and no imaging library. One metadata
 request per batch of locations, one image download per cycle.
@@ -38,7 +39,8 @@ The add-on is in the P-Hoep repository (see the
 1. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.**
 2. **Look and feel → Screensaver → GeoGuess Screensaver.**
 3. **Settings → Interface → Screensaver → Screensaver mode → GeoGuess Screensaver.**
-4. Open the add-on's settings below it to change the timing, the pan and the label.
+4. Open the add-on's settings below it to change the timing, the pan passes, the clock and
+   the label.
 
 `script.module.certifi` is installed automatically as a dependency. It supplies a CA bundle on
 devices whose Python has no system store of its own (common on Android).
@@ -52,10 +54,16 @@ devices whose Python has no system store of its own (common on Android).
 3. When the current cycle ends, that file is put into the spare image control and the two
    controls crossfade over one second. The old image is hidden.
 4. The panorama is scaled to the full screen height; its width follows its aspect ratio. A
-   panorama wider than the screen pans from its left edge to its right edge over the time the
-   location is shown, with a sine ease in and out. A narrower one is centred and does not move.
-5. At **Reveal the location after** seconds the place name fades in over the bottom shade. At
-   **Time per location** seconds the label fades out and the next crossfade begins.
+   panorama wider than the screen pans from its left edge to its right edge in one pass, with a
+   sine ease in and out. With **Passes across each panorama** above one, the direction reverses
+   at each edge, so the panorama is shown back and forth; odd pass counts end at the right edge,
+   even ones at the left. A narrower one, or panning switched off, is centred and does not move.
+5. At **Reveal the location after** seconds the place name fades in over the bottom shade. After
+   **Seconds per panorama pass** × the pass count the label fades out and the next crossfade
+   begins. Repeated passes keep the pace of one pass; they make the location stay longer rather
+   than pan faster.
+6. With **Show a clock** on, the time is drawn in the top right corner, in Kodi's own 12/24-hour
+   format. It is a separate control, so it stays put while the panorama pans behind it.
 
 Nothing is displayed until the first image is ready: the background is black, with **Loading a
 street view…** in the middle. A hint of the label is never shown before the configured delay.
@@ -68,14 +76,17 @@ All the settings are on one page, in two groups. They are listed here with their
 | Setting | Id | Default | Range / options | Effect |
 |---|---|---|---|---|
 | Reveal the location after (seconds) | `reveal_after` | 8 | 1–60 | How long to guess before the name appears. Clamped to at most one second before the end of the cycle. |
-| Time per location (seconds) | `show_for` | 25 | 5–120 | How long each panorama stays, including the pan and the label. |
+| Seconds per panorama pass | `show_for` | 25 | 5–120 | How long one sweep from edge to edge takes. A location stays for this × the number of passes. |
 | Locations fetched per request | `batch_size` | 40 | 10–100, step 10 | Rows asked for in one metadata request. Bigger batches mean fewer requests and more images skipped over. |
 | Append the full country name | `show_country_name` | on | on/off | Adds the English country name when the address does not already end with any known spelling of it. |
 | Pan slowly across each panorama | `pan_enabled` | on | on/off | Off pins wide panoramas to their left edge instead of panning. |
+| Passes across each panorama | `pan_passes` | 1 | 1–10 | How many sweeps before the next location. Each pass reverses direction, so 2 or 3 gives another look at the scene. Hidden when panning is off; centred images always show for one pass. |
+| Show a clock in the top right corner | `show_clock` | off | on/off | A fixed clock over the panorama, in Kodi's time format. |
 | Location label size | `label_size` | Medium | Small / Medium / Large | `font28`, `font37` or `font45` in Kodi's GUI resolution. |
 
 The label is white over a 460-pixel gradient shade at the bottom of the screen, so it stays
-readable over bright skies and snow.
+readable over bright skies and snow. The clock sits on a small soft-edged translucent panel for
+the same reason.
 
 ## The location label
 
@@ -184,7 +195,7 @@ screensaver.geoguess/
     lib/
       config.py                  settings table, sources, strings, backoff
       labels.py                  address cleaning and ISO alpha-2 -> country name
-      layout.py                  display size, pan extent, sine ease, offsets
+      layout.py                  display size, pan extent, sine ease, repeated passes
       net.py                     urllib helpers, TLS, timeouts, image signature check
       hf_client.py               datasets-server client: /size, /rows, retries, rotation
       downloader.py              temp store, JPEG/PNG size, downloader, prefetch thread
