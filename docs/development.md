@@ -48,6 +48,7 @@ screensaver.sandclock.gl/           native project: Sand Clock, Liquid Clock,
                                     Cellular Automata (3), Physarum (2), Tetris AI, Visualisation
 screensaver.plant.gl/               native project: Growing Plant
 screensaver.infworld.gl/            native project: Endless World
+screensaver.vintageradar.gl/        native project: Vintage Radar
 ```
 
 Each native project is one CMake build producing the Kodi module(s) and GLFW test harnesses. Its
@@ -110,6 +111,7 @@ Do not hand-edit `resources/settings.xml` or `strings.po`. Each add-on has one P
 python3 tools/make_settings_jeopkodi.py
 python3 tools/make_settings_plant_gl.py                 # native: also cross-checks option indices
 python3 tools/make_settings_tetris_gl.py                # writes both tetris.gl and tetris.gl.armv7
+python3 tools/make_settings_vintageradar.py             # writes both vintageradar GL builds and the app
 ```
 
 `tools/make_settings.py` contains the shared writer. String ids start at **30100** and are
@@ -208,13 +210,14 @@ git sparse-checkout set addons/kodi-dev-kit/include
 If `KODI_DEVKIT_INCLUDE` is omitted, CMake tries `find_package(Kodi QUIET)` and uses
 `KODI_INCLUDE_DIR`. The caches in this checkout used `/tmp/kodi-src/xbmc/addons/kodi-dev-kit/include`.
 
-## The three native projects
+## The four native projects
 
 | Project | Add-ons built from it | CMake option prefix |
 |---|---|---|
 | `screensaver.sandclock.gl` | Sand Clock GL, Liquid Clock, Cellular Automata, CA Lite, CA 3D, Physarum, Physarum Lite, Tetris AI GL, Physarum Visualisation | `SANDCLOCK_*` |
 | `screensaver.plant.gl` | Growing Plant GL | `PLANT_*` |
 | `screensaver.infworld.gl` | Endless World GL | `SANDCLOCK_*` (same names, different project) |
+| `screensaver.vintageradar.gl` | Vintage Radar GL | `RADAR_*` |
 
 Each has the same shape:
 
@@ -353,6 +356,16 @@ cmake -S . -B build && cmake --build build
 ./build/infworld_glfw --assets resources/textures --seed 2
 ```
 
+Vintage Radar (its harness talks to the live feeds or a fixture, not the Kodi settings):
+
+```bash
+cd screensaver.vintageradar.gl
+cmake -S . -B build -DRADAR_HARNESS=OFF && cmake --build build && ctest --test-dir build
+cmake -S . -B build && cmake --build build
+./build/radar_glfw --live
+./build/radar_glfw_core --fixture tests/fixtures/adsblol.json
+```
+
 Every harness supports `--shot out.ppm --shot-after SECONDS` (PPM via `glReadPixels`). The
 `*_core` variant asks for a 3.2 core context, matching Kodi on macOS. Harnesses with
 `--selftest` compare the GPU result against the CPU core: Automata, Automata Lite, Physarum,
@@ -375,7 +388,7 @@ codesign --force --sign - build-uni/screensaver.sandclock.gl.dylib
 cp build-uni/screensaver.sandclock.gl.dylib screensaver.sandclock.gl/
 ```
 
-**Two builds plus `lipo`** (Growing Plant, Endless World):
+**Two builds plus `lipo`** (Growing Plant, Endless World, Vintage Radar):
 
 ```bash
 cd screensaver.plant.gl
@@ -423,8 +436,8 @@ cp build-android32/screensaver.sandclock.gl.so \
   screensaver.sandclock.gl.armv7/screensaver.sandclock.gl.armv7.so
 ```
 
-Growing Plant and Endless World use the same flags with their `PLANT_*` / `SANDCLOCK_*` options;
-their READMEs give the exact copy commands.
+Growing Plant, Endless World and Vintage Radar use the same flags with their `PLANT_*` /
+`SANDCLOCK_*` / `RADAR_*` options; their READMEs give the exact copy commands.
 
 ### Why the `.armv7` add-ons have different ids
 
@@ -434,7 +447,9 @@ Putting both in one zip would make what installs depend on which platform Kodi p
 32-bit builds are separate add-ons (`screensaver.tetris.gl.armv7` and so on) with their own
 `addon.xml`, `library_android="<id>.armv7.so"` and `<platform>android</platform>`.
 
-A `.armv7` folder contains only `addon.xml` and the 32-bit `.so` — no `.dylib`.
+A `.armv7` folder contains `addon.xml` and the 32-bit `.so` — no `.dylib`. If the add-on reads
+resources at run time, copy those too: Vintage Radar's 32-bit folder also carries the generated
+font atlases from `resources/media/fonts`, because both builds load them from the add-on path.
 
 ## Which file goes where
 
@@ -460,6 +475,8 @@ that:
 - `tools/make_settings_tetris_gl.py`: imports `screensaver.tetris`'s table and writes **both**
   `screensaver.tetris.gl` and `screensaver.tetris.gl.armv7`.
 - `tools/make_settings_infworld.py`: its own table, optional id/name args.
+- `tools/make_settings_vintageradar.py`: one table for the two screensaver builds and the Python
+  app; optional id/name args select the 32-bit build. It also writes the app's `defaults.py`.
 - `tools/make_settings_automata*.py`, `make_settings_voxel.py`, `make_settings_physarum*.py`: also
   write the renderer's option tables (`src/automata_tables.hpp`, `voxel_tables.hpp`,
   `physarum_tables.hpp`) so indices cannot drift.
@@ -482,5 +499,6 @@ For Fire TV, the device must run a Kodi whose bit width matches the library; see
 - [Deployment guide](deployment.md): zips, the repository, GitHub Pages, Fire TV, troubleshooting.
 - Native project READMEs: [sandclock.gl](../screensaver.sandclock.gl/README.md),
   [plant.gl](../screensaver.plant.gl/README.md),
-  [infworld.gl](../screensaver.infworld.gl/README.md).
+  [infworld.gl](../screensaver.infworld.gl/README.md),
+  [vintageradar.gl](../screensaver.vintageradar.gl/README.md).
 - Per-add-on design notes linked from the [root README](../README.md).
