@@ -72,7 +72,7 @@ msgid "Display"
 msgstr ""
 
 msgctxt "#30116"
-msgid "Show the category and dollar value at the top"
+msgid "Show the category at the top and the value at the bottom left"
 msgstr ""
 
 msgctxt "#30117"

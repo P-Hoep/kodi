@@ -24,7 +24,8 @@ HEADER_POOL = 70
 MAIN_POOL = 250
 YEAR_POOL = 20
 SCREEN_W, SCREEN_H = 1920, 1080
-YEAR_SIZE = 42
+CORNER_SIZE = 44
+LEFT_MARGIN = 80
 RIGHT_MARGIN = 80
 BOTTOM_MARGIN = 60
 YELLOW_NAME, WHITE_NAME = 'y', 'w'
@@ -249,10 +250,10 @@ class Screensaver(object):
 
     @staticmethod
     def content_area(scale):
-        """(top, height) of the clue area, centred on the card. The header's height is reserved on
-        both sides, so the clue (and the response) is centred in exactly the same place whether or
-        not the header is shown, and a long clue cannot run into it."""
-        margin = 60 + (62 + 84) * scale * layout.LINE_PITCH + 6 + 40
+        """(top, height) of the clue area, centred on the card. The category's height is reserved
+        on both sides, so the clue (and the response) is centred in exactly the same place whether
+        or not the header is shown, and a long clue cannot run into it."""
+        margin = 60 + 62 * scale * layout.LINE_PITCH + 40
         return margin, SCREEN_H - 2 * margin
 
     def clue_rects(self, text, scale, colour=WHITE_NAME):
@@ -268,28 +269,30 @@ class Screensaver(object):
 
     def year_rects(self, year, scale):
         """The clue's year in the bottom-right corner, right-aligned to the margin."""
-        px = YEAR_SIZE * scale
+        px = CORNER_SIZE * scale
         top = SCREEN_H - BOTTOM_MARGIN - px * layout.LINE_PITCH
         return layout.right_place(self.font, str(year), px, SCREEN_W - RIGHT_MARGIN, top)
 
+    def value_rects(self, label, scale):
+        """The dollar value (or DAILY DOUBLE / FINAL JEOPARDY!) in the bottom-left corner."""
+        px = CORNER_SIZE * scale
+        top = SCREEN_H - BOTTOM_MARGIN - px * layout.LINE_PITCH
+        return layout.left_place(self.font, label, px, LEFT_MARGIN, top)
+
     def show_header(self, level, value, daily, category, scale):
-        """Category in white and the value in yellow, centred at the top."""
+        """Category in white at the top; the value in yellow at the bottom left."""
         f = self.font
         px_cat = 62 * scale
         px, lines = layout.fit(f, category, 1500, px_cat * 1.2, px_cat, 36 * scale)
         rects = layout.place(f, lines, px, SCREEN_W / 2.0, 60)
-        bottom = 60 + layout.block_height(lines, px)
         if level == 6:
             label = 'FINAL JEOPARDY!'
         elif daily:
             label = 'DAILY DOUBLE'
         else:
             label = '$%d' % value
-        px_val = 84 * scale
-        vpx, vlines = layout.fit(f, label, 1500, px_val * 1.3, px_val, 40 * scale)
-        vrects = layout.place(f, vlines, vpx, SCREEN_W / 2.0, bottom + 6)
-        # Both colours share one pool: white glyphs first, then yellow, drawn as two batches.
-        self.header.show_two(rects, WHITE_NAME, vrects, YELLOW_NAME)
+        # Both colours share one pool: white category first, then the yellow value.
+        self.header.show_two(rects, WHITE_NAME, self.value_rects(label, scale), YELLOW_NAME)
 
 
 def run():

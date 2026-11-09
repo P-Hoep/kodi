@@ -42,7 +42,7 @@ CATEGORIES = [
         S('response_seconds', 'Seconds the response stays up', 6, 2, 30, 1),
     ]),
     ('Display', [
-        B('show_header', 'Show the category and dollar value at the top', True),
+        B('show_header', 'Show the category at the top and the value at the bottom left', True),
         B('show_year', "Show the year of the clue at the bottom right", True),
         B('form', 'Phrase the response as a question (WHAT IS ... / WHO IS ...)', True),
         S('text_size', 'Text size (%)', 100, 60, 120, 10),

@@ -180,6 +180,11 @@ class Layout(unittest.TestCase):
         right_edge = max(x + w for _code, x, _y, w, _h in rects)
         self.assertAlmostEqual(right_edge, 1840, delta=20)
 
+    def test_left_aligned_text_starts_at_the_margin(self):
+        rects = layout.left_place(self.font, '$800', 42, 80, 972)
+        left_edge = min(x for _code, x, _y, _w, _h in rects)
+        self.assertAlmostEqual(left_edge, 80, delta=20)
+
 
 if __name__ == '__main__':
     unittest.main()
