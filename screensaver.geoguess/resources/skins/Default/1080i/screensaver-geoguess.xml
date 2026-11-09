@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Black full-screen window; every control is added from Python (resources/lib/saver.py). -->
+<window>
+  <backgroundcolor>0xff000000</backgroundcolor>
+  <controls/>
+</window>

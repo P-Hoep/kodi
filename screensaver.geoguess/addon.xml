@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.geoguess" name="GeoGuess Screensaver" version="0.1.0" provider-name="P-Hoep">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+    <import addon="script.module.certifi" version="2019.0.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library="default.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">A randomly picked street view on the idle screen, named a few seconds later</summary>
+    <description lang="en_GB">Turns an idle TV into a guessing game. Each location is a random street view from around the world: a panorama that slowly pans across the screen. After a few seconds the place name fades in at the bottom left, and after a while the next location crossfades in. Choose how long to guess before the name appears, how long each location stays, how many rows to fetch per request, whether to pan, whether the full country name is shown and the label size. Images are streamed from the Hugging Face dataset at runtime and kept in the temp folder while they are shown. Any key, click or mouse move exits straight away; offline it retries with a backoff and resumes when the connection returns.</description>
+    <disclaimer lang="en_GB">Street view imagery comes from the Hugging Face dataset yunusserhat/random_streetview_images (a mirror of stochastic/random_streetview_images_pano_v0.0.2), served by the datasets server. The imagery is © Google and its contributors and is subject to Google's terms; this add-on is not affiliated with Google. Add-on code: MIT.</disclaimer>
+    <platform>all</platform>
+    <license>MIT</license>
+    <source>https://github.com/P-Hoep/kodi</source>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>
