@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.opentrivia" name="OpenTrivia" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <import addon="xbmc.python" version="3.0.1"/>
+    <import addon="script.module.opentrivia" version="1.0.0"/>
+  </requires>
+  <extension point="xbmc.python.script" library="default.py">
+    <provides>executable</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">A clean multiple-choice quiz for the idle TV</summary>
+    <description lang="en_GB">A quiet quiz from the OpenTriviaQA collection: four answers on a card, one of them right. Pick your answer with the remote, mouse or touch screen, see it marked and move on; score, accuracy and best streak are kept for the round. Choose a round of 10, 20, 30 or 50 questions or endless play, and turn any of the 22 categories on or off. Ink, Paper and Midnight themes (or Auto by time of day), five accents or your own colours, cards or list layout, text size, and optional dimming for OLED screens. The questions are stored in a database read in shuffled blocks, so a round starts instantly and repeats are rare.</description>
+    <disclaimer lang="en_GB">The question data is CC BY-SA 4.0, from the OpenTriviaQA project (https://github.com/uberspot/OpenTriviaQA). The add-on code is MIT.</disclaimer>
+    <platform>all</platform>
+    <license>MIT</license>
+    <source>https://github.com/P-Hoep/kodi</source>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

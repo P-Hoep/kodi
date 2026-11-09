@@ -1,9 +1,9 @@
 # P-Hoep Kodi Add-ons
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
-live-camera window, a scheduler, a flashcard app, a news reader, audiobooks and GPU-drawn
-visuals for Kodi, published as one Kodi repository so Kodi installs them and keeps them up to
-date.
+live-camera window, a scheduler, a flashcard app, a trivia quiz, a news reader, audiobooks and
+GPU-drawn visuals for Kodi, published as one Kodi repository so Kodi installs them and keeps them
+up to date.
 
 ### Python screensavers
 
@@ -18,6 +18,7 @@ date.
 | [Word Clock](#word-clock) | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 | [Sand Clock](#sand-clock) | 1.0.1 | A clock whose digits crumble into falling sand every second |
 | [Jeopkodi](#jeopkodi) | 1.1.0 | An endless Jeopardy! slideshow: clue, then the response |
+| [OpenTrivia](#opentrivia) | 1.0.0 | A trivia question, a countdown, then the answer |
 | [DVD Logo](#dvd-logo) | 1.0.1 | The classic bouncing DVD logo, with corner tricks |
 | [Tetris AI](#tetris-ai) | 1.1.1 | An AI plays Tetris edge to edge, with a clock made of blocks |
 | [Sheetcards Screensaver](#sheetcards) | 1.0.0 | Flashcards from a Google Sheet: an app to study with and a screensaver |
@@ -51,13 +52,15 @@ date.
 | [Screensaver Switcher](#screensaver-switcher) | 0.1.0 | Different screensavers at different times of day |
 | [Audioshelf](#audioshelf) | 1.1.0 | Audiobooks from an Audiobookshelf server |
 | [Sheetcards](#sheetcards) | 1.0.0 | The flashcard study app |
+| [OpenTrivia](#opentrivia) | 1.0.0 | The trivia quiz you play with the remote |
 | [RSS Live Tiles](#rss-live-tiles) | 1.0.0 | The live-tile news reader |
 
-The library modules `script.module.sheetcards` and `script.module.rsslivetiles`, and the
-repository `repository.phoep`, are installed automatically as dependencies.
+The library modules `script.module.sheetcards`, `script.module.rsslivetiles` and
+`script.module.opentrivia`, and the repository `repository.phoep`, are installed automatically as
+dependencies.
 
 Most add-ons are pure Python with no compiled code and run on Kodi 19 (Matrix) or later, on any
-platform. Sheetcards and RSS Live Tiles need Kodi 20 or later. The OpenGL add-ons are native,
+platform. Sheetcards, RSS Live Tiles and OpenTrivia need Kodi 20 or later. The OpenGL add-ons are native,
 built for macOS (Intel and Apple Silicon) and Android in 64-bit and 32-bit builds, and need
 Kodi 21. They were developed and tested on Kodi 21 on macOS; several also on Amazon Fire TV
 Sticks.
@@ -77,13 +80,14 @@ The add-ons are in a Kodi repository hosted on GitHub Pages:
 1. **Settings → System → Add-ons → Unknown sources → On.**
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/`
    and name it `phoep`.
-3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.7.zip`.
+3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.8.zip`.
    Kodi shows "P-Hoep Add-ons — Add-on installed".
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** Screensavers are under
-   **Look and feel → Screensaver**; the Switcher is under **Services**; Sheetcards and RSS Live
-   Tiles are under **Program add-ons**; Audioshelf is under **Music add-ons**; Physarum
-   Visualisation is chosen from **Settings → Player → Music → Visualisation** while a song plays.
-   Sheetcards and RSS Live Tiles need Kodi 20+, and the OpenGL add-ons need Kodi 21.
+   **Look and feel → Screensaver**; the Switcher is under **Services**; Sheetcards, RSS Live
+   Tiles and OpenTrivia are under **Program add-ons**; Audioshelf is under **Music add-ons**;
+   Physarum Visualisation is chosen from **Settings → Player → Music → Visualisation** while a
+   song plays. Sheetcards, RSS Live Tiles and OpenTrivia need Kodi 20+, and the OpenGL add-ons
+   need Kodi 21.
 5. To turn one on, go to **Settings → Interface → Screensaver → Screensaver mode**, pick it,
    then open **Settings** below it to configure it. **Preview** starts it straight away.
 
@@ -428,6 +432,30 @@ Jeopardy Productions, Inc.
 
 ---
 
+## OpenTrivia
+
+![OpenTrivia: the Ink screensaver asking a sports question with its countdown bar draining, the same card with Paul Simon revealed in green, and the Paper-theme app showing a question in its two-column layout, then the wrong pick in red and the right answer in green](gifs/opentrivia.jpg)
+
+A trivia screensaver and a trivia app, with 49,110 questions in 22 categories from the
+OpenTriviaQA collection. The screensaver shows a question, drains a countdown bar, then turns the
+correct answer green with a check and the others back before moving on. The app, under
+**Program add-ons**, is the same quiz played with the remote: select an answer and it tells you at
+once; score, streak and the question number stay in the top bar; rounds can be 10, 20, 30, 50 or
+endless, and the results screen shows your accuracy and best streak.
+
+- **Categories:** every one has its own switch, so you can keep just science, history, movies or
+  whatever you like. All 22 are on at first.
+- **Timing:** how long a question stays up before the reveal, how long the answer stays up, the
+  countdown bar and the clock, and a slow dim for OLED and plasma screens.
+- **Look:** Ink, Paper, Midnight and Auto themes, seven accent colours or your own, custom colours
+  for every part, Auto / Cards / List answer layouts, A/B/C/D letters, text size and dimming. Both
+  add-ons share the same look settings, so they match.
+
+Any key exits the screensaver at once. The questions are © the OpenTriviaQA contributors under
+CC BY-SA 4.0.
+
+---
+
 ## DVD Logo
 
 ![DVD Logo: the white logo bouncing across a black screen, landing exactly in a corner, then lining up another corner and veering away at the last second](gifs/dvd-logo.gif)
@@ -663,7 +691,8 @@ plays. There are two Kodi add-ons, one for macOS and 64-bit Android and one for 
 ## Licence
 
 The add-on code is MIT-licensed. Bundled data and imagery keep their own licences, listed
-above and in each add-on's `LICENSE.txt` or `addon.xml`.
+above and in each add-on's `LICENSE.txt` or `addon.xml`. The OpenTrivia questions and answers
+are © the OpenTriviaQA contributors and licensed CC BY-SA 4.0.
 
 All data comes from public sources. It is for personal use, so follow each provider's
 terms. Positions of flights, satellites and events are as accurate as the feeds they come

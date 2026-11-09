@@ -1,9 +1,9 @@
 # P-Hoep Kodi Add-ons
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
-live-camera window, a scheduler, a flashcard app, a news reader, a music visualisation and an
-audiobook player for Kodi, published as one Kodi repository so Kodi installs them and keeps them
-up to date.
+live-camera window, a scheduler, a flashcard app, a trivia quiz, a news reader, a music
+visualisation and an audiobook player for Kodi, published as one Kodi repository so Kodi installs
+them and keeps them up to date.
 
 Most add-ons are pure Python and run on any Kodi 19 (Matrix) or later device. The OpenGL add-ons
 are native, GPU-drawn add-ons built for macOS (Intel and Apple Silicon) and Android, with
@@ -32,6 +32,7 @@ installed version in **Add-ons → My add-ons**.
 | [Word Clock](#word-clock) | `screensaver.wordclock` | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 | [Sand Clock](#sand-clock) | `screensaver.sandclock` | 1.0.1 | A clock whose digits crumble into falling sand every second |
 | [Jeopkodi](#jeopkodi) | `screensaver.jeopkodi` | 1.1.0 | An endless Jeopardy! slideshow: clue, then the response |
+| [OpenTrivia](#opentrivia) | `screensaver.opentrivia` | 1.0.0 | A trivia question, a countdown, then the answer |
 | [DVD Logo](#dvd-logo) | `screensaver.dvdlogo` | 1.0.1 | The classic bouncing DVD logo, with corner tricks |
 | [Tetris AI](#tetris-ai) | `screensaver.tetris` | 1.1.1 | An AI plays Tetris edge to edge, with a clock made of blocks |
 | [Sheetcards Screensaver](#sheetcards) | `screensaver.sheetcards` | 1.0.0 | Flashcards from a Google Sheet (Kodi 20+) |
@@ -64,6 +65,7 @@ installed version in **Add-ons → My add-ons**.
 | [Audioshelf](#audioshelf) | `plugin.audio.audioshelf` | 1.1.0 | Audiobooks from an Audiobookshelf server (Kodi 19+) |
 | [Sheetcards](#sheetcards) | `script.sheetcards` | 1.0.0 | The flashcard study app (Kodi 20+) |
 | [RSS Live Tiles](#rss-live-tiles) | `script.rsslivetiles` | 1.0.0 | The live-tile news reader (Kodi 20+) |
+| [OpenTrivia](#opentrivia) | `script.opentrivia` | 1.0.0 | The trivia quiz you play with the remote (Kodi 20+) |
 | [Physarum Visualisation (macOS and 64-bit Android)](#physarum-visualisation) | `visualization.physarum.lite` | 1.0.0 | Physarum driven by Kodi's audio (Kodi 21) |
 | Physarum Visualisation (32-bit Android) | `visualization.physarum.lite.armv7` | 1.0.0 | The same visualisation for 32-bit Android Kodi |
 
@@ -73,7 +75,8 @@ installed version in **Add-ons → My add-ons**.
 |---|---|---|---|
 | Sheetcards library | `script.module.sheetcards` | 1.0.0 | Shared code for the Sheetcards app and screensaver |
 | RSS Live Tiles library | `script.module.rsslivetiles` | 1.0.0 | Shared code for the RSS Live Tiles app and screensaver |
-| P-Hoep Add-ons | `repository.phoep` | 1.0.7 | The Kodi repository that installs and updates everything |
+| OpenTrivia library | `script.module.opentrivia` | 1.0.0 | The questions database, shared window and skin for the OpenTrivia add-ons |
+| P-Hoep Add-ons | `repository.phoep` | 1.0.8 | The Kodi repository that installs and updates everything |
 
 The library modules are installed automatically as dependencies; there is nothing to configure.
 
@@ -82,7 +85,7 @@ The library modules are installed automatically as dependencies; there is nothin
 | Add-ons | Kodi | Notes |
 |---|---|---|
 | Most Python add-ons | 19 (Matrix) or later | Pure Python, no compiled code; any platform |
-| Sheetcards, RSS Live Tiles and their modules | 20 (Nexus) or later | They require `xbmc.python` 3.0.1 |
+| Sheetcards, RSS Live Tiles, OpenTrivia and their modules | 20 (Nexus) or later | They require `xbmc.python` 3.0.1 |
 | Native OpenGL add-ons | 21 (Omega) | Compiled against the Kodi 21 add-on API |
 
 The Python add-ons need no imaging library at run time: all artwork is generated ahead of time and
@@ -109,11 +112,11 @@ installs them and updates them itself.
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/` and name it
    `phoep`.
 3. **Settings → Add-ons → Install from zip file → phoep →**
-   `repository.phoep-1.0.7.zip`.
+   `repository.phoep-1.0.8.zip`.
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.**
    - Screensavers are under **Look and feel → Screensaver**.
    - The Switcher is under **Services**.
-   - Sheetcards and RSS Live Tiles are under **Program add-ons**.
+   - Sheetcards, RSS Live Tiles and OpenTrivia are under **Program add-ons**.
    - Audioshelf is under **Music add-ons**.
    - Physarum Visualisation is under **Music → Visualisation** (inside Kodi's player settings, or
      from the music OSD while a song plays).
@@ -543,6 +546,51 @@ seconds. The loop also watches `System.ScreenSaverActive`, so it always exits.
 
 An unofficial fan project, not affiliated with Jeopardy Productions, Inc. Jeopardy! is a
 trademark of Jeopardy Productions, Inc.; the clue data comes from the J! Archive.
+
+## OpenTrivia
+
+![OpenTrivia: the Ink screensaver asking a sports question with its countdown bar draining, the same card with Paul Simon revealed in green, and the Paper-theme app showing a question in its two-column layout, then the wrong pick in red and the right answer in green](release/gifs/opentrivia.jpg)
+
+`screensaver.opentrivia` and `script.opentrivia` (an app under **Add-ons → Program add-ons**): a
+trivia quiz that runs itself on the television, and the same quiz played with the remote. Both use
+the shared library `script.module.opentrivia`, which Kodi installs with them and which holds the
+database, the one window skin and the textures. Requires Kodi 20 or later.
+
+- **The questions.** 49,110 questions in 22 categories, converted from the
+  [OpenTriviaQA](https://github.com/uberspot/OpenTriviaQA) collection into one SQLite database.
+  Every category has its own on/off switch, grouped Everyday, Arts & media, Knowledge, Words &
+  ideas and Life & leisure. Each question is backed by two to four answers.
+- **The screensaver** picks a question at random, drains an accent bar as a countdown, turns the
+  correct answer green with a check and the others back, then moves on. Countdown bar, clock,
+  category, reveal time and dimming after a few minutes are all optional.
+- **The app** offers Start, Settings and Quit, and rounds of 10, 20, 30, 50 or endless questions.
+  Select a choice and it turns red or green at once with the correct one; score, streak and the
+  question number stay in the top bar. Back pauses. The results screen shows your score, accuracy,
+  best streak and how many you missed.
+- **Look**: Ink, Paper, Midnight and Auto themes, seven accent colours or your own, custom colours
+  for every part of the screen, Auto / Cards / List answer layouts, A/B/C/D letters, text size and
+  dimming. Answers are laid out in a quiet card sheet, not a copy of Sheetcards' style.
+
+```bash
+python3 tools/make_opentrivia_db.py        # OpenTrivia/ -> resources/data/trivia.db
+python3 tools/make_opentrivia_media.py     # textures, icon and fanart (Pillow)
+python3 tools/make_settings_opentrivia.py  # both settings.xml + strings.po from lib/opentrivia/config.py
+python3 tools/make_opentrivia_skin.py      # the one shared WindowXML
+for a in script.module.opentrivia script.opentrivia screensaver.opentrivia; do python3 tools/build_zip.py $a; done
+python3 -m unittest tests.test_opentrivia  # offline: settings, database, blocks, theme, quiz, skin, strings
+```
+
+Notes from building it (Kodi 21.1, macOS): both add-ons show the same `WindowXMLDialog` from the
+library, and Python only ever sets `ot.*` window properties — the generated XML decides what is
+visible, what colour it takes and how it animates. The app runs its logic on a worker thread and
+reads an event queue fed by `onAction`/`onClick`, so a remote press is never delayed by a timer.
+The screensaver uses `show()` and a loop on `System.ScreenSaverActive` instead of `doModal()`, for
+the same reason as Jeopkodi. Questions are read in blocks: one indexed query picks up 600
+consecutive rows, the block is filtered by the chosen categories and shuffled in memory, and every
+block is used before any is revisited. Estuary's font names are checked against the real set in
+the test, because a name it does not have silently falls back to a tiny default.
+
+Full documentation: **[docs/opentrivia.md](docs/opentrivia.md)**.
 
 ## DVD Logo
 
@@ -1092,6 +1140,7 @@ Full documentation: **[docs/RSSliveTiles.md](docs/RSSliveTiles.md)**.
   [Math Clock](docs/math-clock.md), [Couchstronomy](docs/couchstronomy.md),
   [SkyWatch](docs/skywatch-spec.md), [Live Cams](docs/livecams-screensaver.md),
   [Sheetcards](docs/Sheetcards.md), [RSS Live Tiles](docs/RSSliveTiles.md),
+  [OpenTrivia](docs/opentrivia.md),
   [Word Clock](docs/wordclock.md), [Sand Clock](docs/sandclock.md),
   [Screensaver Switcher](docs/screensaver-switcher.md), [Audioshelf](docs/audioshelf.md).
 - Native projects: [sandclock.gl](screensaver.sandclock.gl/README.md) (Sand Clock, Liquid Clock,
@@ -1139,6 +1188,10 @@ adsb.lol (ODbL), OpenSky Network, CelesTrak, USGS, NOAA nowCOAST and NHC, TomTom
 agencies listed above. Credits are shown on screen. This is for personal use; follow each
 provider's terms, and use a different tile provider if you deploy it widely (the OpenStreetMap
 tile servers are not meant for heavy use).
+
+The OpenTrivia questions and answers © the OpenTriviaQA contributors, licensed
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) and converted into a database;
+each OpenTrivia add-on's `LICENSE.txt` carries the attribution and lists the changes made.
 
 The add-on code is MIT-licensed. Bundled data and imagery keep their own licences, listed above
 and in each add-on's `LICENSE.txt` or `addon.xml`.

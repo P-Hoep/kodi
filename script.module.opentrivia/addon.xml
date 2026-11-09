@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.module.opentrivia" name="OpenTrivia library" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <import addon="xbmc.python" version="3.0.1"/>
+  </requires>
+  <extension point="xbmc.python.module" library="lib"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Shared code, questions and skin for OpenTrivia and its screensaver</summary>
+    <description lang="en_GB">Holds the 49,000-question OpenTriviaQA database, the block reader both front-ends use, the theme engine and the shared window skin. Installed automatically with OpenTrivia or the OpenTrivia screensaver. The question data is CC BY-SA 4.0 from the OpenTriviaQA project (https://github.com/uberspot/OpenTriviaQA); the code is MIT.</description>
+    <platform>all</platform>
+    <license>MIT</license>
+    <source>https://github.com/P-Hoep/kodi</source>
+    <assets>
+      <icon>icon.png</icon>
+    </assets>
+  </extension>
+</addon>
