@@ -122,14 +122,29 @@ lipo -create -output screensaver.plant.gl.dylib \
 codesign --force --sign - screensaver.plant.gl.dylib
 ```
 
-Android (needs the NDK: `brew install --cask android-ndk`):
+Android (needs the NDK: `brew install --cask android-ndk`). The main add-on carries the 64-bit
+library; `screensaver.plant.gl.armv7/` is a second add-on id with the 32-bit build for Fire TV
+and other 32-bit Android Kodi installs:
 
 ```sh
-cmake -S . -B build-android -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+NDK=/opt/homebrew/Caskroom/android-ndk/30/AndroidNDK16248370.app/Contents/NDK
+cmake -S . -B build-android64 -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
   -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-21 -DANDROID_STL=c++_static \
   -DPLANT_HARNESS=OFF -DPLANT_KODI=ON -DKODI_DEVKIT_INCLUDE=<...>
-cmake --build build-android
+cmake --build build-android64
+cp build-android64/screensaver.plant.gl.so ../screensaver.plant.gl/screensaver.plant.gl.so
+
+cmake -S . -B build-android32 -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
+  -DANDROID_ABI=armeabi-v7a -DANDROID_PLATFORM=android-21 -DANDROID_STL=c++_static \
+  -DPLANT_HARNESS=OFF -DPLANT_KODI=ON -DKODI_DEVKIT_INCLUDE=<...>
+cmake --build build-android32
+cp build-android32/screensaver.plant.gl.so \
+  ../screensaver.plant.gl.armv7/screensaver.plant.gl.armv7.so
 ```
+
+The two add-on ids stay separate because Kodi installs one library per id per platform; a 32-bit
+Kodi cannot load the arm64 `.so`, and putting both in one zip would only make the add-on depend on
+which platform Kodi picks.
 
 `tools/make_repo.py` publishes anything with an `addon.xml`, so the built
 `screensaver.plant.gl.dylib` and `.so` are committed next to it.
