@@ -1,6 +1,11 @@
-# Sand Clock (OpenGL), work in progress
+# Sand Clock (OpenGL)
 
 A C++ / OpenGL port of `../screensaver.sandclock`. The Python add-on stays as it is.
+
+This project also builds the other GPU add-ons: Liquid Clock, the Cellular Automata family
+(full, Lite and 3D), Physarum and Physarum Lite, Tetris AI (OpenGL) and the Physarum music
+visualisation. Each is a separate CMake target and Kodi add-on, sharing the GL-free core and the
+shader dialect layer described here.
 
 | Part | File | Kodi / GL needed |
 |---|---|---|
@@ -317,15 +322,16 @@ cmake --build build-android   # then llvm-strip --strip-unneeded the .so
 
 The built `screensaver.sandclock.gl.dylib` (macOS universal, ad-hoc signed) and
 `screensaver.sandclock.gl.so` (Android arm64) are committed in this folder so
-`tools/make_repo.py` publishes them in the Kodi repository. Rebuild and recopy them after code changes.
-32-bit Android (armeabi-v7a) is not built.
+`tools/make_repo.py` publishes them in the Kodi repository. Rebuild and recopy them after code
+changes. The 32-bit Android build (armeabi-v7a) is committed as
+`../screensaver.sandclock.gl.armv7/screensaver.sandclock.gl.armv7.so`, built with
+`-DANDROID_ABI=armeabi-v7a` and the same flags.
 
 Shader dialects: GLES 2 (`-DSANDCLOCK_GLES=ON`), desktop GL 2.1 and the 3.2 core profile (macOS,
-automatic; needs a VAO). Linux and Android builds have not been run on a device.
+automatic; needs a VAO).
 
-## Not done yet
+## Known limitations
 
-- Not yet run inside Kodi itself.
-- macOS: the library is only ad-hoc signed and Kodi may refuse it.
-- CI build matrix; Linux, Windows (ANGLE) and 32-bit Android (armeabi-v7a) builds.
+- Linux (desktop GL) and Windows (ANGLE / GLES) builds have not been run on a device. macOS and
+  Android have.
 - Time is a float in the shader. Fine for hours; rebase `born` and `now` for sessions of days.

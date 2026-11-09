@@ -1,7 +1,11 @@
 # P-Hoep Kodi Add-ons
 
-Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a scheduler, a flashcard app and a news reader for Kodi, published as one Kodi
-repository so Kodi installs them and keeps them up to date.
+Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
+live-camera window, a scheduler, a flashcard app, a news reader, audiobooks and GPU-drawn
+visuals for Kodi, published as one Kodi repository so Kodi installs them and keeps them up to
+date.
+
+### Python screensavers
 
 | Add-on | Version | What it is |
 |---|---|---|
@@ -9,22 +13,59 @@ repository so Kodi installs them and keeps them up to date.
 | [God's World Map](#gods-world-map) | 0.1.1 | The whole Earth in thirteen projections, with live weather and events |
 | [Math Clock](#math-clock) | 0.1.1 | The date and time as maths puzzles, typeset like LaTeX |
 | [Couchstronomy](#couchstronomy) | 0.1.3 | Your TV as a window onto the real night sky |
-| [Screensaver Switcher](#screensaver-switcher) | 0.1.0 | Different screensavers at different times of day |
-| [Sheetcards](#sheetcards) | 1.0.0 | Flashcards from a Google Sheet: an app to study with and a screensaver |
-| [RSS Live Tiles](#rss-live-tiles) | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles: an app and a screensaver |
+| [SkyWatch](#skywatch) | 1.0.0 | A live weather station: radar, forecasts, warnings and conditions |
+| [Live Cams](#live-cams) | 1.0.0 | A window onto public live cameras around the world |
 | [Word Clock](#word-clock) | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 | [Sand Clock](#sand-clock) | 1.0.1 | A clock whose digits crumble into falling sand every second |
-| [Jeopkodi](#jeopkodi) | 1.0.0 | An endless Jeopardy! slideshow: clue, then the response |
+| [Jeopkodi](#jeopkodi) | 1.1.0 | An endless Jeopardy! slideshow: clue, then the response |
 | [DVD Logo](#dvd-logo) | 1.0.1 | The classic bouncing DVD logo, with corner tricks |
 | [Tetris AI](#tetris-ai) | 1.1.1 | An AI plays Tetris edge to edge, with a clock made of blocks |
-| [Tetris AI (OpenGL)](#tetris-ai-opengl) | 1.0.2 | The same AI in native code and OpenGL: the motion is as smooth as the display |
-| [Endless World (OpenGL)](#endless-world-opengl) | 1.0.1 | An endless procedural landscape of mountains, lakes and forests, generated as the camera flies |
+| [Sheetcards Screensaver](#sheetcards) | 1.0.0 | Flashcards from a Google Sheet: an app to study with and a screensaver |
+| [RSS Live Tiles Screensaver](#rss-live-tiles) | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles: an app and a screensaver |
 
-All of them are pure Python with no compiled code, except Tetris AI (OpenGL) and Endless World
-(OpenGL), which are native add-ons. The Python add-ons run on Kodi 19 (Matrix) and later, on any
-platform; the OpenGL add-ons are built for macOS (Intel and Apple Silicon) and Android, in a
-64-bit and a 32-bit build. They were developed and tested on Kodi 21 on macOS. God's Eye Map has
-also been tested on Amazon Fire TV Sticks.
+### Native screensavers and visualisation (OpenGL / OpenGL ES, Kodi 21)
+
+| Add-on | Version | Platforms |
+|---|---|---|
+| [Tetris AI (OpenGL)](#tetris-ai-opengl) | 1.0.2 | macOS, Android 64-bit |
+| Tetris AI (OpenGL, 32-bit Android) | 1.0.2 | Android 32-bit |
+| [Endless World (OpenGL)](#endless-world-opengl) | 1.0.1 | macOS, Android 64-bit |
+| Endless World (OpenGL, 32-bit Android) | 1.0.1 | Android 32-bit |
+| [Growing Plant (OpenGL)](#growing-plant-opengl) | 1.0.1 | macOS, Android 64-bit |
+| Growing Plant (OpenGL, 32-bit Android) | 1.0.1 | Android 32-bit |
+| [Sand Clock (OpenGL)](#sand-clock-opengl) | 1.0.0 | macOS, Android 64-bit |
+| Sand Clock (OpenGL, 32-bit Android) | 1.0.0 | Android 32-bit |
+| [Cellular Automata (32-bit Android)](#cellular-automata) | 1.1.0 | Android 32-bit |
+| [Cellular Automata Lite (32-bit Android)](#cellular-automata) | 1.1.0 | Android 32-bit |
+| [Cellular Automata 3D (32-bit Android)](#cellular-automata-3d) | 1.0.0 | Android 32-bit |
+| [Liquid Clock (32-bit Android)](#liquid-clock) | 1.1.0 | Android 32-bit |
+| [Physarum (32-bit Android)](#physarum) | 1.0.0 | Android 32-bit |
+| [Physarum Lite (32-bit Android)](#physarum-lite) | 1.3.0 | Android 32-bit |
+| [Physarum Visualisation (macOS and 64-bit Android)](#physarum-visualisation) | 1.0.0 | macOS, Android 64-bit |
+| Physarum Visualisation (32-bit Android) | 1.0.0 | Android 32-bit |
+
+### Apps, services and library modules
+
+| Add-on | Version | What it is |
+|---|---|---|
+| [Screensaver Switcher](#screensaver-switcher) | 0.1.0 | Different screensavers at different times of day |
+| [Audioshelf](#audioshelf) | 1.1.0 | Audiobooks from an Audiobookshelf server |
+| [Sheetcards](#sheetcards) | 1.0.0 | The flashcard study app |
+| [RSS Live Tiles](#rss-live-tiles) | 1.0.0 | The live-tile news reader |
+
+The library modules `script.module.sheetcards` and `script.module.rsslivetiles`, and the
+repository `repository.phoep`, are installed automatically as dependencies.
+
+Most add-ons are pure Python with no compiled code and run on Kodi 19 (Matrix) or later, on any
+platform. Sheetcards and RSS Live Tiles need Kodi 20 or later. The OpenGL add-ons are native,
+built for macOS (Intel and Apple Silicon) and Android in 64-bit and 32-bit builds, and need
+Kodi 21. They were developed and tested on Kodi 21 on macOS; several also on Amazon Fire TV
+Sticks.
+
+The full descriptions, requirements and per-platform build matrix are in the
+[repository README](../README.md). Build and publishing steps are in the
+[deployment guide](../docs/deployment.md); add-on development is covered in the
+[development guide](../docs/development.md).
 
 ---
 
@@ -36,11 +77,13 @@ The add-ons are in a Kodi repository hosted on GitHub Pages:
 1. **Settings → System → Add-ons → Unknown sources → On.**
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/`
    and name it `phoep`.
-3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.6.zip`.
+3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.7.zip`.
    Kodi shows "P-Hoep Add-ons — Add-on installed".
-4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** The screensavers are
-   under **Look and feel → Screensaver**, the Switcher is under **Services**, and the
-   Sheetcards app is under **Program add-ons**.
+4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** Screensavers are under
+   **Look and feel → Screensaver**; the Switcher is under **Services**; Sheetcards and RSS Live
+   Tiles are under **Program add-ons**; Audioshelf is under **Music add-ons**; Physarum
+   Visualisation is chosen from **Settings → Player → Music → Visualisation** while a song plays.
+   Sheetcards and RSS Live Tiles need Kodi 20+, and the OpenGL add-ons need Kodi 21.
 5. To turn one on, go to **Settings → Interface → Screensaver → Screensaver mode**, pick it,
    then open **Settings** below it to configure it. **Preview** starts it straight away.
 
@@ -175,6 +218,45 @@ Data: HYG database (CC BY-SA 4.0), d3-celestial (BSD), VSOP87 via astronomia (MI
 SVS Moon imagery and CelesTrak. The Messier photographs are by Fred Espenak
 (AstroPixels.com), used with permission and **not** covered by the MIT licence.
 
+## SkyWatch
+
+A live weather station screensaver. An animated radar loop over a map of your location runs into
+a future-radar extension with a PAST / NOW / FUTURE timeline, followed by a playlist of scenes
+you can switch on and reorder: regional radar with NWS warning polygons, a national mosaic,
+satellite + radar, "what's coming", current conditions, the next 2 hours, a 48-hour graph, 7 or
+10 daily cards, today against the 1991–2020 normal, air quality and pollen, marine and tides, the
+NWS forecast discussion, and an ambient clock. Active warnings pin a banner to every scene.
+
+- **Keyless by default:** IEM NEXRAD and HRRR, Open-Meteo, NWS, NOAA CO-OPS, USGS, NASA GIBS and
+  Esri/OpenStreetMap, with RainViewer outside the US. Optional keys add a global nowcast, a
+  LibreWXR server and Stadia terrain.
+- **Degrades quietly:** each source is OK, Stale or Down; failed sources back off, the radar
+  chain falls back, scenes with no data are skipped, and with no network it runs from cache.
+- **A background service** warms data in the half hour before Kodi's screensaver would start and
+  sleeps during playback.
+- **Interactive mode** reopens SkyWatch as a normal window where left/right skip scenes, up/down
+  zoom, OK pauses and Back exits.
+
+Data: IEM, Open-Meteo (CC BY 4.0), NWS/NOAA, USGS, NASA GIBS, RainViewer, Esri and
+OpenStreetMap contributors.
+
+## Live Cams
+
+A window onto live outdoor scenes. It rotates through public camera feeds from the
+Live-Environment-Streams dataset (beaches, mountains, lakes, harbours, towns; traffic cameras
+optional), with a small overlay giving the place, the source and the local time there.
+
+- **Choosing a camera:** a weighted draw that favours places in daylight, HD streams and your
+  favourites, and avoids what was shown recently. Dead feeds are probed away in 4 seconds.
+- **Self-healing:** failures are remembered and sources that keep failing are skipped; after
+  repeated failures, or with no network, a fallback card with a clock shows.
+- **Safe with your media:** if your own video or music is loaded it shows only a clock and never
+  touches the player. Any input exits at once. Streams are muted unless *Play audio* is on, and
+  after 2 hours it switches to a clock that uses no network.
+- **Catalogue:** downloaded at run time and cached, since the dataset has no licence yet.
+
+The default pool is about 282 playable cameras; health tracking learns the dead ones.
+
 ## Screensaver Switcher
 
 A service that picks a different screensaver for different times of day. For example: Math
@@ -192,6 +274,27 @@ Clock in the morning, God's World Map during the day, and Black at night.
 
 Open **Programs → Screensaver Switcher** to see what is scheduled now, apply the schedule,
 preview it or change the settings.
+
+---
+
+## Audioshelf
+
+A music add-on for the audiobooks on an [Audiobookshelf](https://www.audiobookshelf.org/)
+server. It opens on Continue Listening, Recently Added, All Audiobooks, Series (in reading
+order), Authors, Genres and Search, plus **Play a random book**, and every book shows its cover
+and progress.
+
+- **Sign in once:** enter the server address, username and password in the add-on; it keeps and
+  renews the server's tokens itself. An API key still works. Nothing about the server is built
+  in.
+- **Playback** uses Kodi's own player on the book's original files. A book's page offers Resume,
+  Play from start, Chapters and About this book; a finished book starts again from the beginning.
+- **Progress** goes back to Audiobookshelf every 30 seconds, on pause and on stop, from a small
+  background service, with the position kept locally and sent later if the server is unreachable.
+- **Skip back / forward** by your own steps with a keymap entry.
+
+It was renamed from `plugin.audio.audiobookshelf` to avoid clashing with another add-on. If you
+had the old one, uninstall it and sign in again.
 
 ---
 
@@ -316,8 +419,9 @@ it never runs out.
   or off, and Daily Doubles and Final Jeopardy if you want them.
 - **Timing:** how long a clue stays up before the response (long clues get a little extra), and
   how long the response stays up.
-- **Display:** the category and the dollar value (in Jeopardy yellow) at the top, or just the
-  clue; WHAT IS / WHO IS phrasing; text size and dimming. Any key exits at once.
+- **Display:** the category at the top, the value in Jeopardy yellow at the bottom left, and the
+  clue's year at the bottom right, each on or off; WHAT IS / WHO IS phrasing or the bare
+  response; text size and dimming. Any key exits at once.
 
 It is under **Look and feel → Screensaver**. An unofficial fan project, not affiliated with
 Jeopardy Productions, Inc.
@@ -435,6 +539,124 @@ This is a native add-on, so Kodi needs the build for its platform:
 Any key or click ends it at once. It is under **Look and feel → Screensaver**. The code is MIT
 licensed; the textures are used under CC-BY-SA 3.0, with the credits in the add-on's
 `LICENSE.txt` and `resources/textures/credits.txt`.
+
+---
+
+## Growing Plant (OpenGL)
+
+A single procedural plant grows from a seed, sways in the wind and holds while the camera moves
+around it. Each cycle is a new plant — a tree, bush, fern, fan-leaf plant or a glowing 2D
+L-system pattern — under one of six hand-tuned skies from dawn to night to an aurora, or with no
+background at all.
+
+- **Growth is on the GPU:** one static mesh whose vertices know their birth time, so the stem
+  slides out of its parent branch and leaves open without rebuilding anything.
+- **Settings:** plant type, seed, leaf density, growth and hold time, camera movement and speed,
+  framing, background, ground and contact shadow, pollen, detail (Low / Normal / High) and
+  dimming.
+- **Weak boxes:** Detail Low, Background None and pollen off is the lightest configuration; the
+  32-bit Android build defaults to Low.
+
+There are two Kodi add-ons: **Growing Plant (OpenGL)** for macOS (Intel and Apple Silicon) and
+64-bit Android, and **Growing Plant (OpenGL, 32-bit Android)** for 32-bit Android Kodi such as
+Fire TV and many Google TV boxes.
+
+---
+
+## Sand Clock (OpenGL)
+
+The GPU version of Sand Clock. Every second (or minute) the digits that change break into
+thousands of grains that fall, slide into a heap and sink slowly through the floor. The sand is
+simulated in native code and drawn in one GPU pass, so it can use far finer grains than the
+Python version at a smooth frame rate.
+
+It has the same settings as Sand Clock: nine fonts, palettes, night colours, grain size and look,
+gravity, crumble speed, pile height, dimming and an OLED-friendly drift. There are two Kodi
+add-ons, one for macOS and 64-bit Android and one for 32-bit Android.
+
+---
+
+## Cellular Automata
+
+Conway's Life and other cellular automata computed entirely on the GPU: the whole grid lives in
+a texture and one fragment shader pass makes one generation, so even millions of cells run
+smoothly.
+
+- **18 rules**, including multi-state Generations rules, or type your own (`B36/S125`, `B2/S/C3`).
+- **Grids** from 14 thousand cells up to 3840 × 2160 (8.3 million), at 1 to 960 generations per
+  second. Starts include random soup, clusters, a kaleidoscope, glider guns and a swarm of
+  gliders.
+- **Looks:** age / position / time colouring, palettes, trails, glow, cell shapes and sparks.
+- **A clock** can sit on top, burst into life, be cut out of the cells or be made of living cells.
+- **Views** include a flat board, raised blocks, a landscape, a tunnel and a spinning globe.
+
+### Cellular Automata Lite
+
+The same GPU automata tuned for weak 32-bit Android devices: specialised shaders, cheaper
+wrapping, a capped and scaled-up resolution, and an optional clock that is off by default.
+
+### Cellular Automata 3D
+
+A cube of voxels running Life-like rules on all 26 neighbours, drawn by ray marching, with no
+clock, nine presets, an inside view and an endless cube. Because OpenGL ES 2.0 has no 3D
+textures, the volume lives in a 2D slice atlas with a one-cell wrapped border.
+
+All three are 32-bit Android builds only.
+
+---
+
+## Liquid Clock
+
+A clock that melts. Every second (or minute) the digits that change shimmer, then melt into
+stretched drops that run together into streams and fall into a pool at the bottom of the screen.
+The pool is a conservative 1-D shallow-water simulation: it ripples where the streams land,
+throws splash droplets and foam, and rocks now and then. Every colour is a liquid of its own that
+never mixes, so the pool settles into unmixed coloured layers, and it drains slowly so it never
+overflows.
+
+Settings: nine fonts and weights, only the changing digits or the whole clock, melt speed,
+droplet size, liquid looks, gravity, sloshing, liquid level, palettes or a custom colour or a
+slow rainbow, night colours, dimming and an OLED drift. 32-bit Android only.
+
+---
+
+## Physarum
+
+A GPU simulation of *Physarum polycephalum*, the slime mould, after Jeff Jones's agent model.
+Each agent senses the trail ahead, ahead-left and ahead-right, turns towards the strongest scent,
+moves and leaves its own trail, which spreads and fades; together they weave networks that
+branch, merge and keep reorganising.
+
+- **The clock** can be food the slime grows into, slime kept inside the digits, cut out of the
+  network, or simply on top.
+- **Eleven behaviours**, or expose the sensor angle, turn, distance, step, decay, diffusion and
+  deposit directly.
+- **Up to three species**, each following its own trail and avoiding the others, from 16 thousand
+  to 8 million agents on a trail map up to 3840 × 2160.
+- **Starts and food**, scatter food the network links like a rail map, and density, species,
+  fire, neon, ink or plasma looks with relief / landscape / tunnel / globe views.
+
+### Physarum Lite
+
+The slime mould tuned for low-resource devices: no timers, no automatic restarts or behaviour
+changes, just the agent passes and the draw pass, with an optional clock that is off by default.
+The defaults are light (16 thousand agents, a 480 × 270 trail, no glow, no screen effect).
+
+Both are 32-bit Android only.
+
+---
+
+## Physarum Visualisation
+
+Physarum Lite as a **music visualisation**: the same GPU slime mould, with no clock and no
+timers, driven by whatever Kodi is playing. An analyser measures the level, five bands, a beat
+and a 32-band spectrum; loud passages make the agents travel further, bass thickens the trails, a
+beat jolts the agents and sends a ring across the screen, and the palette drifts with the music.
+One Reactivity slider sets how much the music does, and each reaction can be switched off on its
+own.
+
+Pick it under **Settings → Player → Music → Visualisation** (or from the music OSD) while a song
+plays. There are two Kodi add-ons, one for macOS and 64-bit Android and one for 32-bit Android.
 
 ---
 
