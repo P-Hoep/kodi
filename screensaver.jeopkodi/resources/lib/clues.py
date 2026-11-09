@@ -33,10 +33,11 @@ def response_form(clue, response):
 
 
 class Clues(object):
-    def __init__(self, db_path, levels, daily):
+    def __init__(self, db_path, levels, daily, years=None):
         self.db = sqlite3.connect('file:%s?mode=ro' % db_path, uri=True, check_same_thread=False)
         self.levels = [int(v) for v in levels]
         self.daily = daily
+        self.years = tuple(int(v) for v in years) if years else None
         self.count = self.db.execute('SELECT MAX(id) FROM clues').fetchone()[0] or 0
         self.blocks = []
         self.queue = []
@@ -49,13 +50,20 @@ class Clues(object):
         return self.blocks.pop()
 
     def _load(self):
-        for _ in range(60):          # a block can be empty after filtering; try another
+        # A block can be empty after filtering, and with a narrow year range nearly all of them
+        # are, so try every block in the round (one indexed read each) rather than give up after
+        # a fixed number. _next_block() rebuilds the round once its blocks run out.
+        for _ in range((self.count + BLOCK - 1) // BLOCK):
             start = self._next_block() * BLOCK + 1
-            sql = ('SELECT level, value, daily, category, clue, response FROM clues '
+            sql = ('SELECT level, value, daily, category, clue, response, year FROM clues '
                    'WHERE id >= ? AND id < ? AND level IN (%s)' % ','.join('?' * len(self.levels)))
+            params = [start, start + BLOCK] + self.levels
             if not self.daily:
                 sql += ' AND daily = 0'
-            rows = self.db.execute(sql, [start, start + BLOCK] + self.levels).fetchall()
+            if self.years:
+                sql += ' AND year >= ? AND year <= ?'
+                params += list(self.years)
+            rows = self.db.execute(sql, params).fetchall()
             if rows:
                 random.shuffle(rows)
                 self.queue = rows
@@ -63,7 +71,7 @@ class Clues(object):
         raise RuntimeError('no clues match the settings')
 
     def next(self):
-        """(level, value, daily, category, clue, response)"""
+        """(level, value, daily, category, clue, response, year)"""
         if not self.queue:
             self._load()
         return self.queue.pop()

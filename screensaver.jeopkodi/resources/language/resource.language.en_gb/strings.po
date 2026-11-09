@@ -40,37 +40,53 @@ msgid "Include Final Jeopardy clues"
 msgstr ""
 
 msgctxt "#30108"
-msgid "Timing"
+msgid "Years (season 1 aired in 1984, season 42 in 2026)"
 msgstr ""
 
 msgctxt "#30109"
-msgid "Seconds a clue stays up before the response"
+msgid "Earliest year of clues to show"
 msgstr ""
 
 msgctxt "#30110"
-msgid "Leave more time for long clues"
+msgid "Latest year of clues to show"
 msgstr ""
 
 msgctxt "#30111"
-msgid "Seconds the response stays up"
+msgid "Timing"
 msgstr ""
 
 msgctxt "#30112"
-msgid "Display"
+msgid "Seconds a clue stays up before the response"
 msgstr ""
 
 msgctxt "#30113"
-msgid "Show the category and dollar value at the top"
+msgid "Leave more time for long clues"
 msgstr ""
 
 msgctxt "#30114"
-msgid "Phrase the response as a question (WHAT IS ... / WHO IS ...)"
+msgid "Seconds the response stays up"
 msgstr ""
 
 msgctxt "#30115"
-msgid "Text size (%)"
+msgid "Display"
 msgstr ""
 
 msgctxt "#30116"
+msgid "Show the category and dollar value at the top"
+msgstr ""
+
+msgctxt "#30117"
+msgid "Show the year of the clue at the bottom right"
+msgstr ""
+
+msgctxt "#30118"
+msgid "Phrase the response as a question (WHAT IS ... / WHO IS ...)"
+msgstr ""
+
+msgctxt "#30119"
+msgid "Text size (%)"
+msgstr ""
+
+msgctxt "#30120"
 msgid "Dim the screen (%)"
 msgstr ""

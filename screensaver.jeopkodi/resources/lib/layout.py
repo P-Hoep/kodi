@@ -121,5 +121,14 @@ def place(font, lines, px, cx, top):
     return out
 
 
+def right_place(font, text, px, right, top):
+    """Glyph rectangles for one line whose advance width ends at `right`."""
+    lines = words_of(font, text)
+    if not lines:
+        return []
+    width = line_width(font, lines) * px / font.size
+    return place(font, [lines], px, right - width / 2.0, top)
+
+
 def block_height(lines, px):
     return len(lines) * px * LINE_PITCH

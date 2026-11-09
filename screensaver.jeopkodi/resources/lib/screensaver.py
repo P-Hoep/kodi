@@ -22,7 +22,11 @@ PROP = 'jeopkodi.'
 FADE_MS = 350
 HEADER_POOL = 70
 MAIN_POOL = 250
+YEAR_POOL = 20
 SCREEN_W, SCREEN_H = 1920, 1080
+YEAR_SIZE = 42
+RIGHT_MARGIN = 80
+BOTTOM_MARGIN = 60
 YELLOW_NAME, WHITE_NAME = 'y', 'w'
 
 
@@ -149,8 +153,10 @@ class Screensaver(object):
         glyphs = os.path.join(self.media, 'glyphs')
         self.header = Pool(HEADER_POOL, 'header', glyphs)
         self.main = Pool(MAIN_POOL, 'main', glyphs)
+        self.year = Pool(YEAR_POOL, 'year', glyphs)
         self.header.attach(window)
         self.main.attach(window)
+        self.year.attach(window)
         dim = int(round(self.s['dim'] * 2.55))
         self.set_prop('dim', '%02X000000' % dim)
         self.thread = threading.Thread(target=self.loop, name='jeopkodi')
@@ -201,23 +207,27 @@ class Screensaver(object):
     def _loop(self):
         s = self.s
         db = os.path.join(self.path, 'resources', 'data', 'clues.db')
-        source = clues.Clues(db, config.levels(s), s['daily'])
-        log('started: levels %s, %d clues' % (config.levels(s), source.count))
+        levels = config.levels(s)
+        year_min, year_max = config.years(s)
+        source = clues.Clues(db, levels, s['daily'], (year_min, year_max))
+        log('started: levels %s, years %d-%d, %d clues' % (levels, year_min, year_max, source.count))
         try:
             while not self.stopped():
-                level, value, daily, category, clue, response = source.next()
-                self.slide(level, value, daily, category, clue, response)
+                level, value, daily, category, clue, response, year = source.next()
+                self.slide(level, value, daily, category, clue, response, year)
         finally:
             source.close()
 
-    def slide(self, level, value, daily, category, clue, response):
+    def slide(self, level, value, daily, category, clue, response, year):
         s = self.s
         scale = s['text_size'] / 100.0
-        top = 0
         if s['show_header']:
-            top = self.show_header(level, value, daily, category, scale)
-        self.main.show(*self.clue_rects(clue, top, scale))
+            self.show_header(level, value, daily, category, scale)
+        if s['show_year']:
+            self.year.show(self.year_rects(year, scale), WHITE_NAME)
+        self.main.show(*self.clue_rects(clue, scale))
         self.set_prop('header', '1' if s['show_header'] else '')
+        self.set_prop('year', '1' if s['show_year'] else '')
         self.set_prop('main', '1')
         seconds = s['clue_seconds']
         if s['read_time']:
@@ -228,27 +238,42 @@ class Screensaver(object):
         if not self.wait(FADE_MS / 1000.0 + 0.1):
             return
         text = clues.response_form(clue, response) if s['form'] else response
-        self.main.show(*self.clue_rects(text, top, scale, colour=WHITE_NAME))
+        self.main.show(*self.clue_rects(text, scale, colour=WHITE_NAME))
         self.set_prop('main', '1')
         if not self.wait(s['response_seconds']):
             return
         self.set_prop('main', '')
         self.set_prop('header', '')
+        self.set_prop('year', '')
         self.wait(FADE_MS / 1000.0 + 0.25)
 
-    def clue_rects(self, text, top, scale, colour=WHITE_NAME):
-        """The glyph rectangles for text centred in the area below the header, and the colour."""
+    @staticmethod
+    def content_area(scale):
+        """(top, height) of the clue area, centred on the card. The header's height is reserved on
+        both sides, so the clue (and the response) is centred in exactly the same place whether or
+        not the header is shown, and a long clue cannot run into it."""
+        margin = 60 + (62 + 84) * scale * layout.LINE_PITCH + 6 + 40
+        return margin, SCREEN_H - 2 * margin
+
+    def clue_rects(self, text, scale, colour=WHITE_NAME):
+        """The glyph rectangles for text centred in the clue area, and the colour."""
         f = self.font
-        area_top = top + 40 if top else 90
-        box_w, box_h = 1320, SCREEN_H - area_top - 110
+        area_top, box_h = self.content_area(scale)
+        box_w = 1320
         max_px = 96 * scale
         px, lines = layout.fit(f, text, box_w * 1.0, box_h, max_px, 36 * scale)
         height = layout.block_height(lines, px)
         y = area_top + (box_h - height) / 2.0
         return layout.place(f, lines, px, SCREEN_W / 2.0, y), colour
 
+    def year_rects(self, year, scale):
+        """The clue's year in the bottom-right corner, right-aligned to the margin."""
+        px = YEAR_SIZE * scale
+        top = SCREEN_H - BOTTOM_MARGIN - px * layout.LINE_PITCH
+        return layout.right_place(self.font, str(year), px, SCREEN_W - RIGHT_MARGIN, top)
+
     def show_header(self, level, value, daily, category, scale):
-        """Category in white and the value in yellow, centred at the top; returns the bottom y."""
+        """Category in white and the value in yellow, centred at the top."""
         f = self.font
         px_cat = 62 * scale
         px, lines = layout.fit(f, category, 1500, px_cat * 1.2, px_cat, 36 * scale)
@@ -265,7 +290,6 @@ class Screensaver(object):
         vrects = layout.place(f, vlines, vpx, SCREEN_W / 2.0, bottom + 6)
         # Both colours share one pool: white glyphs first, then yellow, drawn as two batches.
         self.header.show_two(rects, WHITE_NAME, vrects, YELLOW_NAME)
-        return bottom + 6 + layout.block_height(vlines, vpx)
 
 
 def run():

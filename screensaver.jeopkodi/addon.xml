@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.jeopkodi" name="Jeopkodi" version="1.0.0" provider-name="P-Hoep">
+<addon id="screensaver.jeopkodi" name="Jeopkodi" version="1.1.0" provider-name="P-Hoep">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
   </requires>
   <extension point="xbmc.ui.screensaver" library="default.py"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en_GB">An endless Jeopardy!-style slideshow of clues followed by their responses</summary>
-    <description lang="en_GB">Clue after clue on the classic blue screen, in white capitals with a drop shadow, each followed a few seconds later by the response in the form of a question. Over half a million clues from forty-two seasons are stored in a database that is read in shuffled chunks, so it never runs out and never repeats in a way you would notice. In the settings you can choose which difficulties to show (by the dollar value on the board), whether Daily Doubles and Final Jeopardy appear, how long a clue stays up before the response, how long the response stays up, and whether the category and dollar value (in Jeopardy yellow) are shown at the top.</description>
+    <description lang="en_GB">Clue after clue on the classic blue screen, in white capitals with a drop shadow, each followed a few seconds later by the response in the form of a question. Over half a million clues from forty-two seasons are stored in a database that is read in shuffled chunks, so it never runs out and never repeats in a way you would notice. In the settings you can choose which difficulties to show (by the dollar value on the board), whether Daily Doubles and Final Jeopardy appear, which years of clues to draw from, how long a clue stays up before the response, how long the response stays up, and whether the category and dollar value (in Jeopardy yellow) and the clue's year are shown.</description>
     <disclaimer lang="en_GB">An unofficial fan project, not affiliated with or endorsed by Jeopardy Productions, Inc. or Sony Pictures Television. Jeopardy! is a trademark of Jeopardy Productions, Inc. The clue data comes from the J! Archive, whose contents belong to their respective owners.</disclaimer>
     <platform>all</platform>
     <license>MIT</license>

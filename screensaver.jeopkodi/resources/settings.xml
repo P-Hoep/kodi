@@ -32,21 +32,35 @@
           <control type="toggle"/>
         </setting>
       </group>
+      <group id="3" label="30108">
+        <setting id="year_min" type="integer" label="30109">
+          <level>0</level>
+          <default>1984</default>
+          <constraints><minimum>1984</minimum><step>1</step><maximum>2026</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+        </setting>
+        <setting id="year_max" type="integer" label="30110">
+          <level>0</level>
+          <default>2026</default>
+          <constraints><minimum>1984</minimum><step>1</step><maximum>2026</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+        </setting>
+      </group>
     </category>
-    <category id="c1" label="30108">
+    <category id="c1" label="30111">
       <group id="1">
-        <setting id="clue_seconds" type="integer" label="30109">
+        <setting id="clue_seconds" type="integer" label="30112">
           <level>0</level>
           <default>12</default>
           <constraints><minimum>4</minimum><step>1</step><maximum>60</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="read_time" type="boolean" label="30110">
+        <setting id="read_time" type="boolean" label="30113">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="response_seconds" type="integer" label="30111">
+        <setting id="response_seconds" type="integer" label="30114">
           <level>0</level>
           <default>6</default>
           <constraints><minimum>2</minimum><step>1</step><maximum>30</maximum></constraints>
@@ -54,25 +68,30 @@
         </setting>
       </group>
     </category>
-    <category id="c2" label="30112">
+    <category id="c2" label="30115">
       <group id="1">
-        <setting id="show_header" type="boolean" label="30113">
+        <setting id="show_header" type="boolean" label="30116">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="form" type="boolean" label="30114">
+        <setting id="show_year" type="boolean" label="30117">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="text_size" type="integer" label="30115">
+        <setting id="form" type="boolean" label="30118">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="text_size" type="integer" label="30119">
           <level>0</level>
           <default>100</default>
           <constraints><minimum>60</minimum><step>10</step><maximum>120</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="dim" type="integer" label="30116">
+        <setting id="dim" type="integer" label="30120">
           <level>0</level>
           <default>0</default>
           <constraints><minimum>0</minimum><step>10</step><maximum>80</maximum></constraints>

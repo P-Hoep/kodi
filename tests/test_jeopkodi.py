@@ -47,6 +47,10 @@ class Settings(unittest.TestCase):
         self.assertEqual(config.levels(defaults(easy=False, medium=False, hard=False, final=False)),
                          [1, 2, 3, 4, 5])      # nothing ticked: show everything
 
+    def test_years(self):
+        self.assertEqual(config.years(defaults()), (1984, 2026))
+        self.assertEqual(config.years(defaults(year_min=2010, year_max=1990)), (1990, 2010))
+
 
 class Database(unittest.TestCase):
     @classmethod
@@ -61,6 +65,10 @@ class Database(unittest.TestCase):
         rows = dict(self.db.execute('SELECT level, COUNT(*) FROM clues GROUP BY level'))
         self.assertEqual(sorted(rows), [1, 2, 3, 4, 5, 6])
         self.assertGreater(min(rows.values()), 5000)
+
+    def test_year_range_matches_the_seasons(self):
+        self.assertEqual(self.db.execute('SELECT MIN(year), MAX(year) FROM clues').fetchone(),
+                         (1984, 2026))       # first season 1984, 42nd 2026
 
     def test_text_is_clean_capitals(self):
         bad = self.db.execute("SELECT COUNT(*) FROM clues WHERE clue != UPPER(clue) OR clue LIKE '%\\%' "
@@ -79,12 +87,30 @@ class Chunks(unittest.TestCase):
         try:
             seen = set()
             for _ in range(3000):
-                level, value, daily, category, clue, response = source.next()
+                level, value, daily, category, clue, response, _year = source.next()
                 self.assertIn(level, (4, 5))
                 self.assertEqual(daily, 0)
                 key = (clue, response)
                 self.assertNotIn(key, seen)
                 seen.add(key)
+        finally:
+            source.close()
+
+    def test_year_range(self):
+        source = clues.Clues(DB, [1, 2, 3, 4, 5, 6], daily=True, years=(2000, 2005))
+        try:
+            for _ in range(500):
+                _level, _value, _daily, _category, _clue, _response, year = source.next()
+                self.assertTrue(2000 <= year <= 2005, year)
+        finally:
+            source.close()
+
+    def test_narrow_year_range_is_not_missed(self):
+        """A single year sits in only a handful of the 600-row blocks; they must still be found."""
+        source = clues.Clues(DB, [1, 2, 3, 4, 5, 6], daily=True, years=(1984, 1984))
+        try:
+            for _ in range(100):
+                self.assertEqual(source.next()[6], 1984)
         finally:
             source.close()
 
@@ -148,6 +174,11 @@ class Layout(unittest.TestCase):
     def test_accents_fall_back(self):
         self.assertEqual(self.font.codes('Ā'), [ord('A')])
         self.assertEqual(self.font.codes('É'), [ord('É')])
+
+    def test_right_aligned_text_ends_at_the_margin(self):
+        rects = layout.right_place(self.font, '1984', 42, 1840, 972)
+        right_edge = max(x + w for _code, x, _y, w, _h in rects)
+        self.assertAlmostEqual(right_edge, 1840, delta=20)
 
 
 if __name__ == '__main__':

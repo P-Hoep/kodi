@@ -472,7 +472,7 @@ get coarser if needed to stay under 1000 per second. It uses about 50% of one co
 Mac, where Kodi alone takes about 37% while anything animates. Setting the Home property
 `sandclock.demo` to `HH:MM:SS` starts the clock at that time, for testing.
 
-## Jeopkodi (new, v1.0)
+## Jeopkodi (new, v1.1)
 
 ![Jeopkodi: a $800 clue in CHAMPAGNE PROBLEMS, the response WHO IS MICHELANGELO?, a Final Jeopardy clue about the ravens of the Tower of London, and a clue shown without the category and value](release/gifs/jeopkodi.jpg)
 
@@ -484,10 +484,12 @@ white and the dollar value in Jeopardy yellow at the top. There are 533,168 clue
 - **Clues:** easy ($200 and $400), medium ($600) and hard ($800 and $1000) rows, each on or off,
   plus Daily Doubles and Final Jeopardy. Clues from before the 2001 value doubling count by their
   row on the board, so an old $100 clue is easy.
+- **Years:** only clues first aired between two years, 1984 to 2026 by default (first season to
+  the 42nd).
 - **Timing:** how long a clue stays up (12 seconds by default, with more time for long clues) and
   how long the response stays up.
-- **Display:** the category and value at the top or not, WHAT IS / WHO IS phrasing or the bare
-  response, text size and dimming.
+- **Display:** the category and value at the top or not, the clue's year in the bottom-right
+  corner or not, WHAT IS / WHO IS phrasing or the bare response, text size and dimming.
 
 ```bash
 python3 tools/make_jeopkodi_db.py combined_season1-42.tsv     # J! Archive TSV -> resources/data/clues.db

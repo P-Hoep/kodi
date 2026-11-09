@@ -32,6 +32,9 @@ CATEGORIES = [
         G('Special clues'),
         B('daily', 'Include Daily Doubles', True),
         B('final', 'Include Final Jeopardy clues', True),
+        G('Years (season 1 aired in 1984, season 42 in 2026)'),
+        S('year_min', 'Earliest year of clues to show', 1984, 1984, 2026, 1),
+        S('year_max', 'Latest year of clues to show', 2026, 1984, 2026, 1),
     ]),
     ('Timing', [
         S('clue_seconds', 'Seconds a clue stays up before the response', 12, 4, 60, 1),
@@ -40,6 +43,7 @@ CATEGORIES = [
     ]),
     ('Display', [
         B('show_header', 'Show the category and dollar value at the top', True),
+        B('show_year', "Show the year of the clue at the bottom right", True),
         B('form', 'Phrase the response as a question (WHAT IS ... / WHO IS ...)', True),
         S('text_size', 'Text size (%)', 100, 60, 120, 10),
         S('dim', 'Dim the screen (%)', 0, 0, 80, 10),
@@ -80,3 +84,9 @@ def levels(s):
     if s['final']:
         out.append(6)
     return out or [1, 2, 3, 4, 5]
+
+
+def years(s):
+    """(earliest, latest) air year to show, swapped if the two sliders cross."""
+    lo, hi = s['year_min'], s['year_max']
+    return (lo, hi) if lo <= hi else (hi, lo)
