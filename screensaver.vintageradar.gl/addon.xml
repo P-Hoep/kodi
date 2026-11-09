@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.vintageradar.gl" name="Vintage Radar (OpenGL)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.vintageradar.gl.dylib"
+             library_android="screensaver.vintageradar.gl.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">A green-phosphor radar scope showing the aircraft flying over you right now</summary>
+    <description lang="en_GB">A vintage radar scope for Kodi: concentric range rings, a compass rose, a glowing sweep and contacts that fade as the beam passes. It shows the aircraft actually overhead, fetched live from adsb.lol with OpenSky as a fallback, centred on the place you choose and scaled to the range you choose. Every contact is dead-reckoned between updates, so blips glide instead of jumping, and past sweep echoes stay on the glass. The right side carries a nearest-first contact list (callsign, type, altitude, speed, distance, bearing) and a spotlight card that rotates through the contacts showing everything the transponder reports: hex, registration, type, squawk, category, vertical rate, track, IAS/TAS/Mach, position, navigation settings, signal quality and service flags. Label the scope with callsigns, callsign plus altitude and speed, or type and altitude. Four phosphors (P1 green, P3 amber, P11 ice, white), CRT scanlines and vignette, dimming, and display detail for slow boxes. The graphics are drawn with OpenGL, so the sweep stays smooth at full screen. The companion program add-on, Vintage Radar, shows the same scope in a window where you can click a contact for its full card and find your location by name. Data: adsb.lol and the OpenSky Network; no account or key needed.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Apple Silicon and Intel, and Android). Aircraft data comes from the volunteer-run adsb.lol and OpenSky Network APIs and is used as-is; it is not for navigation or flight safety. The typeface is Doto (SIL Open Font License 1.1), baked into texture atlases under resources/media/fonts.</disclaimer>
+    <platform>osx android</platform>
+    <license>MIT</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

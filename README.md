@@ -50,6 +50,8 @@ installed version in **Add-ons → My add-ons**.
 | [Growing Plant (OpenGL, 32-bit Android)](#growing-plant-opengl) | `screensaver.plant.gl.armv7` | 1.0.1 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
 | [Sand Clock (OpenGL, 32-bit Android)](#sand-clock-opengl) | `screensaver.sandclock.gl.armv7` | 1.0.0 | Android 32-bit |
+| [Vintage Radar (OpenGL)](#vintage-radar-opengl) | `screensaver.vintageradar.gl` | 1.0.0 | macOS, Android 64-bit |
+| [Vintage Radar (OpenGL, 32-bit Android)](#vintage-radar-opengl) | `screensaver.vintageradar.gl.armv7` | 1.0.0 | Android 32-bit |
 | [Cellular Automata (32-bit Android)](#cellular-automata) | `screensaver.automata.armv7` | 1.1.0 | Android 32-bit |
 | [Cellular Automata Lite (32-bit Android)](#cellular-automata) | `screensaver.automata.lite.armv7` | 1.1.0 | Android 32-bit |
 | [Cellular Automata 3D (32-bit Android)](#cellular-automata-3d) | `screensaver.automata3d.armv7` | 1.0.0 | Android 32-bit |
@@ -66,6 +68,7 @@ installed version in **Add-ons → My add-ons**.
 | [Sheetcards](#sheetcards) | `script.sheetcards` | 1.0.0 | The flashcard study app (Kodi 20+) |
 | [RSS Live Tiles](#rss-live-tiles) | `script.rsslivetiles` | 1.0.0 | The live-tile news reader (Kodi 20+) |
 | [OpenTrivia](#opentrivia) | `script.opentrivia` | 1.0.0 | The trivia quiz you play with the remote (Kodi 20+) |
+| [Vintage Radar](#vintage-radar-opengl) | `script.vintageradar` | 1.0.0 | The Vintage Radar scope in a driveable window (Kodi 20+) |
 | [Physarum Visualisation (macOS and 64-bit Android)](#physarum-visualisation) | `visualization.physarum.lite` | 1.0.0 | Physarum driven by Kodi's audio (Kodi 21) |
 | Physarum Visualisation (32-bit Android) | `visualization.physarum.lite.armv7` | 1.0.0 | The same visualisation for 32-bit Android Kodi |
 
@@ -810,6 +813,47 @@ It is a native add-on (C++ / OpenGL 2.1, 3.2 core and OpenGL ES 2.0), with two K
 The code lives in [screensaver.sandclock.gl](screensaver.sandclock.gl/README.md), which also
 holds Liquid Clock, the Cellular Automata family, Physarum and Tetris AI (OpenGL).
 
+## Vintage Radar (OpenGL)
+
+`screensaver.vintageradar.gl` turns the idle TV into an old radar scope: a green (or amber,
+ice-blue or white) phosphor disc with range rings, a compass rose, a sweeping beam and glowing
+aircraft blips. It shows the aircraft actually overhead right now, live from
+[adsb.lol](https://adsb.lol/) with the [OpenSky Network](https://opensky-network.org/) as a
+fallback, centred on the place and range you choose. Contacts are dead-reckoned between feeds so
+blips glide instead of jumping, and the last three sweep echoes stay on the glass. The right side
+carries a nearest-first contact list and a spotlight card that rotates through every contact:
+callsign, registration, type, squawk, category, altitude, speeds, headings, vertical rates,
+navigation settings, position, signal quality and the fix source. Four phosphors, CRT scanlines and
+vignette, dimming and a detail setting for slow boxes are included. The sweep is drawn with
+OpenGL, so it stays smooth at full screen.
+
+It is a native add-on (C++ / OpenGL 2.1, 3.2 core and OpenGL ES 2.0), with two Kodi add-ons:
+
+- **Vintage Radar (OpenGL)** — macOS (universal, Intel and Apple Silicon) and 64-bit Android.
+- **Vintage Radar (OpenGL, 32-bit Android)** — for 32-bit Android Kodi, as on Fire TV and many
+  Google TV boxes.
+
+The companion **Vintage Radar** app (`script.vintageradar`, pure Python, Kodi 20+) puts the same
+scope in a window you can drive: click a blip, a label or a list row (or press Select) for a
+three-column contact sheet with every field the transponder reports; Left and Right step the
+spotlight, Page Up and Page Down turn the list, Menu opens the settings and Back leaves the scope.
+
+The code and build notes are in [screensaver.vintageradar.gl](screensaver.vintageradar.gl/README.md)
+and [script.vintageradar](script.vintageradar/README.md); the full settings reference, data notes
+and troubleshooting are in [docs/vintageradar.md](docs/vintageradar.md).
+
+```bash
+cd screensaver.vintageradar.gl
+cmake -S . -B build && cmake --build build && ctest --test-dir build
+./build/radar_glfw --live                       # live data, no Kodi
+./build/radar_glfw_core --fixture tests/fixtures/adsblol.json   # what Kodi uses on macOS
+python3 -m unittest discover -s ../script.vintageradar/tests    # the app's offline tests
+```
+
+Aircraft data comes from the volunteer-run adsb.lol and OpenSky Network APIs and is used as-is; it
+is not for navigation or flight safety. adsb.lol data is ODbL. The Doto typeface is under the SIL
+Open Font License 1.1.
+
 ## Cellular Automata
 
 `screensaver.automata.armv7` computes Conway's Life and other cellular automata entirely on the
@@ -1142,11 +1186,13 @@ Full documentation: **[docs/RSSliveTiles.md](docs/RSSliveTiles.md)**.
   [Sheetcards](docs/Sheetcards.md), [RSS Live Tiles](docs/RSSliveTiles.md),
   [OpenTrivia](docs/opentrivia.md),
   [Word Clock](docs/wordclock.md), [Sand Clock](docs/sandclock.md),
-  [Screensaver Switcher](docs/screensaver-switcher.md), [Audioshelf](docs/audioshelf.md).
+  [Screensaver Switcher](docs/screensaver-switcher.md), [Audioshelf](docs/audioshelf.md),
+  [Vintage Radar](docs/vintageradar.md).
 - Native projects: [sandclock.gl](screensaver.sandclock.gl/README.md) (Sand Clock, Liquid Clock,
   Cellular Automata, Physarum, Tetris AI),
   [infworld.gl](screensaver.infworld.gl/README.md),
-  [plant.gl](screensaver.plant.gl/README.md).
+  [plant.gl](screensaver.plant.gl/README.md),
+  [vintageradar.gl](screensaver.vintageradar.gl/README.md).
 
 ## Develop
 

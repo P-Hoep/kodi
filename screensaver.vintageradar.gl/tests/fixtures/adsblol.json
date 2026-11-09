@@ -1,0 +1,15 @@
+{
+  "now": 1794198643003,
+  "total": 9,
+  "ac": [
+    {"hex": "acad53", "flight": "DAL2954 ", "r": "N916DU", "t": "B739", "alt_baro": 24150, "gs": 399.5, "track": 274.88, "lat": 44.98, "lon": -93.45, "category": "A3", "seen_pos": 0.158, "emergency": "none", "squawk": "2622", "mlat": [], "tisb": [], "type": "adsb_icao", "baro_rate": -1200, "seen": 0.1, "messages": 412, "rssi": -12.4, "version": 2, "nac_p": 9, "nac_v": 2, "sil": 3, "nic": 8, "rc": 186},
+    {"hex": "a41120", "flight": "MVK69   ", "r": "N361MK", "t": "P28A", "alt_baro": 3275, "gs": 93.7, "track": 213.69, "lat": 44.60, "lon": -93.50, "category": "A1", "seen_pos": 0.403, "emergency": "none", "squawk": "1200", "mlat": [], "tisb": [], "type": "adsb_icao", "baro_rate": 0, "seen": 0.2, "messages": 88, "rssi": -20.1, "version": 2},
+    {"hex": "a2e045", "flight": "UAL1872 ", "r": "N28478", "t": "B739", "alt_baro": 13950, "gs": 332.3, "track": 9.18, "lat": 45.30, "lon": -93.30, "category": "A3", "seen_pos": 0.452, "emergency": "none", "squawk": "4006", "mlat": [], "tisb": [], "type": "adsb_icao", "baro_rate": 2400, "seen": 0.2, "messages": 221, "rssi": -15.3, "version": 2},
+    {"hex": "a3e011", "flight": "EDV4706 ", "r": "N349PQ", "t": "CRJ9", "alt_baro": 5175, "gs": 214.9, "track": 211.1, "lat": 44.78, "lon": -93.05, "category": "A3", "seen_pos": 0.322, "emergency": "none", "squawk": "4257", "mlat": ["baro_rate"], "tisb": [], "type": "adsb_icao", "baro_rate": -1600, "seen": 0.3, "messages": 156, "version": 2},
+    {"hex": "ae1234", "flight": "PAT25   ", "r": "07-0808", "t": "C30J", "alt_baro": 2500, "gs": 180.0, "track": 90.0, "lat": 44.70, "lon": -93.40, "category": "A3", "dbFlags": 1, "seen_pos": 0.2, "emergency": "none", "squawk": "4571", "mlat": [], "tisb": [], "type": "adsb_icao", "baro_rate": 500, "seen": 0.2, "messages": 333, "version": 2},
+    {"hex": "ab5678", "flight": "N88EM   ", "r": "N88EM", "t": "BE20", "alt_baro": 12000, "gs": 260.0, "track": 180.0, "lat": 45.10, "lon": -93.20, "category": "A2", "seen_pos": 0.1, "emergency": "general", "squawk": "7700", "mlat": [], "tisb": [], "type": "adsb_icao", "baro_rate": 0, "seen": 0.1, "messages": 190, "version": 2},
+    {"hex": "a99999", "flight": "N9999G  ", "r": "N9999G", "t": "C172", "alt_baro": "ground", "gs": 12.4, "track": 41.5, "lat": 44.90, "lon": -93.32, "category": "A1", "seen_pos": 1.2, "emergency": "none", "squawk": "1200", "mlat": [], "tisb": [], "type": "adsb_icao", "seen": 1.1, "messages": 25, "version": 2},
+    {"hex": "abc123", "alt_geom": 8000, "gs": 120.0, "track": 300.0, "lat": 44.95, "lon": -93.10, "category": "B6", "seen_pos": 18.0, "emergency": "none", "squawk": "1200", "mlat": ["lat", "lon", "alt_geom"], "tisb": [], "type": "mlat", "geom_rate": -300, "seen": 0.4, "messages": 12, "version": 0},
+    {"hex": "a77777", "flight": "NOPOS   ", "t": "PA28", "alt_baro": 4500, "gs": 110.0, "track": 20.0, "category": "A1", "seen_pos": 0.2, "emergency": "none", "mlat": [], "tisb": [], "type": "adsb_icao"}
+  ]
+}

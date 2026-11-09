@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The app builds every control at runtime (see resources/lib/ui.py); the window only
+     needs to exist so Kodi gives the script a full-screen dialog with input events. -->
+<window>
+  <animation effect="fade" start="0" end="100" time="260">WindowOpen</animation>
+  <animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
+  <controls>
+  </controls>
+</window>
