@@ -48,7 +48,7 @@ colours.
 | HTTP and the place search | `resources/lib/net.py` |
 | The "Find a place by name" action | `resources/lib/setup.py` |
 | Window XML, generated media, fonts | `resources/skins/Default/1080i/`, `resources/media/` |
-| Offline tests | `tests/test_vintageradar.py` |
+| Offline tests | `../tests/test_vintageradar.py` |
 
 The text images go in a per-session directory under `special://temp/vintageradar/` (keyed by process
 id and start time), so two copies of the window never overwrite each other. Directories older than
@@ -119,7 +119,7 @@ the SIL Open Font License 1.1, baked into the texture atlases under `resources/m
 The pure-Python modules need no Kodi and no network:
 
 ```sh
-python3 -m unittest discover -s script.vintageradar/tests -v
+python3 -m unittest tests.test_vintageradar -v
 ```
 
 The tests cover geometry, ADS-B and OpenSky parsing, filtering, ordering, the spotlight and

@@ -1,6 +1,6 @@
-"""Offline tests for the app's pure Python modules (no Kodi needed).
+"""Offline tests for the Vintage Radar app's pure Python modules (no Kodi needed).
 
-Run with:  python3 -m unittest discover -s script.vintageradar/tests -v
+Run with:  python3 -m unittest tests.test_vintageradar -v
 """
 
 import math
@@ -11,7 +11,7 @@ import types
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.join(os.path.dirname(HERE), 'script.vintageradar')
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 

@@ -847,7 +847,7 @@ cd screensaver.vintageradar.gl
 cmake -S . -B build && cmake --build build && ctest --test-dir build
 ./build/radar_glfw --live                       # live data, no Kodi
 ./build/radar_glfw_core --fixture tests/fixtures/adsblol.json   # what Kodi uses on macOS
-python3 -m unittest discover -s ../script.vintageradar/tests    # the app's offline tests
+cd .. && python3 -m unittest tests.test_vintageradar        # the app's offline tests
 ```
 
 Aircraft data comes from the volunteer-run adsb.lol and OpenSky Network APIs and is used as-is; it

@@ -202,7 +202,7 @@ in the [screensaver README](../screensaver.vintageradar.gl/README.md).
 Python app tests (no Kodi, no network):
 
 ```sh
-python3 -m unittest discover -s script.vintageradar/tests -v
+python3 -m unittest tests.test_vintageradar -v
 ```
 
 Live testing against a local Kodi and screenshots: see

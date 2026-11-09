@@ -138,8 +138,7 @@ Kodi.
 
 `ctest` runs `tests/test_radar.cpp` against the JSON fixtures in `tests/fixtures`: distance and
 bearing, destination and east/north conversion, ADS-B and OpenSky parsing, filtering, ordering,
-spotlight rotation, echoes, and formatting. The Python app's equivalent tests are in
-`script.vintageradar/tests`.
+spotlight rotation, echoes, and formatting. The Python app's equivalent tests are in the repository's `tests/test_vintageradar.py`.
 
 ## Source layout
 
