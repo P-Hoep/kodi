@@ -1,7 +1,8 @@
 """Offline tests for the GeoGuess screensaver: the settings table, reveal timing, label cleaning
-and country names, the pan geometry and the map projection, the datasets-server client
+and country names, the pan geometry and the answer map window, the datasets-server client
 (batching, recent rows, coordinates, backoff, source rotation, abort), image header parsing,
-the temp store, expired-URL re-requests and the files Kodi needs. No network, no Kodi.
+the temp store, expired-URL re-requests, map downloads and the files Kodi needs. No network, no
+Kodi.
 
 python3 -m unittest tests.test_geoguess
 """
@@ -187,6 +188,15 @@ class LabelCleaning(unittest.TestCase):
             self.assertTrue(name)
             self.assertEqual(labels.display_label('X', code), 'X, %s' % name)
 
+    def test_map_caption_is_the_country(self):
+        self.assertEqual(labels.map_caption('106 109, 1315 Velike Lašče', 'SI'), 'Slovenia')
+        self.assertEqual(labels.map_caption('', 'JP'), 'Japan')
+
+    def test_map_caption_falls_back_to_the_place(self):
+        self.assertEqual(labels.map_caption('Somewhere_1_2', 'ZZ'), 'Somewhere')
+        self.assertEqual(labels.map_caption('', 'ZZ'), 'ZZ')
+        self.assertEqual(labels.map_caption(None, ''), '')
+
 
 class LayoutMath(unittest.TestCase):
     def test_full_height_width_follows_aspect(self):
@@ -256,19 +266,55 @@ class LayoutMath(unittest.TestCase):
         self.assertEqual(layout.ease(2), 1.0)
         self.assertAlmostEqual(layout.ease(0.5), 0.5)
 
-    def test_world_point_spans_the_map(self):
-        self.assertEqual(layout.world_point(90, -180, 720, 360), (0.0, 0.0))
-        self.assertEqual(layout.world_point(-90, 180, 720, 360), (720.0, 360.0))
-        x, y = layout.world_point(0, 0, 720, 360)
-        self.assertAlmostEqual(x, 360.0)
-        self.assertAlmostEqual(y, 180.0)
-        x, y = layout.world_point(48.3710587, 19.416553, 720, 360)
-        self.assertAlmostEqual(x, (19.416553 + 180.0) / 360.0 * 720)
-        self.assertAlmostEqual(y, (90.0 - 48.3710587) / 180.0 * 360)
+    def test_the_map_window_is_a_fixed_height_around_the_point(self):
+        left, bottom, right, top = config.map_bbox(48.0, 19.0)
+        self.assertAlmostEqual(top - bottom, config.MAP_LAT_SPAN)
+        self.assertAlmostEqual((left + right) / 2.0, 19.0)
+        self.assertAlmostEqual((bottom + top) / 2.0, 48.0)
 
-    def test_world_point_clamps_bad_coordinates_to_the_edge(self):
-        self.assertEqual(layout.world_point(120, -400, 720, 360), (0.0, 0.0))
-        self.assertEqual(layout.world_point(-120, 400, 720, 360), (720.0, 360.0))
+    def test_the_map_window_widens_with_latitude(self):
+        # Roughly 670 km wide and 335 km tall at every latitude, so the image is not stretched.
+        equator = config.map_bbox(0.0, 10.0)
+        high = config.map_bbox(60.0, 10.0)
+        self.assertAlmostEqual(equator[2] - equator[0], 6.0)
+        self.assertAlmostEqual(high[2] - high[0], 6.0 / 0.5)
+        self.assertAlmostEqual(high[2] - high[0], 12.0)
+        frozen = config.map_bbox(89.0, 10.0)
+        self.assertAlmostEqual(frozen[2] - frozen[0], 24.0)      # capped by MAP_MIN_COS
+
+    def test_the_map_window_stays_inside_the_world(self):
+        for lat, lon in ((89.0, 179.9), (-89.0, -179.9), (0.0, 179.0), (0.0, -179.0)):
+            left, bottom, right, top = config.map_bbox(lat, lon)
+            self.assertGreaterEqual(left, -180.0)
+            self.assertLessEqual(right, 180.0)
+            self.assertGreaterEqual(bottom, -90.0)
+            self.assertLessEqual(top, 90.0)
+            self.assertLessEqual(left, lon)
+            self.assertGreaterEqual(right, lon)
+            self.assertLessEqual(bottom, lat)
+            self.assertGreaterEqual(top, lat)
+
+    def test_map_url_asks_gibs_for_the_window(self):
+        bbox = (12.5, 46.5, 21.5, 49.5)
+        url = config.map_url(bbox)
+        self.assertTrue(url.startswith(config.GIBS + '?'))
+        self.assertIn('LAYERS=' + config.MAP_LAYER, url)
+        self.assertIn('FORMAT=image%2Fjpeg', url)
+        self.assertIn('WIDTH=720', url)
+        self.assertIn('HEIGHT=360', url)
+        self.assertIn('BBOX=12.5000%2C46.5000%2C21.5000%2C49.5000', url)
+
+    def test_map_point_places_the_centre_and_the_edges(self):
+        bbox = (10.0, 40.0, 20.0, 50.0)
+        self.assertEqual(layout.map_point(45.0, 15.0, bbox, 720, 360), (360.0, 180.0))
+        self.assertEqual(layout.map_point(50.0, 10.0, bbox, 720, 360), (0.0, 0.0))
+        self.assertEqual(layout.map_point(40.0, 20.0, bbox, 720, 360), (720.0, 360.0))
+
+    def test_map_point_clamps_a_point_outside_the_window(self):
+        bbox = (10.0, 40.0, 20.0, 50.0)
+        self.assertEqual(layout.map_point(60.0, -5.0, bbox, 720, 360), (0.0, 0.0))
+        self.assertEqual(layout.map_point(30.0, 25.0, bbox, 720, 360), (720.0, 360.0))
+        self.assertEqual(layout.map_point(45.0, 15.0, (0.0, 0.0, 0.0, 0.0), 720, 360), (0.0, 0.0))
 
 
 class ParseRows(unittest.TestCase):
@@ -492,6 +538,15 @@ class TempStore(unittest.TestCase):
             self.assertEqual(handle.read(), b'abc')
         self.assertEqual(os.listdir(os.path.join(self.folder, 'geoguess')), ['geoguess-7.jpg'])
 
+    def test_map_is_saved_under_its_own_name(self):
+        self.store = downloader.TempStore(self.folder)
+        image = self.store.save(7, b'abc')
+        answer_map = self.store.save_map(7, b'def')
+        self.assertEqual(os.path.basename(image), 'geoguess-7.jpg')
+        self.assertEqual(os.path.basename(answer_map), 'geoguess-7-map.jpg')
+        with open(answer_map, 'rb') as handle:
+            self.assertEqual(handle.read(), b'def')
+
     def test_cap_keeps_the_newest_files(self):
         self.store = downloader.TempStore(self.folder, keep=3)
         for index, stamp in ((1, 100), (2, 200), (3, 300), (4, 400), (5, 500)):
@@ -577,6 +632,53 @@ class Downloader(unittest.TestCase):
                 downloader.Downloader(rows, self.store).download(hf_client.Item(6, 'https://x/6.jpg'))
         self.assertEqual(rows.asked, [])
 
+    def test_map_is_downloaded_with_the_panorama(self):
+        item = hf_client.Item(3, 'https://x/3.jpg', width=10, height=5, latitude=48.0,
+                              longitude=19.0)
+        urls = []
+
+        def fetch(url):
+            urls.append(url)
+            return jpeg(10, 5)
+
+        with mock.patch.object(downloader.net, 'fetch_image', fetch):
+            got = downloader.Downloader(None, self.store, maps=True).download(item)
+        self.assertEqual(len(urls), 2)
+        self.assertTrue(urls[0].endswith('/3.jpg'))
+        self.assertIn('gibs.earthdata.nasa.gov', urls[1])
+        self.assertIn('BBOX=14.5', urls[1])          # widened for the latitude
+        self.assertTrue(got.map_path.endswith('geoguess-3-map.jpg'))
+        self.assertTrue(os.path.isfile(got.map_path))
+
+    def test_no_map_is_fetched_by_default(self):
+        item = hf_client.Item(3, 'https://x/3.jpg', width=10, height=5, latitude=48.0,
+                              longitude=19.0)
+        with mock.patch.object(downloader.net, 'fetch_image', return_value=jpeg(10, 5)) as fetch:
+            got = downloader.Downloader(None, self.store).download(item)
+        self.assertIsNone(got.map_path)
+        fetch.assert_called_once()
+
+    def test_a_row_without_coordinates_has_no_map(self):
+        item = hf_client.Item(3, 'https://x/3.jpg', width=10, height=5)
+        with mock.patch.object(downloader.net, 'fetch_image', return_value=jpeg(10, 5)) as fetch:
+            got = downloader.Downloader(None, self.store, maps=True).download(item)
+        self.assertIsNone(got.map_path)
+        fetch.assert_called_once()
+
+    def test_a_failed_map_keeps_the_panorama(self):
+        item = hf_client.Item(3, 'https://x/3.jpg', width=10, height=5, latitude=48.0,
+                              longitude=19.0)
+
+        def fetch(url):
+            if 'gibs.earthdata' in url:
+                raise hf_client.net.HttpError('map down', 0, 'network')
+            return jpeg(10, 5)
+
+        with mock.patch.object(downloader.net, 'fetch_image', fetch):
+            got = downloader.Downloader(None, self.store, maps=True).download(item)
+        self.assertIsNone(got.map_path)
+        self.assertTrue(os.path.isfile(got.path))
+
 
 class AddonFiles(unittest.TestCase):
     def test_addon_xml(self):
@@ -595,7 +697,7 @@ class AddonFiles(unittest.TestCase):
     def test_window_and_media_exist(self):
         self.assertTrue(os.path.isfile(os.path.join(
             ADDON_DIR, 'resources', 'skins', 'Default', '1080i', 'screensaver-geoguess.xml')))
-        for name in ('white.png', 'shade.png', 'world.png', 'pin.png'):
+        for name in ('white.png', 'shade.png', 'pin.png'):
             self.assertTrue(os.path.isfile(os.path.join(
                 ADDON_DIR, 'resources', 'skins', 'Default', 'media', name)))
 

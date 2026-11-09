@@ -30,7 +30,7 @@ installed version in **Add-ons → My add-ons**.
 | [SkyWatch](#skywatch) | `screensaver.skywatch` | 1.0.0 | A live weather station: radar, forecasts, warnings and conditions |
 | [Vintage Radar](#vintage-radar) | `screensaver.vintageradar` | 1.0.1 | A green-phosphor radar scope showing the aircraft flying over you right now (Kodi 20+) |
 | [Live Cams](#live-cams) | `screensaver.livecams` | 1.0.0 | A window onto public live cameras around the world |
-| [GeoGuess](#geoguess) | `screensaver.geoguess` | 0.3.0 | A random street-view panorama, answered after a few sweeps |
+| [GeoGuess](#geoguess) | `screensaver.geoguess` | 0.4.0 | A random street-view panorama, answered after a few sweeps |
 | [Word Clock](#word-clock) | `screensaver.wordclock` | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 | [Sand Clock](#sand-clock) | `screensaver.sandclock` | 1.0.1 | A clock whose digits crumble into falling sand every second |
 | [Jeopkodi](#jeopkodi) | `screensaver.jeopkodi` | 1.1.0 | An endless Jeopardy! slideshow: clue, then the response |
@@ -438,17 +438,17 @@ through its datasets server, with one metadata request per batch.
   seconds (5–120) per pass, all adjustable. Pan one to ten times back and forth over the same
   panorama for another look before the next place arrives, and the name stays hidden for every
   pass but the last.
-- **Map answer:** instead of the place name, show a world map with a pin at the row's latitude
-  and longitude. The map is drawn from Natural Earth public-domain data, so it needs no map
-  service, key or extra request.
+- **Map answer:** instead of the place name, show a zoomed satellite map centred on the row's
+  latitude and longitude, with a pin on the spot and the English country name underneath. The
+  map comes from NASA GIBS on demand, so it needs no key and is in the public domain.
 - **Unseen places:** a batch is fetched from a random offset, shuffled, and the last 200 shown
   row indices are dropped, so the same street does not come back soon.
 - **Labels:** the address's coordinate suffix is stripped; the country's ISO alpha-2 code is
   appended as its English name unless the address already ends with a known spelling of it.
   Small, medium and large label sizes.
 - **Images:** a wide panorama pans with a sine ease; a narrow one is centred. The next image is
-  prefetched while the current one is shown, at most three files are kept in Kodi's temp folder,
-  and they are deleted on exit.
+  prefetched while the current one is shown, at most eight files are kept in Kodi's temp folder
+  (two per row when the map is on), and they are deleted on exit.
 - **Clock:** an optional fixed clock in the top right corner, as plain white text in Kodi's own
   time format.
 - **Offline:** a black screen with **No connection. Retrying…**, retrying at 10, 20, 40 and 60
@@ -457,11 +457,11 @@ through its datasets server, with one metadata request per batch.
 | Category | Settings |
 |---|---|
 | Playback | Reveal the location (seconds into the last pass), seconds per panorama pass, locations fetched per request |
-| Display | Append the full country name, pan the panorama, passes across each panorama, clock, map instead of the name, label size |
+| Display | Append the full country name, pan the panorama, passes across each panorama, clock, zoomed map instead of the name, label size |
 
 ```bash
 python3 tools/make_settings_geoguess.py  # settings.xml + strings.po from resources/lib/config.py
-python3 tools/make_geoguess_media.py     # icon, fanart, textures, world map and pin (Pillow)
+python3 tools/make_geoguess_media.py     # icon, fanart, textures and pin (Pillow)
 python3 tools/build_zip.py screensaver.geoguess
 KODI_ADDON=screensaver.geoguess python3 tools/kodi.py install   # then select / run / shot
 python3 -m unittest tests.test_geoguess  # offline: labels, layout, client, downloader, files

@@ -168,3 +168,11 @@ def display_label(address, code, show_country=True):
     if name and not ends_with_country(place, code):
         return '%s, %s' % (place, name)
     return place
+
+
+def map_caption(address, code):
+    """The line under the answer map: the English country name.
+
+    An unknown code falls back to the place name, so the caption still answers the guess.
+    """
+    return country_name(code) or clean_address(address) or (code or '').upper()

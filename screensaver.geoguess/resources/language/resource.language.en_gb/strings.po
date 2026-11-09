@@ -44,7 +44,7 @@ msgid "Show a clock in the top right corner"
 msgstr ""
 
 msgctxt "#30109"
-msgid "Show a map of the location instead of its name"
+msgid "Show a zoomed map of the location instead of its name"
 msgstr ""
 
 msgctxt "#30110"

@@ -15,7 +15,7 @@ installs them and keeps them up to date.
 | [Couchstronomy](#couchstronomy) | 0.1.3 | Your TV as a window onto the real night sky |
 | [SkyWatch](#skywatch) | 1.0.0 | A live weather station: radar, forecasts, warnings and conditions |
 | [Live Cams](#live-cams) | 1.0.0 | A window onto public live cameras around the world |
-| [GeoGuess](#geoguess) | 0.3.0 | A random street-view panorama, answered after a few sweeps |
+| [GeoGuess](#geoguess) | 0.4.0 | A random street-view panorama, answered after a few sweeps |
 | [Word Clock](#word-clock) | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 | [Sand Clock](#sand-clock) | 1.0.1 | A clock whose digits crumble into falling sand every second |
 | [Jeopkodi](#jeopkodi) | 1.1.0 | An endless Jeopardy! slideshow: clue, then the response |
@@ -274,19 +274,21 @@ without it; after a while the next panorama crossfades in.
 - **Timing:** reveal the answer 8 seconds into the final pass (1–60) and show each place for 25
   seconds (5–120) per pass. With three passes the name stays hidden for two full sweeps.
 - **Repeats:** pan one to ten times back and forth over the same panorama before moving on.
-- **Map answer:** a world map with a pin at the row's latitude and longitude, in place of the
-  place name, drawn from public-domain Natural Earth data.
+- **Map answer:** a zoomed satellite map centred on the row's latitude and longitude, with a pin
+  on the spot and the English country name underneath, in place of the place name. The imagery
+  comes from NASA GIBS on demand.
 - **Clock:** an optional fixed clock in the top right corner, as plain white text.
 - **Labels:** the country's English name is appended unless the address already ends with a known
   spelling of it; label size small, medium or large.
 - **Images:** wide panoramas pan with a sine ease, narrow ones are centred; the next image is
-  prefetched, and at most three files are kept in Kodi's temp folder and deleted on exit.
+  prefetched, and at most eight files are kept in Kodi's temp folder and deleted on exit.
 - **Offline:** black screen with a retry message, backing off to once a minute and resuming when
   the connection returns. Any input exits immediately.
 
-Nothing is bundled: the panoramas and place names are streamed at run time from the Hugging Face
-dataset `yunusserhat/random_streetview_images`. The imagery is © Google and its contributors and
-is subject to Google's terms; the add-on is not affiliated with Google.
+The panoramas, place names and answer maps are streamed at run time from the Hugging Face
+dataset `yunusserhat/random_streetview_images` and NASA GIBS. The street-view imagery is © Google
+and its contributors and is subject to Google's terms; the add-on is not affiliated with Google.
+The Blue Marble map imagery is in the public domain.
 
 ## Screensaver Switcher
 

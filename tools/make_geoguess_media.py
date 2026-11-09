@@ -1,18 +1,14 @@
-"""Generate the GeoGuess media: icon, fanart, the white backdrop texture, the bottom shade, the
-answer map and its pin.
+"""Generate the GeoGuess media: icon, fanart, the white backdrop texture, the bottom shade and
+the map pin.
 
 The backdrop and shade are drawn with Python in the add-on (resources/lib/saver.py): a plain
-white texture tinted black and a transparent-to-black gradient behind the answer. The map is an
-equirectangular world map rendered from Natural Earth 1:110m country polygons (public domain),
-downloaded once into tools/.world-cache when missing. The pin is drawn separately and placed at
-the row's coordinates by the screensaver.
+white texture tinted black and a transparent-to-black gradient behind the answer. The answer map
+itself is fetched per location from NASA GIBS at run time; only the pin is a bundled image.
 
 Run:  python3 tools/make_geoguess_media.py
 """
 
-import json
 import os
-import urllib.request
 
 from PIL import Image, ImageDraw, ImageFilter
 
@@ -20,25 +16,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 ADDON = os.path.join(ROOT, 'screensaver.geoguess')
 MEDIA = os.path.join(ADDON, 'resources', 'skins', 'Default', 'media')
-CACHE = os.path.join(HERE, '.world-cache')
-COUNTRIES = os.path.join(CACHE, 'ne_110m_admin_0_countries.geojson')
-NATURAL_EARTH = ('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/'
-                 'geojson/ne_110m_admin_0_countries.geojson')
 
 SKY_TOP = (7, 17, 28)
 SKY_BOTTOM = (38, 92, 122)
 GROUND_TOP = (22, 62, 64)
 GROUND_BOTTOM = (9, 24, 27)
 SUN = (244, 183, 110)
-
-# Map panel size on screen (Kodi's 1080i GUI); the file is drawn at twice that.
-MAP_W, MAP_H = 720, 360
-MAP_SCALE = 2
-OCEAN = (10, 18, 28, 255)
-GRID = (18, 31, 45, 255)
-LAND = (52, 68, 90, 255)
-EDGE = (92, 116, 145, 255)
-BORDER = (78, 100, 126, 255)
 
 
 def vertical_gradient(size, top, bottom):
@@ -150,69 +133,7 @@ def make_textures():
         for x in range(1920):
             pixels[x, y] = (0, 0, 0, alpha)
     shade.save(os.path.join(MEDIA, 'shade.png'), optimize=True)
-    make_world_map()
     make_pin()
-
-
-def countries():
-    """The Natural Earth country polygons, downloaded once into the build cache."""
-    if not os.path.exists(COUNTRIES):
-        os.makedirs(CACHE, exist_ok=True)
-        request = urllib.request.Request(NATURAL_EARTH,
-                                         headers={'User-Agent': 'GeoGuess-build/0.3'})
-        data = urllib.request.urlopen(request, timeout=180).read()
-        with open(COUNTRIES, 'wb') as handle:
-            handle.write(data)
-    with open(COUNTRIES) as handle:
-        return json.load(handle)
-
-
-def _polygons(geometry):
-    """The ring lists of a Polygon or of every polygon in a MultiPolygon."""
-    if geometry.get('type') == 'Polygon':
-        yield geometry.get('coordinates') or []
-    elif geometry.get('type') == 'MultiPolygon':
-        for polygon in geometry.get('coordinates') or []:
-            yield polygon or []
-
-
-def make_world_map():
-    """A dark equirectangular world map: oceans, a 30-degree graticule, land and borders."""
-    width, height = MAP_W * MAP_SCALE, MAP_H * MAP_SCALE
-    image = Image.new('RGBA', (width, height), OCEAN)
-    draw = ImageDraw.Draw(image)
-
-    def xy(point):
-        return ((point[0] + 180.0) / 360.0 * width, (90.0 - point[1]) / 180.0 * height)
-
-    for lon in range(-150, 180, 30):
-        x = (lon + 180.0) / 360.0 * width
-        draw.line([(x, 0), (x, height)], fill=GRID, width=1)
-    for lat in range(-60, 90, 30):
-        y = (90.0 - lat) / 180.0 * height
-        draw.line([(0, y), (width, y)], fill=GRID, width=1)
-
-    features = [f for f in countries().get('features') or [] if f.get('geometry')]
-    # Land first, then every outline on top, so borders are not covered by a neighbouring fill.
-    for feature in features:
-        for polygon in _polygons(feature['geometry']):
-            if not polygon:
-                continue
-            ring = [xy(point) for point in polygon[0]]
-            if len(ring) >= 3:
-                draw.polygon(ring, fill=LAND)
-            for hole in polygon[1:]:
-                inner = [xy(point) for point in hole]
-                if len(inner) >= 3:
-                    draw.polygon(inner, fill=OCEAN)
-    for feature in features:
-        for polygon in _polygons(feature['geometry']):
-            if polygon:
-                ring = [xy(point) for point in polygon[0]]
-                draw.line(ring + ring[:1], fill=EDGE, width=1, joint='curve')
-
-    draw.rectangle((0, 0, width - 1, height - 1), outline=BORDER, width=2)
-    image.convert('RGB').save(os.path.join(MEDIA, 'world.png'), optimize=True)
 
 
 def make_pin():

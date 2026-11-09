@@ -10,23 +10,27 @@ import queue
 import struct
 import threading
 
-from . import hf_client, net
+from . import config, hf_client, net
 
-KEEP_FILES = 3          # at most this many temp files, the design note's cap
+# Two files per row (the panorama and, with the map answer on, its map). Keeping the two newest
+# rows and the one being replaced fits in six; eight leaves a little slack.
+KEEP_FILES = 8
 PREFIX = 'geoguess-'
 
 
 class Downloaded(object):
-    __slots__ = ('item', 'path', 'width', 'height')
+    __slots__ = ('item', 'path', 'width', 'height', 'map_path')
 
-    def __init__(self, item, path, width, height):
+    def __init__(self, item, path, width, height, map_path=None):
         self.item = item
         self.path = path
         self.width = width
         self.height = height
+        self.map_path = map_path
 
     def __repr__(self):
-        return 'Downloaded(%d, %r, %dx%d)' % (self.item.row_idx, self.path, self.width, self.height)
+        return 'Downloaded(%d, %r, %dx%d, map %r)' % (self.item.row_idx, self.path, self.width,
+                                                     self.height, self.map_path)
 
 
 # -- image dimensions from the file header ----------------------------------
@@ -73,8 +77,26 @@ class TempStore(object):
         self.directory = directory
         self.keep = keep
 
-    def _name(self, row_idx):
-        return os.path.join(self.directory, '%s%d.jpg' % (PREFIX, int(row_idx)))
+    def _name(self, row_idx, suffix='.jpg'):
+        return os.path.join(self.directory, '%s%d%s' % (PREFIX, int(row_idx), suffix))
+
+    def _save(self, row_idx, suffix, data):
+        os.makedirs(self.directory, exist_ok=True)
+        path = self._name(row_idx, suffix)
+        temporary = path + '.part'
+        with open(temporary, 'wb') as handle:
+            handle.write(data)
+        os.replace(temporary, path)
+        self.trim()
+        return path
+
+    def save(self, row_idx, data):
+        """Write the panorama bytes and return the path; the folder is created when missing."""
+        return self._save(row_idx, '.jpg', data)
+
+    def save_map(self, row_idx, data):
+        """Write the answer map bytes; it has its own name so the panorama is left alone."""
+        return self._save(row_idx, '-map.jpg', data)
 
     def _files(self):
         try:
@@ -83,17 +105,6 @@ class TempStore(object):
             return []
         paths = [os.path.join(self.directory, name) for name in names if name.startswith(PREFIX)]
         return [path for path in paths if os.path.isfile(path)]
-
-    def save(self, row_idx, data):
-        """Write the bytes and return the path; the folder is created when missing."""
-        os.makedirs(self.directory, exist_ok=True)
-        path = self._name(row_idx)
-        temporary = path + '.part'
-        with open(temporary, 'wb') as handle:
-            handle.write(data)
-        os.replace(temporary, path)
-        self.trim()
-        return path
 
     def trim(self):
         """Delete the oldest files beyond the cap."""
@@ -118,14 +129,29 @@ class TempStore(object):
 # -- downloading --------------------------------------------------------------
 
 class Downloader(object):
-    def __init__(self, client, store, timeout=None):
+    def __init__(self, client, store, timeout=None, maps=False):
         self.client = client
         self.store = store
         self.timeout = timeout
+        self.maps = maps
 
     def _fetch(self, item):
         kwargs = {} if self.timeout is None else {'timeout': self.timeout}
         return net.fetch_image(item.src, **kwargs)
+
+    def _fetch_map(self, item):
+        """The zoomed answer map for a row, or None when it cannot be had.
+
+        The map is an extra request, so its failure must not cost the panorama: the screensaver
+        shows the place name instead when this returns None.
+        """
+        if not self.maps or item.latitude is None or item.longitude is None:
+            return None
+        try:
+            data = net.fetch_image(config.map_url(config.map_bbox(item.latitude, item.longitude)))
+        except net.HttpError:
+            return None
+        return self.store.save_map(item.row_idx, data)
 
     def download(self, item):
         """Image bytes saved to the temp store. A refused URL is re-requested once by row_idx."""
@@ -140,10 +166,11 @@ class Downloader(object):
             item = fresh
             data = self._fetch(item)
         path = self.store.save(item.row_idx, data)
+        map_path = self._fetch_map(item)
         width, height = item.width, item.height
         if width <= 0 or height <= 0:
             width, height = image_size(data)
-        return Downloaded(item, path, width, height)
+        return Downloaded(item, path, width, height, map_path)
 
 
 # -- prefetching --------------------------------------------------------------

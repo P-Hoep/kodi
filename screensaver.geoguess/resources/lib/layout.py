@@ -57,15 +57,16 @@ def centre_offset(display_width, screen_width):
     return int((screen_width - display_width) / 2)
 
 
-def world_point(latitude, longitude, width, height):
-    """Pixel position of (latitude, longitude) on an equirectangular world map.
+def map_point(latitude, longitude, bbox, width, height):
+    """Pixel position of (latitude, longitude) inside a map drawn for `bbox`.
 
-    The map spans 180 degrees west to east across `width` and 90 north to south across
-    `height`. Out-of-range values are clamped to the edge rather than wrapped, so a bad row
-    puts the pin at the border instead of somewhere unrelated.
+    bbox is (left, bottom, right, top) in degrees, the same bounds the image was requested for.
+    The result is clamped to the image, so a point just outside a window that had to be slid
+    inward still gets a pin on the border rather than off the map.
     """
-    lat = max(-90.0, min(90.0, float(latitude)))
-    lon = max(-180.0, min(180.0, float(longitude)))
-    x = (lon + 180.0) / 360.0 * width
-    y = (90.0 - lat) / 180.0 * height
-    return x, y
+    left, bottom, right, top = [float(value) for value in bbox]
+    if right <= left or top <= bottom:
+        return 0.0, 0.0
+    u = (float(longitude) - left) / (right - left)
+    v = (top - float(latitude)) / (top - bottom)
+    return max(0.0, min(1.0, u)) * width, max(0.0, min(1.0, v)) * height

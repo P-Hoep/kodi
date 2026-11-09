@@ -2,8 +2,9 @@
 
 Every control is created from Python, bottom to top: a black backdrop, two image controls so one
 can crossfade into the other, a bottom shade, the three label sizes, the status line, and
-optionally the clock and the world map with its pin. The display loop runs on its own thread;
-any input or the screensaver being woken stops it and the window closes straight away.
+optionally the clock and the zoomed answer map with its pin and country caption. The display loop
+runs on its own thread; any input or the screensaver being woken stops it and the window closes
+straight away.
 """
 
 import collections
@@ -30,10 +31,12 @@ RETRY_SECONDS = 10
 RECENT = 200
 SHADE_HEIGHT = 460
 
-# The optional answer panel: an equirectangular world map with a pin at the row's latitude and
-# longitude, in the bottom left corner where the place name would be. The map file is drawn at
-# twice its display size and the pin is rendered at 4x and downsampled, so their edges are smooth.
-MAP_X, MAP_Y, MAP_W, MAP_H = 60, 680, 720, 360
+# The optional answer panel: a zoomed NASA Blue Marble image centred on the row, in the bottom
+# left corner where the place name would be, with a pin at the location and the country name under
+# it. The image is fetched per row; only the pin is bundled. The panel starts high enough that the
+# caption still clears the bottom of the 1080-pixel GUI.
+MAP_X, MAP_Y, MAP_W, MAP_H = 60, 640, 720, 360
+CAPTION_Y, CAPTION_H = MAP_Y + MAP_H + 8, 56
 PIN_W, PIN_H = 44, 62
 
 LABEL_BOXES = ((60, 946, 1500, 90),      # font28
@@ -101,7 +104,9 @@ class Saver(object):
         self.clock_label = None
         self._clock_shown = None
         self.map_controls = []
+        self.map_image = None
         self.map_pin = None
+        self.map_caption = None
         self.active = 0
         self.recent = collections.deque(maxlen=RECENT)
         self.candidates = []
@@ -187,11 +192,14 @@ class Saver(object):
             self.controls.append(self.clock_label)
             self._tick_clock()
         if self.show_map:
-            # The map replaces the place name at reveal time. Both controls start hidden and are
-            # shown when the answer comes; the pin is moved to the row's coordinates each cycle.
-            window_image = xbmcgui.ControlImage(MAP_X, MAP_Y, MAP_W, MAP_H, self.media('world.png'))
-            self.map_pin = xbmcgui.ControlImage(MAP_X, MAP_Y, PIN_W, PIN_H, self.media('pin.png'))
-            self.map_controls = [window_image, self.map_pin]
+            # The map replaces the place name at reveal time. The controls start hidden and are
+            # filled in when the answer comes: the image path and pin position change per cycle.
+            self.map_image = xbmcgui.ControlImage(MAP_X, MAP_Y, MAP_W, MAP_H, '')
+            self.map_pin = xbmcgui.ControlImage(0, 0, PIN_W, PIN_H, self.media('pin.png'))
+            self.map_caption = xbmcgui.ControlLabel(MAP_X, CAPTION_Y, MAP_W, CAPTION_H, '',
+                                                    font='font37', textColor='FFFFFFFF',
+                                                    alignment=2)
+            self.map_controls = [self.map_image, self.map_pin, self.map_caption]
             for control in self.map_controls:
                 control.setAnimations(LABEL_ANIMS)
                 control.setVisible(False)
@@ -238,19 +246,24 @@ class Saver(object):
         if self.status_label is not None:
             self.status_label.setVisible(False)
 
-    def _show_answer(self, text, item):
-        """Reveal the place name, or the map with a pin when that is switched on.
+    def _show_answer(self, text, item, downloaded):
+        """Reveal the place name, or the zoomed map with its pin and country caption.
 
-        Rows carry coordinates, but one without them falls back to the name, so the answer is
-        never missing.
+        The map image is fetched with the panorama, so it is ready when the answer comes. A row
+        without coordinates, or whose map could not be downloaded, falls back to the name, so the
+        answer is never missing.
         """
-        if self.map_controls and item.latitude is not None and item.longitude is not None:
-            x, y = layout.world_point(item.latitude, item.longitude, MAP_W, MAP_H)
+        if self.map_controls and downloaded.map_path:
+            bbox = config.map_bbox(item.latitude, item.longitude)
+            x, y = layout.map_point(item.latitude, item.longitude, bbox, MAP_W, MAP_H)
+            self.map_image.setImage(downloaded.map_path, False)
             self.map_pin.setPosition(MAP_X + int(round(x)) - PIN_W // 2,
                                      MAP_Y + int(round(y)) - PIN_H)
+            caption = labels.map_caption(item.address, item.country)
+            self.map_caption.setLabel(caption)
             for control in self.map_controls:
                 control.setVisible(True)
-            return 'map %+.4f, %+.4f' % (item.latitude, item.longitude)
+            return 'map %+.4f, %+.4f, %s' % (item.latitude, item.longitude, caption)
         self.label.setText(text)
         self.label.setVisible(True)
         return text
@@ -274,7 +287,8 @@ class Saver(object):
         temp = xbmcvfs.translatePath('special://temp/geoguess/')
         self.store = downloader.TempStore(temp)
         self.client = hf_client.Client(monitor=self.monitor, on_retry=self._on_retry)
-        self.prefetch = downloader.Prefetcher(downloader.Downloader(self.client, self.store))
+        self.prefetch = downloader.Prefetcher(
+            downloader.Downloader(self.client, self.store, maps=self.show_map))
         while not self.stopped():
             downloaded = self._next_ready()
             if downloaded is None:
@@ -395,7 +409,7 @@ class Saver(object):
                 x = moved
             self._tick_clock()
             if not revealed and elapsed >= reveal_at:
-                debug('answer: %s' % self._show_answer(text, downloaded.item))
+                debug('answer: %s' % self._show_answer(text, downloaded.item, downloaded))
                 revealed = True
             if self.monitor.waitForAbort(TICK):
                 break

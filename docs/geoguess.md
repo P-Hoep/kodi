@@ -1,18 +1,19 @@
 # GeoGuess Screensaver
 
-`screensaver.geoguess` v0.3.0
+`screensaver.geoguess` v0.4.0
 
 A Kodi screensaver that turns the idle screen into a guessing game. Each location is a random
 street-view panorama from around the world, filling the screen height while it pans slowly — as
 many times back and forth as you like, to give you another look. The answer appears only when
 the final pass begins, so every earlier sweep is played without it: the place name fades in at
-the bottom left, or, if you prefer, a world map with a pin at the location. A fixed clock in the
-top right corner is optional. After a while the next panorama crossfades in. It streams the
-panoramas and place names from a Hugging Face dataset at run time; the only bundled images are
-the answer map and its pin.
+the bottom left, or, if you prefer, a zoomed satellite map centred on the location, with a pin
+and the country name beneath it. A fixed clock in the top right corner is optional. After a while
+the next panorama crossfades in. It streams the panoramas, place names and answer maps at run
+time; the only bundled image is the pin.
 
 It is pure Python (Kodi 19 or later), with no compiled code and no imaging library. One metadata
-request per batch of locations, one image download per cycle.
+request per batch of locations, one image download per cycle, plus one map request when the map
+answer is switched on.
 
 ---
 
@@ -63,10 +64,11 @@ devices whose Python has no system store of its own (common on Android).
    even ones at the left. A narrower one, or panning switched off, is centred and does not move.
 5. The answer fades in over the bottom shade at **Reveal the location** seconds into the final
    pass, so every earlier pass is played without it: with three passes the answer is hidden for
-   two full sweeps. With **Show a map of the location instead of its name** on, a world map with
-   a pin at the row's latitude and longitude appears instead of the text. After **Seconds per
-   panorama pass** × the pass count the answer fades out and the next crossfade begins. Repeated
-   passes keep the pace of one pass; they make the location stay longer rather than pan faster.
+   two full sweeps. With **Show a zoomed map of the location instead of its name** on, a
+   satellite map centred on the row's latitude and longitude appears instead of the text, with a
+   pin on the spot and the English country name under it. After **Seconds per panorama pass** ×
+   the pass count the answer fades out and the next crossfade begins. Repeated passes keep the
+   pace of one pass; they make the location stay longer rather than pan faster.
 6. With **Show a clock** on, the time is drawn as plain white text in the top right corner, in
    Kodi's own 12/24-hour format. It is a separate control, so it stays put while the panorama
    pans behind it.
@@ -88,7 +90,7 @@ All the settings are on one page, in two groups. They are listed here with their
 | Pan slowly across each panorama | `pan_enabled` | on | on/off | Off pins wide panoramas to their left edge instead of panning. |
 | Passes across each panorama | `pan_passes` | 1 | 1–10 | How many sweeps before the next location. Each pass reverses direction, so 2 or 3 gives another look at the scene. Hidden when panning is off; centred images always show for one pass. |
 | Show a clock in the top right corner | `show_clock` | off | on/off | Plain white clock text over the panorama, in Kodi's time format. |
-| Show a map of the location instead of its name | `show_map` | off | on/off | A world map with a pin at the row's latitude and longitude, in place of the place name. A row without coordinates falls back to the name. |
+| Show a zoomed map of the location instead of its name | `show_map` | off | on/off | A satellite map centred on the row's latitude and longitude, with a pin and the country name, in place of the place name. A row without coordinates, or whose map could not be downloaded, falls back to the name. |
 | Location label size | `label_size` | Medium | Small / Medium / Large | `font28`, `font37` or `font45` in Kodi's GUI resolution. Ignored while the map is shown. |
 
 The name is white over a 460-pixel gradient shade at the bottom of the screen, so it stays
@@ -113,23 +115,31 @@ dataset.
 
 ## The answer map
 
-With **Show a map of the location instead of its name** on, the answer is a 720 × 360 world map
-in the bottom left corner, dark navy with the land in slate, a 30-degree graticule and country
-borders. A red pin marks the row's latitude and longitude, its tip exactly on the point.
+With **Show a zoomed map of the location instead of its name** on, the answer is a 720 × 360
+satellite image in the bottom left corner, centred on the row's latitude and longitude and zoomed
+in to a region roughly 670 km wide and 335 km tall. A red pin marks the exact spot, its tip on the
+row's coordinates, and the English country name is shown in white underneath.
 
-- **Projection:** equirectangular, the format the map image is drawn in, so the pin is a plain
-  linear interpolation: `x = (lon + 180) / 360 × width`, `y = (90 − lat) / 180 × height`.
-  Coordinates outside their ranges are clamped to the map edge.
-- **Source:** Natural Earth 1:110m country polygons, which are in the public domain.
-  `tools/make_geoguess_media.py` downloads the GeoJSON once into `tools/.world-cache` and renders
-  the map with Pillow at twice its display size (1440 × 720); the add-on only displays the PNG.
-- **Fallback:** a row without usable coordinates shows the place name instead, so the answer is
-  never missing.
+- **Source:** NASA Blue Marble imagery (shaded relief with bathymetry), rendered on demand by the
+  NASA EOSDIS **GIBS** WMS. GIBS needs no key, is in the public domain, and returns the exact
+  bounding box asked for, so the view can be centred on the row rather than cropped from a world
+  map. The image is requested as JPEG, which keeps it to roughly 20–50 KB.
+- **Projection:** plate carrée (EPSG:4326). The latitude span is fixed at 3°; the longitude span
+  is `6° / cos(latitude)`, so the view covers about the same distance on the ground at every
+  latitude and the terrain is not stretched. The point is placed with a linear interpolation
+  inside the requested bounds: `x = (lon − left) / (right − left) × width`,
+  `y = (top − lat) / (top − bottom) × height`.
+- **Edges:** near the antimeridian or a pole the window is slid inward instead of crossing the
+  edge of the world. The pin is placed from the bounds actually requested, so it stays on the
+  location even then, and is clamped to the image if a point falls just outside.
+- **Fallback:** a row without usable coordinates, or one whose map request fails, shows the place
+  name instead, so the answer is never missing.
 
-The map is bundled rather than fetched from OpenStreetMap because their tile service is not
-licensed for use by applications, and the Wikimedia maps service is restricted to Wikimedia
-projects. A Natural Earth world map needs no key, no third-party service and no network request,
-so it also cannot break or slow the reveal.
+The map is fetched ahead of the reveal with the panorama, so the extra request does not delay the
+answer. It is deliberately not taken from OpenStreetMap or Wikimedia: their tile services are not
+licensed for use by applications, whereas GIBS is a public NASA service intended for exactly this
+kind of use. The imagery has no country borders or place labels of its own; the country caption
+under it is what names the answer.
 
 ## Data and how it is used
 
@@ -153,18 +163,21 @@ Malformed rows — no index, no image, a non-HTTP source — are skipped without
 Signed URLs expire; if an image download is refused, the add-on asks for that one row again by
 `row_idx` once, then either shows the fresh URL or skips the row.
 
-Requests identify themselves as `screensaver.geoguess/0.3.0 (Kodi screensaver;
+Requests identify themselves as `screensaver.geoguess/0.4.0 (Kodi screensaver;
 +https://github.com/P-Hoep/kodi)`, send `Accept-Encoding: gzip`, and time out after 15 seconds.
 Responses are capped at 32 MB for JSON and 24 MB for images, and an image must start with a JPEG
-or PNG signature before it is accepted.
+or PNG signature before it is accepted. With the map answer on, the prefetch also makes one GIBS
+request per row (see [The answer map](#the-answer-map)); that image goes through the same
+checks, and its failure is not fatal.
 
 ## Images, panning and temporary files
 
 Kodi's image control wants a path, not bytes, so each download is written to
-`special://temp/geoguess/geoguess-<row_idx>.jpg`. A `.part` file is written first and renamed into
-place, so a half-written file is never shown. At most three files are kept (the current image, the
-prefetched one and the one before), oldest deleted first; the folder is created when missing and
-every file the add-on wrote is deleted when the screensaver closes.
+`special://temp/geoguess/geoguess-<row_idx>.jpg`; with the map answer on, its map is written next
+to it as `geoguess-<row_idx>-map.jpg`. A `.part` file is written first and renamed into place, so a
+half-written file is never shown. At most eight files are kept — two per row for the current row,
+the prefetched one and the one being replaced — oldest deleted first; the folder is created when
+missing and every file the add-on wrote is deleted when the screensaver closes.
 
 The display size is computed from the image header when the dataset row does not carry a size:
 
@@ -194,6 +207,8 @@ cost is one `setPosition` call per frame, which is negligible next to decoding t
 - **An image download failure:** retryable network errors pause for a second and try the next row;
   a refused or expired URL is re-requested by `row_idx` once. A row that cannot be shown is skipped
   without interrupting the screensaver.
+- **A map download failure:** the panorama is still shown and the answer falls back to the place
+  name; the next row tries its map again.
 - **A row whose index was just shown:** the batch is refetched from another offset rather than
   showing it again.
 
@@ -220,17 +235,17 @@ screensaver.geoguess/
   icon.png, fanart.jpg           generated by tools/make_geoguess_media.py
   resources/
     lib/
-      config.py                  settings table, reveal timing, sources, strings, backoff
-      labels.py                  address cleaning and ISO alpha-2 -> country name
-      layout.py                  display size, pan extent, sine ease, passes, map projection
+      config.py                  settings table, reveal timing, sources, answer map, strings
+      labels.py                  address cleaning, ISO alpha-2 -> country name, map caption
+      layout.py                  display size, pan extent, sine ease, passes, map placement
       net.py                     urllib helpers, TLS, timeouts, image signature check
       hf_client.py               datasets-server client: /size, /rows, retries, rotation
-      downloader.py              temp store, JPEG/PNG size, downloader, prefetch thread
+      downloader.py              temp store, JPEG/PNG size, panorama and map download, prefetch
       saver.py                   the Kodi window and display loop (the only xbmc code)
     settings.xml                 GENERATED from config.py
     language/…/strings.po        GENERATED from config.py
     skins/Default/1080i/         the empty screensaver window
-    skins/Default/media/         white backdrop, bottom shade, world map and pin
+    skins/Default/media/         white backdrop, bottom shade and pin
 ```
 
 The logic modules import no Kodi modules and are tested offline; `saver.py` is the glue and the
@@ -240,17 +255,18 @@ only place that touches `xbmc`, `xbmcgui`, `xbmcaddon` or `xbmcvfs`.
 
 ```bash
 python3 tools/make_settings_geoguess.py   # settings.xml + strings.po from resources/lib/config.py
-python3 tools/make_geoguess_media.py      # icon, fanart, textures, map and pin (Pillow; Natural Earth once)
-python3 -m unittest tests.test_geoguess   # 66 offline tests
+python3 tools/make_geoguess_media.py      # icon, fanart, textures and pin (Pillow)
+python3 -m unittest tests.test_geoguess   # 77 offline tests
 python3 tools/build_zip.py screensaver.geoguess
 KODI_ADDON=screensaver.geoguess python3 tools/kodi.py install   # then select / run / shot
 KODI_ADDON=screensaver.geoguess python3 tools/kodi.py set reveal_after=3 show_for=30
 ```
 
 The tests cover the settings table and reveal timing, the label cleaning (including non-ASCII and
-missing addresses), the layout and pan maths, the map projection, row and coordinate parsing, the
-client's retry and rotation behaviour, image size parsing, the temp store's cap and cleanup, the
-downloader's re-request path, and the add-on's files and generated settings. They need no network.
+missing addresses), the layout and pan maths, the answer map's window and pin placement, row and
+coordinate parsing, the client's retry and rotation behaviour, image size parsing, the temp
+store's cap and cleanup, the downloader's re-request and map paths, and the add-on's files and
+generated settings. They need no network.
 
 Restart Kodi after changing `strings.po`: Kodi caches an add-on's strings, and the settings labels
 show up blank until it reloads them.
@@ -280,10 +296,10 @@ occasionally disagree. This is not an add-on error.
 
 - The dataset is a fixed collection of 11,054 rows; the screensaver avoids the last 200 shown
   indices, not every index it has ever shown.
-- No images are cached between runs: the three temp files exist only while the screensaver is
+- No images are cached between runs: the eight temp files exist only while the screensaver is
   active, by design.
-- The answer map is a world map, not a street-level one: the pin shows where in the world the
-  row is, which is the point of the guess, not the streets around it.
+- The answer map is satellite imagery at regional zoom, not a street map: it has no borders,
+  roads or labels, and the country name under it is what identifies the answer.
 - The second source in `config.py` currently answers HTTP 500 on `/rows`; see
   [Data and how it is used](#data-and-how-it-is-used).
 - Street-view imagery is © Google and its contributors and is subject to Google's terms; the

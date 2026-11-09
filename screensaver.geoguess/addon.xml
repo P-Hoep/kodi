@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.geoguess" name="GeoGuess Screensaver" version="0.3.0" provider-name="P-Hoep">
+<addon id="screensaver.geoguess" name="GeoGuess Screensaver" version="0.4.0" provider-name="P-Hoep">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
     <import addon="script.module.certifi" version="2019.0.0"/>
@@ -7,8 +7,8 @@
   <extension point="xbmc.ui.screensaver" library="default.py"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en_GB">A randomly picked street view on the idle screen, answered after a few sweeps</summary>
-    <description lang="en_GB">Turns an idle TV into a guessing game. Each location is a random street view from around the world: a panorama that slowly pans across the screen, as many times back and forth as you choose. When the final pass begins the answer fades in at the bottom left — the place name, or a world map with a pin at the location — and after a while the next location crossfades in. Choose how many passes to play before the answer, how long each pass lasts, how long into the final pass the answer appears, how many rows to fetch per request, whether to pan, whether the full country name is shown, the label size and the clock. Images are streamed from the Hugging Face dataset at runtime and kept in the temp folder while they are shown. Any key, click or mouse move exits straight away; offline it retries with a backoff and resumes when the connection returns.</description>
-    <disclaimer lang="en_GB">Street view imagery comes from the Hugging Face dataset yunusserhat/random_streetview_images (a mirror of stochastic/random_streetview_images_pano_v0.0.2), served by the datasets server. The imagery is © Google and its contributors and is subject to Google's terms; this add-on is not affiliated with Google. The optional map is drawn from Natural Earth 1:110m country data, which is in the public domain. Add-on code: MIT.</disclaimer>
+    <description lang="en_GB">Turns an idle TV into a guessing game. Each location is a random street view from around the world: a panorama that slowly pans across the screen, as many times back and forth as you choose. When the final pass begins the answer fades in at the bottom left — the place name, or a zoomed satellite map centred on the location, with a pin and the country name beneath it — and after a while the next location crossfades in. Choose how many passes to play before the answer, how long each pass lasts, how long into the final pass the answer appears, how many rows to fetch per request, whether to pan, whether the full country name is shown, the label size and the clock. Images are streamed from the Hugging Face dataset at runtime and kept in the temp folder while they are shown. Any key, click or mouse move exits straight away; offline it retries with a backoff and resumes when the connection returns.</description>
+    <disclaimer lang="en_GB">Street view imagery comes from the Hugging Face dataset yunusserhat/random_streetview_images (a mirror of stochastic/random_streetview_images_pano_v0.0.2), served by the datasets server. The imagery is © Google and its contributors and is subject to Google's terms; this add-on is not affiliated with Google. The optional answer map is NASA Blue Marble imagery rendered by NASA EOSDIS GIBS, which is in the public domain. Add-on code: MIT.</disclaimer>
     <platform>all</platform>
     <license>MIT</license>
     <source>https://github.com/P-Hoep/kodi</source>
