@@ -10,7 +10,7 @@ runs the same session hands-off and exits on any key.
 The pure modules import no Kodi modules and are tested offline by tests/test_vintageradar.py.
 """
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 LIBRARY_ID = 'script.module.vintageradar'
 APP_ID = 'script.vintageradar'
 SCREENSAVER_ID = 'screensaver.vintageradar'

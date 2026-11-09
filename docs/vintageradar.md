@@ -1,7 +1,7 @@
 # Vintage Radar
 
-`screensaver.vintageradar` v1.0.0, `script.vintageradar` v1.0.1,
-`script.module.vintageradar` v1.0.0
+`screensaver.vintageradar` v1.0.1, `script.vintageradar` v1.0.2,
+`script.module.vintageradar` v1.0.1
 
 An old radar scope for Kodi, showing the aircraft flying over you right now. A green (or amber,
 ice-blue or white) phosphor disc with range rings, a compass rose, a sweeping beam and glowing

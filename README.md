@@ -28,7 +28,7 @@ installed version in **Add-ons → My add-ons**.
 | [Math Clock](#math-clock) | `screensaver.math.clock` | 0.1.1 | The date and time as maths puzzles, typeset like LaTeX |
 | [Couchstronomy](#couchstronomy) | `screensaver.couchstronomy` | 0.1.3 | Your TV as a window onto the real night sky |
 | [SkyWatch](#skywatch) | `screensaver.skywatch` | 1.0.0 | A live weather station: radar, forecasts, warnings and conditions |
-| [Vintage Radar](#vintage-radar) | `screensaver.vintageradar` | 1.0.0 | A green-phosphor radar scope showing the aircraft flying over you right now (Kodi 20+) |
+| [Vintage Radar](#vintage-radar) | `screensaver.vintageradar` | 1.0.1 | A green-phosphor radar scope showing the aircraft flying over you right now (Kodi 20+) |
 | [Live Cams](#live-cams) | `screensaver.livecams` | 1.0.0 | A window onto public live cameras around the world |
 | [Word Clock](#word-clock) | `screensaver.wordclock` | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 | [Sand Clock](#sand-clock) | `screensaver.sandclock` | 1.0.1 | A clock whose digits crumble into falling sand every second |
@@ -67,7 +67,7 @@ installed version in **Add-ons → My add-ons**.
 | [Sheetcards](#sheetcards) | `script.sheetcards` | 1.0.0 | The flashcard study app (Kodi 20+) |
 | [RSS Live Tiles](#rss-live-tiles) | `script.rsslivetiles` | 1.0.0 | The live-tile news reader (Kodi 20+) |
 | [OpenTrivia](#opentrivia) | `script.opentrivia` | 1.0.0 | The trivia quiz you play with the remote (Kodi 20+) |
-| [Vintage Radar](#vintage-radar) | `script.vintageradar` | 1.0.1 | The Vintage Radar scope in a driveable window (Kodi 20+) |
+| [Vintage Radar](#vintage-radar) | `script.vintageradar` | 1.0.2 | The Vintage Radar scope in a driveable window (Kodi 20+) |
 | [Physarum Visualisation (macOS and 64-bit Android)](#physarum-visualisation) | `visualization.physarum.lite` | 1.0.0 | Physarum driven by Kodi's audio (Kodi 21) |
 | Physarum Visualisation (32-bit Android) | `visualization.physarum.lite.armv7` | 1.0.0 | The same visualisation for 32-bit Android Kodi |
 
@@ -78,7 +78,7 @@ installed version in **Add-ons → My add-ons**.
 | Sheetcards library | `script.module.sheetcards` | 1.0.0 | Shared code for the Sheetcards app and screensaver |
 | RSS Live Tiles library | `script.module.rsslivetiles` | 1.0.0 | Shared code for the RSS Live Tiles app and screensaver |
 | OpenTrivia library | `script.module.opentrivia` | 1.0.0 | The questions database, shared window and skin for the OpenTrivia add-ons |
-| Vintage Radar library | `script.module.vintageradar` | 1.0.0 | The scope's model, feeds, window, text renderer and textures, shared by the Vintage Radar app and screensaver |
+| Vintage Radar library | `script.module.vintageradar` | 1.0.1 | The scope's model, feeds, window, text renderer and textures, shared by the Vintage Radar app and screensaver |
 | P-Hoep Add-ons | `repository.phoep` | 1.0.8 | The Kodi repository that installs and updates everything |
 
 The library modules are installed automatically as dependencies; there is nothing to configure.

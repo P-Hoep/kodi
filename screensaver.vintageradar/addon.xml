@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.vintageradar" name="Vintage Radar" version="1.0.0" provider-name="P-Hoep">
+<addon id="screensaver.vintageradar" name="Vintage Radar" version="1.0.1" provider-name="P-Hoep">
   <requires>
     <import addon="xbmc.python" version="3.0.1"/>
-    <import addon="script.module.vintageradar" version="1.0.0"/>
+    <import addon="script.module.vintageradar" version="1.0.1"/>
   </requires>
   <extension point="xbmc.ui.screensaver" library="default.py"/>
   <extension point="xbmc.addon.metadata">
