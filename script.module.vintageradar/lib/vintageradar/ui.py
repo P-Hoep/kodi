@@ -424,8 +424,11 @@ class Scene(object):
 
     def _set_sweep_animation(self):
         ms = max(1000, int(round(self.settings.sweep_seconds * 1000.0)))
+        # Kodi's rotate effect turns counter-clockwise for increasing angles, while compass
+        # bearings (and the model's sweep clock) increase clockwise. Run the angle from 360
+        # down to 0 so the beam turns clockwise and its afterglow trails behind it.
         self.sweep.setAnimations([
-            ('conditional', 'effect=rotate start=0 end=360 center=auto time=%d loop=true '
+            ('conditional', 'effect=rotate start=360 end=0 center=auto time=%d loop=true '
                             'condition=true' % ms)])
 
     def _build_static(self):
