@@ -9,7 +9,7 @@ from urllib.parse import urlencode
 
 ADDON_ID = 'screensaver.geoguess'
 ADDON_NAME = 'GeoGuess Screensaver'
-VERSION = '0.4.0'
+VERSION = '0.4.1'
 
 # Both Hugging Face datasets hold the same 11,054 rows with the same five columns and the same
 # row order. The first one's /rows endpoint works; the second's parquet row groups are larger

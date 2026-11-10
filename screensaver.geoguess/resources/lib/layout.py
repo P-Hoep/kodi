@@ -5,9 +5,6 @@ image is wider than the screen and pans from its left edge to its right edge ove
 location is shown; a narrower one is centred and does not move.
 """
 
-import math
-
-
 def display_size(image_width, image_height, screen_width, screen_height):
     """(width, height) on screen: full screen height, width by aspect ratio.
 
@@ -25,17 +22,11 @@ def pan_extent(display_width, screen_width):
     return max(0, int(display_width) - int(screen_width))
 
 
-def ease(u):
-    """Sine ease in and out, so the pan starts and stops softly. u is clamped to 0..1."""
-    u = max(0.0, min(1.0, float(u)))
-    return 0.5 - 0.5 * math.cos(math.pi * u)
-
-
 def pan_offset(display_width, screen_width, elapsed, show_for, enabled=True, passes=1):
     """The image's left edge in screen pixels at `elapsed` seconds into the pan.
 
-    One pass sweeps the panorama from its left edge to its right edge in `show_for` seconds,
-    easing in and out. With several passes the direction reverses at each end, so the same
+    One pass sweeps the panorama from its left edge to its right edge in `show_for` seconds at
+    a constant speed. With several passes the direction reverses at each end, so the same
     panorama is shown back and forth; the last pass may end at either edge. `elapsed` past the
     end keeps the last position.
     """
@@ -45,9 +36,10 @@ def pan_offset(display_width, screen_width, elapsed, show_for, enabled=True, pas
         return 0
     index = min(int(elapsed / float(show_for)), passes - 1)
     u = (elapsed - index * float(show_for)) / float(show_for)
+    u = max(0.0, min(1.0, u))
     if index % 2:
         u = 1.0 - u
-    return -int(round(extent * ease(u)))
+    return -int(round(extent * u))
 
 
 def centre_offset(display_width, screen_width):

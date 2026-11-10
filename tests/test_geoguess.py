@@ -225,6 +225,15 @@ class LayoutMath(unittest.TestCase):
             self.assertLessEqual(value, previous)
             previous = value
 
+    def test_pan_moves_at_a_constant_speed(self):
+        width = 5920
+        extent = width - 1920
+        # Every fifth of a pass covers the same distance: no ramp up or down at the ends.
+        positions = [layout.pan_offset(width, 1920, step / 5.0 * 20, 20) for step in range(6)]
+        steps = [-positions[i + 1] + positions[i] for i in range(5)]
+        for step in steps:
+            self.assertAlmostEqual(step, extent / 5.0, delta=1)
+
     def test_narrow_image_is_centred_and_does_not_pan(self):
         self.assertEqual(layout.centre_offset(800, 1920), 560)
         self.assertEqual(layout.centre_offset(2000, 1920), 0)
@@ -260,11 +269,6 @@ class LayoutMath(unittest.TestCase):
 
     def test_pan_is_clamped_after_all_passes(self):
         self.assertEqual(layout.pan_offset(4000, 1920, 999, 5, passes=2), 0)
-
-    def test_ease_is_clamped(self):
-        self.assertEqual(layout.ease(-1), 0.0)
-        self.assertEqual(layout.ease(2), 1.0)
-        self.assertAlmostEqual(layout.ease(0.5), 0.5)
 
     def test_the_map_window_is_a_fixed_height_around_the_point(self):
         left, bottom, right, top = config.map_bbox(48.0, 19.0)

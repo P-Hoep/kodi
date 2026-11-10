@@ -58,8 +58,8 @@ devices whose Python has no system store of its own (common on Android).
 3. When the current cycle ends, that file is put into the spare image control and the two
    controls crossfade over one second. The old image is hidden.
 4. The panorama is scaled to the full screen height; its width follows its aspect ratio. A
-   panorama wider than the screen pans from its left edge to its right edge in one pass, with a
-   sine ease in and out. With **Passes across each panorama** above one, the direction reverses
+   panorama wider than the screen pans from its left edge to its right edge in one pass, at a
+   constant speed. With **Passes across each panorama** above one, the direction reverses
    at each edge, so the panorama is shown back and forth; odd pass counts end at the right edge,
    even ones at the left. A narrower one, or panning switched off, is centred and does not move.
 5. The answer fades in over the bottom shade at **Reveal the location** seconds into the final
@@ -237,7 +237,7 @@ screensaver.geoguess/
     lib/
       config.py                  settings table, reveal timing, sources, answer map, strings
       labels.py                  address cleaning, ISO alpha-2 -> country name, map caption
-      layout.py                  display size, pan extent, sine ease, passes, map placement
+      layout.py                  display size, pan extent, constant-speed pan, passes, map placement
       net.py                     urllib helpers, TLS, timeouts, image signature check
       hf_client.py               datasets-server client: /size, /rows, retries, rotation
       downloader.py              temp store, JPEG/PNG size, panorama and map download, prefetch
