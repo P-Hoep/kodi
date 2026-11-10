@@ -3,7 +3,7 @@ changes, switch Kodi's screensaver.
 
 The service only acts when the scheduled choice changes (and at start-up or after a
 settings change), so a screensaver picked by hand in Kodi's settings stays until the
-next window boundary.
+next window boundary or alternation.
 """
 
 import time

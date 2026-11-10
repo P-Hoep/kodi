@@ -123,6 +123,58 @@ class Alternate(unittest.TestCase):
         s['w1_alt'] = 'b'
         self.assertEqual(schedule.wanted(s, at('12:00')), (1, 'b'))
 
+    def test_window_interval_overrides_the_general_one(self):
+        s = self.day(every=30)
+        s['w1_every'] = 7
+        self.assertEqual(schedule.wanted(s, at('07:30'))[1], 'eye')
+        self.assertEqual(schedule.wanted(s, at('07:36'))[1], 'eye')
+        self.assertEqual(schedule.wanted(s, at('07:37'))[1], 'world')
+        self.assertEqual(schedule.wanted(s, at('07:44'))[1], 'eye')
+
+    def test_zero_window_interval_uses_the_general_one(self):
+        s = self.day(every=10)
+        s['w1_every'] = 0
+        self.assertEqual(schedule.wanted(s, at('07:30'))[1], 'eye')
+        self.assertEqual(schedule.wanted(s, at('07:40'))[1], 'world')
+
+    def test_one_minute_interval(self):
+        s = settings(('00:00', '00:00', 'a'))
+        s['w1_alt'] = 'b'
+        s['w1_every'] = 1
+        seen = [schedule.wanted(s, m)[1] for m in range(10)]
+        self.assertEqual(seen, ['a', 'b'] * 5)
+
+    def test_each_window_keeps_its_own_interval(self):
+        s = settings(('06:00', '12:00', 'a'), ('12:00', '18:00', 'c'))
+        s['w1_alt'], s['w1_every'] = 'b', 2
+        s['w2_alt'], s['w2_every'] = 'd', 3
+        self.assertEqual(schedule.wanted(s, at('06:00'))[1], 'a')
+        self.assertEqual(schedule.wanted(s, at('06:02'))[1], 'b')
+        self.assertEqual(schedule.wanted(s, at('12:00'))[1], 'c')
+        self.assertEqual(schedule.wanted(s, at('12:03'))[1], 'd')
+        self.assertEqual(schedule.wanted(s, at('12:06'))[1], 'c')
+
+    def test_bad_window_interval_falls_back(self):
+        s = settings(('00:00', '00:00', 'a'))
+        s['w1_alt'] = 'b'
+        s['w1_every'] = 'nonsense'
+        self.assertEqual(schedule.windows(s)[0][4], 0)
+        s['alternate_minutes'] = 10
+        self.assertEqual(schedule.wanted(s, at('12:10'))[1], 'b')
+
+
+class Windows(unittest.TestCase):
+    def test_more_than_six_windows(self):
+        self.assertGreaterEqual(config.SLOTS, 12)
+        s = config.defaults()
+        s.update({'w9_on': True, 'w9_start': '09:00', 'w9_end': '10:00',
+                  'w9_screensaver': 'nine'})
+        self.assertEqual(schedule.wanted(s, at('09:30')), (9, 'nine'))
+
+    def test_windows_are_listed_in_slot_order(self):
+        s = settings(*[('0%d:00' % n, '0%d:30' % n, 's%d' % n) for n in range(1, 10)])
+        self.assertEqual([w[0] for w in schedule.windows(s)], list(range(1, 10)))
+
 
 class Read(unittest.TestCase):
     def test_falls_back_to_defaults(self):
@@ -131,11 +183,12 @@ class Read(unittest.TestCase):
         self.assertEqual(config.read({'boolean': broken, 'string': broken}), config.defaults())
 
     def test_settings_count(self):
-        self.assertEqual(len(list(config.all_settings())), 4 + 5 * config.SLOTS)
+        self.assertEqual(len(list(config.all_settings())), 4 + 6 * config.SLOTS)
 
-    def test_slider_clamped(self):
+    def test_sliders_clamped(self):
         s = config.read({'boolean': lambda _id: True, 'integer': lambda _id: 1, 'string': lambda _id: ''})
-        self.assertEqual(s['alternate_minutes'], 5)
+        self.assertEqual(s['alternate_minutes'], 1)
+        self.assertEqual(s['w1_every'], 1)
 
 
 if __name__ == '__main__':

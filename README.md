@@ -63,7 +63,7 @@ installed version in **Add-ons → My add-ons**.
 
 | Add-on | Add-on id | Version | What it is |
 |---|---|---|---|
-| [Screensaver Switcher](#screensaver-switcher) | `service.screensaver.switcher` | 0.1.0 | Different screensavers at different times of day (Kodi 19+) |
+| [Screensaver Switcher](#screensaver-switcher) | `service.screensaver.switcher` | 0.2.0 | Different screensavers at different times of day (Kodi 19+) |
 | [Audioshelf](#audioshelf) | `plugin.audio.audioshelf` | 1.1.0 | Audiobooks from an Audiobookshelf server (Kodi 19+) |
 | [Sheetcards](#sheetcards) | `script.sheetcards` | 1.0.0 | The flashcard study app (Kodi 20+) |
 | [RSS Live Tiles](#rss-live-tiles) | `script.rsslivetiles` | 1.0.0 | The live-tile news reader (Kodi 20+) |
@@ -1056,10 +1056,11 @@ KODI_ADDON=visualization.physarum.lite python3 ../tools/kodi.py install
 `service.screensaver.switcher` picks a different screensaver for different times of day. For
 example: Math Clock in the morning, God's World Map during the day, and Black at night.
 
-- **Time windows:** set up to six, each with a start time, an end time and a screensaver chosen
-  from the ones you have installed. A default covers the rest of the day.
-- **Alternating:** a window can switch between two screensavers every 5–240 minutes (30 by
-  default), counted from the window's start.
+- **Time windows:** set up to twelve, each with a start time, an end time and a screensaver
+  chosen from the ones you have installed. A default covers the rest of the day.
+- **Alternating:** a window can switch between two screensavers every 1–1440 minutes, counted
+  from the window's start. Each window has its own interval; 0 uses the general one (30 minutes
+  by default), so a fast lunchtime rotation and a slow evening one can coexist.
 - **Flexible windows:** a window can cross midnight (22:00–06:00); start = end means all day; if
   two windows overlap, the lowest-numbered one wins.
 - **Instant switching:** at each boundary it changes Kodi's `screensaver.mode`, and restarts a

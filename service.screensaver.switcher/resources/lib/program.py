@@ -22,9 +22,10 @@ def describe(s, names):
         lines.append('[COLOR orange]Scheduling is switched off.[/COLOR]')
     lines.append('')
     rows = schedule.windows(s)
-    for n, start, end, pool in rows:
+    for n, start, end, pool, every in rows:
         span = 'all day' if start == end else '%s-%s' % (schedule.clock(start), schedule.clock(end))
-        every = '  (alternating every %d min)' % s['alternate_minutes'] if len(pool) > 1 else ''
+        every = ('  (alternating every %d min)' % schedule.interval(s, every)
+                 if len(pool) > 1 else '')
         lines.append('Window %d  %s  %s%s' % (n, span, ' / '.join(name(p) for p in pool), every))
     if not rows:
         lines.append('No windows are set up yet.')

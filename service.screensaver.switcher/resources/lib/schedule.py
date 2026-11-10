@@ -4,8 +4,9 @@ A window runs from its start up to (not including) its end. A window whose end i
 earlier than its start crosses midnight (22:00-06:00); start == end covers the whole day.
 When windows overlap, the lowest-numbered one wins.
 
-A window with a second screensaver alternates between the two every `alternate_minutes`,
-counted from the window's start, so the choice depends only on the clock.
+A window with a second screensaver alternates between the two every few minutes, counted
+from the window's start, so the choice depends only on the clock. Each window has its own
+interval (1 minute upwards); 0 means it uses the general `alternate_minutes` instead.
 """
 
 from . import config
@@ -32,7 +33,8 @@ def contains(start, end, now):
 
 
 def windows(settings):
-    """The usable windows: [(slot, start, end, [screensaver ids])], in slot order."""
+    """The usable windows: [(slot, start, end, [screensaver ids], every)], in slot order.
+    `every` is the window's own interval in minutes, or 0 for the general setting."""
     out = []
     for n in range(1, config.SLOTS + 1):
         if not settings.get('w%d_on' % n):
@@ -43,8 +45,17 @@ def windows(settings):
         pool = [p for i, p in enumerate(pool) if p and p not in pool[:i]]
         if start is None or end is None or not pool:
             continue
-        out.append((n, start, end, pool))
+        try:
+            every = max(0, int(settings.get('w%d_every' % n) or 0))
+        except (TypeError, ValueError):
+            every = 0
+        out.append((n, start, end, pool, every))
     return out
+
+
+def interval(settings, every):
+    """The minutes between alternations: the window's own interval, else the general one."""
+    return every or max(1, int(settings.get('alternate_minutes', 30) or 30))
 
 
 def pick(pool, start, now, every):
@@ -55,10 +66,9 @@ def pick(pool, start, now, every):
 def wanted(settings, now):
     """(slot, screensaver id) for `now` (minutes after midnight). slot is 0 for the default;
     the id is '' when nothing is scheduled and the screensaver should be left alone."""
-    every = settings.get('alternate_minutes', 30)
-    for n, start, end, pool in windows(settings):
+    for n, start, end, pool, every in windows(settings):
         if contains(start, end, now):
-            return n, pick(pool, start, now, every)
+            return n, pick(pool, start, now, interval(settings, every))
     return 0, settings.get('default_screensaver', '')
 
 

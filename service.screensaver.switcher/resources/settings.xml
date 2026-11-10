@@ -18,7 +18,7 @@
         <setting id="alternate_minutes" type="integer" label="30103">
           <level>0</level>
           <default>30</default>
-          <constraints><minimum>5</minimum><step>5</step><maximum>240</maximum></constraints>
+          <constraints><minimum>1</minimum><step>1</step><maximum>1440</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
         <setting id="reload" type="boolean" label="30104">
@@ -66,8 +66,15 @@
           <control type="button" format="addon"><show more="true" details="true">installed</show></control>
           <dependencies><dependency type="visible" setting="w1_on">true</dependency></dependencies>
         </setting>
+        <setting id="w1_every" type="integer" label="30113">
+          <level>0</level>
+          <default>0</default>
+          <constraints><minimum>0</minimum><step>1</step><maximum>1440</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="w1_on">true</dependency></dependencies>
+        </setting>
       </group>
-      <group id="2" label="30113">
+      <group id="2" label="30114">
         <setting id="w2_on" type="boolean" label="30108">
           <level>0</level>
           <default>false</default>
@@ -99,8 +106,15 @@
           <control type="button" format="addon"><show more="true" details="true">installed</show></control>
           <dependencies><dependency type="visible" setting="w2_on">true</dependency></dependencies>
         </setting>
+        <setting id="w2_every" type="integer" label="30113">
+          <level>0</level>
+          <default>0</default>
+          <constraints><minimum>0</minimum><step>1</step><maximum>1440</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="w2_on">true</dependency></dependencies>
+        </setting>
       </group>
-      <group id="3" label="30114">
+      <group id="3" label="30115">
         <setting id="w3_on" type="boolean" label="30108">
           <level>0</level>
           <default>false</default>
@@ -132,10 +146,15 @@
           <control type="button" format="addon"><show more="true" details="true">installed</show></control>
           <dependencies><dependency type="visible" setting="w3_on">true</dependency></dependencies>
         </setting>
+        <setting id="w3_every" type="integer" label="30113">
+          <level>0</level>
+          <default>0</default>
+          <constraints><minimum>0</minimum><step>1</step><maximum>1440</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="w3_on">true</dependency></dependencies>
+        </setting>
       </group>
-    </category>
-    <category id="c2" label="30115">
-      <group id="1" label="30116">
+      <group id="4" label="30116">
         <setting id="w4_on" type="boolean" label="30108">
           <level>0</level>
           <default>false</default>
@@ -167,8 +186,17 @@
           <control type="button" format="addon"><show more="true" details="true">installed</show></control>
           <dependencies><dependency type="visible" setting="w4_on">true</dependency></dependencies>
         </setting>
+        <setting id="w4_every" type="integer" label="30113">
+          <level>0</level>
+          <default>0</default>
+          <constraints><minimum>0</minimum><step>1</step><maximum>1440</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="w4_on">true</dependency></dependencies>
+        </setting>
       </group>
-      <group id="2" label="30117">
+    </category>
+    <category id="c2" label="30117">
+      <group id="1" label="30118">
         <setting id="w5_on" type="boolean" label="30108">
           <level>0</level>
           <default>false</default>
@@ -200,8 +228,15 @@
           <control type="button" format="addon"><show more="true" details="true">installed</show></control>
           <dependencies><dependency type="visible" setting="w5_on">true</dependency></dependencies>
         </setting>
+        <setting id="w5_every" type="integer" label="30113">
+          <level>0</level>
+          <default>0</default>
+          <constraints><minimum>0</minimum><step>1</step><maximum>1440</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="w5_on">true</dependency></dependencies>
+        </setting>
       </group>
-      <group id="3" label="30118">
+      <group id="2" label="30119">
         <setting id="w6_on" type="boolean" label="30108">
           <level>0</level>
           <default>false</default>
@@ -232,6 +267,255 @@
           <constraints><addontype>xbmc.ui.screensaver</addontype><allowempty>true</allowempty></constraints>
           <control type="button" format="addon"><show more="true" details="true">installed</show></control>
           <dependencies><dependency type="visible" setting="w6_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w6_every" type="integer" label="30113">
+          <level>0</level>
+          <default>0</default>
+          <constraints><minimum>0</minimum><step>1</step><maximum>1440</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="w6_on">true</dependency></dependencies>
+        </setting>
+      </group>
+      <group id="3" label="30120">
+        <setting id="w7_on" type="boolean" label="30108">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="w7_start" type="time" label="30109">
+          <level>0</level>
+          <default>07:00</default>
+          <control type="button" format="time"><heading>30109</heading></control>
+          <dependencies><dependency type="visible" setting="w7_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w7_end" type="time" label="30110">
+          <level>0</level>
+          <default>09:00</default>
+          <control type="button" format="time"><heading>30110</heading></control>
+          <dependencies><dependency type="visible" setting="w7_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w7_screensaver" type="addon" label="30111">
+          <level>0</level>
+          <default></default>
+          <constraints><addontype>xbmc.ui.screensaver</addontype><allowempty>true</allowempty></constraints>
+          <control type="button" format="addon"><show more="true" details="true">installed</show></control>
+          <dependencies><dependency type="visible" setting="w7_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w7_alt" type="addon" label="30112">
+          <level>0</level>
+          <default></default>
+          <constraints><addontype>xbmc.ui.screensaver</addontype><allowempty>true</allowempty></constraints>
+          <control type="button" format="addon"><show more="true" details="true">installed</show></control>
+          <dependencies><dependency type="visible" setting="w7_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w7_every" type="integer" label="30113">
+          <level>0</level>
+          <default>0</default>
+          <constraints><minimum>0</minimum><step>1</step><maximum>1440</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="w7_on">true</dependency></dependencies>
+        </setting>
+      </group>
+      <group id="4" label="30121">
+        <setting id="w8_on" type="boolean" label="30108">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="w8_start" type="time" label="30109">
+          <level>0</level>
+          <default>09:00</default>
+          <control type="button" format="time"><heading>30109</heading></control>
+          <dependencies><dependency type="visible" setting="w8_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w8_end" type="time" label="30110">
+          <level>0</level>
+          <default>12:00</default>
+          <control type="button" format="time"><heading>30110</heading></control>
+          <dependencies><dependency type="visible" setting="w8_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w8_screensaver" type="addon" label="30111">
+          <level>0</level>
+          <default></default>
+          <constraints><addontype>xbmc.ui.screensaver</addontype><allowempty>true</allowempty></constraints>
+          <control type="button" format="addon"><show more="true" details="true">installed</show></control>
+          <dependencies><dependency type="visible" setting="w8_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w8_alt" type="addon" label="30112">
+          <level>0</level>
+          <default></default>
+          <constraints><addontype>xbmc.ui.screensaver</addontype><allowempty>true</allowempty></constraints>
+          <control type="button" format="addon"><show more="true" details="true">installed</show></control>
+          <dependencies><dependency type="visible" setting="w8_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w8_every" type="integer" label="30113">
+          <level>0</level>
+          <default>0</default>
+          <constraints><minimum>0</minimum><step>1</step><maximum>1440</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="w8_on">true</dependency></dependencies>
+        </setting>
+      </group>
+    </category>
+    <category id="c3" label="30122">
+      <group id="1" label="30123">
+        <setting id="w9_on" type="boolean" label="30108">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="w9_start" type="time" label="30109">
+          <level>0</level>
+          <default>12:00</default>
+          <control type="button" format="time"><heading>30109</heading></control>
+          <dependencies><dependency type="visible" setting="w9_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w9_end" type="time" label="30110">
+          <level>0</level>
+          <default>14:00</default>
+          <control type="button" format="time"><heading>30110</heading></control>
+          <dependencies><dependency type="visible" setting="w9_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w9_screensaver" type="addon" label="30111">
+          <level>0</level>
+          <default></default>
+          <constraints><addontype>xbmc.ui.screensaver</addontype><allowempty>true</allowempty></constraints>
+          <control type="button" format="addon"><show more="true" details="true">installed</show></control>
+          <dependencies><dependency type="visible" setting="w9_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w9_alt" type="addon" label="30112">
+          <level>0</level>
+          <default></default>
+          <constraints><addontype>xbmc.ui.screensaver</addontype><allowempty>true</allowempty></constraints>
+          <control type="button" format="addon"><show more="true" details="true">installed</show></control>
+          <dependencies><dependency type="visible" setting="w9_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w9_every" type="integer" label="30113">
+          <level>0</level>
+          <default>0</default>
+          <constraints><minimum>0</minimum><step>1</step><maximum>1440</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="w9_on">true</dependency></dependencies>
+        </setting>
+      </group>
+      <group id="2" label="30124">
+        <setting id="w10_on" type="boolean" label="30108">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="w10_start" type="time" label="30109">
+          <level>0</level>
+          <default>14:00</default>
+          <control type="button" format="time"><heading>30109</heading></control>
+          <dependencies><dependency type="visible" setting="w10_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w10_end" type="time" label="30110">
+          <level>0</level>
+          <default>18:00</default>
+          <control type="button" format="time"><heading>30110</heading></control>
+          <dependencies><dependency type="visible" setting="w10_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w10_screensaver" type="addon" label="30111">
+          <level>0</level>
+          <default></default>
+          <constraints><addontype>xbmc.ui.screensaver</addontype><allowempty>true</allowempty></constraints>
+          <control type="button" format="addon"><show more="true" details="true">installed</show></control>
+          <dependencies><dependency type="visible" setting="w10_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w10_alt" type="addon" label="30112">
+          <level>0</level>
+          <default></default>
+          <constraints><addontype>xbmc.ui.screensaver</addontype><allowempty>true</allowempty></constraints>
+          <control type="button" format="addon"><show more="true" details="true">installed</show></control>
+          <dependencies><dependency type="visible" setting="w10_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w10_every" type="integer" label="30113">
+          <level>0</level>
+          <default>0</default>
+          <constraints><minimum>0</minimum><step>1</step><maximum>1440</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="w10_on">true</dependency></dependencies>
+        </setting>
+      </group>
+      <group id="3" label="30125">
+        <setting id="w11_on" type="boolean" label="30108">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="w11_start" type="time" label="30109">
+          <level>0</level>
+          <default>18:00</default>
+          <control type="button" format="time"><heading>30109</heading></control>
+          <dependencies><dependency type="visible" setting="w11_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w11_end" type="time" label="30110">
+          <level>0</level>
+          <default>21:00</default>
+          <control type="button" format="time"><heading>30110</heading></control>
+          <dependencies><dependency type="visible" setting="w11_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w11_screensaver" type="addon" label="30111">
+          <level>0</level>
+          <default></default>
+          <constraints><addontype>xbmc.ui.screensaver</addontype><allowempty>true</allowempty></constraints>
+          <control type="button" format="addon"><show more="true" details="true">installed</show></control>
+          <dependencies><dependency type="visible" setting="w11_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w11_alt" type="addon" label="30112">
+          <level>0</level>
+          <default></default>
+          <constraints><addontype>xbmc.ui.screensaver</addontype><allowempty>true</allowempty></constraints>
+          <control type="button" format="addon"><show more="true" details="true">installed</show></control>
+          <dependencies><dependency type="visible" setting="w11_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w11_every" type="integer" label="30113">
+          <level>0</level>
+          <default>0</default>
+          <constraints><minimum>0</minimum><step>1</step><maximum>1440</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="w11_on">true</dependency></dependencies>
+        </setting>
+      </group>
+      <group id="4" label="30126">
+        <setting id="w12_on" type="boolean" label="30108">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="w12_start" type="time" label="30109">
+          <level>0</level>
+          <default>21:00</default>
+          <control type="button" format="time"><heading>30109</heading></control>
+          <dependencies><dependency type="visible" setting="w12_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w12_end" type="time" label="30110">
+          <level>0</level>
+          <default>23:00</default>
+          <control type="button" format="time"><heading>30110</heading></control>
+          <dependencies><dependency type="visible" setting="w12_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w12_screensaver" type="addon" label="30111">
+          <level>0</level>
+          <default></default>
+          <constraints><addontype>xbmc.ui.screensaver</addontype><allowempty>true</allowempty></constraints>
+          <control type="button" format="addon"><show more="true" details="true">installed</show></control>
+          <dependencies><dependency type="visible" setting="w12_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w12_alt" type="addon" label="30112">
+          <level>0</level>
+          <default></default>
+          <constraints><addontype>xbmc.ui.screensaver</addontype><allowempty>true</allowempty></constraints>
+          <control type="button" format="addon"><show more="true" details="true">installed</show></control>
+          <dependencies><dependency type="visible" setting="w12_on">true</dependency></dependencies>
+        </setting>
+        <setting id="w12_every" type="integer" label="30113">
+          <level>0</level>
+          <default>0</default>
+          <constraints><minimum>0</minimum><step>1</step><maximum>1440</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
+          <dependencies><dependency type="visible" setting="w12_on">true</dependency></dependencies>
         </setting>
       </group>
     </category>
