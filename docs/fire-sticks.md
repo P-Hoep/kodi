@@ -284,6 +284,12 @@ blank labels until then.
   Eye at :00, :10, :20..., God's World at :05, :15...); window 2, 19:00-07:30,
   Couchstronomy; no default. Not on .15 yet. After each swap God's World takes about 17 s
   on .78 to show its first scene (6 s to load the world, then the first frame).
+- Updated to **v0.2.0** on .78 on 2026-11-10: twelve windows instead of six, and each
+  window has its own alternation interval (1-1440 minutes; 0 uses the general setting).
+  Copied with Kodi closed, then relaunched with `am start -n org.xbmc.kodi/.Main` (the
+  `monkey` launcher line did not start it that time). `addon_data` was left in place, so
+  the existing windows and the general 5-minute interval carried over unchanged. The log
+  shows `service started` and no errors.
 - The schedule can be written as `addon_data/service.screensaver.switcher/settings.xml`
   while Kodi is closed, e.g.
   `<settings version="2"><setting id="w1_on">true</setting><setting id="w1_start">07:30</setting>...</settings>`
