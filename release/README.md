@@ -1,9 +1,9 @@
 # P-Hoep Kodi Add-ons
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
-live-camera window, a street-view guessing game, an old radar scope, a scheduler, a flashcard
-app, a trivia quiz, a news reader, audiobooks and GPU-drawn visuals for Kodi, published as one
-Kodi repository so Kodi installs them and keeps them up to date.
+live-camera window, a street-view guessing game, an old radar scope, a ship tracker, a scheduler,
+a flashcard app, a trivia quiz, a news reader, audiobooks and GPU-drawn visuals for Kodi, published
+as one Kodi repository so Kodi installs them and keeps them up to date.
 
 ### Python screensavers
 
@@ -26,6 +26,7 @@ Kodi repository so Kodi installs them and keeps them up to date.
 | [Sheetcards Screensaver](#sheetcards) | 1.0.0 | Flashcards from a Google Sheet: an app to study with and a screensaver |
 | [RSS Live Tiles Screensaver](#rss-live-tiles) | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles: an app and a screensaver |
 | [Hacker News](#hacker-news) | 0.1.0 | The Hacker News front page and its best comments, paced to reading speed |
+| [Ship Tracker](#ship-tracker) | 0.1.0 | Live ships inside a bounding box you choose, on NASA's Blue Marble, with ship photos |
 
 ### Native screensavers and visualisation (OpenGL / OpenGL ES, Kodi 21)
 
@@ -85,7 +86,7 @@ The add-ons are in a Kodi repository hosted on GitHub Pages:
 1. **Settings → System → Add-ons → Unknown sources → On.**
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/`
    and name it `phoep`.
-3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.14.zip`.
+3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.15.zip`.
    Kodi shows "P-Hoep Add-ons — Add-on installed".
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** Screensavers are under
    **Look and feel → Screensaver**; the Switcher is under **Services**; Sheetcards, RSS Live
@@ -450,6 +451,32 @@ Under **Look and feel → Screensaver**. Needs Kodi 20 or later.
 
 ---
 
+## Ship Tracker
+
+![Ship Tracker: the Blue Marble map of Lake Superior with ship markers, the vessel list and a ship photograph](gifs/shiptracker.jpg)
+
+A live map of the ships inside a bounding box you choose. The left of the screen is NASA's Blue
+Marble image of exactly that area, with a top-down ship marker for every AIS-equipped vessel,
+coloured by type and turned to its course. The right-hand panel lists the ships six at a time —
+name, flag state, type, speed, length and voyage status — and a slideshow underneath shows
+photographs of them, with their names, from Wikimedia Commons.
+
+- **Anywhere on Earth:** set the south, west, north and east edges in the settings. The default is
+  Lake Superior; the map window is padded to the screen with a `1/cos(latitude)` correction so the
+  Blue Marble is not stretched.
+- **Cache first:** the last state of every ship is kept in a SQLite database, so the screen has
+  ships to show while the stream reconnects, and a regular visitor is not looked up again. The map
+  and photographs are cached on disk too.
+- **Details and photos:** a background worker looks each ship up by IMO/MMSI on Wikidata and its
+  photographs on Wikimedia Commons, then remembers the answer for a month (a week for nothing
+  found).
+- **A free key:** aisstream.io needs an account; paste its API key into the settings. Nothing is
+  bundled and the key is never committed. The map works without it.
+
+Under **Look and feel → Screensaver**. Needs Kodi 19 or later.
+
+---
+
 ## Word Clock
 
 ![Word Clock: IT IS FIVE TO TWO PM turning to TWO O'CLOCK, a ripple, midnight in blue with a glow, rainbow words, an amber dot-matrix face, a serif walnut card, minute dots, and the day colours blending into night](gifs/word-clock.gif)
@@ -785,6 +812,11 @@ plays. There are two Kodi add-ons, one for macOS and 64-bit Android and one for 
 The add-on code is MIT-licensed. Bundled data and imagery keep their own licences, listed
 above and in each add-on's `LICENSE.txt` or `addon.xml`. The OpenTrivia questions and answers
 are © the OpenTriviaQA contributors and licensed CC BY-SA 4.0.
+
+Ship positions come from aisstream.io (a free API key is required); the map is NASA Blue Marble
+via NASA GIBS (public domain); ship details come from Wikidata (CC0) and photographs are loaded
+from Wikimedia Commons, each under its own licence. No photographs, map image or API key are
+bundled with the Ship Tracker add-on.
 
 All data comes from public sources. It is for personal use, so follow each provider's
 terms. Positions of flights, satellites and events are as accurate as the feeds they come

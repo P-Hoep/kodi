@@ -1,0 +1,29 @@
+Ship Tracker Screensaver (screensaver.shiptracker)
+
+The add-on's code is released under the MIT License:
+
+Copyright (c) 2026 P-Hoep
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-------------------------------------------------------------------------------------------
+
+The add-on bundles no photographs and no map image. Ship positions come from aisstream.io and
+are used under that service's terms; an API key from aisstream.io is required and is stored in
+the add-on settings. The map is NASA Blue Marble imagery rendered by NASA EOSDIS GIBS, which is
+in the public domain. Ship details are read from Wikidata (CC0) and photographs are fetched at
+run time from Wikimedia Commons, where each file keeps its own licence and attribution; they
+are cached in the add-on profile and are not redistributed with this add-on.

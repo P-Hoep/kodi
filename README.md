@@ -1,9 +1,9 @@
 # P-Hoep Kodi Add-ons
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
-live-camera window, a scheduler, a flashcard app, a trivia quiz, a news reader, a music
-visualisation and an audiobook player for Kodi, published as one Kodi repository so Kodi installs
-them and keeps them up to date.
+live-camera window, a ship tracker, a scheduler, a flashcard app, a trivia quiz, a news reader, a
+music visualisation and an audiobook player for Kodi, published as one Kodi repository so Kodi
+installs them and keeps them up to date.
 
 Most add-ons are pure Python and run on any Kodi 19 (Matrix) or later device. The OpenGL add-ons
 are native, GPU-drawn add-ons built for macOS (Intel and Apple Silicon) and Android, with
@@ -40,6 +40,7 @@ installed version in **Add-ons → My add-ons**.
 | [Sheetcards Screensaver](#sheetcards) | `screensaver.sheetcards` | 1.0.0 | Flashcards from a Google Sheet (Kodi 20+) |
 | [RSS Live Tiles Screensaver](#rss-live-tiles) | `screensaver.rsslivetiles` | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles (Kodi 20+) |
 | [Hacker News](#hacker-news) | `screensaver.hackernews` | 0.1.0 | Top Hacker News stories and their best comments, paced to reading speed |
+| [Ship Tracker](#ship-tracker) | `screensaver.shiptracker` | 0.1.0 | Live ships inside a bounding box you choose, on NASA's Blue Marble, with a list and ship photos |
 
 ### Native screensavers — OpenGL / OpenGL ES (Kodi 21)
 
@@ -81,7 +82,7 @@ installed version in **Add-ons → My add-ons**.
 | RSS Live Tiles library | `script.module.rsslivetiles` | 1.0.0 | Shared code for the RSS Live Tiles app and screensaver |
 | OpenTrivia library | `script.module.opentrivia` | 1.0.0 | The questions database, shared window and skin for the OpenTrivia add-ons |
 | Vintage Radar library | `script.module.vintageradar` | 1.0.1 | The scope's model, feeds, window, text renderer and textures, shared by the Vintage Radar app and screensaver |
-| P-Hoep Add-ons | `repository.phoep` | 1.0.14 | The Kodi repository that installs and updates everything |
+| P-Hoep Add-ons | `repository.phoep` | 1.0.15 | The Kodi repository that installs and updates everything |
 
 The library modules are installed automatically as dependencies; there is nothing to configure.
 
@@ -117,7 +118,7 @@ installs them and updates them itself.
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/` and name it
    `phoep`.
 3. **Settings → Add-ons → Install from zip file → phoep →**
-   `repository.phoep-1.0.12.zip`.
+   `repository.phoep-1.0.15.zip`.
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.**
    - Screensavers are under **Look and feel → Screensaver**.
    - The Switcher is under **Services**.
@@ -1289,6 +1290,49 @@ Notes from building it (Kodi 21.3, macOS and Fire TV):
 
 Full documentation: **[docs/hackernews.md](docs/hackernews.md)**.
 
+## Ship Tracker
+
+![Ship Tracker: the Blue Marble map of Lake Superior with ship markers, the vessel list and a ship photograph](release/gifs/shiptracker.jpg)
+
+`screensaver.shiptracker`: a live map of the ships inside a bounding box you choose. The left of
+the screen is NASA's Blue Marble image of exactly that area, with a top-down ship marker for every
+AIS-equipped vessel, coloured by type and turned to its course. The right-hand panel lists the
+ships six at a time — name, flag state, type, speed, length and voyage status — and a slideshow
+underneath shows photographs of them, with their names, from Wikimedia Commons.
+
+- **Anywhere on Earth.** Enter the south, west, north and east edges of the box as settings. The
+  default is Lake Superior (`46.3, −92.3` to `49.1, −84.2`). The map window is padded to the
+  screen's shape with a `1/cos(latitude)` correction, so the Blue Marble is not stretched.
+- **Only the ships you can see.** Markers are limited to the box, sorted by name, and dropped after
+  **Keep a ship listed for** minutes without a position. The status line says whether the stream
+  is live, connecting, retrying or showing last known positions.
+- **Cache first.** The last AIS state of every ship is kept in a small SQLite database, so the
+  screen has ships to show while the WebSocket reconnects, and a ship that only sends position
+  reports keeps the name and dimensions it broadcast days ago. The map is cached per bounding box
+  and photographs are cached on disk.
+- **Details and photos.** A background worker looks ships up once by IMO/MMSI on Wikidata, and
+  their photographs on Wikimedia Commons. The database remembers the answer for a month (a week
+  for "nothing found"), keyed by the identifiers it was built from, so a regular visitor is not
+  looked up again every night.
+- **A free key.** aisstream.io needs an account; paste its API key into the settings. Nothing is
+  bundled, and the key is never written to the repository. The map works without it.
+
+Requires Kodi 19 or later. The AIS stream and the map and photo lookups need a network connection;
+the ship list and cached map still draw without one.
+
+```bash
+python3 tools/make_settings_shiptracker.py     # settings.xml + strings.po from resources/lib/config.py
+python3 tools/make_shiptracker_media.py        # icon, fanart, textures and ship icons (Pillow)
+python3 -m unittest tests.test_shiptracker     # offline: settings, geometry, AIS, WebSocket, database
+KODI_ADDON=screensaver.shiptracker python3 tools/kodi.py install   # then select / run / shot
+```
+
+Data from aisstream.io; map from NASA GIBS Blue Marble (public domain); ship details from Wikidata
+(CC0) and photographs from Wikimedia Commons, each under its own licence. The add-on code is
+MIT-licensed and bundles no photographs, map image or API key.
+
+Full documentation: **[docs/shiptracker.md](docs/shiptracker.md)**.
+
 ---
 
 ## Documentation
@@ -1308,7 +1352,8 @@ Full documentation: **[docs/hackernews.md](docs/hackernews.md)**.
   [OpenTrivia](docs/opentrivia.md),
   [Word Clock](docs/wordclock.md), [Sand Clock](docs/sandclock.md),
   [Screensaver Switcher](docs/screensaver-switcher.md), [Audioshelf](docs/audioshelf.md),
-  [Vintage Radar](docs/vintageradar.md), [GeoGuess](docs/geoguess.md).
+  [Vintage Radar](docs/vintageradar.md), [GeoGuess](docs/geoguess.md),
+  [Hacker News](docs/hackernews.md), [Ship Tracker](docs/shiptracker.md).
 - Native projects: [sandclock.gl](screensaver.sandclock.gl/README.md) (Sand Clock, Liquid Clock,
   Cellular Automata, Physarum, Tetris AI),
   [infworld.gl](screensaver.infworld.gl/README.md),
@@ -1366,6 +1411,12 @@ subject to Google's terms. The add-on is not affiliated with, endorsed by or spo
 Hacker News stories, scores and comments are read at run time from Hacker News' public read-only
 API and remain the work of their authors. The Hacker News screensaver is unaffiliated with and
 not endorsed by Y Combinator or Hacker News; its name and orange square only say what it shows.
+
+Ship positions are read at run time from aisstream.io, which requires a free API key and is not
+affiliated with this add-on. The map is NASA's Blue Marble, served by NASA GIBS and in the public
+domain. Ship details come from Wikidata (CC0); photographs are loaded from Wikimedia Commons and
+remain under their own licences, with credit shown on screen. No photographs, map image or API key
+are bundled with the Ship Tracker add-on.
 
 The add-on code is MIT-licensed. Bundled data and imagery keep their own licences, listed above
 and in each add-on's `LICENSE.txt` or `addon.xml`.
