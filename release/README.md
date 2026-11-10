@@ -25,6 +25,7 @@ Kodi repository so Kodi installs them and keeps them up to date.
 | [Tetris AI](#tetris-ai) | 1.1.1 | An AI plays Tetris edge to edge, with a clock made of blocks |
 | [Sheetcards Screensaver](#sheetcards) | 1.0.0 | Flashcards from a Google Sheet: an app to study with and a screensaver |
 | [RSS Live Tiles Screensaver](#rss-live-tiles) | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles: an app and a screensaver |
+| [Hacker News](#hacker-news) | 0.1.0 | The Hacker News front page and its best comments, paced to reading speed |
 
 ### Native screensavers and visualisation (OpenGL / OpenGL ES, Kodi 21)
 
@@ -63,7 +64,8 @@ The library modules `script.module.sheetcards`, `script.module.rsslivetiles`,
 `repository.phoep`, are installed automatically as dependencies.
 
 Most add-ons are pure Python with no compiled code and run on Kodi 19 (Matrix) or later, on any
-platform. Sheetcards, RSS Live Tiles, OpenTrivia and Vintage Radar need Kodi 20 or later. The
+platform. Sheetcards, RSS Live Tiles, OpenTrivia, Vintage Radar and Hacker News need Kodi 20
+or later. The
 OpenGL add-ons are native, built for macOS (Intel and Apple Silicon) and Android in 64-bit and
 32-bit builds, and need Kodi 21. They were developed and tested on Kodi 21 on macOS; several also
 on Amazon Fire TV Sticks.
@@ -83,14 +85,14 @@ The add-ons are in a Kodi repository hosted on GitHub Pages:
 1. **Settings → System → Add-ons → Unknown sources → On.**
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/`
    and name it `phoep`.
-3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.12.zip`.
+3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.14.zip`.
    Kodi shows "P-Hoep Add-ons — Add-on installed".
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** Screensavers are under
    **Look and feel → Screensaver**; the Switcher is under **Services**; Sheetcards, RSS Live
    Tiles, OpenTrivia and Vintage Radar are under **Program add-ons**; Audioshelf is under
    **Music add-ons**; Physarum Visualisation is chosen from **Settings → Player → Music →
-   Visualisation** while a song plays. Sheetcards, RSS Live Tiles, OpenTrivia and Vintage Radar
-   need Kodi 20+, and the OpenGL add-ons need Kodi 21.
+   Visualisation** while a song plays. Sheetcards, RSS Live Tiles, OpenTrivia, Vintage Radar and
+   Hacker News need Kodi 20+, and the OpenGL add-ons need Kodi 21.
 5. To turn one on, go to **Settings → Interface → Screensaver → Screensaver mode**, pick it,
    then open **Settings** below it to configure it. **Preview** starts it straight away.
 
@@ -421,6 +423,30 @@ Day). Add your own in **Manage feeds**.
 The app is under **Program add-ons** (press **Menu** on a tile for Manage feeds, layouts and
 settings) and the screensaver under **Look and feel → Screensaver**. By default the screensaver
 uses the app's feeds and look.
+
+---
+
+## Hacker News
+
+![Hacker News: a story slide with its rank, title and meta line, then comment slides with their authors and formatted text](gifs/hacker-news.gif)
+
+The Hacker News front page as a screensaver, read at reading speed. Each story gets a slide with
+its rank, title, domain, points, author, age and comment count; its top comments follow, one at a
+time, for as long as they take to read. Choose Top, Best, New, Ask or Show, the number of stories
+and comments, whether the first reply comes along, the reading speed, and the theme.
+
+- **Comments as text:** paragraphs, line breaks, italics, indented code blocks, entities and links
+  are reduced to clean text, with literal brackets turned into parentheses so nothing can be read
+  as a Kodi tag. Long comments are cut at a sentence or word boundary.
+- **Timed to read:** a comment's time on screen is its word count at your words per minute,
+  clamped to a minimum and maximum; the progress bar shows how much is left.
+- **Always something to show:** the last fetch is cached, so it starts instantly and keeps playing
+  offline; it refreshes in the background and marks itself offline when a refresh fails.
+- **Kind to the panel:** three themes, an optional clock and a slow drift for OLED and plasma.
+- **Read-only:** it uses Hacker News' public API and nothing else — no account, no votes, no
+  comments, no telemetry.
+
+Under **Look and feel → Screensaver**. Needs Kodi 20 or later.
 
 ---
 

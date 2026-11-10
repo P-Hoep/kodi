@@ -1,0 +1,145 @@
+{
+ "author": "p4bl0",
+ "children": [
+  {
+   "author": "toomuchtodo",
+   "children": [],
+   "created_at": "2026-11-10T16:38:49.000Z",
+   "created_at_i": 1794328729,
+   "id": 50442749,
+   "parent_id": 50442736,
+   "points": null,
+   "story_id": 50442736,
+   "text": "<a href=\"https:&#x2F;&#x2F;itp.cdn.icann.org&#x2F;en&#x2F;files&#x2F;consensus-policies&#x2F;kane-to-fessenden-05-11-2026-en.pdf\" rel=\"nofollow\">https:&#x2F;&#x2F;itp.cdn.icann.org&#x2F;en&#x2F;files&#x2F;consensus-policies&#x2F;kane-t...</a><p>Success is possible. Well done to all.",
+   "title": null,
+   "type": "comment",
+   "url": null
+  },
+  {
+   "author": "derhuerst",
+   "children": [],
+   "created_at": "2026-11-10T16:54:12.000Z",
+   "created_at_i": 1794329652,
+   "id": 50442975,
+   "parent_id": 50442736,
+   "points": null,
+   "story_id": 50442736,
+   "text": "previous discussion on the predecessor post, 69 days ago, 547 comments: <a href=\"https:&#x2F;&#x2F;news.ycombinator.com&#x2F;item?id=49550772\">https:&#x2F;&#x2F;news.ycombinator.com&#x2F;item?id=49550772</a>",
+   "title": null,
+   "type": "comment",
+   "url": null
+  },
+  {
+   "author": "Tepix",
+   "children": [
+    {
+     "author": "cobbzilla",
+     "children": [
+      {
+       "author": "dataflow",
+       "children": [],
+       "created_at": "2026-11-10T17:08:45.000Z",
+       "created_at_i": 1794330525,
+       "id": 50443176,
+       "parent_id": 50443089,
+       "points": null,
+       "story_id": 50442736,
+       "text": "And with a lot of money to burn.",
+       "title": null,
+       "type": "comment",
+       "url": null
+      }
+     ],
+     "created_at": "2026-11-10T17:02:30.000Z",
+     "created_at_i": 1794330150,
+     "id": 50443089,
+     "parent_id": 50442990,
+     "points": null,
+     "story_id": 50442736,
+     "text": "&gt; to my lawyers Jan, Flip and Di\u00e9go who threw the book at ICANN<p>Resistance <i>with a strong case and competent lawyers</i> is not futile.",
+     "title": null,
+     "type": "comment",
+     "url": null
+    }
+   ],
+   "created_at": "2026-11-10T16:55:07.000Z",
+   "created_at_i": 1794329707,
+   "id": 50442990,
+   "parent_id": 50442736,
+   "points": null,
+   "story_id": 50442736,
+   "text": "Vive la r\u00e9sistance!<p>Resistance is not futile.",
+   "title": null,
+   "type": "comment",
+   "url": null
+  },
+  {
+   "author": "doublepg23",
+   "children": [],
+   "created_at": "2026-11-10T16:59:57.000Z",
+   "created_at_i": 1794329997,
+   "id": 50443059,
+   "parent_id": 50442736,
+   "points": null,
+   "story_id": 50442736,
+   "text": "I&#x27;ve had a .name for almost a decade now and was not aware of it&#x27;s history.<p>Shame I didn&#x27;t register on my lastname .name , I had thought it was a much newer gTLD.",
+   "title": null,
+   "type": "comment",
+   "url": null
+  },
+  {
+   "author": "dist-epoch",
+   "children": [
+    {
+     "author": "cobbzilla",
+     "children": [
+      {
+       "author": "mh-",
+       "children": [],
+       "created_at": "2026-11-10T18:06:35.000Z",
+       "created_at_i": 1794333995,
+       "id": 50443893,
+       "parent_id": 50443431,
+       "points": null,
+       "story_id": 50442736,
+       "text": "In 1997, this was explored in a documentary featuring Keanu Reeves.",
+       "title": null,
+       "type": "comment",
+       "url": null
+      }
+     ],
+     "created_at": "2026-11-10T17:31:45.000Z",
+     "created_at_i": 1794331905,
+     "id": 50443431,
+     "parent_id": 50443178,
+     "points": null,
+     "story_id": 50442736,
+     "text": "The Devil is no match for a sufficiently talented attorney",
+     "title": null,
+     "type": "comment",
+     "url": null
+    }
+   ],
+   "created_at": "2026-11-10T17:08:45.000Z",
+   "created_at_i": 1794330525,
+   "id": 50443178,
+   "parent_id": 50442736,
+   "points": null,
+   "story_id": 50442736,
+   "text": "So, turns out Verisign is not the Devil incarnate?",
+   "title": null,
+   "type": "comment",
+   "url": null
+  }
+ ],
+ "created_at": "2026-11-10T16:37:44.000Z",
+ "created_at_i": 1794328664,
+ "id": 50442736,
+ "parent_id": null,
+ "points": 267,
+ "story_id": 50442736,
+ "text": null,
+ "title": ".name Grandfathered",
+ "type": "story",
+ "url": "https://neil.fraser.name/news/2026/11/10/"
+}

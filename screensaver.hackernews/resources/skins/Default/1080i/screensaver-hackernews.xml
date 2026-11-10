@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The Hacker News screensaver. Python sets every window property the controls read; two
+     content layers (A and B) fade between slides so the swap is a cross-fade, and the layer
+     group moves a few pixels a minute for burn-in protection. Theme colours, the font scale
+     and the clock setting are properties too. -->
+<window>
+  <defaultcontrol>1</defaultcontrol>
+  <animation effect="fade" start="0" end="100" time="500">WindowOpen</animation>
+  <animation effect="fade" start="100" end="0" time="400">WindowClose</animation>
+  <controls>
+    <!-- Background. -->
+    <control type="image" id="1">
+      <left>-20</left><top>-20</top><width>1960</width><height>1120</height>
+      <texture>white.png</texture>
+      <aspectratio>stretch</aspectratio>
+      <colordiffuse>$INFO[Window.Property(hn.bg)]</colordiffuse>
+    </control>
+
+    <!-- Header: wordmark, source list and the optional clock. -->
+    <control type="label" id="10">
+      <left>96</left><top>38</top><width>700</width><height>54</height>
+      <font>font37</font>
+      <align>left</align><aligny>center</aligny>
+      <textcolor>$INFO[Window.Property(hn.accent)]</textcolor>
+      <label>$INFO[Window.Property(hn.wordmark)]</label>
+    </control>
+    <control type="label" id="11">
+      <left>98</left><top>94</top><width>900</width><height>34</height>
+      <font>font13</font>
+      <align>left</align><aligny>center</aligny>
+      <textcolor>$INFO[Window.Property(hn.dim)]</textcolor>
+      <label>$INFO[Window.Property(hn.source)]</label>
+    </control>
+    <control type="image" id="12">
+      <left>96</left><top>136</top><width>1728</width><height>2</height>
+      <texture>white.png</texture>
+      <aspectratio>stretch</aspectratio>
+      <colordiffuse>$INFO[Window.Property(hn.accent)]</colordiffuse>
+    </control>
+    <control type="label" id="13">
+      <left>1424</left><top>38</top><width>400</width><height>54</height>
+      <font>font37</font>
+      <align>right</align><aligny>center</aligny>
+      <textcolor>$INFO[Window.Property(hn.dim)]</textcolor>
+      <label>$INFO[System.Time]</label>
+      <visible>String.IsEqual(Window.Property(hn.clock),1)</visible>
+    </control>
+
+    <!-- Offline badge. -->
+    <control type="label" id="14">
+      <left>98</left><top>146</top><width>1200</width><height>34</height>
+      <font>font13</font>
+      <align>left</align><aligny>center</aligny>
+      <textcolor>$INFO[Window.Property(hn.accent)]</textcolor>
+      <label>$INFO[Window.Property(hn.status)]</label>
+      <visible>String.IsNotEmpty(Window.Property(hn.status))</visible>
+    </control>
+
+    <!-- The slides. Group 900 is the one Python nudges for burn-in drift. -->
+    <control type="group" id="900">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <animation type="Conditional" condition="String.IsEqual(Window.Property(hn.scale),80)">
+        <effect type="zoom" start="80" end="80" center="960,540" time="0"/>
+      </animation>
+      <animation type="Conditional" condition="String.IsEqual(Window.Property(hn.scale),90)">
+        <effect type="zoom" start="90" end="90" center="960,540" time="0"/>
+      </animation>
+      <animation type="Conditional" condition="String.IsEqual(Window.Property(hn.scale),110)">
+        <effect type="zoom" start="110" end="110" center="960,540" time="0"/>
+      </animation>
+      <animation type="Conditional" condition="String.IsEqual(Window.Property(hn.scale),120)">
+        <effect type="zoom" start="120" end="120" center="960,540" time="0"/>
+      </animation>
+
+      <!-- Layer A. -->
+      <control type="group" id="100">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <visible>String.IsEqual(Window.Property(hn.front),a)</visible>
+        <animation effect="fade" start="0" end="100" time="500">Visible</animation>
+        <animation effect="fade" start="100" end="0" time="500">Hidden</animation>
+        <control type="group" id="110">
+          <left>0</left><top>0</top><width>1920</width><height>1080</height>
+          <visible>String.IsEqual(Window.Property(hn.a.mode),story)</visible>
+          <control type="label" id="111">
+            <left>96</left><top>306</top><width>250</width><height>150</height>
+            <font>font60</font>
+            <align>right</align><aligny>top</aligny>
+            <textcolor>$INFO[Window.Property(hn.accent)]</textcolor>
+            <label>$INFO[Window.Property(hn.a.rank)]</label>
+          </control>
+          <control type="label" id="112">
+            <left>376</left><top>300</top><width>1448</width><height>130</height>
+            <font>font45</font>
+            <align>left</align><aligny>top</aligny>
+            <wrapmultiline>true</wrapmultiline>
+            <textcolor>$INFO[Window.Property(hn.text)]</textcolor>
+            <label>$INFO[Window.Property(hn.a.title)]</label>
+          </control>
+          <control type="label" id="113">
+            <left>378</left><top>450</top><width>1446</width><height>44</height>
+            <font>font27</font>
+            <align>left</align><aligny>center</aligny>
+            <textcolor>$INFO[Window.Property(hn.dim)]</textcolor>
+            <label>$INFO[Window.Property(hn.a.meta)]</label>
+          </control>
+          <control type="label" id="114">
+            <left>378</left><top>516</top><width>1446</width><height>380</height>
+            <font>font27</font>
+            <align>left</align><aligny>top</aligny>
+            <wrapmultiline>true</wrapmultiline>
+            <textcolor>$INFO[Window.Property(hn.text)]</textcolor>
+            <label>$INFO[Window.Property(hn.a.storytext)]</label>
+          </control>
+        </control>
+        <control type="group" id="120">
+          <left>0</left><top>0</top><width>1920</width><height>1080</height>
+          <visible>String.IsEqual(Window.Property(hn.a.mode),comment)</visible>
+          <control type="label" id="121">
+            <left>96</left><top>168</top><width>1728</width><height>82</height>
+            <font>font27</font>
+            <align>left</align><aligny>top</aligny>
+            <wrapmultiline>true</wrapmultiline>
+            <textcolor>$INFO[Window.Property(hn.dim)]</textcolor>
+            <label>$INFO[Window.Property(hn.a.chead)]</label>
+          </control>
+          <control type="label" id="122">
+            <left>96</left><top>264</top><width>1728</width><height>44</height>
+            <font>font27</font>
+            <align>left</align><aligny>center</aligny>
+            <textcolor>$INFO[Window.Property(hn.accent)]</textcolor>
+            <label>$INFO[Window.Property(hn.a.cauthor)]</label>
+          </control>
+          <control type="label" id="123">
+            <left>96</left><top>330</top><width>1728</width><height>590</height>
+            <font>font32</font>
+            <align>left</align><aligny>top</aligny>
+            <wrapmultiline>true</wrapmultiline>
+            <textcolor>$INFO[Window.Property(hn.text)]</textcolor>
+            <label>$INFO[Window.Property(hn.a.ctext)]</label>
+          </control>
+        </control>
+      </control>
+
+      <!-- Layer B. -->
+      <control type="group" id="200">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <visible>String.IsEqual(Window.Property(hn.front),b)</visible>
+        <animation effect="fade" start="0" end="100" time="500">Visible</animation>
+        <animation effect="fade" start="100" end="0" time="500">Hidden</animation>
+        <control type="group" id="210">
+          <left>0</left><top>0</top><width>1920</width><height>1080</height>
+          <visible>String.IsEqual(Window.Property(hn.b.mode),story)</visible>
+          <control type="label" id="211">
+            <left>96</left><top>306</top><width>250</width><height>150</height>
+            <font>font60</font>
+            <align>right</align><aligny>top</aligny>
+            <textcolor>$INFO[Window.Property(hn.accent)]</textcolor>
+            <label>$INFO[Window.Property(hn.b.rank)]</label>
+          </control>
+          <control type="label" id="212">
+            <left>376</left><top>300</top><width>1448</width><height>130</height>
+            <font>font45</font>
+            <align>left</align><aligny>top</aligny>
+            <wrapmultiline>true</wrapmultiline>
+            <textcolor>$INFO[Window.Property(hn.text)]</textcolor>
+            <label>$INFO[Window.Property(hn.b.title)]</label>
+          </control>
+          <control type="label" id="213">
+            <left>378</left><top>450</top><width>1446</width><height>44</height>
+            <font>font27</font>
+            <align>left</align><aligny>center</aligny>
+            <textcolor>$INFO[Window.Property(hn.dim)]</textcolor>
+            <label>$INFO[Window.Property(hn.b.meta)]</label>
+          </control>
+          <control type="label" id="214">
+            <left>378</left><top>516</top><width>1446</width><height>380</height>
+            <font>font27</font>
+            <align>left</align><aligny>top</aligny>
+            <wrapmultiline>true</wrapmultiline>
+            <textcolor>$INFO[Window.Property(hn.text)]</textcolor>
+            <label>$INFO[Window.Property(hn.b.storytext)]</label>
+          </control>
+        </control>
+        <control type="group" id="220">
+          <left>0</left><top>0</top><width>1920</width><height>1080</height>
+          <visible>String.IsEqual(Window.Property(hn.b.mode),comment)</visible>
+          <control type="label" id="221">
+            <left>96</left><top>168</top><width>1728</width><height>82</height>
+            <font>font27</font>
+            <align>left</align><aligny>top</aligny>
+            <wrapmultiline>true</wrapmultiline>
+            <textcolor>$INFO[Window.Property(hn.dim)]</textcolor>
+            <label>$INFO[Window.Property(hn.b.chead)]</label>
+          </control>
+          <control type="label" id="222">
+            <left>96</left><top>264</top><width>1728</width><height>44</height>
+            <font>font27</font>
+            <align>left</align><aligny>center</aligny>
+            <textcolor>$INFO[Window.Property(hn.accent)]</textcolor>
+            <label>$INFO[Window.Property(hn.b.cauthor)]</label>
+          </control>
+          <control type="label" id="223">
+            <left>96</left><top>330</top><width>1728</width><height>590</height>
+            <font>font32</font>
+            <align>left</align><aligny>top</aligny>
+            <wrapmultiline>true</wrapmultiline>
+            <textcolor>$INFO[Window.Property(hn.text)]</textcolor>
+            <label>$INFO[Window.Property(hn.b.ctext)]</label>
+          </control>
+        </control>
+      </control>
+    </control>
+
+    <!-- Footer: slide counter and progress bar. -->
+    <control type="label" id="401">
+      <left>96</left><top>946</top><width>500</width><height>40</height>
+      <font>font27</font>
+      <align>left</align><aligny>center</aligny>
+      <textcolor>$INFO[Window.Property(hn.dim)]</textcolor>
+      <label>$INFO[Window.Property(hn.counter)]</label>
+    </control>
+    <control type="image" id="500">
+      <left>96</left><top>1012</top><width>1728</width><height>4</height>
+      <texture>white.png</texture>
+      <aspectratio>stretch</aspectratio>
+      <colordiffuse>$INFO[Window.Property(hn.track)]</colordiffuse>
+    </control>
+    <control type="image" id="501">
+      <left>96</left><top>1012</top><width>1</width><height>4</height>
+      <texture>white.png</texture>
+      <aspectratio>stretch</aspectratio>
+      <colordiffuse>$INFO[Window.Property(hn.accent)]</colordiffuse>
+    </control>
+
+    <!-- Loading and error states. -->
+    <control type="label" id="600">
+      <left>160</left><top>380</top><width>1600</width><height>300</height>
+      <font>font45</font>
+      <align>center</align><aligny>center</aligny>
+      <textcolor>$INFO[Window.Property(hn.text)]</textcolor>
+      <label>$INFO[Window.Property(hn.message)]</label>
+      <visible>String.IsNotEmpty(Window.Property(hn.message))</visible>
+    </control>
+  </controls>
+</window>

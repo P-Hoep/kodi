@@ -39,6 +39,7 @@ installed version in **Add-ons → My add-ons**.
 | [Tetris AI](#tetris-ai) | `screensaver.tetris` | 1.1.1 | An AI plays Tetris edge to edge, with a clock made of blocks |
 | [Sheetcards Screensaver](#sheetcards) | `screensaver.sheetcards` | 1.0.0 | Flashcards from a Google Sheet (Kodi 20+) |
 | [RSS Live Tiles Screensaver](#rss-live-tiles) | `screensaver.rsslivetiles` | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles (Kodi 20+) |
+| [Hacker News](#hacker-news) | `screensaver.hackernews` | 0.1.0 | Top Hacker News stories and their best comments, paced to reading speed |
 
 ### Native screensavers — OpenGL / OpenGL ES (Kodi 21)
 
@@ -80,7 +81,7 @@ installed version in **Add-ons → My add-ons**.
 | RSS Live Tiles library | `script.module.rsslivetiles` | 1.0.0 | Shared code for the RSS Live Tiles app and screensaver |
 | OpenTrivia library | `script.module.opentrivia` | 1.0.0 | The questions database, shared window and skin for the OpenTrivia add-ons |
 | Vintage Radar library | `script.module.vintageradar` | 1.0.1 | The scope's model, feeds, window, text renderer and textures, shared by the Vintage Radar app and screensaver |
-| P-Hoep Add-ons | `repository.phoep` | 1.0.12 | The Kodi repository that installs and updates everything |
+| P-Hoep Add-ons | `repository.phoep` | 1.0.14 | The Kodi repository that installs and updates everything |
 
 The library modules are installed automatically as dependencies; there is nothing to configure.
 
@@ -1238,6 +1239,58 @@ Full documentation: **[docs/RSSliveTiles.md](docs/RSSliveTiles.md)**.
 
 ---
 
+## Hacker News
+
+![Hacker News: a story slide with its rank, title and meta line, then comment slides with their authors and formatted text](release/gifs/hacker-news.gif)
+
+`screensaver.hackernews`: the front page of Hacker News, read at reading speed. Each story gets a
+slide with its rank, title, domain, points, author, age and comment count, and then up to ten of
+its top-level comments follow, one at a time, for as long as they take to read. Choose the list
+(Top, Best, New, Ask, Show), how many stories and comments, whether the first reply comes along,
+the reading speed and the theme. Requires Kodi 20 or later.
+
+- **Comments as text.** The HTML comments arrive in is reduced to plain text: paragraphs, line
+  breaks, italics (`[I]`), indented `<pre>` blocks, entities decoded, links shown as their visible
+  text (or just the domain when the link text is a raw URL), and literal brackets turned into
+  parentheses so Kodi never reads a comment as a tag. Long comments are cut at a sentence or word
+  boundary with an ellipsis.
+- **Reading speed.** A comment's time on screen is its word count at your words per minute (220 by
+  default), clamped to a minimum and a maximum. Story slides get a fixed number of seconds.
+- **Crossfades and burn-in drift.** Two property-bound layers let Kodi cross-fade between slides
+  while Python fills the hidden one. An optional slow drift moves everything a few pixels every
+  minute for OLED and plasma panels.
+- **Cache first.** The last fetch is cached on disk for the refresh interval (30 minutes by
+  default), so the screensaver starts instantly and keeps showing stories. A background thread
+  refreshes at the end of the queue. With no network and no cache it says so and retries at 60
+  seconds, doubling to 5 minutes; with a stale cache it keeps playing and marks itself offline.
+- **Read-only.** Story titles, scores and comments are read from Hacker News' public API (Firebase,
+  with Algolia for comment trees and Firebase's `kids` as the fallback). Nothing is posted or voted
+  on, no account is used, and there are no requests to any other host.
+
+```bash
+python3 tools/make_hackernews_settings.py      # settings.xml + strings.po from resources/lib/config.py
+python3 tools/make_hackernews_media.py         # icon, fanart and the white texture (Pillow)
+python3 -m unittest tests.test_hackernews      # offline: formatter, queue, cache, API trimming, skin
+```
+
+Notes from building it (Kodi 21.1, macOS):
+
+- **Every content control exists twice.** Groups 100 and 200 hold the same story block and comment
+  card, reading `a.*` and `b.*` properties, and a `hn.front` property decides which is visible. The
+  fade animations sit on those groups, so a slide change is a crossfade Kodi renders, not Python.
+- **No dynamic controls.** Kodi cannot add labels at run time, so the window XML holds the whole
+  layout once per layer. Python only sets window properties and the progress bar's width with
+  `setWidth()`.
+- **Font scale** cannot change a font at run time, so 80, 90, 110 and 120 percent are conditional
+  zoom animations on the drift group; 100 percent is no animation at all.
+- **The window is shown, not `doModal()`ed**, and watched by the runner like Jeopkodi: Kodi can
+  close a screensaver itself (a screenshot, a notification), and `doModal()` then never returns.
+  `Dialog.Close(id, true)` is posted to Kodi's thread instead of `Window.close()`.
+
+Full documentation: **[docs/hackernews.md](docs/hackernews.md)**.
+
+---
+
 ## Documentation
 
 - **[Deployment guide](docs/deployment.md)**: building zips, the repository, GitHub Pages, native
@@ -1309,6 +1362,10 @@ each OpenTrivia add-on's `LICENSE.txt` carries the attribution and lists the cha
 The GeoGuess street-view panoramas come from the Hugging Face dataset
 `yunusserhat/random_streetview_images`; the imagery is © Google and its contributors and is
 subject to Google's terms. The add-on is not affiliated with, endorsed by or sponsored by Google.
+
+Hacker News stories, scores and comments are read at run time from Hacker News' public read-only
+API and remain the work of their authors. The Hacker News screensaver is unaffiliated with and
+not endorsed by Y Combinator or Hacker News; its name and orange square only say what it shows.
 
 The add-on code is MIT-licensed. Bundled data and imagery keep their own licences, listed above
 and in each add-on's `LICENSE.txt` or `addon.xml`.
