@@ -245,7 +245,6 @@ screensaver.hackernews/
   resources/
     settings.xml                generated from config.py by tools/make_hackernews_settings.py
     language/resource.language.en_gb/strings.po
-    media/white.png             solid texture for the background and bars
     lib/
       config.py                 settings table, strings table, themes; no Kodi imports
       hn_client.py              both APIs, trimming, Algolia→Firebase fallback; injectable get
@@ -253,11 +252,12 @@ screensaver.hackernews/
       playlist.py               the slide queue; no Kodi imports
       cache.py                  JSON files on disk, atomic writes, TTL; no Kodi imports
       ui.py                     the window class, the show loop, fetching, properties
-    skins/Default/1080i/
-      screensaver-hackernews.xml  the whole window: header, two content layers, footer
+    skins/Default/
+      media/white.png           solid texture for the background and bars
+      1080i/screensaver-hackernews.xml  the whole window: header, two content layers, footer
 ```
 
-The four modules without Kodi imports (`config`, `formatter`, `playlist`, `cache`, plus
+The five modules without Kodi imports (`config`, `formatter`, `playlist`, `cache`, plus
 `hn_client`) hold all the logic and are what the tests exercise.
 
 ## Development and testing

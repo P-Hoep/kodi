@@ -1273,7 +1273,7 @@ python3 tools/make_hackernews_media.py         # icon, fanart and the white text
 python3 -m unittest tests.test_hackernews      # offline: formatter, queue, cache, API trimming, skin
 ```
 
-Notes from building it (Kodi 21.1, macOS):
+Notes from building it (Kodi 21.3, macOS and Fire TV):
 
 - **Every content control exists twice.** Groups 100 and 200 hold the same story block and comment
   card, reading `a.*` and `b.*` properties, and a `hn.front` property decides which is visible. The
