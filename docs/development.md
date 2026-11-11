@@ -45,7 +45,8 @@ tools/
   make_repo.py                      the Kodi repository
   kodi.py                           drive a local Kodi over JSON-RPC
 screensaver.sandclock.gl/           native project: Sand Clock, Liquid Clock,
-                                    Cellular Automata (3), Physarum (2), Tetris AI, Visualisation
+                                    Cellular Automata (3), Physarum (2), Tetris AI, Particle Life,
+                                    Visualisation
 screensaver.plant.gl/               native project: Growing Plant
 screensaver.infworld.gl/            native project: Endless World
 ```

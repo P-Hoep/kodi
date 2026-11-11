@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.particlelife.gl" name="Particle Life (OpenGL)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.particlelife.gl.dylib"
+             library_android="screensaver.particlelife.gl.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Simple rules of attraction and repulsion, and a screen full of living patterns</summary>
+    <description lang="en_GB">Particle Life is a simulation of primitive artificial life. A few kinds of particles attract or repel each other according to a small square matrix of pair forces, and that is all: no collisions, no scripted behaviour. Out of those rules come cells, worms, membranes, orbiting rings and drifting colonies, changing for as long as the screensaver runs. Ten presets reproduce the best matrices from the original Particle Life demo (DNA, Worm, Waves, Soap, Photon, Ladybug, Flower, Cells, Vacuum, Y); type any matrix of your own, or let it invent a completely random one and start again with new rules whenever it restarts. Species, particle count, radius, force, damping, start pattern, palette, colour style, size, glow, trails, background, dimming, restart and evolve intervals are all settable, and every setting has a sensible automatic-feeling default.
+
+This port is built to run on a weak TV box and still look right on a desktop. The simulation is CPU-side with no quadratic all-pairs loop: a uniform neighbour grid rebuilt each step by a counting sort makes a step cost the particles plus the pairs inside the radius, and the draw is interpolated between fixed simulation steps so motion stays smooth even at 30 steps a second. The scene is drawn into a capped offscreen target (automatic up to 1080p) that fades itself, so thousands of glowing points leave soft trails without ever flooding a 4K screen; it is then scaled up once with a hue-preserving tone map, a vignette and dither. The 32-bit Android build ships lighter defaults (2,048 particles, a smaller radius, a 720p target) and the same settings can raise or lower all of it: from 1,024 particles at 360p to 32,768 at full resolution.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Apple Silicon and Intel, and 64-bit Android). It needs OpenGL 3.2 core on macOS or OpenGL ES 2.0 on Android. Particle Life was created by Hunar Ahmad (https://github.com/hunar4321/life_code, MIT); this is an independent native port of the same idea, with the interaction matrices taken from that project's "interesting models".</disclaimer>
+    <platform>osx android</platform>
+    <license>MIT</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

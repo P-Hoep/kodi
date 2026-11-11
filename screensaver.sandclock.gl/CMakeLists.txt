@@ -12,7 +12,7 @@ option(SANDCLOCK_FETCH_GLFW "Download GLFW instead of using an installed one" OF
 option(SANDCLOCK_KODI "Build the Kodi add-on (needs the kodi-addon-dev-kit headers)" OFF)
 set(KODI_DEVKIT_INCLUDE "" CACHE PATH "xbmc/addons/kodi-dev-kit/include, if Kodi's cmake package is not installed")
 
-add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp src/liquid.cpp src/automata.cpp src/physarum.cpp src/voxel.cpp src/tetris.cpp src/audio_react.cpp src/physarum_audio.cpp)
+add_library(sandclock_core STATIC src/sand.cpp src/engine.cpp src/liquid.cpp src/automata.cpp src/physarum.cpp src/voxel.cpp src/tetris.cpp src/audio_react.cpp src/physarum_audio.cpp src/particle_life.cpp)
 target_include_directories(sandclock_core PUBLIC src)
 target_compile_options(sandclock_core PRIVATE -Wall -Wextra)
 
@@ -38,6 +38,9 @@ add_executable(test_audio tests/test_audio.cpp)
 target_link_libraries(test_audio sandclock_core)
 add_test(NAME audio COMMAND test_audio)
 add_test(NAME liquid COMMAND test_liquid ${CMAKE_SOURCE_DIR}/../screensaver.sandclock/resources/media/fonts/fonts.json)
+add_executable(test_particle_life tests/test_particle_life.cpp)
+target_link_libraries(test_particle_life sandclock_core)
+add_test(NAME particle_life COMMAND test_particle_life)
 
 if(SANDCLOCK_HARNESS)
   if(SANDCLOCK_FETCH_GLFW)
@@ -128,6 +131,14 @@ if(SANDCLOCK_HARNESS)
   add_executable(tetris_glfw src/main_tetris_glfw.cpp)
   target_link_libraries(tetris_glfw tetris_render ${GLFW_TARGET})
 
+  add_library(particle_life_render STATIC src/particle_life_app.cpp)
+  target_link_libraries(particle_life_render PUBLIC sandclock_core OpenGL::GL)
+  if(SANDCLOCK_GLES)
+    target_compile_definitions(particle_life_render PUBLIC SANDCLOCK_GLES)
+  endif()
+  add_executable(particle_life_glfw src/main_particle_life_glfw.cpp)
+  target_link_libraries(particle_life_glfw particle_life_render ${GLFW_TARGET})
+
   if(APPLE)
     add_library(physarum_render_core STATIC src/physarum_app.cpp)
     target_link_libraries(physarum_render_core PUBLIC sandclock_core OpenGL::GL)
@@ -181,6 +192,12 @@ if(SANDCLOCK_HARNESS)
     target_compile_definitions(tetris_render_core PUBLIC SANDCLOCK_CORE)
     add_executable(tetris_glfw_core src/main_tetris_glfw.cpp)
     target_link_libraries(tetris_glfw_core tetris_render_core ${GLFW_TARGET})
+
+    add_library(particle_life_render_core STATIC src/particle_life_app.cpp)
+    target_link_libraries(particle_life_render_core PUBLIC sandclock_core OpenGL::GL)
+    target_compile_definitions(particle_life_render_core PUBLIC SANDCLOCK_CORE)
+    add_executable(particle_life_glfw_core src/main_particle_life_glfw.cpp)
+    target_link_libraries(particle_life_glfw_core particle_life_render_core ${GLFW_TARGET})
   endif()
 endif()
 
@@ -272,4 +289,9 @@ if(SANDCLOCK_KODI)
   # continuous motion; the add-on folders are ../screensaver.tetris.gl and
   # ../screensaver.tetris.gl.armv7.
   sandclock_kodi_module(screensaver.tetris.gl src/kodi_tetris.cpp src/tetris_app.cpp)
+
+  # Particle Life (OpenGL): CPU simulation with a uniform neighbour grid, drawn with premultiplied
+  # point sprites and accumulated trails; the add-on folders are ../screensaver.particlelife.gl
+  # and ../screensaver.particlelife.gl.armv7.
+  sandclock_kodi_module(screensaver.particlelife.gl src/kodi_particle_life.cpp src/particle_life_app.cpp)
 endif()
