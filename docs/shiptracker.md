@@ -1,13 +1,14 @@
 # Ship Tracker Screensaver
 
-`screensaver.shiptracker` v0.1.0
+`screensaver.shiptracker` v0.2.0
 
-A Kodi screensaver that watches a box of water (or coast, or harbour) and shows the ships in it
-right now. The left of the screen is NASA's Blue Marble satellite image of exactly that area; every
-AIS-equipped vessel inside the box gets a small ship marker, coloured by type and turned to its
-course. The right-hand panel lists the ships, six at a time, with their flag state, type, speed,
-length and voyage status, and a slideshow underneath shows photographs of them where Wikimedia
-Commons has one. Any key closes it.
+A Kodi screensaver that watches ten boxes of water (or coast, or harbour) and shows the ships in
+them right now, moving on from one area to the next after a set number of minutes. The left of the
+screen is NASA's Blue Marble satellite image of exactly the current area; every AIS-equipped
+vessel inside the box gets a small ship marker, coloured by type and turned to its course. The
+right-hand panel lists the ships, six at a time, with their flag state, type, speed, length and
+voyage status, and a slideshow underneath shows photographs of them where Wikimedia Commons has
+one. Any key closes it.
 
 It is pure Python 3 using only the standard library — no compiled code, no imaging library at run
 time. Two external services are used: the [aisstream.io](https://aisstream.io/) WebSocket for live
@@ -41,19 +42,28 @@ The add-on is in the P-Hoep repository (see the
 1. **Settings → Add-ons → Install from repository → P-Hoep Add-ons → Look and feel →
    Screensavers → Ship Tracker.**
 2. Open the add-on's settings. Enter the **aisstream.io API key** (free: sign in at
-   [aisstream.io](https://aisstream.io/) with GitHub, then copy the key from your account page)
-   and set the four edges of the bounding box.
+   [aisstream.io](https://aisstream.io/) with GitHub, then copy the key from your account page).
+   Ten areas are set up already; switch each one on or off, rename it and adjust its four edges.
+   **Minutes per area before switching** sets how long each enabled area stays on screen.
 3. **Settings → Interface → Screensaver → Screensaver mode → Ship Tracker.**
 
-The default box is Lake Superior:
+The ten areas ship ready to use:
 
-| Setting | Default |
-|---|---|
-| South latitude | 46.3 |
-| West longitude | −92.3 |
-| North latitude | 49.1 |
-| East longitude | −84.2 |
-| Area name | Lake Superior |
+| # | Area | South | West | North | East |
+|---|---|---|---|---|---|
+| 1 | Lake Superior | 46.3 | −92.3 | 49.1 | −84.2 |
+| 2 | Strait of Hormuz | 25.6 | 55.6 | 27.0 | 57.0 |
+| 3 | San Diego | 32.5 | −117.4 | 32.9 | −116.9 |
+| 4 | San Francisco Bay | 37.55 | −122.6 | 38.2 | −121.7 |
+| 5 | Hawaii | 21.0 | −158.3 | 21.7 | −157.5 |
+| 6 | Singapore Strait | 1.0 | 103.4 | 1.45 | 104.3 |
+| 7 | Rotterdam | 51.8 | 3.8 | 52.1 | 4.6 |
+| 8 | Panama Canal | 8.7 | −80.0 | 9.6 | −79.3 |
+| 9 | Suez Canal | 29.7 | 32.2 | 31.4 | 32.7 |
+| 10 | New York Harbor | 40.4 | −74.3 | 40.95 | −73.6 |
+
+All ten start enabled and the screen moves to the next one every five minutes. Disable every area
+and the screen says `No areas enabled in the settings` instead of connecting.
 
 The API key is stored in Kodi's add-on profile and is never bundled with the add-on or written to
 the repository. Without a key the screen says so and the map still draws.
@@ -88,10 +98,10 @@ The list is the screen's spine; everything else describes the same ships.
   and tinted by type: cargo light blue, tanker amber, passenger pink, tug green, fishing orange,
   pleasure yellow, high-speed craft purple, military grey, everything else white. A ship without a
   course points north. At most 90 markers are drawn.
-- **Header.** The area name (or the latitude range when the name is blank), the clock, the
-  compass-style latitude/longitude range, and the live status line: `● AIS live · N vessels`, or
-  `Connecting…`, `Listening for ships…`, `AIS connection lost — retrying`, `Showing last known
-  positions` after three quiet minutes, or `No AIS key`.
+- **Header.** The current area's name, the clock, the compass-style latitude/longitude range, and
+  the live status line: `● AIS live · N vessels`, or `Connecting…`, `Listening for ships…`, `AIS
+  connection lost — retrying`, `Showing last known positions` after three quiet minutes,
+  `Loading map…` for a new area, `No areas enabled in the settings`, or `No AIS key`.
 - **Ship list.** Six rows per page, sorted by name. Each row is the name and one line of details:
   flag state, type, speed in knots, length, and either the destination (when it fits) or a short
   navigation status (`Moored`, `Under way`, `At anchor`…). Parts that do not fit are dropped whole
@@ -115,16 +125,36 @@ the rows, because the number of ships is not known in advance.
 | Setting | Default | What it does |
 |---|---|---|
 | aisstream.io API key | empty | The key from your aisstream.io account. Required for positions; the map works without it |
-| Area name shown on screen | Lake Superior | The title in the panel. Blank falls back to the latitude range |
+
+**Rotation**
+
+| Setting | Default | Range | What it does |
+|---|---|---|---|
+| Minutes per area before switching | 5 | 1–60 | How long each enabled area stays on screen before the next one |
+
+Areas rotate in settings order (Area 1 → Area 2 → … → Area 10 → Area 1), skipping the ones that
+are switched off. With only one area enabled, the screen stays there.
+
+**Areas 1–10** each have the same six settings; the table shows Area 1's defaults. The other nine
+are the areas listed under [Installing](#installing).
+
+| Setting | Default | What it does |
+|---|---|---|
+| Enabled | on | Include this area in the rotation and in the AIS subscription |
+| Name shown on screen | Lake Superior | The title in the panel. Blank falls back to the area's built-in name |
 | South latitude | 46.3 | Southern edge of the box, −90 to 90 |
 | West longitude | −92.3 | Western edge, −180 to 180 |
 | North latitude | 49.1 | Northern edge, south of the south edge is rejected |
 | East longitude | −84.2 | Eastern edge, west of the west edge is rejected |
 
-The four edges are validated together. If any is not a number, the box is upside down, empty or out
-of range, the whole box falls back to the Lake Superior default rather than silently subscribing to
+The four edges are validated together, per area. If any is not a number, the box is upside down,
+empty or out of range, that area falls back to its built-in box rather than silently subscribing to
 a sliver. A box cannot cross the antimeridian: the west edge must be numerically smaller than the
 east edge.
+
+All enabled boxes go to aisstream.io in one subscription, so switching areas needs no reconnect.
+The screen shows only the ships inside the current area; the ships in the other enabled areas are
+still tracked and cached but not drawn.
 
 **Display**
 
@@ -149,20 +179,26 @@ change.
 ## How a ship gets on screen
 
 1. The tracker opens a TLS WebSocket to `stream.aisstream.io` and sends one subscription: your API
-   key, the box as `[[south, west], [north, east]]`, and a filter for the position and static
-   message types (Class A and Class B position reports, `ShipStaticData`, `StaticDataReport`).
+   key, every enabled area as `[[south, west], [north, east]]` in `BoundingBoxes`, and a filter for
+   the position and static message types (Class A and Class B position reports, `ShipStaticData`,
+   `StaticDataReport`).
 2. Each message updates one ship in an in-memory fleet keyed by MMSI: position, speed over ground
    (SOG), course over ground (COG), true heading, navigation status, name, call sign, IMO, type,
    dimensions, destination, ETA and draught. AIS "not available" markers (SOG 102.3, COG 360,
    heading 511) are ignored rather than shown as real values.
 3. The flag state is the first three digits of the MMSI (the Maritime Identification Digits).
    A ship with an unknown MID simply shows no country.
-4. The fleet snapshot keeps ships whose last position is younger than **Keep a ship listed for**.
-   They are sorted by name; the screen pages through them six at a time.
+4. The fleet snapshot keeps ships whose last position is younger than **Keep a ship listed for**;
+   the display keeps only those inside the current area's box. They are sorted by name; the screen
+   pages through them six at a time.
 5. Positions are projected into the padded map window with a plate carrée projection, so a marker
    sits where the ship is relative to the Blue Marble image. Ships outside the padded window (only
    possible at the edge of the world) are clipped.
-6. When the connection drops, the tracker reconnects with a 5-second backoff that doubles to 60
+6. After **Minutes per area before switching**, the display moves to the next enabled area: the
+   fleet is filtered to its box, the map is fetched in the background (the screen says `Loading
+   map…` meanwhile), and the list and photo slideshow start again from that area's ships. The AIS
+   connection stays open across the switch.
+7. When the connection drops, the tracker reconnects with a 5-second backoff that doubles to 60
    seconds and re-sends the subscription. The screen keeps the last known ships and says `AIS
    connection lost — retrying`.
 
@@ -176,10 +212,13 @@ layer, in `EPSG:4326`, rendered at exactly 1400 × 1080. The requested box is ce
 widened or heightened as needed to fill a 1400 × 1080 frame at the middle latitude, with longitude
 scaled by `1/cos(latitude)` so degrees of latitude and longitude cover the same distance on screen.
 The original box always stays inside the returned window; near the poles or the date line the
-window is slid inwards instead. The map is cached under a name derived from the full request URL, so
-changing any edge produces a new image and leaves the old one to be pruned. When the download fails
-and a cached image exists, the cached image is used; with no image at all the screen says `No map
-image available`.
+window is slid inwards instead. Because the Blue Marble is about 500 m per pixel, a box smaller
+than two degrees tall is shown with at least two degrees of surrounding water, so a tight harbour
+box does not turn into a blocky enlargement. Each area gets its own image, fetched in a background
+thread when the rotation reaches it so the screen never freezes on a new area. The map is cached
+under a name derived from the full request URL, so changing any edge produces a new image and
+leaves the old one to be pruned. When the download fails and a cached image exists, the cached
+image is used; with no image at all the screen says `No map image available`.
 
 The `Lighten the map` setting is a white Kodi image over the map with an alpha proportional to the
 percentage; it does not modify the cached JPEG.
@@ -206,8 +245,8 @@ built from (`imo:…|cs:…|mmsi:…`). The database decides whether to look a s
 - signature unchanged and nothing was found → retry after 7 days;
 - a new IMO or call sign → look it up immediately.
 
-The display filters photos against the ships currently in the fleet, so the slideshow only shows
-photographs of ships that are on screen. Downloads are one at a time, capped at 8 MB each, written
+The display filters photos against the ships currently in the area, so the slideshow only shows
+photographs of ships that are on screen, and starts again when the rotation moves on. Downloads are one at a time, capped at 8 MB each, written
 to a temporary file and renamed into the photo cache. Failed downloads are remembered for the run
 and tried again later; a successful one is never downloaded twice. The lookup worker respects a
 Wikimedia rate-limit response by pausing for the requested time, and retries ordinary failures
@@ -224,7 +263,7 @@ Everything is kept in the add-on's profile folder:
 | File | What it is |
 |---|---|
 | `ships.db` (+ `-wal`, `-shm`) | SQLite database with the `ships` and `profiles` tables |
-| `map_<hash>.jpg` | One Blue Marble image per bounding box and size |
+| `map_<hash>.jpg` | One Blue Marble image per area box and size |
 | `photos/photo_<hash>.<ext>` | Downloaded ship photographs |
 
 `ships` holds the last known AIS state of every MMSI heard (`name`, `call_sign`, `imo`, position,
@@ -276,7 +315,7 @@ screensaver.shiptracker/
     skins/Default/1080i/screensaver-shiptracker.xml  full-screen window
     media/                      map panel textures, placeholder, 16 ship icons (generated)
     lib/
-      config.py                 settings table, strings, bounding box, map URL and projection
+      config.py                 settings table, areas, strings, map URL and projection
       ws.py                     minimal RFC 6455 WebSocket client (TLS, binary frames, ping/pong)
       ais.py                    AIS message decoding and the in-memory fleet
       tracker.py                AIS connection thread: subscribe, reconnect, write the cache
@@ -300,7 +339,8 @@ python3 tools/make_shiptracker_media.py       # icon, fanart, textures, ship ico
 python3 -m unittest tests.test_shiptracker    # offline: settings, geometry, AIS, WebSocket, DB
 KODI_ADDON=screensaver.shiptracker python3 tools/kodi.py install   # symlink into local Kodi
 KODI_ADDON=screensaver.shiptracker python3 tools/kodi.py select    # make it the screensaver
-KODI_ADDON=screensaver.shiptracker python3 tools/kodi.py set api_key=… south_lat=46.3
+KODI_ADDON=screensaver.shiptracker python3 tools/kodi.py set api_key=… area1_south_lat=46.3
+KODI_ADDON=screensaver.shiptracker python3 tools/kodi.py set area_minutes=1 area2_enabled=false
 KODI_ADDON=screensaver.shiptracker python3 tools/kodi.py run       # start it now
 ```
 
@@ -322,7 +362,8 @@ show blank until it reloads them.
 | A blank settings screen | Kodi caches the add-on's strings. Restart Kodi after installing or changing `strings.po` |
 | `AIS connection lost — retrying` | The stream dropped or the host is unreachable. It reconnects automatically; check `kodi.log` with **Debug logging** on |
 | No map, just `No map image available` | GIBS was unreachable and no image was cached. Check the network; the next run retries |
-| Map shows the wrong place | Check the four edges. A west edge larger than the east edge, or a box crossing the antimeridian, falls back to Lake Superior |
+| Map shows the wrong place | Check the four edges of that area. A west edge larger than the east edge, or a box crossing the antimeridian, falls back to the area's built-in box |
+| `No areas enabled in the settings` | Every area is switched off. Enable at least one in the add-on settings |
 | No photos | Wikimedia has no photograph for that IMO/MMSI, lookups are off, or the downloads are still running. With **Debug logging** the log names each failed download |
 | Photos of ships that have left | The slideshow rebuilds its candidates every 10 seconds; old photos stay until the next successful download. If it persists, clear the cache |
 | List stays empty with `● AIS live · 0 vessels` | The stream is healthy but no ship inside the box has reported a position yet |

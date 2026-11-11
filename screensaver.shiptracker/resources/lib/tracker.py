@@ -13,12 +13,12 @@ from . import ais, config, sources, ws
 
 
 class Tracker(threading.Thread):
-    def __init__(self, api_key, box, fleet, store, enricher=None, debug=None,
+    def __init__(self, api_key, boxes, fleet, store, enricher=None, debug=None,
                  clock=time.time, connection_factory=None):
         threading.Thread.__init__(self, name='shiptracker-ais')
         self.daemon = True
         self.api_key = (api_key or '').strip()
-        self.box = box
+        self.boxes = [tuple(box) for box in boxes]
         self.fleet = fleet
         self.store = store
         self.enricher = enricher
@@ -74,7 +74,7 @@ class Tracker(threading.Thread):
                 client = self.connection_factory()
                 self._client = client
                 client.connect()
-                client.send_text(json.dumps(config.subscription(self.api_key, self.box)))
+                client.send_text(json.dumps(config.subscription(self.api_key, self.boxes)))
                 with self._lock:
                     self.state = 'connected'
                     self.last_error = None

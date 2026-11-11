@@ -40,7 +40,7 @@ installed version in **Add-ons → My add-ons**.
 | [Sheetcards Screensaver](#sheetcards) | `screensaver.sheetcards` | 1.0.0 | Flashcards from a Google Sheet (Kodi 20+) |
 | [RSS Live Tiles Screensaver](#rss-live-tiles) | `screensaver.rsslivetiles` | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles (Kodi 20+) |
 | [Hacker News](#hacker-news) | `screensaver.hackernews` | 0.1.0 | Top Hacker News stories and their best comments, paced to reading speed |
-| [Ship Tracker](#ship-tracker) | `screensaver.shiptracker` | 0.1.0 | Live ships inside a bounding box you choose, on NASA's Blue Marble, with a list and ship photos |
+| [Ship Tracker](#ship-tracker) | `screensaver.shiptracker` | 0.2.0 | Live ships in up to ten areas you choose, rotating on a timer, on NASA's Blue Marble, with a list and ship photos |
 
 ### Native screensavers — OpenGL / OpenGL ES (Kodi 21)
 
@@ -1294,22 +1294,30 @@ Full documentation: **[docs/hackernews.md](docs/hackernews.md)**.
 
 ![Ship Tracker: the Blue Marble map of Lake Superior with ship markers, the vessel list and a ship photograph](release/gifs/shiptracker.jpg)
 
-`screensaver.shiptracker`: a live map of the ships inside a bounding box you choose. The left of
-the screen is NASA's Blue Marble image of exactly that area, with a top-down ship marker for every
-AIS-equipped vessel, coloured by type and turned to its course. The right-hand panel lists the
-ships six at a time — name, flag state, type, speed, length and voyage status — and a slideshow
-underneath shows photographs of them, with their names, from Wikimedia Commons.
+`screensaver.shiptracker`: a live map of the ships in up to ten areas you choose, moving on from one
+to the next on a timer. The left of the screen is NASA's Blue Marble image of exactly the current
+area, with a top-down ship marker for every AIS-equipped vessel, coloured by type and turned to its
+course. The right-hand panel lists the ships six at a time — name, flag state, type, speed, length
+and voyage status — and a slideshow underneath shows photographs of them, with their names, from
+Wikimedia Commons.
 
-- **Anywhere on Earth.** Enter the south, west, north and east edges of the box as settings. The
-  default is Lake Superior (`46.3, −92.3` to `49.1, −84.2`). The map window is padded to the
-  screen's shape with a `1/cos(latitude)` correction, so the Blue Marble is not stretched.
-- **Only the ships you can see.** Markers are limited to the box, sorted by name, and dropped after
+- **Ten areas, on and off.** Each area has its own name and south, west, north and east edges, plus
+  an **Enabled** switch. They ship filled in with interesting water: Lake Superior, the Strait of
+  Hormuz, San Diego, San Francisco Bay, Hawaii, the Singapore Strait, Rotterdam, the Panama Canal,
+  the Suez Canal and New York Harbor. **Minutes per area before switching** (1–60, default 5) sets
+  the rotation; disabled areas are skipped.
+- **Anywhere on Earth.** The map window is padded to the screen's shape with a `1/cos(latitude)`
+  correction, so the Blue Marble is not stretched, and a box under two degrees tall is shown with
+  surrounding water so it does not pixelate. Each area's image is fetched in the background when
+  the rotation reaches it.
+- **Only the ships you can see.** All enabled boxes go to aisstream.io in one subscription, but
+  markers and the list are limited to the current area. Ships are sorted by name and dropped after
   **Keep a ship listed for** minutes without a position. The status line says whether the stream
   is live, connecting, retrying or showing last known positions.
 - **Cache first.** The last AIS state of every ship is kept in a small SQLite database, so the
   screen has ships to show while the WebSocket reconnects, and a ship that only sends position
-  reports keeps the name and dimensions it broadcast days ago. The map is cached per bounding box
-  and photographs are cached on disk.
+  reports keeps the name and dimensions it broadcast days ago. Maps are cached per area box and
+  photographs are cached on disk.
 - **Details and photos.** A background worker looks ships up once by IMO/MMSI on Wikidata, and
   their photographs on Wikimedia Commons. The database remembers the answer for a month (a week
   for "nothing found"), keyed by the identifiers it was built from, so a regular visitor is not

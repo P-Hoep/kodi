@@ -10,74 +10,408 @@
           <constraints><allowempty>true</allowempty></constraints>
           <control type="edit" format="string"><heading>30101</heading></control>
         </setting>
-        <setting id="area_name" type="string" label="30102">
+      </group>
+    </category>
+    <category id="c1" label="30102">
+      <group id="1">
+        <setting id="area_minutes" type="integer" label="30103">
           <level>0</level>
-          <default>Lake Superior</default>
-          <constraints><allowempty>true</allowempty></constraints>
-          <control type="edit" format="string"><heading>30102</heading></control>
-        </setting>
-        <setting id="south_lat" type="number" label="30103">
-          <level>0</level>
-          <default>46.3</default>
-          <control type="edit" format="number"><heading>30103</heading></control>
-        </setting>
-        <setting id="west_lon" type="number" label="30104">
-          <level>0</level>
-          <default>-92.3</default>
-          <control type="edit" format="number"><heading>30104</heading></control>
-        </setting>
-        <setting id="north_lat" type="number" label="30105">
-          <level>0</level>
-          <default>49.1</default>
-          <control type="edit" format="number"><heading>30105</heading></control>
-        </setting>
-        <setting id="east_lon" type="number" label="30106">
-          <level>0</level>
-          <default>-84.2</default>
-          <control type="edit" format="number"><heading>30106</heading></control>
+          <default>5</default>
+          <constraints><minimum>1</minimum><step>1</step><maximum>60</maximum></constraints>
+          <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
       </group>
     </category>
-    <category id="c1" label="30107">
+    <category id="c2" label="30104">
       <group id="1">
-        <setting id="ship_timeout" type="integer" label="30108">
+        <setting id="area1_enabled" type="boolean" label="30105">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="area1_name" type="string" label="30106">
+          <level>0</level>
+          <default>Lake Superior</default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"><heading>30106</heading></control>
+        </setting>
+        <setting id="area1_south_lat" type="number" label="30107">
+          <level>0</level>
+          <default>46.3</default>
+          <control type="edit" format="number"><heading>30107</heading></control>
+        </setting>
+        <setting id="area1_west_lon" type="number" label="30108">
+          <level>0</level>
+          <default>-92.3</default>
+          <control type="edit" format="number"><heading>30108</heading></control>
+        </setting>
+        <setting id="area1_north_lat" type="number" label="30109">
+          <level>0</level>
+          <default>49.1</default>
+          <control type="edit" format="number"><heading>30109</heading></control>
+        </setting>
+        <setting id="area1_east_lon" type="number" label="30110">
+          <level>0</level>
+          <default>-84.2</default>
+          <control type="edit" format="number"><heading>30110</heading></control>
+        </setting>
+      </group>
+    </category>
+    <category id="c3" label="30111">
+      <group id="1">
+        <setting id="area2_enabled" type="boolean" label="30105">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="area2_name" type="string" label="30106">
+          <level>0</level>
+          <default>Strait of Hormuz</default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"><heading>30106</heading></control>
+        </setting>
+        <setting id="area2_south_lat" type="number" label="30107">
+          <level>0</level>
+          <default>25.6</default>
+          <control type="edit" format="number"><heading>30107</heading></control>
+        </setting>
+        <setting id="area2_west_lon" type="number" label="30108">
+          <level>0</level>
+          <default>55.6</default>
+          <control type="edit" format="number"><heading>30108</heading></control>
+        </setting>
+        <setting id="area2_north_lat" type="number" label="30109">
+          <level>0</level>
+          <default>27</default>
+          <control type="edit" format="number"><heading>30109</heading></control>
+        </setting>
+        <setting id="area2_east_lon" type="number" label="30110">
+          <level>0</level>
+          <default>57</default>
+          <control type="edit" format="number"><heading>30110</heading></control>
+        </setting>
+      </group>
+    </category>
+    <category id="c4" label="30112">
+      <group id="1">
+        <setting id="area3_enabled" type="boolean" label="30105">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="area3_name" type="string" label="30106">
+          <level>0</level>
+          <default>San Diego</default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"><heading>30106</heading></control>
+        </setting>
+        <setting id="area3_south_lat" type="number" label="30107">
+          <level>0</level>
+          <default>32.5</default>
+          <control type="edit" format="number"><heading>30107</heading></control>
+        </setting>
+        <setting id="area3_west_lon" type="number" label="30108">
+          <level>0</level>
+          <default>-117.4</default>
+          <control type="edit" format="number"><heading>30108</heading></control>
+        </setting>
+        <setting id="area3_north_lat" type="number" label="30109">
+          <level>0</level>
+          <default>32.9</default>
+          <control type="edit" format="number"><heading>30109</heading></control>
+        </setting>
+        <setting id="area3_east_lon" type="number" label="30110">
+          <level>0</level>
+          <default>-116.9</default>
+          <control type="edit" format="number"><heading>30110</heading></control>
+        </setting>
+      </group>
+    </category>
+    <category id="c5" label="30113">
+      <group id="1">
+        <setting id="area4_enabled" type="boolean" label="30105">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="area4_name" type="string" label="30106">
+          <level>0</level>
+          <default>San Francisco Bay</default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"><heading>30106</heading></control>
+        </setting>
+        <setting id="area4_south_lat" type="number" label="30107">
+          <level>0</level>
+          <default>37.55</default>
+          <control type="edit" format="number"><heading>30107</heading></control>
+        </setting>
+        <setting id="area4_west_lon" type="number" label="30108">
+          <level>0</level>
+          <default>-122.6</default>
+          <control type="edit" format="number"><heading>30108</heading></control>
+        </setting>
+        <setting id="area4_north_lat" type="number" label="30109">
+          <level>0</level>
+          <default>38.2</default>
+          <control type="edit" format="number"><heading>30109</heading></control>
+        </setting>
+        <setting id="area4_east_lon" type="number" label="30110">
+          <level>0</level>
+          <default>-121.7</default>
+          <control type="edit" format="number"><heading>30110</heading></control>
+        </setting>
+      </group>
+    </category>
+    <category id="c6" label="30114">
+      <group id="1">
+        <setting id="area5_enabled" type="boolean" label="30105">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="area5_name" type="string" label="30106">
+          <level>0</level>
+          <default>Hawaii</default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"><heading>30106</heading></control>
+        </setting>
+        <setting id="area5_south_lat" type="number" label="30107">
+          <level>0</level>
+          <default>21</default>
+          <control type="edit" format="number"><heading>30107</heading></control>
+        </setting>
+        <setting id="area5_west_lon" type="number" label="30108">
+          <level>0</level>
+          <default>-158.3</default>
+          <control type="edit" format="number"><heading>30108</heading></control>
+        </setting>
+        <setting id="area5_north_lat" type="number" label="30109">
+          <level>0</level>
+          <default>21.7</default>
+          <control type="edit" format="number"><heading>30109</heading></control>
+        </setting>
+        <setting id="area5_east_lon" type="number" label="30110">
+          <level>0</level>
+          <default>-157.5</default>
+          <control type="edit" format="number"><heading>30110</heading></control>
+        </setting>
+      </group>
+    </category>
+    <category id="c7" label="30115">
+      <group id="1">
+        <setting id="area6_enabled" type="boolean" label="30105">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="area6_name" type="string" label="30106">
+          <level>0</level>
+          <default>Singapore Strait</default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"><heading>30106</heading></control>
+        </setting>
+        <setting id="area6_south_lat" type="number" label="30107">
+          <level>0</level>
+          <default>1</default>
+          <control type="edit" format="number"><heading>30107</heading></control>
+        </setting>
+        <setting id="area6_west_lon" type="number" label="30108">
+          <level>0</level>
+          <default>103.4</default>
+          <control type="edit" format="number"><heading>30108</heading></control>
+        </setting>
+        <setting id="area6_north_lat" type="number" label="30109">
+          <level>0</level>
+          <default>1.45</default>
+          <control type="edit" format="number"><heading>30109</heading></control>
+        </setting>
+        <setting id="area6_east_lon" type="number" label="30110">
+          <level>0</level>
+          <default>104.3</default>
+          <control type="edit" format="number"><heading>30110</heading></control>
+        </setting>
+      </group>
+    </category>
+    <category id="c8" label="30116">
+      <group id="1">
+        <setting id="area7_enabled" type="boolean" label="30105">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="area7_name" type="string" label="30106">
+          <level>0</level>
+          <default>Rotterdam</default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"><heading>30106</heading></control>
+        </setting>
+        <setting id="area7_south_lat" type="number" label="30107">
+          <level>0</level>
+          <default>51.8</default>
+          <control type="edit" format="number"><heading>30107</heading></control>
+        </setting>
+        <setting id="area7_west_lon" type="number" label="30108">
+          <level>0</level>
+          <default>3.8</default>
+          <control type="edit" format="number"><heading>30108</heading></control>
+        </setting>
+        <setting id="area7_north_lat" type="number" label="30109">
+          <level>0</level>
+          <default>52.1</default>
+          <control type="edit" format="number"><heading>30109</heading></control>
+        </setting>
+        <setting id="area7_east_lon" type="number" label="30110">
+          <level>0</level>
+          <default>4.6</default>
+          <control type="edit" format="number"><heading>30110</heading></control>
+        </setting>
+      </group>
+    </category>
+    <category id="c9" label="30117">
+      <group id="1">
+        <setting id="area8_enabled" type="boolean" label="30105">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="area8_name" type="string" label="30106">
+          <level>0</level>
+          <default>Panama Canal</default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"><heading>30106</heading></control>
+        </setting>
+        <setting id="area8_south_lat" type="number" label="30107">
+          <level>0</level>
+          <default>8.7</default>
+          <control type="edit" format="number"><heading>30107</heading></control>
+        </setting>
+        <setting id="area8_west_lon" type="number" label="30108">
+          <level>0</level>
+          <default>-80</default>
+          <control type="edit" format="number"><heading>30108</heading></control>
+        </setting>
+        <setting id="area8_north_lat" type="number" label="30109">
+          <level>0</level>
+          <default>9.6</default>
+          <control type="edit" format="number"><heading>30109</heading></control>
+        </setting>
+        <setting id="area8_east_lon" type="number" label="30110">
+          <level>0</level>
+          <default>-79.3</default>
+          <control type="edit" format="number"><heading>30110</heading></control>
+        </setting>
+      </group>
+    </category>
+    <category id="c10" label="30118">
+      <group id="1">
+        <setting id="area9_enabled" type="boolean" label="30105">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="area9_name" type="string" label="30106">
+          <level>0</level>
+          <default>Suez Canal</default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"><heading>30106</heading></control>
+        </setting>
+        <setting id="area9_south_lat" type="number" label="30107">
+          <level>0</level>
+          <default>29.7</default>
+          <control type="edit" format="number"><heading>30107</heading></control>
+        </setting>
+        <setting id="area9_west_lon" type="number" label="30108">
+          <level>0</level>
+          <default>32.2</default>
+          <control type="edit" format="number"><heading>30108</heading></control>
+        </setting>
+        <setting id="area9_north_lat" type="number" label="30109">
+          <level>0</level>
+          <default>31.4</default>
+          <control type="edit" format="number"><heading>30109</heading></control>
+        </setting>
+        <setting id="area9_east_lon" type="number" label="30110">
+          <level>0</level>
+          <default>32.7</default>
+          <control type="edit" format="number"><heading>30110</heading></control>
+        </setting>
+      </group>
+    </category>
+    <category id="c11" label="30119">
+      <group id="1">
+        <setting id="area10_enabled" type="boolean" label="30105">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="area10_name" type="string" label="30106">
+          <level>0</level>
+          <default>New York Harbor</default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"><heading>30106</heading></control>
+        </setting>
+        <setting id="area10_south_lat" type="number" label="30107">
+          <level>0</level>
+          <default>40.4</default>
+          <control type="edit" format="number"><heading>30107</heading></control>
+        </setting>
+        <setting id="area10_west_lon" type="number" label="30108">
+          <level>0</level>
+          <default>-74.3</default>
+          <control type="edit" format="number"><heading>30108</heading></control>
+        </setting>
+        <setting id="area10_north_lat" type="number" label="30109">
+          <level>0</level>
+          <default>40.95</default>
+          <control type="edit" format="number"><heading>30109</heading></control>
+        </setting>
+        <setting id="area10_east_lon" type="number" label="30110">
+          <level>0</level>
+          <default>-73.6</default>
+          <control type="edit" format="number"><heading>30110</heading></control>
+        </setting>
+      </group>
+    </category>
+    <category id="c12" label="30120">
+      <group id="1">
+        <setting id="ship_timeout" type="integer" label="30121">
           <level>0</level>
           <default>15</default>
           <constraints><minimum>2</minimum><step>1</step><maximum>120</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="photo_seconds" type="integer" label="30109">
+        <setting id="photo_seconds" type="integer" label="30122">
           <level>0</level>
           <default>8</default>
           <constraints><minimum>3</minimum><step>1</step><maximum>30</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="map_brightness" type="integer" label="30110">
+        <setting id="map_brightness" type="integer" label="30123">
           <level>0</level>
           <default>8</default>
           <constraints><minimum>0</minimum><step>2</step><maximum>30</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
-        <setting id="show_clock" type="boolean" label="30111">
+        <setting id="show_clock" type="boolean" label="30124">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
       </group>
     </category>
-    <category id="c2" label="30112">
+    <category id="c13" label="30125">
       <group id="1">
-        <setting id="enrich" type="boolean" label="30113">
+        <setting id="enrich" type="boolean" label="30126">
           <level>0</level>
           <default>true</default>
           <control type="toggle"/>
         </setting>
-        <setting id="clear_cache" type="action" label="30114">
+        <setting id="clear_cache" type="action" label="30127">
           <level>0</level>
           <data>RunScript(special://home/addons/screensaver.shiptracker/default.py,clear_cache)</data>
           <control type="button" format="action"><close>true</close></control>
         </setting>
-        <setting id="debug" type="boolean" label="30115">
+        <setting id="debug" type="boolean" label="30128">
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>

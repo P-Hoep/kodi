@@ -186,6 +186,29 @@ class PhotoJob(threading.Thread):
             self.done.set()
 
 
+class MapJob(threading.Thread):
+    """Fetch one area's Blue Marble image without blocking the display thread."""
+
+    def __init__(self, folder, bounds, width, height):
+        threading.Thread.__init__(self, name='shiptracker-map')
+        self.daemon = True
+        self.folder = folder
+        self.bounds = tuple(bounds)
+        self.width = width
+        self.height = height
+        self.path = None
+        self.error = None
+        self.done = threading.Event()
+
+    def run(self):
+        try:
+            self.path = mapimage.ensure_map(self.folder, self.bounds, self.width, self.height)
+        except Exception as error:
+            self.error = error
+        finally:
+            self.done.set()
+
+
 # -------------------------------------------------------------------------------------------
 # Window
 # -------------------------------------------------------------------------------------------
@@ -220,9 +243,14 @@ class Saver(object):
         self.photos = os.path.join(self.profile, 'photos')
         self.settings = config.read(setting_getters(self.addon))
 
-        self.box = config.bbox(self.settings)
+        self.areas = config.enabled_areas(self.settings)
+        self.area_index = 0
+        self.current = self.areas[0] if self.areas else None
+        self.box = self.current['box'] if self.current else None
         self.bounds = config.map_bounds(self.box[0], self.box[1], self.box[2], self.box[3],
-                                        MAP_W, MAP_H)
+                                        MAP_W, MAP_H) if self.box is not None else None
+        self.area_seconds = config.area_seconds(self.settings)
+        self.area_started = time.time()
         self.timeout = config.ship_timeout_seconds(self.settings)
         self.photo_seconds = config.photo_seconds(self.settings)
         self.brightness = config.map_brightness(self.settings)
@@ -244,6 +272,7 @@ class Saver(object):
         self.controls = None
         self.map_image = None
         self.map_overlay = None
+        self.map_job = None
         self.map_attribution = None
         self.center_status = None
         self.markers = []
@@ -369,14 +398,16 @@ class Saver(object):
             self.store.prune()
         except Exception:
             pass
-        if self.enrich:
+        boxes = [area['box'] for area in self.areas]
+        if self.enrich and boxes:
             self.enricher = sources.Enricher(self.store, enabled=True,
                                              debug=self._debug if self.debug_on else None)
             self.enricher.start()
-        self.tracker = tracker.Tracker(self.settings.get('api_key', ''), self.box, self.fleet,
-                                       self.store, enricher=self.enricher,
-                                       debug=self._debug if self.debug_on else None)
-        self.tracker.start()
+        if boxes:
+            self.tracker = tracker.Tracker(self.settings.get('api_key', ''), boxes, self.fleet,
+                                           self.store, enricher=self.enricher,
+                                           debug=self._debug if self.debug_on else None)
+            self.tracker.start()
 
     # ------------------------------------------------------------------ controls
     def attach(self, window):
@@ -414,11 +445,12 @@ class Saver(object):
         self.clock_label = xbmcgui.ControlLabel(X0 + INNER_W - CLOCK_W, 40, CLOCK_W, 56, '',
                                                 font='font27', textColor='E6FFFFFF',
                                                 alignment=ALIGN['right'])
+        area_text = self.current['name'] if self.current else ''
         self.area_label = xbmcgui.ControlLabel(
-            X0, 48, INNER_W - CLOCK_W - 12, 44, self._clip(config.area_title(self.settings), 20),
+            X0, 48, INNER_W - CLOCK_W - 12, 44, self._clip(area_text, 20),
             font='font27', textColor='FFFFFFFF')
         self.bbox_label = xbmcgui.ControlLabel(
-            X0, 98, INNER_W, 30, config.bbox_label(self.settings), font='font12',
+            X0, 98, INNER_W, 30, config.box_label(self.box) if self.box else '', font='font12',
             textColor=FAINT)
         self.status_label = xbmcgui.ControlLabel(X0, 134, INNER_W, 32, '', font='font20',
                                                  textColor=ACCENT)
@@ -502,23 +534,42 @@ class Saver(object):
             log(traceback.format_exc(), xbmc.LOGERROR)
 
     def _display(self):
-        self._prepare_map()
+        self._request_map()
         while not self.stopped():
             now = time.time()
             self._tick(now)
             self.monitor.waitForAbort(LOOP_TICK)
 
-    def _prepare_map(self):
-        path = mapimage.ensure_map(self.profile, self.bounds, MAP_W, MAP_H)
-        if self.stopped():
+    def _request_map(self):
+        """Start fetching the current area's map; the display loop picks it up when ready."""
+        if self.map_image is None:
             return
-        if path:
+        if self.box is None:
+            self.map_job = None
+            self.map_image.setVisible(False)
+            self.map_overlay.setVisible(False)
+            return
+        self.bounds = config.map_bounds(self.box[0], self.box[1], self.box[2], self.box[3],
+                                        MAP_W, MAP_H)
+        self.map_image.setVisible(False)
+        self.map_overlay.setVisible(False)
+        self.map_job = MapJob(self.profile, self.bounds, MAP_W, MAP_H)
+        self.map_job.start()
+
+    def _update_map(self):
+        job = self.map_job
+        if job is None or not job.done.is_set():
+            return
+        self.map_job = None
+        if self.stopped() or self.map_image is None or job.bounds != self.bounds:
+            return
+        if job.path:
             try:
-                self.map_image.setImage(path)
+                self.map_image.setImage(job.path)
                 self.map_image.setVisible(True)
                 self.map_overlay.setVisible(self.brightness > 0)
                 self.map_attribution.setLabel(self.tr(32014))
-                self._debug('map ready: %s' % path)
+                self._debug('map ready: %s' % job.path)
                 return
             except Exception:
                 log(traceback.format_exc(), xbmc.LOGERROR)
@@ -530,6 +581,8 @@ class Saver(object):
             pass
 
     def _tick(self, now):
+        if self._area_due(now):
+            self._next_area(now)
         if now >= self.clock_at:
             self.clock_at = now + 1.0
             self._tick_clock()
@@ -539,7 +592,34 @@ class Saver(object):
         if now >= self.status_at:
             self.status_at = now + SHIPS_TICK
             self._update_status(now)
+        self._update_map()
         self._update_photo(now)
+
+    def _area_due(self, now):
+        return len(self.areas) > 1 and now - self.area_started >= self.area_seconds
+
+    def _next_area(self, now):
+        self.area_index = (self.area_index + 1) % len(self.areas)
+        self._set_area(now)
+
+    def _set_area(self, now):
+        """Switch the map, labels, ships and photos to the area at ``area_index``."""
+        self.current = self.areas[self.area_index]
+        self.box = self.current['box']
+        self.bounds = config.map_bounds(self.box[0], self.box[1], self.box[2], self.box[3],
+                                        MAP_W, MAP_H)
+        self.area_started = now
+        self.ships = []
+        self.page = 0
+        self.pages = 1
+        self.page_started = now
+        self._update_markers([])
+        self._update_list(now)
+        self._reset_photos(now)
+        self.area_label.setLabel(self._clip(self.current['name'], 20))
+        self.bbox_label.setLabel(config.box_label(self.box))
+        self._request_map()
+        self._debug('area: %s %s' % (self.current['name'], self.box))
 
     def _tick_clock(self):
         if self.clock_label is None or not self.show_clock:
@@ -555,7 +635,11 @@ class Saver(object):
 
     # ------------------------------------------------------------------ ships
     def _refresh_ships(self, now):
-        self.ships = self.fleet.snapshot(now, self.timeout)
+        if self.box is None:
+            self.ships = []
+        else:
+            self.ships = [ship for ship in self.fleet.snapshot(now, self.timeout)
+                          if config.in_box(ship, self.box)]
         self._update_markers(self.ships)
         self._update_list(now)
 
@@ -702,6 +786,13 @@ class Saver(object):
 
     # ------------------------------------------------------------------ status
     def _update_status(self, now):
+        if not self.areas:
+            panel = self.tr(32022)
+            self.status_label.setLabel(self.tr(32024))
+            if self.center_status is not None:
+                self.center_status.setLabel(panel)
+                self.center_status.setVisible(True)
+            return
         snapshot = self.tracker.snapshot() if self.tracker is not None else {
             'state': 'idle', 'messages': 0, 'last_message_at': 0.0}
         state = snapshot.get('state')
@@ -724,6 +815,8 @@ class Saver(object):
 
         if count:
             center = ''
+        elif self.map_job is not None:
+            center = self.tr(32023)
         elif state == 'no_key':
             center = self.tr(32001)
         elif state == 'error':
@@ -742,6 +835,17 @@ class Saver(object):
         return (self.tr(32007) if count == 1 else self.tr(32008)) % count
 
     # ------------------------------------------------------------------ photos
+    def _reset_photos(self, now):
+        """Forget the previous area's candidates and clear the frame for the new one."""
+        self.photo_candidates = []
+        self.photo_candidates_at = 0.0
+        self.photo_index = 0
+        self.photo_ready = None
+        self.photo_job = None
+        self.photo_showing = None
+        self._show_placeholder()
+        self.photo_next_at = now + 1.0
+
     def _update_photo(self, now):
         if self.photo_name is None:
             return

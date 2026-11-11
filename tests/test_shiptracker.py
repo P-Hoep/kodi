@@ -51,19 +51,35 @@ class SettingsTable(unittest.TestCase):
     def test_defaults_are_the_lake_superior_box(self):
         values = config.defaults()
         self.assertEqual(values['api_key'], '')
-        self.assertEqual(values['area_name'], 'Lake Superior')
-        self.assertEqual(values['south_lat'], '46.3')
-        self.assertEqual(values['west_lon'], '-92.3')
-        self.assertEqual(values['north_lat'], '49.1')
-        self.assertEqual(values['east_lon'], '-84.2')
-        self.assertEqual(config.bbox(values), (46.3, -92.3, 49.1, -84.2))
+        self.assertEqual(values['area1_name'], 'Lake Superior')
+        self.assertEqual(values['area1_south_lat'], '46.3')
+        self.assertEqual(values['area1_west_lon'], '-92.3')
+        self.assertEqual(values['area1_north_lat'], '49.1')
+        self.assertEqual(values['area1_east_lon'], '-84.2')
+        self.assertEqual(config.area_box(values, 0), (46.3, -92.3, 49.1, -84.2))
         self.assertEqual(config.DEFAULT_BBOX, (46.3, -92.3, 49.1, -84.2))
+
+    def test_ten_areas_ship_with_names_and_boxes(self):
+        self.assertEqual(len(config.AREAS), 10)
+        names = [area['name'] for area in config.AREAS]
+        self.assertEqual(names[0], 'Lake Superior')
+        self.assertIn('Strait of Hormuz', names)
+        self.assertIn('San Diego', names)
+        self.assertIn('San Francisco Bay', names)
+        self.assertIn('Hawaii', names)
+        for area in config.AREAS:
+            south, west, north, east = area['box']
+            self.assertLess(south, north)
+            self.assertLess(west, east)
+            self.assertTrue(-90 <= south and north <= 90)
+            self.assertTrue(-180 <= west and east <= 180)
 
     def test_display_defaults(self):
         values = config.defaults()
         self.assertEqual(values['ship_timeout'], 15)
         self.assertEqual(values['photo_seconds'], 8)
         self.assertEqual(values['map_brightness'], 8)
+        self.assertEqual(values['area_minutes'], 5)
         self.assertTrue(values['show_clock'])
         self.assertTrue(values['enrich'])
         self.assertFalse(values['debug'])
@@ -77,6 +93,7 @@ class SettingsTable(unittest.TestCase):
         values = config.read(getters)
         self.assertEqual(values['photo_seconds'], 30)       # clamped to the maximum
         self.assertEqual(values['ship_timeout'], 2)         # clamped to the minimum
+        self.assertEqual(values['area_minutes'], 1)         # clamped to the minimum
         self.assertTrue(values['debug'])
         self.assertEqual(values['api_key'], '')             # a None string falls back
 
@@ -88,32 +105,68 @@ class SettingsTable(unittest.TestCase):
 class BoundingBox(unittest.TestCase):
     def test_a_custom_box_is_used(self):
         settings = config.defaults()
-        settings.update({'south_lat': '40', 'west_lon': '-80', 'north_lat': '41',
-                         'east_lon': '-79'})
-        self.assertEqual(config.bbox(settings), (40.0, -80.0, 41.0, -79.0))
+        settings.update({'area1_south_lat': '40', 'area1_west_lon': '-80',
+                         'area1_north_lat': '41', 'area1_east_lon': '-79'})
+        self.assertEqual(config.area_box(settings, 0), (40.0, -80.0, 41.0, -79.0))
 
-    def test_invalid_boxes_fall_back(self):
+    def test_invalid_boxes_fall_back_to_their_area(self):
         for values in ((50, -92, 49, -84),          # upside down
                        (46, -84, 49, -92),          # east of west
                        (95, -92, 96, -84),          # out of range
                        ('x', -92, 49, -84)):        # not a number
-            settings = dict(zip(('south_lat', 'west_lon', 'north_lat', 'east_lon'), values))
-            self.assertEqual(config.bbox(settings), config.DEFAULT_BBOX)
+            settings = config.defaults()
+            for key, value in zip(('south_lat', 'west_lon', 'north_lat', 'east_lon'), values):
+                settings['area2_' + key] = value
+            self.assertEqual(config.area_box(settings, 1), config.AREAS[1]['box'])
 
-    def test_label_and_title(self):
+    def test_label_and_name(self):
         settings = config.defaults()
-        label = config.bbox_label(settings)
+        label = config.box_label(config.area_box(settings, 0))
         self.assertEqual(label, '46.30–49.10°N · 92.30–84.20°W')
         self.assertLessEqual(len(label), 32)                # fits the panel at font12
-        self.assertEqual(config.area_title(settings), 'Lake Superior')
-        settings['area_name'] = '  '
-        self.assertIn('46.30°N', config.area_title(settings))
+        self.assertEqual(config.area_name(settings, 0), 'Lake Superior')
+        settings['area1_name'] = '  '
+        self.assertEqual(config.area_name(settings, 0), 'Lake Superior')
 
     def test_label_names_each_end_across_the_equator(self):
         settings = config.defaults()
-        settings.update({'south_lat': '-1', 'west_lon': '5', 'north_lat': '1',
-                         'east_lon': '6'})
-        self.assertEqual(config.bbox_label(settings), '1.00°S–1.00°N · 5.00–6.00°E')
+        settings.update({'area1_south_lat': '-1', 'area1_west_lon': '5',
+                         'area1_north_lat': '1', 'area1_east_lon': '6'})
+        self.assertEqual(config.box_label(config.area_box(settings, 0)),
+                         '1.00°S–1.00°N · 5.00–6.00°E')
+
+
+class Areas(unittest.TestCase):
+    def test_enabled_areas_follow_the_switches(self):
+        settings = config.defaults()
+        self.assertEqual(len(config.enabled_areas(settings)), 10)
+        settings['area2_enabled'] = False
+        areas = config.enabled_areas(settings)
+        self.assertEqual(len(areas), 9)
+        self.assertNotIn('Strait of Hormuz', [area['name'] for area in areas])
+        self.assertEqual(areas[0]['name'], 'Lake Superior')
+        for index in range(10):
+            settings['area%d_enabled' % (index + 1)] = False
+        self.assertEqual(config.enabled_areas(settings), [])
+
+    def test_a_renamed_area_keeps_its_custom_name(self):
+        settings = config.defaults()
+        settings['area3_name'] = '  My Harbour  '
+        self.assertEqual(config.area_name(settings, 2), 'My Harbour')
+        self.assertEqual(config.enabled_areas(settings)[2]['name'], 'My Harbour')
+
+    def test_in_box(self):
+        box = (46.3, -92.3, 49.1, -84.2)
+        self.assertTrue(config.in_box({'lat': 47.5, 'lon': -88.0}, box))
+        self.assertTrue(config.in_box({'lat': 46.3, 'lon': -92.3}, box))
+        self.assertFalse(config.in_box({'lat': 47.5, 'lon': -80.0}, box))
+        self.assertFalse(config.in_box({'lat': 40.0, 'lon': -88.0}, box))
+        self.assertFalse(config.in_box({}, box))
+
+    def test_rotation_minutes_are_clamped(self):
+        self.assertEqual(config.area_seconds({'area_minutes': 0}), 60)
+        self.assertEqual(config.area_seconds({'area_minutes': 10}), 600)
+        self.assertEqual(config.area_seconds({'area_minutes': 999}), 3600)
 
 
 class MapGeometry(unittest.TestCase):
@@ -123,6 +176,12 @@ class MapGeometry(unittest.TestCase):
         self.assertGreaterEqual(right, 4.0)
         self.assertLessEqual(bottom, 11.5)
         self.assertGreaterEqual(top, 12.0)
+
+    def test_a_tiny_box_is_shown_with_surrounding_water(self):
+        left, bottom, right, top = config.map_bounds(32.5, -117.4, 32.9, -116.9, 1400, 1080)
+        self.assertGreaterEqual(top - bottom, config.MIN_MAP_SPAN - 0.001)
+        self.assertLessEqual(bottom, 32.5)
+        self.assertGreaterEqual(top, 32.9)
 
     def test_degrees_are_square_on_screen(self):
         import math
@@ -199,10 +258,12 @@ class AisHelpers(unittest.TestCase):
         self.assertEqual(config.marker_group(None), 'other')
         self.assertEqual(config.marker_colour(70), 'FF8ECAE6')
 
-    def test_subscription(self):
-        payload = config.subscription('KEY', (46.3, -92.3, 49.1, -84.2))
+    def test_subscription_carries_every_enabled_box(self):
+        boxes = [(46.3, -92.3, 49.1, -84.2), (25.6, 55.6, 27.0, 57.0)]
+        payload = config.subscription('KEY', boxes)
         self.assertEqual(payload['APIKey'], 'KEY')
-        self.assertEqual(payload['BoundingBoxes'], [[[46.3, -92.3], [49.1, -84.2]]])
+        self.assertEqual(payload['BoundingBoxes'], [[[46.3, -92.3], [49.1, -84.2]],
+                                                    [[25.6, 55.6], [27.0, 57.0]]])
         self.assertIn('PositionReport', payload['FilterMessageTypes'])
         self.assertIn('ShipStaticData', payload['FilterMessageTypes'])
 
@@ -572,7 +633,7 @@ class TrackerWork(unittest.TestCase):
         self.addCleanup(ship_store.close)
         fleet = ais.Fleet()
         enricher = type('E', (), {'seen': [], 'enqueue': lambda self, ship: self.seen.append(ship)})()
-        worker = tracker.Tracker('KEY', config.DEFAULT_BBOX, fleet, ship_store,
+        worker = tracker.Tracker('KEY', [config.DEFAULT_BBOX], fleet, ship_store,
                                  enricher=enricher, clock=lambda: 1000.0,
                                  connection_factory=lambda: None)
         worker._handle(position_message())
@@ -587,7 +648,7 @@ class TrackerWork(unittest.TestCase):
         self.addCleanup(shutil.rmtree, folder, True)
         ship_store = store.Store(os.path.join(folder, 'ships.db'))
         self.addCleanup(ship_store.close)
-        worker = tracker.Tracker('', config.DEFAULT_BBOX, ais.Fleet(), ship_store)
+        worker = tracker.Tracker('', [config.DEFAULT_BBOX], ais.Fleet(), ship_store)
         worker.start()
         worker.join(2.0)
         self.assertEqual(worker.snapshot()['state'], 'no_key')

@@ -11,7 +11,7 @@ from urllib.parse import urlencode
 
 ADDON_ID = 'screensaver.shiptracker'
 ADDON_NAME = 'Ship Tracker Screensaver'
-VERSION = '0.1.0'
+VERSION = '0.2.0'
 
 # aisstream.io's public AIS stream. The free key is tied to an account; the user pastes it into
 # the add-on settings. It is never bundled.
@@ -19,10 +19,22 @@ STREAM_HOST = 'stream.aisstream.io'
 STREAM_PORT = 443
 STREAM_PATH = '/v0/stream'
 
-# [[south_lat, west_lon], [north_lat, east_lon]]. These are the defaults the add-on ships with;
-# every edge can be changed in the settings.
-DEFAULT_BBOX = (46.3, -92.3, 49.1, -84.2)
-DEFAULT_AREA = 'Lake Superior'
+# Ten ready-made areas. Each one is a setting group: it can be renamed, its four edges can be
+# changed, and it can be switched off. Enabled areas share one AIS subscription and the screen
+# rotates between them every area_minutes minutes.
+AREAS = (
+    {'name': 'Lake Superior', 'box': (46.3, -92.3, 49.1, -84.2)},
+    {'name': 'Strait of Hormuz', 'box': (25.6, 55.6, 27.0, 57.0)},
+    {'name': 'San Diego', 'box': (32.5, -117.4, 32.9, -116.9)},
+    {'name': 'San Francisco Bay', 'box': (37.55, -122.6, 38.2, -121.7)},
+    {'name': 'Hawaii', 'box': (21.0, -158.3, 21.7, -157.5)},
+    {'name': 'Singapore Strait', 'box': (1.0, 103.4, 1.45, 104.3)},
+    {'name': 'Rotterdam', 'box': (51.8, 3.8, 52.1, 4.6)},
+    {'name': 'Panama Canal', 'box': (8.7, -80.0, 9.6, -79.3)},
+    {'name': 'Suez Canal', 'box': (29.7, 32.2, 31.4, 32.7)},
+    {'name': 'New York Harbor', 'box': (40.4, -74.3, 40.95, -73.6)},
+)
+DEFAULT_BBOX = AREAS[0]['box']
 
 POSITION_TYPES = ('PositionReport', 'StandardClassBPositionReport',
                   'ExtendedClassBPositionReport')
@@ -34,6 +46,9 @@ STATIC_TYPES = ('ShipStaticData', 'StaticDataReport')
 GIBS = 'https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi'
 MAP_LAYER = 'BlueMarble_ShadedRelief_Bathymetry'
 MAP_WIDTH, MAP_HEIGHT = 1400, 1080
+# The Blue Marble is about 500 m per pixel, so a tiny harbour box would be blown up into a
+# blocky mess. Every map window is at least this many degrees tall, centred on the box.
+MIN_MAP_SPAN = 2.0
 
 USER_AGENT = '%s/%s (Kodi screensaver; +https://github.com/P-Hoep/kodi)' % (ADDON_ID, VERSION)
 
@@ -148,29 +163,46 @@ def A(sid, label, command):
                 data='RunScript(special://home/addons/%s/default.py,%s)' % (ADDON_ID, command))
 
 
-CATEGORIES = [
-    ('AIS stream', [
+def area_settings(index):
+    """The six settings behind one area: a switch, a name and the four edges."""
+    number = index + 1
+    area = AREAS[index]
+    prefix = 'area%d_' % number
+    settings = [
+        B(prefix + 'enabled', 'Enabled', True),
+        dict(id=prefix + 'name', type='string', label='Name shown on screen',
+             default=area['name']),
+    ]
+    labels = ('South latitude', 'West longitude', 'North latitude', 'East longitude')
+    for key, label, value in zip(('south_lat', 'west_lon', 'north_lat', 'east_lon'),
+                                 labels, area['box']):
+        settings.append(dict(id=prefix + key, type='number', label=label,
+                             default='%g' % value))
+    return settings
+
+
+CATEGORIES = (
+    [('AIS stream', [
         dict(id='api_key', type='string', label='aisstream.io API key (free from aisstream.io)',
              default=''),
-        dict(id='area_name', type='string', label='Area name shown on screen',
-             default=DEFAULT_AREA),
-        dict(id='south_lat', type='number', label='South latitude', default='46.3'),
-        dict(id='west_lon', type='number', label='West longitude', default='-92.3'),
-        dict(id='north_lat', type='number', label='North latitude', default='49.1'),
-        dict(id='east_lon', type='number', label='East longitude', default='-84.2'),
     ]),
-    ('Display', [
+     ('Rotation', [
+         S('area_minutes', 'Minutes per area before switching', 5, 1, 60),
+     ])]
+    + [('Area %d · %s' % (index + 1, area['name']), area_settings(index))
+       for index, area in enumerate(AREAS)]
+    + [('Display', [
         S('ship_timeout', 'Keep a ship listed for (minutes)', 15, 2, 120),
         S('photo_seconds', 'Seconds per ship photo', 8, 3, 30),
         S('map_brightness', 'Lighten the map (percent)', 8, 0, 30, step=2),
         B('show_clock', 'Show a clock', True),
     ]),
-    ('Data', [
+       ('Data', [
         B('enrich', 'Look up ship details and photos on Wikipedia', True),
         A('clear_cache', 'Clear cached ships, map and photos', 'clear_cache'),
         B('debug', 'Debug logging', False),
-    ]),
-]
+    ])]
+)
 
 # On-screen text. Settings labels start at 30100; these start at 32000 so the generator can
 # append them without renumbering the settings.
@@ -197,6 +229,9 @@ STRINGS = {
     32019: 'Wikimedia',
     32020: 'VESSELS · 0',
     32021: 'No AIS key',
+    32022: 'No areas enabled in the settings',
+    32023: 'Loading map…',
+    32024: 'No areas enabled',
 }
 
 
@@ -237,33 +272,53 @@ def read(getters):
 # ---------------------------------------------------------------------------------------------
 # The tracked box
 # ---------------------------------------------------------------------------------------------
-def bbox(settings):
-    """(south, west, north, east) from the four number settings, or the shipped default.
+def area_key(index, key):
+    return 'area%d_%s' % (index + 1, key)
 
-    A box that is out of range, upside down or empty cannot be sent to aisstream, so the whole
-    box falls back to the Lake Superior default rather than silently tracking a sliver.
+
+def area_enabled(settings, index):
+    return bool(settings.get(area_key(index, 'enabled'), True))
+
+
+def area_name(settings, index):
+    name = (settings.get(area_key(index, 'name')) or '').strip()
+    return name or AREAS[index]['name']
+
+
+def area_box(settings, index):
+    """(south, west, north, east) for one area, or that area's shipped box when it is invalid.
+
+    An out-of-range, upside-down or empty box cannot be sent to aisstream, so the whole box
+    falls back to the area's default rather than silently tracking a sliver.
     """
     keys = ('south_lat', 'west_lon', 'north_lat', 'east_lon')
     try:
-        south, west, north, east = (float(settings.get(key)) for key in keys)
+        south, west, north, east = (float(settings.get(area_key(index, key))) for key in keys)
     except (TypeError, ValueError):
-        return DEFAULT_BBOX
+        return AREAS[index]['box']
     if not (-90.0 <= south < north <= 90.0 and -180.0 <= west < east <= 180.0):
-        return DEFAULT_BBOX
+        return AREAS[index]['box']
     return (south, west, north, east)
 
 
-def bbox_is_valid(settings):
-    return bbox(settings) != DEFAULT_BBOX or all(
-        _float(settings.get(key)) is not None for key in
-        ('south_lat', 'west_lon', 'north_lat', 'east_lon'))
+def enabled_areas(settings):
+    """The areas the screen rotates through, in settings order, with their current names."""
+    areas = []
+    for index in range(len(AREAS)):
+        if area_enabled(settings, index):
+            areas.append({'index': index, 'name': area_name(settings, index),
+                          'box': area_box(settings, index)})
+    return areas
 
 
-def _float(value):
+def in_box(ship, box):
+    """Whether a ship's last position is inside a tracked box."""
     try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
+        latitude, longitude = float(ship['lat']), float(ship['lon'])
+    except (KeyError, TypeError, ValueError):
+        return False
+    south, west, north, east = box
+    return south <= latitude <= north and west <= longitude <= east
 
 
 def format_lat(lat):
@@ -287,15 +342,10 @@ def _range_label(low, high, positive, negative, formatter):
     return '%s–%s' % (formatter(low), formatter(high))
 
 
-def bbox_label(settings):
-    south, west, north, east = bbox(settings)
+def box_label(box):
+    south, west, north, east = box
     return '%s · %s' % (_range_label(south, north, 'N', 'S', format_lat),
                         _range_label(west, east, 'E', 'W', format_lon))
-
-
-def area_title(settings):
-    name = (settings.get('area_name') or '').strip()
-    return name or '%s – %s' % (format_lat(bbox(settings)[0]), format_lat(bbox(settings)[2]))
 
 
 # ---------------------------------------------------------------------------------------------
@@ -306,10 +356,12 @@ def map_bounds(south, west, north, east, width, height):
 
     The requested box is centred and then widened or heightened as needed, with longitude
     scaled by 1/cos(mid latitude), so one degree of latitude and one of longitude occupy the
-    same distance on screen and the Blue Marble is not stretched. The original box always stays
-    inside the returned one; near the edge of the world the window is slid inwards instead.
+    same distance on screen and the Blue Marble is not stretched. A box smaller than
+    MIN_MAP_SPAN is shown with surrounding water, so the image stays legible near the finest
+    Blue Marble zoom. The original box always stays inside the returned one; near the edge of
+    the world the window is slid inwards instead.
     """
-    lat_span = max(0.0001, float(north) - float(south))
+    lat_span = max(MIN_MAP_SPAN, float(north) - float(south))
     lon_span = max(0.0001, float(east) - float(west))
     mid_lat = (float(south) + float(north)) / 2.0
     cos_lat = max(0.02, math.cos(math.radians(mid_lat)))
@@ -455,13 +507,25 @@ def heading_index(course):
     return int(round(value / 22.5)) % 16
 
 
-def subscription(api_key, box):
-    south, west, north, east = box
+def subscription(api_key, boxes):
+    """One aisstream subscription covering every enabled area."""
+    bounding_boxes = []
+    for box in boxes:
+        south, west, north, east = box
+        bounding_boxes.append([[south, west], [north, east]])
     return {
         'APIKey': api_key,
-        'BoundingBoxes': [[[south, west], [north, east]]],
+        'BoundingBoxes': bounding_boxes,
         'FilterMessageTypes': list(POSITION_TYPES + STATIC_TYPES),
     }
+
+
+def area_minutes(settings):
+    return max(1, min(60, int(settings.get('area_minutes', 5))))
+
+
+def area_seconds(settings):
+    return area_minutes(settings) * 60
 
 
 def ship_timeout_seconds(settings):

@@ -16,58 +16,110 @@ msgid "aisstream.io API key (free from aisstream.io)"
 msgstr ""
 
 msgctxt "#30102"
-msgid "Area name shown on screen"
+msgid "Rotation"
 msgstr ""
 
 msgctxt "#30103"
-msgid "South latitude"
+msgid "Minutes per area before switching"
 msgstr ""
 
 msgctxt "#30104"
-msgid "West longitude"
+msgid "Area 1 · Lake Superior"
 msgstr ""
 
 msgctxt "#30105"
-msgid "North latitude"
+msgid "Enabled"
 msgstr ""
 
 msgctxt "#30106"
-msgid "East longitude"
+msgid "Name shown on screen"
 msgstr ""
 
 msgctxt "#30107"
-msgid "Display"
+msgid "South latitude"
 msgstr ""
 
 msgctxt "#30108"
-msgid "Keep a ship listed for (minutes)"
+msgid "West longitude"
 msgstr ""
 
 msgctxt "#30109"
-msgid "Seconds per ship photo"
+msgid "North latitude"
 msgstr ""
 
 msgctxt "#30110"
-msgid "Lighten the map (percent)"
+msgid "East longitude"
 msgstr ""
 
 msgctxt "#30111"
-msgid "Show a clock"
+msgid "Area 2 · Strait of Hormuz"
 msgstr ""
 
 msgctxt "#30112"
-msgid "Data"
+msgid "Area 3 · San Diego"
 msgstr ""
 
 msgctxt "#30113"
-msgid "Look up ship details and photos on Wikipedia"
+msgid "Area 4 · San Francisco Bay"
 msgstr ""
 
 msgctxt "#30114"
-msgid "Clear cached ships, map and photos"
+msgid "Area 5 · Hawaii"
 msgstr ""
 
 msgctxt "#30115"
+msgid "Area 6 · Singapore Strait"
+msgstr ""
+
+msgctxt "#30116"
+msgid "Area 7 · Rotterdam"
+msgstr ""
+
+msgctxt "#30117"
+msgid "Area 8 · Panama Canal"
+msgstr ""
+
+msgctxt "#30118"
+msgid "Area 9 · Suez Canal"
+msgstr ""
+
+msgctxt "#30119"
+msgid "Area 10 · New York Harbor"
+msgstr ""
+
+msgctxt "#30120"
+msgid "Display"
+msgstr ""
+
+msgctxt "#30121"
+msgid "Keep a ship listed for (minutes)"
+msgstr ""
+
+msgctxt "#30122"
+msgid "Seconds per ship photo"
+msgstr ""
+
+msgctxt "#30123"
+msgid "Lighten the map (percent)"
+msgstr ""
+
+msgctxt "#30124"
+msgid "Show a clock"
+msgstr ""
+
+msgctxt "#30125"
+msgid "Data"
+msgstr ""
+
+msgctxt "#30126"
+msgid "Look up ship details and photos on Wikipedia"
+msgstr ""
+
+msgctxt "#30127"
+msgid "Clear cached ships, map and photos"
+msgstr ""
+
+msgctxt "#30128"
 msgid "Debug logging"
 msgstr ""
 
@@ -157,4 +209,16 @@ msgstr ""
 
 msgctxt "#32021"
 msgid "No AIS key"
+msgstr ""
+
+msgctxt "#32022"
+msgid "No areas enabled in the settings"
+msgstr ""
+
+msgctxt "#32023"
+msgid "Loading map…"
+msgstr ""
+
+msgctxt "#32024"
+msgid "No areas enabled"
 msgstr ""
