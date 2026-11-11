@@ -1,9 +1,9 @@
 # P-Hoep Kodi Add-ons
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
-live-camera window, a street-view guessing game, an old radar scope, a ship tracker, a scheduler,
-a flashcard app, a trivia quiz, a news reader, audiobooks and GPU-drawn visuals for Kodi, published
-as one Kodi repository so Kodi installs them and keeps them up to date.
+live-camera window, a bird-sighting mosaic, a street-view guessing game, an old radar scope, a ship
+tracker, a scheduler, a flashcard app, a trivia quiz, a news reader, audiobooks and GPU-drawn
+visuals for Kodi, published as one Kodi repository so Kodi installs them and keeps them up to date.
 
 ### Python screensavers
 
@@ -27,6 +27,7 @@ as one Kodi repository so Kodi installs them and keeps them up to date.
 | [RSS Live Tiles Screensaver](#rss-live-tiles) | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles: an app and a screensaver |
 | [Hacker News](#hacker-news) | 0.1.0 | The Hacker News front page and its best comments, paced to reading speed |
 | [Ship Tracker](#ship-tracker) | 0.3.0 | Live ships in up to ten areas you choose, rotating on a timer, on Sentinel-2 satellite maps, with ship photos |
+| [Local Bird Sightings](#local-bird-sightings) | 1.0.0 | Recent bird sightings near you as a living photo mosaic, with occasional spotlight cards |
 
 ### Native screensavers and visualisation (OpenGL / OpenGL ES, Kodi 21)
 
@@ -86,7 +87,7 @@ The add-ons are in a Kodi repository hosted on GitHub Pages:
 1. **Settings → System → Add-ons → Unknown sources → On.**
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/`
    and name it `phoep`.
-3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.15.zip`.
+3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.16.zip`.
    Kodi shows "P-Hoep Add-ons — Add-on installed".
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** Screensavers are under
    **Look and feel → Screensaver**; the Switcher is under **Services**; Sheetcards, RSS Live
@@ -479,6 +480,37 @@ photographs of them, with their names, from Wikimedia Commons.
   found).
 - **A free key:** aisstream.io needs an account; paste its API key into the settings. Nothing is
   bundled and the key is never committed. The map works without it.
+
+Under **Look and feel → Screensaver**. Needs Kodi 19 or later.
+
+---
+
+## Local Bird Sightings
+
+![Local Bird Sightings: the photo mosaic of recent sightings near Minneapolis and a spotlight card for a Cooper's Hawk](gifs/birdsightings.jpg)
+
+The latest bird sightings around a place you choose, as a constantly shifting mosaic of
+iNaturalist photographs. Each tile is a real observation with its species and how long ago it was
+seen; tiles pop and swap on their own, and every so often one sighting takes over the screen with
+a large photograph, the species' common and scientific names, where it was seen, how far away, who
+observed it and when.
+
+- **A place and a window:** set the latitude and longitude (or use **Find coordinates by place
+  name…**), the search radius (1–200 km) and how many days back to look (1–30). The location name
+  shown on screen is yours to edit, and the header shows the counts, radius, window and clock.
+- **Only birds, only photos:** observations come from iNaturalist's Aves taxon and must have a
+  photo. Captive or cultivated birds are excluded by default; you can also keep only
+  research-grade identifications or only photos with an open CC licence.
+- **A mosaic that keeps moving:** swap a tile every few seconds, preloading the next photo behind
+  the current one before it pops in, with a few large feature tiles at random and 4–12 columns.
+- **Spotlights:** every 30 seconds by default (or off), one sighting fills the screen for 12
+  seconds with its photographer and licence credit. Recent spotlights are not repeated.
+- **Refreshes by itself:** the list is fetched again every 5–180 minutes, and the photos on screen
+  stay up if the network fails.
+
+No account or API key is needed: data and photographs come from iNaturalist and its observers,
+each photo under the licence shown in its credit. The code is MIT-licensed and bundles no
+photographs. Not affiliated with iNaturalist.
 
 Under **Look and feel → Screensaver**. Needs Kodi 19 or later.
 

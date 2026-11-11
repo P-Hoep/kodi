@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.birdsightings" name="Local Bird Sightings" version="1.0.0" provider-name="Patrick Hoepner">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library="screensaver.py"/>
+  <extension point="xbmc.python.script" library="lookup.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Recent bird sightings near you as a living photo mosaic</summary>
+    <description lang="en_GB">Pulls the latest bird observations (with photos) from iNaturalist around a location you choose and turns them into a constantly shifting mosaic. Tiles pop and swap, and every so often one sighting takes over the screen with the species, where it was seen, how far away, and when. Personal, non-commercial use. Photo credits are always shown. Data and photos: iNaturalist and its observers.</description>
+    <disclaimer lang="en_GB">Not affiliated with iNaturalist. Photos remain the property of their photographers under their stated licences.</disclaimer>
+    <platform>all</platform>
+    <license>MIT</license>
+    <assets>
+      <icon>icon.png</icon>
+    </assets>
+  </extension>
+</addon>

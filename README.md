@@ -1,9 +1,9 @@
 # P-Hoep Kodi Add-ons
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
-live-camera window, a ship tracker, a scheduler, a flashcard app, a trivia quiz, a news reader, a
-music visualisation and an audiobook player for Kodi, published as one Kodi repository so Kodi
-installs them and keeps them up to date.
+live-camera window, a bird-sighting mosaic, a ship tracker, a scheduler, a flashcard app, a trivia
+quiz, a news reader, a music visualisation and an audiobook player for Kodi, published as one Kodi
+repository so Kodi installs them and keeps them up to date.
 
 Most add-ons are pure Python and run on any Kodi 19 (Matrix) or later device. The OpenGL add-ons
 are native, GPU-drawn add-ons built for macOS (Intel and Apple Silicon) and Android, with
@@ -41,6 +41,7 @@ installed version in **Add-ons → My add-ons**.
 | [RSS Live Tiles Screensaver](#rss-live-tiles) | `screensaver.rsslivetiles` | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles (Kodi 20+) |
 | [Hacker News](#hacker-news) | `screensaver.hackernews` | 0.1.0 | Top Hacker News stories and their best comments, paced to reading speed |
 | [Ship Tracker](#ship-tracker) | `screensaver.shiptracker` | 0.3.0 | Live ships in up to ten areas you choose, rotating on a timer, on Sentinel-2 satellite maps, with a list and ship photos |
+| [Local Bird Sightings](#local-bird-sightings) | `screensaver.birdsightings` | 1.0.0 | Recent bird sightings near you as a living photo mosaic, with occasional spotlight cards |
 
 ### Native screensavers — OpenGL / OpenGL ES (Kodi 21)
 
@@ -82,7 +83,7 @@ installed version in **Add-ons → My add-ons**.
 | RSS Live Tiles library | `script.module.rsslivetiles` | 1.0.0 | Shared code for the RSS Live Tiles app and screensaver |
 | OpenTrivia library | `script.module.opentrivia` | 1.0.0 | The questions database, shared window and skin for the OpenTrivia add-ons |
 | Vintage Radar library | `script.module.vintageradar` | 1.0.1 | The scope's model, feeds, window, text renderer and textures, shared by the Vintage Radar app and screensaver |
-| P-Hoep Add-ons | `repository.phoep` | 1.0.15 | The Kodi repository that installs and updates everything |
+| P-Hoep Add-ons | `repository.phoep` | 1.0.16 | The Kodi repository that installs and updates everything |
 
 The library modules are installed automatically as dependencies; there is nothing to configure.
 
@@ -118,7 +119,7 @@ installs them and updates them itself.
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/` and name it
    `phoep`.
 3. **Settings → Add-ons → Install from zip file → phoep →**
-   `repository.phoep-1.0.15.zip`.
+   `repository.phoep-1.0.16.zip`.
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.**
    - Screensavers are under **Look and feel → Screensaver**.
    - The Switcher is under **Services**.
@@ -1342,6 +1343,47 @@ from Wikimedia Commons, each under its own licence. The add-on code is MIT-licen
 photographs, map image or API key.
 
 Full documentation: **[docs/shiptracker.md](docs/shiptracker.md)**.
+
+## Local Bird Sightings
+
+![Local Bird Sightings: the photo mosaic of recent sightings near Minneapolis and a spotlight card for a Cooper's Hawk](release/gifs/birdsightings.jpg)
+
+`screensaver.birdsightings`: the latest bird sightings around a place you choose, as a constantly
+shifting mosaic of iNaturalist photographs. Each tile is a real observation with its species and
+how long ago it was seen; tiles pop and swap on their own, and every so often one sighting takes
+over the screen with a large photograph, the species' common and scientific names, where it was
+seen, how far away, who observed it and when.
+
+- **A place and a window.** Set the latitude and longitude, or use **Find coordinates by place
+  name…** to fill them in; the location name shown on screen is yours to edit. **Search radius**
+  (1–200 km) and **Days to look back** (1–30) decide how far and how recent the sightings are.
+  The header shows the sighting and species counts, the radius, the window and the clock.
+- **Only birds, only photos.** Observations come from iNaturalist's Aves taxon and must have a
+  photo. Captive or cultivated birds are excluded by default; you can also keep only
+  research-grade identifications or only photos with an open CC licence.
+- **A mosaic that keeps moving.** Up to **Maximum sightings to load** (25–200) fill the grid.
+  **Swap a tile every** seconds (1–10, jittered) preloads the next photo behind the current one
+  and pops it in; the layout picks a few large feature tiles at random. **Photos across the
+  screen** (4–12) sets the maximum column count, and the rows follow the display's shape.
+- **Spotlights.** Every **Spotlight a sighting every** seconds (0 turns it off, default 30) one
+  sighting fills the screen for the **Spotlight duration** (5–40 s, default 12), with the
+  photographer and licence credit and a line for how often the species was reported. Recent
+  spotlights are not repeated, and half of them favour the freshest sightings.
+- **Refreshes by itself.** The list is fetched again every **Refresh data every** minutes (5–180),
+  so the mosaic follows the day's sightings. If the network is failing, the photos already on
+  screen stay up and it retries.
+
+Requires Kodi 19 or later. The first fetch and the photographs need a network connection; Kodi's
+texture cache keeps the photos after that. No account or API key is needed.
+
+```bash
+python3 tools/build_zip.py screensaver.birdsightings
+KODI_ADDON=screensaver.birdsightings python3 tools/kodi.py install   # then select / run / shot
+```
+
+Data and photographs from [iNaturalist](https://www.inaturalist.org/) and its observers, each
+photo under the licence shown in its credit. Not affiliated with iNaturalist. The add-on code is
+MIT-licensed and bundles no photographs.
 
 ---
 

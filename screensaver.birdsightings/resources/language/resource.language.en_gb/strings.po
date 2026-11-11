@@ -1,0 +1,108 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Local Bird Sightings\n"
+"Language: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "#30000"
+msgid "Location"
+msgstr ""
+
+msgctxt "#30001"
+msgid "Latitude"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Longitude"
+msgstr ""
+
+msgctxt "#30003"
+msgid "Search radius (km)"
+msgstr ""
+
+msgctxt "#30004"
+msgid "Find coordinates by place name..."
+msgstr ""
+
+msgctxt "#30005"
+msgid "Location name (shown on screen)"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Sightings"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Days to look back"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Maximum sightings to load"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Research-grade identifications only"
+msgstr ""
+
+msgctxt "#30014"
+msgid "Exclude captive / cultivated birds"
+msgstr ""
+
+msgctxt "#30015"
+msgid "Only photos with an open licence (CC)"
+msgstr ""
+
+msgctxt "#30016"
+msgid "Refresh data every (minutes)"
+msgstr ""
+
+msgctxt "#30020"
+msgid "Display"
+msgstr ""
+
+msgctxt "#30021"
+msgid "Photos across the screen"
+msgstr ""
+
+msgctxt "#30022"
+msgid "Swap a tile every (seconds)"
+msgstr ""
+
+msgctxt "#30023"
+msgid "Spotlight a sighting every (seconds, 0 = off)"
+msgstr ""
+
+msgctxt "#30024"
+msgid "Spotlight duration (seconds)"
+msgstr ""
+
+msgctxt "#30025"
+msgid "Distance units"
+msgstr ""
+
+msgctxt "#30030"
+msgid "Kilometres"
+msgstr ""
+
+msgctxt "#30031"
+msgid "Miles"
+msgstr ""
+
+msgctxt "#30040"
+msgid "Enter a place name (e.g. Duluth, MN)"
+msgstr ""
+
+msgctxt "#30041"
+msgid "No matching places found"
+msgstr ""
+
+msgctxt "#30042"
+msgid "Location set"
+msgstr ""
+
+msgctxt "#30043"
+msgid "Could not look up that place"
+msgstr ""
+
