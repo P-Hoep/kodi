@@ -1,7 +1,7 @@
 """The screensaver window and its display loop: Kodi glue only.
 
-The screen is one Blue Marble image of the tracked box with a marker for every ship, and a panel
-on the right with the clock, the live status, a paged ship list and a photo slideshow. Every
+The screen is one Sentinel-2 satellite image of the tracked box with a marker for every ship, and
+a panel on the right with the clock, the live status, a paged ship list and a photo slideshow. Every
 control is created from Python, bottom to top, because the layout only exists in this file.
 
 Three worker threads feed the screen and never touch Kodi:
@@ -104,9 +104,10 @@ def localized(addon, sid):
 # -------------------------------------------------------------------------------------------
 def setting_getters(addon):
     """Typed getters on Kodi 19+, the string getter on anything older."""
-    if hasattr(addon, 'getSettingBool'):
+    if hasattr(addon, 'getSettingNumber'):
         return {'boolean': addon.getSettingBool,
                 'integer': addon.getSettingInt,
+                'number': addon.getSettingNumber,
                 'string': addon.getSettingString}
 
     def boolean(sid):
@@ -119,10 +120,17 @@ def setting_getters(addon):
         except ValueError:
             return 0
 
+    def number(sid):
+        text = addon.getSetting(sid).strip()
+        try:
+            return float(text)
+        except ValueError:
+            return 0.0
+
     def string(sid):
         return addon.getSetting(sid)
 
-    return {'boolean': boolean, 'integer': integer, 'string': string}
+    return {'boolean': boolean, 'integer': integer, 'number': number, 'string': string}
 
 
 # -------------------------------------------------------------------------------------------
@@ -187,7 +195,7 @@ class PhotoJob(threading.Thread):
 
 
 class MapJob(threading.Thread):
-    """Fetch one area's Blue Marble image without blocking the display thread."""
+    """Fetch one area's satellite image without blocking the display thread."""
 
     def __init__(self, folder, bounds, width, height):
         threading.Thread.__init__(self, name='shiptracker-map')
@@ -431,8 +439,10 @@ class Saver(object):
         self.marker_icon = [None] * MAX_MARKERS
         self.marker_colour = [None] * MAX_MARKERS
 
+        self.ais_credit = xbmcgui.ControlLabel(
+            24, 1004, 1360, 24, self.tr(32025), font='font10', textColor='B3FFFFFF')
         self.map_attribution = xbmcgui.ControlLabel(
-            24, 1034, 900, 28, self.tr(32014), font='font12', textColor='B3FFFFFF')
+            24, 1032, 1360, 26, self.tr(32014), font='font10', textColor='B3FFFFFF')
         self.center_status = xbmcgui.ControlLabel(
             0, 476, MAP_W, 90, '', font='font32', textColor='E6FFFFFF',
             alignment=ALIGN['center'])
@@ -505,7 +515,7 @@ class Saver(object):
         self.photo_credit.setVisible(False)
 
         self.controls = ([backdrop, self.map_image, self.map_overlay] + self.markers +
-                         [self.map_attribution, self.center_status, panel, accent,
+                         [self.ais_credit, self.map_attribution, self.center_status, panel, accent,
                           self.clock_label, self.area_label, self.bbox_label, self.status_label,
                           divider, self.list_header] +
                          self.row_lines + self.row_names + self.row_infos +

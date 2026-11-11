@@ -40,7 +40,7 @@ installed version in **Add-ons → My add-ons**.
 | [Sheetcards Screensaver](#sheetcards) | `screensaver.sheetcards` | 1.0.0 | Flashcards from a Google Sheet (Kodi 20+) |
 | [RSS Live Tiles Screensaver](#rss-live-tiles) | `screensaver.rsslivetiles` | 1.0.0 | Your RSS and Atom feeds as Windows Phone style live tiles (Kodi 20+) |
 | [Hacker News](#hacker-news) | `screensaver.hackernews` | 0.1.0 | Top Hacker News stories and their best comments, paced to reading speed |
-| [Ship Tracker](#ship-tracker) | `screensaver.shiptracker` | 0.2.0 | Live ships in up to ten areas you choose, rotating on a timer, on NASA's Blue Marble, with a list and ship photos |
+| [Ship Tracker](#ship-tracker) | `screensaver.shiptracker` | 0.3.0 | Live ships in up to ten areas you choose, rotating on a timer, on Sentinel-2 satellite maps, with a list and ship photos |
 
 ### Native screensavers — OpenGL / OpenGL ES (Kodi 21)
 
@@ -1292,14 +1292,14 @@ Full documentation: **[docs/hackernews.md](docs/hackernews.md)**.
 
 ## Ship Tracker
 
-![Ship Tracker: the Blue Marble map of Lake Superior with ship markers, the vessel list and a ship photograph](release/gifs/shiptracker.jpg)
+![Ship Tracker: the Sentinel-2 satellite map of Lake Superior with ship markers, the vessel list and a ship photograph](release/gifs/shiptracker.jpg)
 
 `screensaver.shiptracker`: a live map of the ships in up to ten areas you choose, moving on from one
-to the next on a timer. The left of the screen is NASA's Blue Marble image of exactly the current
-area, with a top-down ship marker for every AIS-equipped vessel, coloured by type and turned to its
-course. The right-hand panel lists the ships six at a time — name, flag state, type, speed, length
-and voyage status — and a slideshow underneath shows photographs of them, with their names, from
-Wikimedia Commons.
+to the next on a timer. The left of the screen is a Copernicus Sentinel-2 satellite image of the
+current area, sharp enough to see harbours, locks and berths, with a top-down ship marker for every
+AIS-equipped vessel, coloured by type and turned to its course. The right-hand panel lists the
+ships six at a time — name, flag state, type, speed, length and voyage status — and a slideshow
+underneath shows photographs of them, with their names, from Wikimedia Commons.
 
 - **Ten areas, on and off.** Each area has its own name and south, west, north and east edges, plus
   an **Enabled** switch. They ship filled in with interesting water: Lake Superior, the Strait of
@@ -1307,9 +1307,10 @@ Wikimedia Commons.
   the Suez Canal and New York Harbor. **Minutes per area before switching** (1–60, default 5) sets
   the rotation; disabled areas are skipped.
 - **Anywhere on Earth.** The map window is padded to the screen's shape with a `1/cos(latitude)`
-  correction, so the Blue Marble is not stretched, and a box under two degrees tall is shown with
-  surrounding water so it does not pixelate. Each area's image is fetched in the background when
-  the rotation reaches it.
+  correction, so the satellite image is not stretched. Sentinel-2 is 10 m per pixel, so the
+  screen can zoom down to a harbour or a lock; a box under 0.05° tall is shown with that much
+  surrounding water so it stays sharp. Each area's image is fetched in the background when the
+  rotation reaches it.
 - **Only the ships you can see.** All enabled boxes go to aisstream.io in one subscription, but
   markers and the list are limited to the current area. Ships are sorted by name and dropped after
   **Keep a ship listed for** minutes without a position. The status line says whether the stream
@@ -1335,9 +1336,10 @@ python3 -m unittest tests.test_shiptracker     # offline: settings, geometry, AI
 KODI_ADDON=screensaver.shiptracker python3 tools/kodi.py install   # then select / run / shot
 ```
 
-Data from aisstream.io; map from NASA GIBS Blue Marble (public domain); ship details from Wikidata
-(CC0) and photographs from Wikimedia Commons, each under its own licence. The add-on code is
-MIT-licensed and bundles no photographs, map image or API key.
+Data from aisstream.io; map from the EOX Sentinel-2 cloudless 2025 mosaic (Contains modified
+Copernicus Sentinel data 2025, CC BY-NC-SA 4.0); ship details from Wikidata (CC0) and photographs
+from Wikimedia Commons, each under its own licence. The add-on code is MIT-licensed and bundles no
+photographs, map image or API key.
 
 Full documentation: **[docs/shiptracker.md](docs/shiptracker.md)**.
 
@@ -1421,8 +1423,9 @@ API and remain the work of their authors. The Hacker News screensaver is unaffil
 not endorsed by Y Combinator or Hacker News; its name and orange square only say what it shows.
 
 Ship positions are read at run time from aisstream.io, which requires a free API key and is not
-affiliated with this add-on. The map is NASA's Blue Marble, served by NASA GIBS and in the public
-domain. Ship details come from Wikidata (CC0); photographs are loaded from Wikimedia Commons and
+affiliated with this add-on. The map is the EOX Sentinel-2 cloudless 2025 mosaic (Contains modified
+Copernicus Sentinel data 2025), used non-commercially under CC BY-NC-SA 4.0 with credit shown on
+screen. Ship details come from Wikidata (CC0); photographs are loaded from Wikimedia Commons and
 remain under their own licences, with credit shown on screen. No photographs, map image or API key
 are bundled with the Ship Tracker add-on.
 

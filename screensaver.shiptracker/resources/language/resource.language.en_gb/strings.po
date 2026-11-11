@@ -180,7 +180,7 @@ msgid "No detailed information yet"
 msgstr ""
 
 msgctxt "#32014"
-msgid "AIS: aisstream.io  ·  Map: NASA Blue Marble"
+msgid "Map: Sentinel-2 cloudless – https://s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2025)"
 msgstr ""
 
 msgctxt "#32015"
@@ -221,4 +221,8 @@ msgstr ""
 
 msgctxt "#32024"
 msgid "No areas enabled"
+msgstr ""
+
+msgctxt "#32025"
+msgid "AIS: aisstream.io"
 msgstr ""

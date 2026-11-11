@@ -88,6 +88,7 @@ class SettingsTable(unittest.TestCase):
         getters = {
             'boolean': lambda sid: sid == 'debug',
             'integer': lambda sid: 999 if sid == 'photo_seconds' else 0,
+            'number': lambda sid: 0.0,
             'string': lambda sid: None if sid == 'api_key' else 'x',
         }
         values = config.read(getters)
@@ -96,6 +97,23 @@ class SettingsTable(unittest.TestCase):
         self.assertEqual(values['area_minutes'], 1)         # clamped to the minimum
         self.assertTrue(values['debug'])
         self.assertEqual(values['api_key'], '')             # a None string falls back
+
+    def test_number_settings_are_read_with_the_number_getter(self):
+        # Kodi's getSettingString refuses a 'number' setting: it logs "Invalid setting type"
+        # and returns ''. Reading coordinates that way silently lost every custom box.
+        boxes = {'area1_south_lat': 40.0, 'area1_west_lon': -80.0,
+                 'area1_north_lat': 41.0, 'area1_east_lon': -79.0}
+        number_ids = {s['id'] for s in config.all_settings() if s['type'] == 'number'}
+
+        def string(sid):
+            return '' if sid in number_ids else 'x'
+
+        values = config.read({'boolean': lambda sid: False,
+                              'integer': lambda sid: 0,
+                              'number': lambda sid: boxes.get(sid, 0.0),
+                              'string': string})
+        self.assertEqual(values['area1_south_lat'], 40.0)
+        self.assertEqual(config.area_box(values, 0), (40.0, -80.0, 41.0, -79.0))
 
     def test_clear_cache_is_an_action_not_a_stored_setting(self):
         ids = [s['id'] for s in config.all_settings()]
@@ -204,8 +222,10 @@ class MapGeometry(unittest.TestCase):
     def test_map_url_and_cache_name(self):
         bounds = config.map_bounds(46.3, -92.3, 49.1, -84.2, 1400, 1080)
         url = config.map_url(bounds)
+        self.assertIn('https://tiles.maps.eox.at/wms', url)
         self.assertIn('REQUEST=GetMap', url)
         self.assertIn('LAYERS=%s' % config.MAP_LAYER, url)
+        self.assertEqual(config.MAP_LAYER, 's2cloudless-2025')
         self.assertIn('WIDTH=1400', url)
         self.assertIn('HEIGHT=1080', url)
         self.assertIn('BBOX=', url)

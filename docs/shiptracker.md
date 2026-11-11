@@ -1,18 +1,18 @@
 # Ship Tracker Screensaver
 
-`screensaver.shiptracker` v0.2.0
+`screensaver.shiptracker` v0.3.0
 
 A Kodi screensaver that watches ten boxes of water (or coast, or harbour) and shows the ships in
 them right now, moving on from one area to the next after a set number of minutes. The left of the
-screen is NASA's Blue Marble satellite image of exactly the current area; every AIS-equipped
-vessel inside the box gets a small ship marker, coloured by type and turned to its course. The
-right-hand panel lists the ships, six at a time, with their flag state, type, speed, length and
-voyage status, and a slideshow underneath shows photographs of them where Wikimedia Commons has
-one. Any key closes it.
+screen is a Copernicus Sentinel-2 cloudless satellite image of the current area, sharp enough to
+see harbours, locks and individual berths; every AIS-equipped vessel inside the box gets a small
+ship marker, coloured by type and turned to its course. The right-hand panel lists the ships, six
+at a time, with their flag state, type, speed, length and voyage status, and a slideshow
+underneath shows photographs of them where Wikimedia Commons has one. Any key closes it.
 
 It is pure Python 3 using only the standard library — no compiled code, no imaging library at run
 time. Two external services are used: the [aisstream.io](https://aisstream.io/) WebSocket for live
-positions, and NASA GIBS for the map image.
+positions, and the [EOX Sentinel-2 cloudless](https://s2maps.eu) WMS for the map image.
 
 ---
 
@@ -77,7 +77,7 @@ The list is the screen's spine; everything else describes the same ships.
 |                                                | Lake Superior     4:58 PM  |
 |                                                | 46.30–49.10°N · 92.30–84.20°W|
 |                                                | ● AIS live · 9 vessels      |
-|                  NASA Blue Marble              |-----------------------------|
+|               Sentinel-2 cloudless                |-----------------------------|
 |                                                | VESSELS · 1–6 OF 9          |
 |          ▲   the tracked box, with a           | R/V LAKE EXPLORER II        |
 |         ▮▮   marker for every ship             | United States · 0.0 kn · …  |
@@ -89,11 +89,12 @@ The list is the screen's spine; everything else describes the same ships.
 |                                                | R/V NEIL ARMSTRONG          |
 |                                                | Office of Naval Research    |
 +------------------------------------------------+-----------------------------+
-| AIS: aisstream.io  ·  Map: NASA Blue Marble                                  |
+| AIS: aisstream.io                                                             |
+| Map: Sentinel-2 cloudless – https://s2maps.eu by EOX IT Services GmbH …       |
 +------------------------------------------------------------------------------+
 ```
 
-- **Map (left, 1400 × 1080).** The Blue Marble image of the tracked box, padded to fill the screen
+- **Map (left, 1400 × 1080).** The Sentinel-2 satellite image of the tracked box, padded to fill the screen
   without stretching. Markers are top-down ship icons, rotated to the vessel's course or heading
   and tinted by type: cargo light blue, tanker amber, passenger pink, tug green, fishing orange,
   pleasure yellow, high-speed craft purple, military grey, everything else white. A ship without a
@@ -113,7 +114,10 @@ The list is the screen's spine; everything else describes the same ships.
   them. A small `Wikimedia` credit is burnt into the bottom-right of each real photograph;
   while photos are being fetched the frame says `Loading ship photos…`, and when nothing is found,
   `No ship photos yet`. Images are cached on disk, so a later run reuses them.
-- **Attribution.** The bottom-left of the map credits aisstream.io and NASA Blue Marble.
+- **Attribution.** The bottom-left of the map has two small lines: `AIS: aisstream.io`, then
+  the full EOX credit — `Map: Sentinel-2 cloudless – https://s2maps.eu by EOX IT Services GmbH
+  (Contains modified Copernicus Sentinel data 2025)` — as the mosaic's licence requires. Both
+  lines are 23 px type across the map's width so the credit fits without being cut.
 
 Every control is created from Python when the screensaver starts — Kodi has no layout file with
 the rows, because the number of ships is not known in advance.
@@ -162,7 +166,7 @@ still tracked and cached but not drawn.
 |---|---|---|---|
 | Keep a ship listed for (minutes) | 15 | 2–120 | How long after its last position a ship stays on screen and in the list |
 | Seconds per ship photo | 8 | 3–30 | Slideshow interval |
-| Lighten the map (percent) | 8 | 0–30 (2) | A white overlay over the Blue Marble; 0 is the raw image, 30 is noticeably brighter |
+| Lighten the map (percent) | 8 | 0–30 (2) | A white overlay over the satellite image; 0 is the raw image, 30 is noticeably brighter |
 | Show a clock | on | | Time of day in the top-right corner |
 
 **Data**
@@ -192,7 +196,7 @@ change.
    the display keeps only those inside the current area's box. They are sorted by name; the screen
    pages through them six at a time.
 5. Positions are projected into the padded map window with a plate carrée projection, so a marker
-   sits where the ship is relative to the Blue Marble image. Ships outside the padded window (only
+   sits where the ship is relative to the satellite image. Ships outside the padded window (only
    possible at the edge of the world) are clipped.
 6. After **Minutes per area before switching**, the display moves to the next enabled area: the
    fleet is filtered to its box, the map is fetched in the background (the screen says `Loading
@@ -207,18 +211,22 @@ The screensaver only listens — it never transmits, and it uses no other accoun
 
 ## The map
 
-The image is a WMS `GetMap` request to NASA GIBS for the `BlueMarble_ShadedRelief_Bathymetry`
-layer, in `EPSG:4326`, rendered at exactly 1400 × 1080. The requested box is centred and then
-widened or heightened as needed to fill a 1400 × 1080 frame at the middle latitude, with longitude
-scaled by `1/cos(latitude)` so degrees of latitude and longitude cover the same distance on screen.
-The original box always stays inside the returned window; near the poles or the date line the
-window is slid inwards instead. Because the Blue Marble is about 500 m per pixel, a box smaller
-than two degrees tall is shown with at least two degrees of surrounding water, so a tight harbour
-box does not turn into a blocky enlargement. Each area gets its own image, fetched in a background
-thread when the rotation reaches it so the screen never freezes on a new area. The map is cached
-under a name derived from the full request URL, so changing any edge produces a new image and
-leaves the old one to be pruned. When the download fails and a cached image exists, the cached
-image is used; with no image at all the screen says `No map image available`.
+The image is a WMS `GetMap` request to EOX for the `s2cloudless-2025` layer, in `EPSG:4326`,
+rendered at exactly 1400 × 1080. The requested box is centred and then widened or heightened as
+needed to fill a 1400 × 1080 frame at the middle latitude, with longitude scaled by
+`1/cos(latitude)` so degrees of latitude and longitude cover the same distance on screen. The
+original box always stays inside the returned window; near the poles or the date line the window
+is slid inwards instead. The mosaic is 10 m per pixel, so a box smaller than 0.05 degrees tall
+(about 5.5 km) is shown with at least that much surrounding water, which keeps the image sharp
+while still letting you zoom into a harbour or a lock. Each area gets its own image, fetched in a
+background thread when the rotation reaches it so the screen never freezes on a new area. The map
+is cached under a name derived from the full request URL, so changing any edge produces a new
+image and leaves the old one to be pruned. When the download fails and a cached image exists, the
+cached image is used; with no image at all the screen says `No map image available`.
+
+The Sentinel-2 cloudless mosaic is © EOX IT Services GmbH and is based on modified Copernicus
+Sentinel data 2025. It is licensed **CC BY-NC-SA 4.0** and this free add-on uses it
+non-commercially; the required credit is shown on screen and in the add-on metadata.
 
 The `Lighten the map` setting is a white Kodi image over the map with an alpha proportional to the
 percentage; it does not modify the cached JPEG.
@@ -263,7 +271,7 @@ Everything is kept in the add-on's profile folder:
 | File | What it is |
 |---|---|
 | `ships.db` (+ `-wal`, `-shm`) | SQLite database with the `ships` and `profiles` tables |
-| `map_<hash>.jpg` | One Blue Marble image per area box and size |
+| `map_<hash>.jpg` | One Sentinel-2 image per area box and size |
 | `photos/photo_<hash>.<ext>` | Downloaded ship photographs |
 
 `ships` holds the last known AIS state of every MMSI heard (`name`, `call_sign`, `imo`, position,
@@ -286,8 +294,9 @@ used at all, the cache falls back to an in-memory database for that run.
 - **AIS positions** come from [aisstream.io](https://aisstream.io/), a free public aggregator. It
   needs an account and an API key, and is used only to read the stream. Follow its terms; it is not
   affiliated with this add-on.
-- **Map imagery** is NASA's Blue Marble, served by NASA GIBS. It is in the public domain; credit is
-  shown on screen.
+- **Map imagery** is the Sentinel-2 cloudless mosaic by EOX IT Services, based on modified
+  Copernicus Sentinel data 2025. It is licensed CC BY-NC-SA 4.0; the add-on uses it
+  non-commercially and shows the required credit on screen and in its metadata.
 - **Ship details and photographs** come from Wikidata (CC0) and Wikimedia Commons. Each photograph
   keeps its own licence, which is not bundled or copied with the add-on — the slideshow loads it
   from Commons and credits Wikimedia Commons on screen. The add-on code is MIT-licensed; see
@@ -321,7 +330,7 @@ screensaver.shiptracker/
       tracker.py                AIS connection thread: subscribe, reconnect, write the cache
       sources.py                Wikidata/Commons lookup worker and profile cache policy
       store.py                  SQLite ship and profile tables
-      mapimage.py               Blue Marble download and cache
+      mapimage.py               Sentinel-2 download and cache
       net.py                    small HTTP/JSON helper with a timeout and size cap
       ui.py                     the Kodi window, display loop and settings glue
   tools/make_settings_shiptracker.py   settings.xml + strings.po from config.py
@@ -361,7 +370,7 @@ show blank until it reloads them.
 | `Listening for ships…` for a long time | The stream is connected but this box has had no AIS traffic yet. Lake Superior is quiet; try a busy harbour or widen the box |
 | A blank settings screen | Kodi caches the add-on's strings. Restart Kodi after installing or changing `strings.po` |
 | `AIS connection lost — retrying` | The stream dropped or the host is unreachable. It reconnects automatically; check `kodi.log` with **Debug logging** on |
-| No map, just `No map image available` | GIBS was unreachable and no image was cached. Check the network; the next run retries |
+| No map, just `No map image available` | EOX was unreachable and no image was cached. Check the network; the next run retries |
 | Map shows the wrong place | Check the four edges of that area. A west edge larger than the east edge, or a box crossing the antimeridian, falls back to the area's built-in box |
 | `No areas enabled in the settings` | Every area is switched off. Enable at least one in the add-on settings |
 | No photos | Wikimedia has no photograph for that IMO/MMSI, lookups are off, or the downloads are still running. With **Debug logging** the log names each failed download |

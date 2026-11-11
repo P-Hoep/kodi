@@ -11,7 +11,7 @@ from urllib.parse import urlencode
 
 ADDON_ID = 'screensaver.shiptracker'
 ADDON_NAME = 'Ship Tracker Screensaver'
-VERSION = '0.2.0'
+VERSION = '0.3.0'
 
 # aisstream.io's public AIS stream. The free key is tied to an account; the user pastes it into
 # the add-on settings. It is never bundled.
@@ -40,15 +40,16 @@ POSITION_TYPES = ('PositionReport', 'StandardClassBPositionReport',
                   'ExtendedClassBPositionReport')
 STATIC_TYPES = ('ShipStaticData', 'StaticDataReport')
 
-# NASA GIBS renders the Blue Marble on demand, so the map is exactly the tracked box (padded to
-# the screen's aspect ratio) rather than a crop from a bundled world image. No key, public
-# domain, and a JPEG stays around 100 KB at TV resolution.
-GIBS = 'https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi'
-MAP_LAYER = 'BlueMarble_ShadedRelief_Bathymetry'
+# EOX renders the Sentinel-2 cloudless mosaic on demand, so the map is exactly the tracked box
+# (padded to the screen's aspect ratio) rather than a crop from a bundled world image. No key;
+# the mosaic is CC BY-NC-SA 4.0 and needs the attribution shown on screen.
+MAP_SERVICE = 'https://tiles.maps.eox.at/wms'
+MAP_LAYER = 's2cloudless-2025'
 MAP_WIDTH, MAP_HEIGHT = 1400, 1080
-# The Blue Marble is about 500 m per pixel, so a tiny harbour box would be blown up into a
-# blocky mess. Every map window is at least this many degrees tall, centred on the box.
-MIN_MAP_SPAN = 2.0
+# Sentinel-2 cloudless is 10 m per pixel, so a window at least 0.05 degrees tall (about 5.5 km)
+# is still sharp at 1080p. Wider boxes are shown as they are; tighter boxes get surrounding
+# water so the image is not blown up into a blocky mess.
+MIN_MAP_SPAN = 0.05
 
 USER_AGENT = '%s/%s (Kodi screensaver; +https://github.com/P-Hoep/kodi)' % (ADDON_ID, VERSION)
 
@@ -221,7 +222,7 @@ STRINGS = {
     32011: 'Ship photos: Wikimedia Commons',
     32012: 'Cached data cleared',
     32013: 'No detailed information yet',
-    32014: 'AIS: aisstream.io  ·  Map: NASA Blue Marble',
+    32014: 'Map: Sentinel-2 cloudless – https://s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2025)',
     32015: 'Waiting for a position…',
     32016: 'Last position %s ago',
     32017: 'No map image available',
@@ -232,6 +233,7 @@ STRINGS = {
     32022: 'No areas enabled in the settings',
     32023: 'Loading map…',
     32024: 'No areas enabled',
+    32025: 'AIS: aisstream.io',
 }
 
 
@@ -247,7 +249,8 @@ def defaults():
 
 
 def read(getters):
-    """Settings as a dict. getters: {'boolean', 'integer', 'string'} -> f(setting id)."""
+    """Settings as a dict.
+    getters: {'boolean', 'integer', 'number', 'string'} -> f(setting id)."""
     out = {}
     for s in all_settings():
         kind = s['type']
@@ -259,6 +262,11 @@ def read(getters):
                 value = max(s['min'], min(s['max'], value))
             elif kind == 'options':
                 value = int(getters['integer'](s['id']))
+            elif kind == 'number':
+                # Kodi refuses to read a 'number' setting as a string: getSettingString
+                # logs "Invalid setting type" and returns ''. That made every bounding
+                # box silently fall back to its shipped default.
+                value = float(getters['number'](s['id']))
             else:
                 value = getters['string'](s['id'])
         except Exception:
@@ -356,9 +364,9 @@ def map_bounds(south, west, north, east, width, height):
 
     The requested box is centred and then widened or heightened as needed, with longitude
     scaled by 1/cos(mid latitude), so one degree of latitude and one of longitude occupy the
-    same distance on screen and the Blue Marble is not stretched. A box smaller than
-    MIN_MAP_SPAN is shown with surrounding water, so the image stays legible near the finest
-    Blue Marble zoom. The original box always stays inside the returned one; near the edge of
+    same distance on screen and the satellite image is not stretched. A box smaller than
+    MIN_MAP_SPAN is shown with surrounding water, so the image stays sharp at the mosaic's
+    native resolution. The original box always stays inside the returned one; near the edge of
     the world the window is slid inwards instead.
     """
     lat_span = max(MIN_MAP_SPAN, float(north) - float(south))
@@ -408,7 +416,7 @@ def map_url(bounds, width=MAP_WIDTH, height=MAP_HEIGHT):
              ('SRS', 'EPSG:4326'), ('FORMAT', 'image/jpeg'), ('LAYERS', MAP_LAYER),
              ('WIDTH', int(width)), ('HEIGHT', int(height)),
              ('BBOX', '%.4f,%.4f,%.4f,%.4f' % (left, bottom, right, top))]
-    return GIBS + '?' + urlencode(query)
+    return MAP_SERVICE + '?' + urlencode(query)
 
 
 def map_cache_name(bounds, width, height):

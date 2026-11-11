@@ -1,9 +1,10 @@
-"""The Blue Marble base map, downloaded once per bounding box and kept in the profile folder.
+"""The satellite base map, downloaded once per bounding box and kept in the profile folder.
 
-The image is requested from NASA GIBS at the exact size of the map control, so it is already at
-TV resolution when Kodi displays it. The cache key is the request URL, so changing any edge of
-the box or the control size produces a new file and the old one can be pruned. A cached file is
-used even when the request fails, which keeps the screen usable offline.
+The image is a Sentinel-2 cloudless mosaic requested from EOX at the exact size of the map
+control, so it is already at TV resolution when Kodi displays it. The cache key is the request
+URL, so changing any edge of the box or the control size produces a new file and the old one can
+be pruned. A cached file is used even when the request fails, which keeps the screen usable
+offline.
 """
 
 import os
