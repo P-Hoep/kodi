@@ -94,6 +94,7 @@ static void test_sanitise() {
     s.matrix_mode = 99; s.preset = -5; s.species = 1; s.particles = 99; s.radius = 100;
     s.force = 0; s.friction = -2; s.speed = 99; s.start = 99; s.palette = 99; s.colour_mode = 9;
     s.size = 0; s.glow = 999; s.trail = -1; s.dim = 999; s.draw = 99; s.vary = 99;
+    s.camera = 99; s.camera_zoom = 999; s.camera_speed = -5;
     s.restart = 99; s.evolve = 99;
     Settings c = sanitise(s);
     check(c.matrix_mode == 2 && c.preset == 0 && c.species == 2, "sanitise clamps rules indices");
@@ -104,6 +105,8 @@ static void test_sanitise() {
     check(c.glow == 100 && c.trail == 0 && c.dim == 80, "sanitise clamps glow, trail, dim");
     check(c.draw == kDrawCount - 1 && c.vary == 2 && c.restart == kRestartCount - 1 &&
           c.evolve == kEvolveCount - 1, "sanitise clamps draw and timers");
+    check(c.camera == 3 && c.camera_zoom == 400 && c.camera_speed == 10,
+          "sanitise clamps camera");
 }
 
 static Settings small_settings() {

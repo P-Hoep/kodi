@@ -36,7 +36,8 @@ STARTS = ['Scattered', 'Disk', 'Ring', 'Species clusters', 'Grid', 'Two blobs']
 PALETTES = ['Neon', 'Ocean', 'Sunset', 'Forest', 'Candy', 'Ice', 'Fire', 'Mono']
 COLOURS = ['By species', 'By speed (heat)', 'Shimmering']
 PARTICLES = ['1,024', '2,048', '3,072', '4,096', '6,144', '8,192',
-             '12,288', '16,384', '24,576', '32,768']
+             '12,288', '16,384', '24,576', '32,768',
+             '768 (extra light)', '512 (extra light)', '256 (lightest)']
 SPEEDS = ['30 steps/s', '45 steps/s', '60 steps/s', '90 steps/s',
           '120 steps/s', '180 steps/s', 'Maximum (as many as the device can do)']
 RESTARTS = ['Never', '1 minute', '2 minutes', '5 minutes', '10 minutes',
@@ -44,8 +45,10 @@ RESTARTS = ['Never', '1 minute', '2 minutes', '5 minutes', '10 minutes',
 EVOLVES = ['Never', 'Every 30 seconds', 'Every minute', 'Every 2 minutes',
            'Every 5 minutes', 'Every 10 minutes', 'Every 30 minutes']
 DRAWS = ['Automatic (up to 1080p)', 'Up to 1080p (sharpest)', 'Up to 720p',
-         'Up to 540p', 'Up to 360p (softest, fastest)',
-         'Full screen (every output pixel, the heaviest)']
+         'Up to 540p', 'Up to 360p',
+         'Full screen (every output pixel, the heaviest)',
+         'Up to 270p', 'Up to 180p (softest, fastest)']
+CAMERAS = ['Still (the whole scene)', 'Slow pan', 'Pan and zoom', 'Zoom in and out']
 VARY = ['Same rules and look every time',
         'New interaction rules each time',
         'New rules, colours and layout each time']
@@ -92,6 +95,15 @@ def categories():
             I('trail', 'Trails (how long the glow lingers, %)', TRAIL_DEFAULT, 0, 100, 5),
             dict(id='background', type='colour', label='Background', default='FF05060A'),
             I('dim', 'Dim the picture (%)', 0, 0, 80, 10),
+        ]),
+        ('Camera', [
+            # A screensaver has no input, so this is an automatic move: a slow, non-repeating
+            # wander over the particle field, optionally drifting in and out.
+            O('camera', 'Camera motion', 0, CAMERAS),
+            I('camera_zoom', 'Camera zoom (%)', 180, 100, 400, 10,
+              visible=('camera', '!', '0')),
+            I('camera_speed', 'Camera speed (%)', 100, 10, 300, 10,
+              visible=('camera', '!', '0')),
         ]),
         ('Start and evolve', [
             O('vary', 'When it starts over', 0, VARY),

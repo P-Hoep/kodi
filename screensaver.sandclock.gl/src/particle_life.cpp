@@ -140,6 +140,9 @@ Settings sanitise(Settings s) {
     s.trail = clamp_int(s.trail, 0, 95);
     s.dim = clamp_int(s.dim, 0, 80);
     s.draw = clamp_int(s.draw, 0, kDrawCount - 1);
+    s.camera = clamp_int(s.camera, 0, 3);
+    s.camera_zoom = clamp_int(s.camera_zoom, 100, 400);
+    s.camera_speed = clamp_int(s.camera_speed, 10, 300);
     s.vary = clamp_int(s.vary, 0, 2);
     s.restart = clamp_int(s.restart, 0, kRestartCount - 1);
     s.evolve = clamp_int(s.evolve, 0, kEvolveCount - 1);

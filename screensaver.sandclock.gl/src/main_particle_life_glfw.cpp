@@ -2,7 +2,8 @@
 //   particle_life_glfw [--preset N | --custom "a,b,c,d,..." | --random]
 //                      [--species N] [--particles N] [--radius N] [--force N] [--friction N]
 //                      [--speed N] [--no-wrap] [--start N] [--palette N] [--mode N] [--size N]
-//                      [--glow N] [--trail N] [--bg RRGGBB] [--dim N] [--draw N] [--vary N]
+//                      [--glow N] [--trail N] [--bg RRGGBB] [--dim N] [--draw N]
+//                      [--camera N] [--camera-zoom N] [--camera-speed N] [--vary N]
 //                      [--restart N] [--evolve N] [--seed N]
 //                      [--fullscreen] [--shot out.ppm --shot-after SECONDS]
 //                      [--selftest] [--bench FRAMES]
@@ -141,6 +142,9 @@ int main(int argc, char** argv) {
         else if (is("--bg")) s.background = (uint32_t)std::strtoul(next(), nullptr, 16);
         else if (is("--dim")) s.dim = std::atoi(next());
         else if (is("--draw")) s.draw = std::atoi(next());
+        else if (is("--camera")) s.camera = std::atoi(next());
+        else if (is("--camera-zoom")) s.camera_zoom = std::atoi(next());
+        else if (is("--camera-speed")) s.camera_speed = std::atoi(next());
         else if (is("--vary")) s.vary = std::atoi(next());
         else if (is("--restart")) s.restart = std::atoi(next());
         else if (is("--evolve")) s.evolve = std::atoi(next());

@@ -44,6 +44,9 @@ struct Settings {
     uint32_t background = 0x05060A;
     int dim = 0;                  // %
     int draw = 0;                 // index into kDrawCaps
+    int camera = 0;               // 0 still, 1 slow pan, 2 pan and zoom, 3 zoom
+    int camera_zoom = 180;        // the camera's furthest zoom, % (100 = the whole scene)
+    int camera_speed = 100;       // how fast the camera drifts, %
     int vary = 0;                 // what changes when it starts over: 0 same, 1 rules, 2 everything
     int restart = 3;              // index into kRestarts (300 s)
     int evolve = 0;               // index into kEvolveSeconds

@@ -47,6 +47,7 @@ private:
     struct Target { unsigned tex = 0, fbo = 0; int w = 0, h = 0; };
     struct PointsU {
         int world = -1, point = -1, alpha = -1, soft = -1, mode = -1, time = -1;
+        int cam = -1, zoom = -1;
     };
     struct FadeU { int bg = -1; };
     struct PresentU { int tex = -1, dim = -1; };
@@ -58,6 +59,7 @@ private:
     void update_world_size(int fb_w, int fb_h);
     void build_colours();
     void upload_particles(float t);
+    void camera_at(double now, float* cx, float* cy, float* zoom) const;
     void apply_random_look();
     void restart(double now);
     void evolve(double now);

@@ -43,6 +43,8 @@ attribute vec2 a_pos;
 attribute float a_speed;
 attribute vec4 a_colour;
 uniform vec2 u_world;
+uniform vec2 u_cam;
+uniform float u_zoom;
 uniform float u_point;
 uniform float u_alpha;
 uniform float u_mode;
@@ -58,7 +60,12 @@ vec3 heat(float t) {
 }
 
 void main() {
-    gl_Position = vec4((a_pos / u_world) * 2.0 - 1.0, 0.0, 1.0);
+    // Camera: take the shortest wrapped offset from the camera centre, then scale it. The world
+    // is a torus, so a pan never runs into an edge; it just circles round.
+    vec2 d = a_pos - u_cam;
+    d.x -= u_world.x * floor(d.x / u_world.x + 0.5);
+    d.y -= floor(d.y + 0.5);
+    gl_Position = vec4(d * (2.0 * u_zoom) / u_world, 0.0, 1.0);
     gl_PointSize = u_point;
     vec3 c = a_colour.rgb;
     if (u_mode > 0.5 && u_mode < 1.5) c = heat(a_speed);
@@ -179,7 +186,8 @@ bool App::init(const Settings& settings, unsigned seed, std::string* error) {
     if (!prog_present_) return false;
 
     pu_ = {loc(prog_points_, "u_world"), loc(prog_points_, "u_point"), loc(prog_points_, "u_alpha"),
-           loc(prog_points_, "u_soft"), loc(prog_points_, "u_mode"), loc(prog_points_, "u_time")};
+           loc(prog_points_, "u_soft"), loc(prog_points_, "u_mode"), loc(prog_points_, "u_time"),
+           loc(prog_points_, "u_cam"), loc(prog_points_, "u_zoom")};
     fu_ = {loc(prog_fade_, "u_bg")};
     xu_ = {loc(prog_present_, "u_tex"), loc(prog_present_, "u_dim")};
     attr_.pos = glGetAttribLocation(prog_points_, "a_pos");
@@ -257,6 +265,35 @@ void App::upload_particles(float t) {
     world_.interpolate(frame_.data(), t);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_particles_);
     glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(frame_.size() * sizeof(float)), frame_.data(), GL_STREAM_DRAW);
+}
+
+// A slow, deterministic virtual camera. There is no input on a screensaver, so the motion is a
+// pair of sine waves with different periods: the view wanders around the torus instead of looping
+// visibly, and optionally drifts in and out. Modes: 1 pans at a fixed zoom, 2 pans and zooms,
+// 3 zooms around the middle.
+void App::camera_at(double now, float* cx, float* cy, float* zoom) const {
+    float aspect = world_.aspect();
+    float base = std::max(1.05f, s_.camera_zoom / 100.0f);
+    if (s_.camera <= 0 || base <= 1.001f) {
+        *cx = aspect * 0.5f;
+        *cy = 0.5f;
+        *zoom = 1.0f;
+        return;
+    }
+    float t = (float)now * (s_.camera_speed / 100.0f);
+    if (s_.camera == 3) {
+        *cx = aspect * 0.5f;
+        *cy = 0.5f;
+    } else {
+        *cx = aspect * (0.5f + 0.34f * std::sin(t * 0.020f + 0.6f));
+        *cy = 0.5f + 0.34f * std::sin(t * 0.013f + 2.1f);
+    }
+    if (s_.camera == 2) {
+        float wave = 0.5f + 0.5f * std::sin(t * 0.009f - 1.0f);
+        *zoom = std::max(1.05f, base * (0.62f + 0.55f * wave));
+    } else {
+        *zoom = base;
+    }
 }
 
 void App::apply_random_look() {
@@ -411,10 +448,14 @@ void App::render(double now, int fb_w, int fb_h) {
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         glUseProgram(prog_points_);
         glUniform2f(pu_.world, world_.aspect(), 1.0f);
+        float cam_x, cam_y, cam_zoom;
+        camera_at(now, &cam_x, &cam_y, &cam_zoom);
+        glUniform2f(pu_.cam, cam_x, cam_y);
+        glUniform1f(pu_.zoom, cam_zoom);
         glUniform1f(pu_.mode, (float)s_.colour_mode);
         glUniform1f(pu_.time, (float)now);
 
-        float base = (1.6f + (s_.size / 100.0f) * 5.4f) * scene_.h / 720.0f;
+        float base = (1.6f + (s_.size / 100.0f) * 5.4f) * scene_.h / 720.0f * cam_zoom;
         base = std::max(1.0f, std::min(base, point_max_));
 #ifdef SANDCLOCK_CORE
         glBindVertexArray(vao_);

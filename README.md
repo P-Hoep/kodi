@@ -53,8 +53,8 @@ installed version in **Add-ons → My add-ons**.
 | [Endless World (OpenGL, 32-bit Android)](#endless-world-opengl) | `screensaver.infworld.gl.armv7` | 1.0.1 | Android 32-bit |
 | [Growing Plant (OpenGL)](#growing-plant-opengl) | `screensaver.plant.gl` | 1.0.1 | macOS, Android 64-bit |
 | [Growing Plant (OpenGL, 32-bit Android)](#growing-plant-opengl) | `screensaver.plant.gl.armv7` | 1.0.1 | Android 32-bit |
-| [Particle Life (OpenGL)](#particle-life-opengl) | `screensaver.particlelife.gl` | 1.0.1 | macOS, Android 64-bit |
-| [Particle Life (OpenGL, 32-bit Android)](#particle-life-opengl) | `screensaver.particlelife.gl.armv7` | 1.0.1 | Android 32-bit |
+| [Particle Life (OpenGL)](#particle-life-opengl) | `screensaver.particlelife.gl` | 1.0.2 | macOS, Android 64-bit |
+| [Particle Life (OpenGL, 32-bit Android)](#particle-life-opengl) | `screensaver.particlelife.gl.armv7` | 1.0.2 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
 | [Sand Clock (OpenGL, 32-bit Android)](#sand-clock-opengl) | `screensaver.sandclock.gl.armv7` | 1.0.0 | Android 32-bit |
 | [Cellular Automata (32-bit Android)](#cellular-automata) | `screensaver.automata.armv7` | 1.1.0 | Android 32-bit |
@@ -874,12 +874,16 @@ collision detection and nothing scripted; the patterns are what the rules do.
   pass. That sequential update is why the original keeps churning for minutes instead of settling
   into a still cluster.
 - **Built for weak boxes and high-end alike:** a uniform neighbour grid (counting sort, rebuilt
-  each step) makes a step cost the particles plus the pairs inside the radius, not every possible
+  each pass) makes a step cost the particles plus the pairs inside the radius, not every possible
   pair. Positions are interpolated between fixed simulation steps, so motion is smooth even at 30
   steps a second, and the scene is drawn into a capped offscreen target that fades itself for soft
-  trails, then scaled up once with a hue-preserving tone map. Everything from 1,024 particles at
-  360p to 32,768 at full resolution is a setting; the 32-bit build starts at 2,048 particles, a
+  trails, then scaled up once with a hue-preserving tone map. Everything from 256 particles at
+  180p to 32,768 at full resolution is a setting; the 32-bit build starts at 2,048 particles, a
   7% mean radius and a 720p target.
+- **An automatic camera:** optionally let the view slowly pan across the particle field, or pan
+  and zoom in and out, or zoom around the middle. The move is a slow, non-repeating drift over
+  the torus — no input needed — with its own zoom and speed settings. The camera only changes
+  what is drawn, never the simulation.
 - **Look:** eight palettes, colour by species, speed or a shimmer, particle size, glow, trails,
   background and dimming, plus six starting arrangements. Mean radius, force, viscosity
   (damping), wrap-around (torus or bounce), simulation speed, restart and rule-evolution intervals

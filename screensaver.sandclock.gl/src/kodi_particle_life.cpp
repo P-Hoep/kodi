@@ -48,6 +48,9 @@ sandclock::particlelife::Settings read_settings() {
     s.background = parse_colour(kodi::addon::GetSettingString("background", ""), s.background);
     s.dim = kodi::addon::GetSettingInt("dim", s.dim);
     s.draw = kodi::addon::GetSettingInt("draw", s.draw);
+    s.camera = kodi::addon::GetSettingInt("camera", s.camera);
+    s.camera_zoom = kodi::addon::GetSettingInt("camera_zoom", s.camera_zoom);
+    s.camera_speed = kodi::addon::GetSettingInt("camera_speed", s.camera_speed);
     s.vary = kodi::addon::GetSettingInt("vary", s.vary);
     s.restart = kodi::addon::GetSettingInt("restart", s.restart);
     s.evolve = kodi::addon::GetSettingInt("evolve", s.evolve);

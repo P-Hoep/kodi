@@ -18,9 +18,10 @@ namespace particlelife {
 inline constexpr int kSpeeds[] = {30, 45, 60, 90, 120, 180, 240};
 inline constexpr int kSpeedCount = (int)(sizeof(kSpeeds) / sizeof(kSpeeds[0]));
 
-// Settings index -> particle count.
+// Settings index -> particle count. The very light counts are appended at the end so that the
+// index a saved setting already holds keeps meaning the same count.
 inline constexpr int kParticles[] = {1024, 2048, 3072, 4096, 6144, 8192,
-                                    12288, 16384, 24576, 32768};
+                                    12288, 16384, 24576, 32768, 768, 512, 256};
 inline constexpr int kParticlesCount = (int)(sizeof(kParticles) / sizeof(kParticles[0]));
 
 // Settings index -> seconds between starts over (0 = never).
@@ -32,7 +33,8 @@ inline constexpr int kEvolves[] = {0, 30, 60, 120, 300, 600, 1800};
 inline constexpr int kEvolveCount = (int)(sizeof(kEvolves) / sizeof(kEvolves[0]));
 
 // Settings index -> draw target height (0 = automatic up to 1080p, -1 = every output pixel).
-inline constexpr int kDrawCaps[] = {0, 1080, 720, 540, 360, -1};
+// The very small targets are appended at the end, for the same reason as the particle counts.
+inline constexpr int kDrawCaps[] = {0, 1080, 720, 540, 360, -1, 270, 180};
 inline constexpr int kDrawCount = (int)(sizeof(kDrawCaps) / sizeof(kDrawCaps[0]));
 
 inline constexpr int kStartCount = 6;
