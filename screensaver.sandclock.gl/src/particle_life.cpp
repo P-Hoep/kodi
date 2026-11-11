@@ -39,14 +39,19 @@ bool Rules::parse(const std::string& text, int species_hint) {
     if (k * k != (int)values.size() || k < 2 || k > MAX_SPECIES) return false;
     (void)species_hint;   // the count is authoritative; a hint would only hide a typo
     species = k;
-    for (int i = 0; i < k; ++i)
-        for (int j = 0; j < k; ++j) m[i][j] = clamp_f(values[i * k + j], -2.0f, 2.0f);
+    for (int i = 0; i < k; ++i) {
+        for (int j = 0; j < k; ++j) {
+            m[i][j] = clamp_f(values[i * k + j], -2.0f, 2.0f);
+            r[i][j] = 1.0f;
+        }
+    }
     return true;
 }
 
 void Rules::randomize(int k, std::mt19937& rng) {
     species = clamp_int(k, 2, MAX_SPECIES);
     std::uniform_real_distribution<float> u(-0.9f, 0.9f);
+    std::uniform_real_distribution<float> ur(0.35f, 2.1f);
     for (int i = 0; i < species; ++i) {
         for (int j = 0; j < species; ++j) {
             // Uniform random rules are what the original's randomise button makes; a slightly
@@ -55,14 +60,23 @@ void Rules::randomize(int k, std::mt19937& rng) {
             float v = u(rng);
             if (i == j) v = v * 0.45f + 0.22f;
             m[i][j] = clamp_f(v, -1.0f, 1.0f);
+            // The original randomised every radius slider over 10..200 px as well, so pairs
+            // reach very different distances; that is a large part of what makes it live.
+            r[i][j] = ur(rng);
         }
     }
 }
 
 void Rules::mutate(float amount, std::mt19937& rng) {
     std::normal_distribution<float> n(0.0f, amount);
-    for (int i = 0; i < species; ++i)
-        for (int j = 0; j < species; ++j) m[i][j] = clamp_f(m[i][j] + n(rng), -1.0f, 1.0f);
+    std::normal_distribution<float> nr(0.0f, amount * 0.5f);
+    for (int i = 0; i < species; ++i) {
+        for (int j = 0; j < species; ++j) {
+            m[i][j] = clamp_f(m[i][j] + n(rng), -1.0f, 1.0f);
+            // Radii drift multiplicatively, so a pair never ends up with a negative reach.
+            r[i][j] = clamp_f(r[i][j] * std::exp(nr(rng)), 0.2f, 3.5f);
+        }
+    }
 }
 
 std::string Rules::to_string() const {
@@ -83,8 +97,12 @@ std::string matrix_text(const Rules& rules) { return rules.to_string(); }
 bool load_preset(int index, Rules* rules) {
     if (!rules || index < 0 || index >= kPresetCount) return false;
     rules->species = 4;
-    for (int i = 0; i < 4; ++i)
-        for (int j = 0; j < 4; ++j) rules->m[i][j] = kPresets[index][i][j];
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            rules->m[i][j] = kPresets[index][i][j];
+            rules->r[i][j] = kPresetRadii[index][i][j];
+        }
+    }
     return true;
 }
 
@@ -110,9 +128,9 @@ Settings sanitise(Settings s) {
     s.preset = clamp_int(s.preset, 0, kPresetCount - 1);
     s.species = clamp_int(s.species, 2, MAX_SPECIES);
     s.particles = clamp_int(s.particles, 0, kParticlesCount - 1);
-    s.radius = clamp_int(s.radius, 5, 25);
+    s.radius = clamp_int(s.radius, 4, 24);
     s.force = clamp_int(s.force, 10, 200);
-    s.friction = clamp_int(s.friction, 0, 90);
+    s.friction = clamp_int(s.friction, 0, 95);
     s.speed = clamp_int(s.speed, 0, kSpeedCount - 1);
     s.start = clamp_int(s.start, 0, kStartCount - 1);
     s.palette = clamp_int(s.palette, 0, kPaletteCount - 1);
@@ -133,16 +151,45 @@ void World::init(const Settings& settings, float aspect, unsigned seed) {
     count_ = kParticles[s.particles];
     start_ = s.start;
     aspect_ = clamp_f(aspect, 0.5f, 4.0f);
-    radius_ = s.radius / 100.0f;
-    force_ = (s.force / 100.0f) * 0.05f;
-    friction_ = (s.friction / 100.0f) * 5.0f;      // 1/s
-    damping_ = std::exp(-friction_ * dt_);
-    speed_limit_ = 0.25f;
+    radius_ = s.radius / 100.0f;             // the mean pair radius, in screen heights
+    force_ = s.force / 100.0f;               // 1 = the original demo's power sliders
+    // The original "Viscosity/Friction" slider removes this fraction of the velocity every
+    // rendered frame. Keep a little damping even at 0%, or there is nothing to stop the system
+    // from accelerating without bound.
+    viscosity_ = clamp_f(s.friction / 100.0f, 0.02f, 0.95f);
+    // The original moves positions in pixels once per frame; one world step here stands for one
+    // of its frames. 1/1080 turns its per-frame pixel velocity into screen heights per step.
+    kick_ = force_ / 1080.0f;
+    speed_limit_ = 0.02f;
+    tint_scale_ = 0.012f;
     wrap_ = s.wrap;
 
     std::string note;
     rules_ = rules_for(s, seed, &note);
+    update_max_radius();
     reset_positions(seed);
+}
+
+float World::radius_for(int species_i, int species_j) const {
+    int k = rules_.species;
+    if (k < 1) return radius_;
+    species_i = clamp_int(species_i, 0, k - 1);
+    species_j = clamp_int(species_j, 0, k - 1);
+    return radius_ * rules_.r[species_i][species_j];
+}
+
+void World::update_max_radius() {
+    float rel = 1.0f;
+    int k = std::max(1, rules_.species);
+    for (int i = 0; i < k; ++i)
+        for (int j = 0; j < k; ++j) rel = std::max(rel, rules_.r[i][j]);
+    max_radius_ = radius_ * rel;
+    // Split the largest reach into search_cells_ x search_cells_ cells and search that many cells
+    // each way. A single cell per reach tests every particle in 3 x 3 cells; when the per-pair
+    // radii make the reach about twice the mean radius, three cells per reach cover it with 7 x 7
+    // cells that each hold about a ninth as many particles, so roughly half the pair tests.
+    search_cells_ = clamp_int((int)std::ceil(rel - 1e-4f), 1, 8);
+    cell_size_ = std::max(max_radius_ / (float)search_cells_, 1e-4f);
 }
 
 void World::reset_positions(unsigned seed) {
@@ -223,37 +270,57 @@ void World::reset_positions(unsigned seed) {
 void World::set_rules(const Rules& rules) {
     rules_ = rules;
     if (rules_.species < 1) rules_.species = 1;
+    update_max_radius();
 }
 
 void World::randomize_rules(unsigned seed) {
     std::mt19937 rng(seed ? seed : 1u);
     rules_.randomize(rules_.species, rng);
     // Existing species labels are still valid: randomize keeps the species count.
+    update_max_radius();
 }
 
 void World::mutate_rules(float amount, unsigned seed) {
     std::mt19937 rng(seed ? seed : 1u);
     rules_.mutate(amount, rng);
+    update_max_radius();
 }
 
 void World::build_grid() {
-    cols_ = std::max(1, (int)std::ceil(aspect_ / radius_));
-    rows_ = std::max(1, (int)std::ceil(1.0f / radius_));
+    // A cell is max_radius_ / search_cells_ wide, so every neighbour a particle can feel is at
+    // most search_cells_ cells away. Each species gets its own bucket, because a sequential pass
+    // only ever looks at one object species.
+    // Use floor, not ceil: from the cell a particle is in, a neighbour within the largest reach
+    // must be within search_cells_ cells, or the widened search would miss it.
+    float cell = std::max(cell_size_, 1e-4f);
+    cols_ = std::max(1, (int)(aspect_ / cell));
+    rows_ = std::max(1, (int)(1.0f / cell));
     cells_ = cols_ * rows_;
-    cell_start_.assign((size_t)cells_ + 1, 0);
-    cursor_.assign((size_t)cells_, 0);
+    grid_species_ = std::max(1, rules_.species);
+    const size_t stride = (size_t)cells_ + 1;
+    cell_start_.assign(stride * grid_species_, 0);
+    cursor_.assign((size_t)cells_ * grid_species_, 0);
     cell_index_.resize((size_t)count_);
-    for (int i = 0; i < count_; ++i) {
+    auto cell_of = [&](int i) {
         int cx = clamp_int((int)(x_[(size_t)i * 2] / aspect_ * cols_), 0, cols_ - 1);
         int cy = clamp_int((int)(x_[(size_t)i * 2 + 1] * rows_), 0, rows_ - 1);
-        ++cell_start_[(size_t)cy * cols_ + cx + 1];
+        return cy * cols_ + cx;
+    };
+    for (int i = 0; i < count_; ++i)
+        ++cell_start_[(size_t)species_[i] * stride + cell_of(i) + 1];
+    int base = 0;
+    for (int s = 0; s < grid_species_; ++s) {
+        int* start = &cell_start_[(size_t)s * stride];
+        int* cursor = &cursor_[(size_t)s * cells_];
+        for (int c = 0; c < cells_; ++c) start[c + 1] += start[c];
+        // Shift each species' cell offsets into the shared index array, one species after another.
+        for (int c = 0; c <= cells_; ++c) start[c] += base;
+        for (int c = 0; c < cells_; ++c) cursor[c] = start[c];
+        base = start[cells_];
     }
-    for (int c = 0; c < cells_; ++c) cell_start_[c + 1] += cell_start_[c];
-    for (int c = 0; c < cells_; ++c) cursor_[c] = cell_start_[c];
     for (int i = 0; i < count_; ++i) {
-        int cx = clamp_int((int)(x_[(size_t)i * 2] / aspect_ * cols_), 0, cols_ - 1);
-        int cy = clamp_int((int)(x_[(size_t)i * 2 + 1] * rows_), 0, rows_ - 1);
-        cell_index_[(size_t)cursor_[(size_t)cy * cols_ + cx]++] = i;
+        size_t at = (size_t)species_[i] * (size_t)cells_ + cell_of(i);
+        cell_index_[(size_t)cursor_[at]++] = i;
     }
 }
 
@@ -269,28 +336,29 @@ void World::add_pair(int i, int j, float xi, float yi, float* sx, float* sy) con
         else if (dy < -0.5f) dy += 1.0f;
     }
     float d2 = dx * dx + dy * dy;
-    if (d2 <= 1e-12f || d2 >= radius_ * radius_) return;
-    float d = std::sqrt(d2);
-    float a = rules_.m[species_[i]][species_[j]];
-    float f;
-    float core = beta_ * radius_;
-    if (d < core) {
-        f = d / core - 1.0f;                        // hard core: always repels
-    } else {
-        f = a * (1.0f - std::fabs(2.0f * d / radius_ - 1.0f - beta_) / (1.0f - beta_));
-    }
-    float inv = f / d;
+    if (d2 <= 1e-12f) return;
+    int si = species_[i], sj = species_[j];
+    float reach = radius_ * rules_.r[si][sj];
+    if (reach <= 0.0f || d2 >= reach * reach) return;
+    float a = rules_.m[si][sj];
+    if (a == 0.0f) return;
+    // The original law: every neighbour inside the radius pulls (or pushes) with the same
+    // strength, however far away it is. f is one unit vector, scaled by the pair power.
+    float inv = a / std::sqrt(d2);
     *sx += dx * inv;
     *sy += dy * inv;
 }
 
-void World::forces_grid(int i, float* sx, float* sy) const {
+void World::forces_grid(int i, int object_species, float* sx, float* sy) const {
     *sx = *sy = 0.0f;
+    if (object_species < 0 || object_species >= grid_species_) return;
     float xi = x_[(size_t)i * 2], yi = x_[(size_t)i * 2 + 1];
     int cx = clamp_int((int)(xi / aspect_ * cols_), 0, cols_ - 1);
     int cy = clamp_int((int)(yi * rows_), 0, rows_ - 1);
-    for (int oy = -1; oy <= 1; ++oy) {
-        for (int ox = -1; ox <= 1; ++ox) {
+    const int* start = &cell_start_[(size_t)object_species * ((size_t)cells_ + 1)];
+    const int q = search_cells_;
+    for (int oy = -q; oy <= q; ++oy) {
+        for (int ox = -q; ox <= q; ++ox) {
             int nx = cx + ox, ny = cy + oy;
             if (wrap_) {
                 nx = (nx % cols_ + cols_) % cols_;
@@ -299,7 +367,7 @@ void World::forces_grid(int i, float* sx, float* sy) const {
                 continue;
             }
             int c = ny * cols_ + nx;
-            for (int n = cell_start_[c]; n < cell_start_[c + 1]; ++n) {
+            for (int n = start[c]; n < start[c + 1]; ++n) {
                 int j = cell_index_[n];
                 if (j != i) add_pair(i, j, xi, yi, sx, sy);
             }
@@ -307,24 +375,26 @@ void World::forces_grid(int i, float* sx, float* sy) const {
     }
 }
 
-void World::forces_brute(int i, float* sx, float* sy) const {
+void World::forces_brute(int i, int object_species, float* sx, float* sy) const {
     *sx = *sy = 0.0f;
     float xi = x_[(size_t)i * 2], yi = x_[(size_t)i * 2 + 1];
     for (int j = 0; j < count_; ++j)
-        if (j != i) add_pair(i, j, xi, yi, sx, sy);
+        if (j != i && species_[j] == object_species) add_pair(i, j, xi, yi, sx, sy);
 }
 
 void World::integrate(float fx, float fy, int i) {
-    float vx = (v_[(size_t)i * 2] + fx * force_ * dt_) * damping_;
-    float vy = (v_[(size_t)i * 2 + 1] + fy * force_ * dt_) * damping_;
+    // Exactly the original update: add the force (a sum of unit vectors weighted by the pair
+    // powers), lose the viscosity fraction of the velocity, then move by the new velocity.
+    float vx = (v_[(size_t)i * 2] + fx * kick_) * (1.0f - viscosity_);
+    float vy = (v_[(size_t)i * 2 + 1] + fy * kick_) * (1.0f - viscosity_);
     float sp2 = vx * vx + vy * vy;
     if (sp2 > speed_limit_ * speed_limit_) {
         float sc = speed_limit_ / std::sqrt(sp2);
         vx *= sc;
         vy *= sc;
     }
-    float px = x_[(size_t)i * 2] + vx * dt_;
-    float py = x_[(size_t)i * 2 + 1] + vy * dt_;
+    float px = x_[(size_t)i * 2] + vx;
+    float py = x_[(size_t)i * 2 + 1] + vy;
     if (wrap_) {
         px = std::fmod(px, aspect_);
         if (px < 0) px += aspect_;
@@ -347,39 +417,56 @@ void World::integrate(float fx, float fy, int i) {
 }
 
 void World::step() {
+    // The original calls one interaction() per ordered species pair, and each call updates the
+    // velocity and position of the subject group before the next call. So a species is moved once
+    // per object species, with the viscosity applied each time: this sequential, in-place update
+    // is a big part of the original's behaviour, and summing every force first and integrating
+    // once makes the system much faster and far more prone to collapsing.
     prev_ = x_;
-    build_grid();
-    force_sum_.assign((size_t)count_ * 2, 0.0f);
-    for (int i = 0; i < count_; ++i) {
-        float fx, fy;
-        forces_grid(i, &fx, &fy);
-        force_sum_[(size_t)i * 2] = fx;
-        force_sum_[(size_t)i * 2 + 1] = fy;
+    int k = std::max(1, rules_.species);
+    for (int subject = 0; subject < k; ++subject) {
+        for (int object = 0; object < k; ++object) {
+            // Rebuild before every pass, not just every subject: each pass moves the subject
+            // species, so a grid kept for a whole subject would be stale for the later objects.
+            build_grid();
+            for (int i = 0; i < count_; ++i) {
+                if (species_[i] != subject) continue;
+                float fx, fy;
+                forces_grid(i, object, &fx, &fy);
+                integrate(fx, fy, i);
+            }
+        }
     }
-    for (int i = 0; i < count_; ++i) integrate(force_sum_[(size_t)i * 2], force_sum_[(size_t)i * 2 + 1], i);
 }
 
 void World::step_brute_force() {
     prev_ = x_;
-    force_sum_.assign((size_t)count_ * 2, 0.0f);
-    for (int i = 0; i < count_; ++i) {
-        float fx, fy;
-        forces_brute(i, &fx, &fy);
-        force_sum_[(size_t)i * 2] = fx;
-        force_sum_[(size_t)i * 2 + 1] = fy;
+    int k = std::max(1, rules_.species);
+    for (int subject = 0; subject < k; ++subject) {
+        for (int object = 0; object < k; ++object) {
+            for (int i = 0; i < count_; ++i) {
+                if (species_[i] != subject) continue;
+                float fx, fy;
+                forces_brute(i, object, &fx, &fy);
+                integrate(fx, fy, i);
+            }
+        }
     }
-    for (int i = 0; i < count_; ++i) integrate(force_sum_[(size_t)i * 2], force_sum_[(size_t)i * 2 + 1], i);
 }
 
 float World::force_difference() {
     build_grid();
-    std::vector<float> a((size_t)count_ * 2), b((size_t)count_ * 2);
-    for (int i = 0; i < count_; ++i) {
-        forces_grid(i, &a[(size_t)i * 2], &a[(size_t)i * 2 + 1]);
-        forces_brute(i, &b[(size_t)i * 2], &b[(size_t)i * 2 + 1]);
-    }
+    int k = std::max(1, rules_.species);
     float worst = 0;
-    for (size_t i = 0; i < a.size(); ++i) worst = std::max(worst, std::fabs(a[i] - b[i]));
+    for (int i = 0; i < count_; ++i) {
+        for (int object = 0; object < k; ++object) {
+            float ax, ay, bx, by;
+            forces_grid(i, object, &ax, &ay);
+            forces_brute(i, object, &bx, &by);
+            float diff = std::max(std::fabs(ax - bx), std::fabs(ay - by));
+            worst = std::max(worst, diff);
+        }
+    }
     return worst;
 }
 
@@ -403,7 +490,7 @@ void World::interpolate(float* out, float t) const {
             if (py < 0) py += 1.0f;
         }
         float vx = v_[(size_t)i * 2], vy = v_[(size_t)i * 2 + 1];
-        float speed = std::sqrt(vx * vx + vy * vy) / speed_limit_;
+        float speed = std::sqrt(vx * vx + vy * vy) / tint_scale_;
         out[(size_t)i * 3] = px;
         out[(size_t)i * 3 + 1] = py;
         out[(size_t)i * 3 + 2] = clamp_f(speed, 0.0f, 1.0f);

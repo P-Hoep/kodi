@@ -5,7 +5,10 @@
 // A preset is a square interaction matrix: row i is how a particle of species i reacts to a
 // particle of species j (column j). Positive attracts, negative repels. The numbers are the four
 // species rules from the original Particle Life "interesting models" (power sliders divided by
-// 100), which is why every preset here has four species.
+// 100), which is why every preset here has four species. Each preset also carries a second 4 x 4
+// matrix of pair radii, divided by that model's mean radius so the global radius setting controls
+// the scale: the original gave every pair its own 10..500 px radius slider, and those relative
+// reaches are part of what makes each model behave the way it does.
 #pragma once
 
 namespace sandclock {
@@ -101,6 +104,51 @@ inline constexpr float kPresets[kPresetCount][4][4] = {
      { 0.137f,  0.540f, -0.283f,  0.746f},
      {-0.338f, -0.284f, -0.147f,  0.769f},
      {-0.579f, -0.631f, -0.460f,  0.295f}},
+};
+
+// Pair radii for the same ten presets, row-major, as multiples of the mean pair radius (which is
+// what the radius setting gives). Extracted from the original model files.
+inline constexpr float kPresetRadii[kPresetCount][4][4] = {
+    {{0.356f, 1.565f, 0.557f, 0.548f},
+     {1.000f, 1.112f, 0.592f, 1.106f},
+     {1.012f, 0.900f, 1.107f, 1.877f},
+     {2.039f, 1.037f, 0.655f, 0.537f}},
+    {{0.852f, 1.616f, 0.449f, 0.535f},
+     {0.506f, 0.823f, 2.640f, 0.838f},
+     {0.622f, 0.636f, 0.449f, 3.245f},
+     {0.679f, 0.607f, 0.694f, 0.809f}},
+    {{1.015f, 0.302f, 1.433f, 0.529f},
+     {1.855f, 1.057f, 1.050f, 0.223f},
+     {1.813f, 0.860f, 0.513f, 0.281f},
+     {1.641f, 1.378f, 1.758f, 0.291f}},
+    {{1.190f, 1.581f, 1.693f, 1.561f},
+     {0.587f, 0.127f, 1.144f, 0.516f},
+     {1.765f, 0.555f, 0.187f, 0.621f},
+     {0.723f, 1.644f, 1.148f, 0.957f}},
+    {{1.279f, 0.790f, 1.241f, 1.041f},
+     {1.115f, 1.600f, 0.236f, 0.803f},
+     {0.382f, 1.100f, 0.988f, 1.217f},
+     {1.271f, 1.170f, 0.256f, 1.510f}},
+    {{0.815f, 1.602f, 1.792f, 0.195f},
+     {1.505f, 0.846f, 1.416f, 0.139f},
+     {1.354f, 1.135f, 0.796f, 0.229f},
+     {1.415f, 1.427f, 0.220f, 1.113f}},
+    {{0.853f, 1.576f, 0.456f, 0.527f},
+     {2.683f, 0.725f, 0.399f, 1.690f},
+     {0.413f, 1.051f, 0.385f, 0.668f},
+     {0.612f, 2.215f, 1.122f, 0.626f}},
+    {{2.788f, 1.206f, 0.354f, 0.853f},
+     {2.301f, 0.622f, 0.342f, 1.449f},
+     {0.354f, 0.902f, 0.330f, 0.573f},
+     {0.525f, 1.900f, 0.963f, 0.537f}},
+    {{0.610f, 0.594f, 1.346f, 0.626f},
+     {1.586f, 0.562f, 1.763f, 0.578f},
+     {0.786f, 0.786f, 0.626f, 1.490f},
+     {1.426f, 0.722f, 1.763f, 0.738f}},
+    {{0.105f, 1.395f, 0.134f, 0.867f},
+     {1.119f, 0.749f, 0.209f, 1.067f},
+     {0.933f, 1.587f, 0.603f, 1.515f},
+     {1.847f, 1.823f, 0.328f, 1.720f}},
 };
 
 }  // namespace particlelife

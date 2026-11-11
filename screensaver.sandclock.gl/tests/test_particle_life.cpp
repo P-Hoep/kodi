@@ -70,6 +70,23 @@ static void test_rules_for() {
     Rules preset;
     check(load_preset(kPresetCount - 1, &preset) && preset.species == 4, "last preset loads");
     check(!load_preset(kPresetCount, &preset), "preset index out of range is rejected");
+
+    bool radii_valid = true, radii_varied = false;
+    for (int p = 0; p < kPresetCount; ++p) {
+        load_preset(p, &preset);
+        float lo = 1e9f, hi = 0.0f;
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                radii_valid &= std::isfinite(preset.r[i][j]) && preset.r[i][j] > 0.0f;
+                lo = std::min(lo, preset.r[i][j]);
+                hi = std::max(hi, preset.r[i][j]);
+            }
+        }
+        radii_varied |= hi > lo * 1.5f;
+    }
+    check(radii_valid && radii_varied, "every preset has positive, varied pair radii");
+    check(r.parse("0.5,-0.25,0.75,0.1", 4) && r.r[0][0] == 1.0f && r.r[1][1] == 1.0f,
+          "a typed matrix uses the global radius for every pair");
 }
 
 static void test_sanitise() {
@@ -80,7 +97,7 @@ static void test_sanitise() {
     s.restart = 99; s.evolve = 99;
     Settings c = sanitise(s);
     check(c.matrix_mode == 2 && c.preset == 0 && c.species == 2, "sanitise clamps rules indices");
-    check(c.particles == kParticlesCount - 1 && c.radius == 25 && c.force == 10, "sanitise clamps size");
+    check(c.particles == kParticlesCount - 1 && c.radius == 24 && c.force == 10, "sanitise clamps size");
     check(c.friction == 0 && c.speed == kSpeedCount - 1 && c.start == kStartCount - 1,
           "sanitise clamps speed and start");
     check(c.palette == kPaletteCount - 1 && c.colour_mode == 2 && c.size == 10, "sanitise clamps look");

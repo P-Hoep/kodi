@@ -48,20 +48,20 @@
         </setting>
         <setting id="radius" type="integer" label="30118">
           <level>0</level>
-          <default>12</default>
+          <default>8</default>
           <constraints><minimum>4</minimum><step>1</step><maximum>24</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
         <setting id="force" type="integer" label="30119">
           <level>0</level>
-          <default>70</default>
+          <default>100</default>
           <constraints><minimum>10</minimum><step>5</step><maximum>200</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
         <setting id="friction" type="integer" label="30120">
           <level>0</level>
-          <default>30</default>
-          <constraints><minimum>0</minimum><step>5</step><maximum>100</maximum></constraints>
+          <default>50</default>
+          <constraints><minimum>0</minimum><step>5</step><maximum>95</maximum></constraints>
           <control type="slider" format="integer"><popup>false</popup></control>
         </setting>
         <setting id="wrap" type="boolean" label="30121">

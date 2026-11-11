@@ -30,9 +30,9 @@ struct Settings {
     std::string custom_matrix;    // row-major values, comma or whitespace separated
     int species = 6;              // 2..8, for custom and random matrices
     int particles = 3;            // index into kParticles
-    int radius = 12;              // interaction radius, % of the screen height
-    int force = 70;               // force strength, %
-    int friction = 30;            // damping, %
+    int radius = 8;               // mean pair radius, % of the screen height
+    int force = 100;              // force strength, % (100 = the original demo's power sliders)
+    int friction = 50;            // viscosity, % of the velocity lost each step
     int speed = 2;                // index into kSpeeds
     bool wrap = true;
     int start = 0;                // index into kStartNames
@@ -50,14 +50,24 @@ struct Settings {
     std::string seed_text;        // blank = a seed from the clock
 };
 
-// The square interaction matrix. m[subject][other]: > 0 attracts, < 0 repels.
+// The square interaction matrix. m[subject][other]: > 0 attracts, < 0 repels. r[subject][other]
+// is that pair's interaction radius as a multiple of the global radius setting; the original demo
+// gave every pair its own radius slider, and the relative sizes are as much a part of a preset's
+// behaviour as the forces are.
 struct Rules {
     int species = 0;
     float m[MAX_SPECIES][MAX_SPECIES] = {};
+    float r[MAX_SPECIES][MAX_SPECIES];
+
+    Rules() {
+        for (auto& row : r)
+            for (float& v : row) v = 1.0f;
+    }
 
     // Parse "a,b,c,d, ..." (commas, spaces, semicolons or newlines) into a square matrix. Any
     // number of values from 4 (2 species) to 64 (8 species) is accepted; species is inferred
     // from the count. A hint is only used when the count does not decide it. False = bad text.
+    // A typed matrix sets every pair radius to the global one.
     bool parse(const std::string& text, int species_hint);
     void randomize(int species, std::mt19937& rng);
     void mutate(float amount, std::mt19937& rng);
@@ -95,9 +105,10 @@ public:
 
     int count() const { return count_; }
     float aspect() const { return aspect_; }
-    float radius() const { return radius_; }
+    float radius() const { return radius_; }             // mean pair radius, world units
+    float radius_for(int species_i, int species_j) const;  // one pair's radius, world units
     float force() const { return force_; }
-    float friction() const { return friction_; }
+    float friction() const { return viscosity_; }
     float speed_limit() const { return speed_limit_; }
     const Rules& rules() const { return rules_; }
     const std::vector<float>& positions() const { return x_; }
@@ -123,32 +134,36 @@ public:
     Stats stats() const;
 
 private:
+    void update_max_radius();
     void build_grid();
     void add_pair(int i, int j, float xi, float yi, float* sx, float* sy) const;
-    void forces_grid(int i, float* fx, float* fy) const;
-    void forces_brute(int i, float* fx, float* fy) const;
+    // Force on particle i from the particles of one object species only.
+    void forces_grid(int i, int object_species, float* fx, float* fy) const;
+    void forces_brute(int i, int object_species, float* fx, float* fy) const;
     void integrate(float fx, float fy, int i);
 
     int count_ = 0;
     int start_ = 0;                 // kStartNames index, kept for reset_positions
     float aspect_ = 16.0f / 9.0f;
-    float radius_ = 0.1f;
-    float beta_ = 0.3f;             // inner repulsion core, as a fraction of the radius
-    float force_ = 0.036f;          // acceleration per unit of summed force
-    float friction_ = 1.25f;        // velocity damping rate, 1/s
-    float damping_ = 0.99f;         // velocity multiplier per step
-    float dt_ = 1.0f / 120.0f;
-    float speed_limit_ = 0.25f;
+    float radius_ = 0.08f;          // mean pair radius, in world units (screen heights)
+    float max_radius_ = 0.08f;      // the largest pair radius: how far any pair can reach
+    int search_cells_ = 1;          // grid cells to search each way: max_radius_ / cell size
+    float cell_size_ = 0.08f;       // grid cell size; smaller cells mean fewer pair tests
+    float force_ = 1.0f;            // force strength multiplier (1 = the original demo)
+    float viscosity_ = 0.5f;        // fraction of the velocity lost each step
+    float kick_ = 1.0f / 1080.0f;   // velocity added per unit of summed force, world units/step
+    float speed_limit_ = 0.02f;     // safety cap, world units per step (the original had none)
+    float tint_scale_ = 0.012f;     // speed that maps to full brightness in heat colour mode
     bool wrap_ = true;
 
     Rules rules_;
     std::vector<float> x_, v_, prev_;         // x and v interleaved xy
     std::vector<uint8_t> species_;
 
-    // Uniform grid over the world, one cell wide. Rebuilt each step by a counting sort.
-    int cols_ = 0, rows_ = 0, cells_ = 0;
+    // Uniform grid over the world, one cell wide, with one bucket per species: a pass only ever
+    // looks at one object species, so this keeps a pass as cheap as a whole-field query.
+    int cols_ = 0, rows_ = 0, cells_ = 0, grid_species_ = 0;
     std::vector<int> cell_start_, cell_index_, cursor_;
-    std::vector<float> force_sum_;
 };
 
 // A Settings with every value inside the ranges settings.xml offers (the wrapper calls this, and

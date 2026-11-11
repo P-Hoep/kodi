@@ -51,7 +51,9 @@ VARY = ['Same rules and look every time',
         'New rules, colours and layout each time']
 
 PARTICLE_DEFAULT = 1 if LOW_POWER else 3
-RADIUS_DEFAULT = 10 if LOW_POWER else 12
+RADIUS_DEFAULT = 7 if LOW_POWER else 8
+FORCE_DEFAULT = 100
+FRICTION_DEFAULT = 50
 DRAW_DEFAULT = 2 if LOW_POWER else 0
 SIZE_DEFAULT = 70 if LOW_POWER else 65
 TRAIL_DEFAULT = 45 if LOW_POWER else 50
@@ -72,9 +74,9 @@ def categories():
                  visible=('matrix_mode', '1')),
             I('species', 'Species (for custom and random rules)', 6, 2, 8,
               visible=('matrix_mode', '!', '0')),
-            I('radius', 'Interaction radius (% of the screen height)', RADIUS_DEFAULT, 4, 24),
-            I('force', 'Force strength (%)', 70, 10, 200, 5),
-            I('friction', 'Damping (%)', 30, 0, 100, 5),
+            I('radius', 'Interaction radius (mean, % of the screen height)', RADIUS_DEFAULT, 4, 24),
+            I('force', 'Force strength (%)', FORCE_DEFAULT, 10, 200, 5),
+            I('friction', 'Viscosity / damping (%)', FRICTION_DEFAULT, 0, 95, 5),
             B('wrap', 'Wrap around the edges (a torus)', True),
         ]),
         ('Particles and movement', [

@@ -264,9 +264,9 @@ void App::apply_random_look() {
     auto pick = [&](int n) { return (int)(r() % (unsigned)n); };
     s_.palette = pick(kPaletteCount);
     s_.colour_mode = pick(3);
-    s_.radius = 6 + pick(15);          // 6..20 %
-    s_.force = 35 + pick(90);          // 35..124 %
-    s_.friction = 8 + pick(55);        // 8..62 %
+    s_.radius = 4 + pick(12);          // 4..15 % mean pair radius
+    s_.force = 60 + pick(101);         // 60..160 %
+    s_.friction = 35 + pick(36);       // 35..70 % viscosity
     s_.size = 20 + pick(50);
     s_.glow = 30 + pick(60);
     s_.trail = 25 + pick(60);

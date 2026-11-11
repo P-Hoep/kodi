@@ -162,8 +162,9 @@ int main(int argc, char** argv) {
         for (int i = 0; i < simulate; ++i) {
             for (int k = 0; k < 60; ++k) w.step();
             World::Stats st = w.stats();
-            std::printf("t=%3ds mean speed %.4f, density variation %.2f, finite %d\n", i + 1,
-                        (double)st.mean_speed, (double)st.density_variation, (int)st.finite);
+            std::printf("t=%3ds mean speed %.4f (max %.4f), density variation %.2f, finite %d\n",
+                        i + 1, (double)st.mean_speed, (double)st.max_speed,
+                        (double)st.density_variation, (int)st.finite);
         }
         return 0;
     }
