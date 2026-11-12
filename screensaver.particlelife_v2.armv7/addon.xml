@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.particlelife_v2.armv7" name="Particle Life v2 (OpenGL, 32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+<addon id="screensaver.particlelife_v2.armv7" name="Particle Life v2 (OpenGL, 32-bit Android)" version="1.1.0" provider-name="P-Hoep">
   <requires>
     <c-pluff version="1.0"/>
     <import addon="kodi.binary.global.main" version="2.0.2"/>
@@ -8,13 +8,14 @@
   <extension point="xbmc.ui.screensaver" library_android="screensaver.particlelife_v2.armv7.so"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en_GB">Particle Life v2 tuned for 32-bit Android Kodi</summary>
-    <description lang="en_GB">The same Particle Life v2 screensaver as "Particle Life v2 (OpenGL)", built for 32-bit Android (armeabi-v7a), as on many Fire TV sticks, Google TV boxes and the Chromecast with Google TV. Install this one if your Android or Google TV Kodi is a 32-bit app; install "Particle Life v2 (OpenGL)" on 64-bit Android and macOS. Four colours of particles attract and repel each other under a randomly generated matrix of pair forces, forming cells, chains, membranes and orbiting clusters; the rules are re-rolled on a timer so the pattern never settles into one look.
+    <description lang="en_GB">The same Particle Life v2 screensaver as "Particle Life v2 (OpenGL)", built for 32-bit Android (armeabi-v7a), as on many Fire TV sticks, Google TV boxes and the Chromecast with Google TV. Install this one if your Android or Google TV Kodi is a 32-bit app; install "Particle Life v2 (OpenGL)" on 64-bit Android and macOS. Colours of particles attract and repel each other under a matrix of pair forces, forming cells, chains, membranes and orbiting clusters; the rules are re-rolled on a timer so the pattern never settles into one look. Rules can be random, with one to eight colours, or come from the 19 saved models of the original app (Worm, Flower cell, DNA, Ladybug, Soap and more), and there are palettes, glowing particles, motion trails and random pulses.
 
-This build starts lighter for a small box: 500 particles per colour and 30 simulation steps a second. Particles per colour, steps per second, the re-roll interval, rule evolution, viscosity, force strength, interaction range, wall repulsion, hard bounds and particle size are all in the add-on settings.</description>
+This build starts lighter for a small box: 500 particles per colour and 30 simulation steps a second. Particles per colour, steps per second, the re-roll interval, the rule source and randomisation, viscosity, force strength, interaction range, gravity, wall repulsion, hard bounds, palette, particle style and size, and trails are all in the add-on settings. Presets and more than four colours cost more CPU; lower the particle count if the motion stutters.</description>
     <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega, 32-bit ARM Android). It needs OpenGL ES 2.0. Particle Life was created by Hunar Ahmad (https://github.com/hunar4321/life_code, MIT); this is an independent native port of the same idea with its own simulation, renderer and settings.</disclaimer>
     <platform>android</platform>
     <license>MIT</license>
-    <news>1.0.0 - initial release</news>
+    <news>1.1.0 - the 19 saved models from the original app as presets (in order, shuffled, mixed with random rules, or one fixed preset); 1 to 8 colours with Classic, Neon, Pastel, Rainbow and random-hue palettes; symmetric rules, random exploration, random colour counts and viscosity per rule set, random pulses and gravity; round, square and glow particles; motion trails.
+1.0.0 - initial release</news>
     <assets>
       <icon>icon.png</icon>
       <fanart>fanart.jpg</fanart>

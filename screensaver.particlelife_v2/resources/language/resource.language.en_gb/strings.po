@@ -25,6 +25,10 @@ msgctxt "#30003"
 msgid "Display"
 msgstr ""
 
+msgctxt "#30004"
+msgid "Rules and randomness"
+msgstr ""
+
 msgctxt "#30010"
 msgid "Particles per colour"
 msgstr ""
@@ -61,6 +65,254 @@ msgctxt "#30024"
 msgid "Keep particles inside the screen (hard bounds)"
 msgstr ""
 
+msgctxt "#30025"
+msgid "Gravity"
+msgstr ""
+
 msgctxt "#30030"
 msgid "Particle size (pixels at 900p)"
+msgstr ""
+
+msgctxt "#30031"
+msgid "Colour palette"
+msgstr ""
+
+msgctxt "#30032"
+msgid "Particle style"
+msgstr ""
+
+msgctxt "#30033"
+msgid "Motion trails"
+msgstr ""
+
+msgctxt "#30040"
+msgid "Rules"
+msgstr ""
+
+msgctxt "#30041"
+msgid "Preset"
+msgstr ""
+
+msgctxt "#30042"
+msgid "Number of colours"
+msgstr ""
+
+msgctxt "#30043"
+msgid "Random number of colours for each new rule set"
+msgstr ""
+
+msgctxt "#30044"
+msgid "Random viscosity for each new rule set"
+msgstr ""
+
+msgctxt "#30045"
+msgid "Symmetric rules"
+msgstr ""
+
+msgctxt "#30046"
+msgid "Random exploration (mutate one rule at a time)"
+msgstr ""
+
+msgctxt "#30047"
+msgid "Random pulses"
+msgstr ""
+
+msgctxt "#30048"
+msgid "Pulse every (seconds)"
+msgstr ""
+
+msgctxt "#30100"
+msgid "Random rules"
+msgstr ""
+
+msgctxt "#30101"
+msgid "Presets, in order"
+msgstr ""
+
+msgctxt "#30102"
+msgid "Presets, shuffled"
+msgstr ""
+
+msgctxt "#30103"
+msgid "Mix of presets and random rules"
+msgstr ""
+
+msgctxt "#30104"
+msgid "One preset"
+msgstr ""
+
+msgctxt "#30120"
+msgid "Bubble formation"
+msgstr ""
+
+msgctxt "#30121"
+msgid "Busy life"
+msgstr ""
+
+msgctxt "#30122"
+msgid "Coupling"
+msgstr ""
+
+msgctxt "#30123"
+msgid "DNA"
+msgstr ""
+
+msgctxt "#30124"
+msgid "Flower cell"
+msgstr ""
+
+msgctxt "#30125"
+msgid "Cells I"
+msgstr ""
+
+msgctxt "#30126"
+msgid "Cells II"
+msgstr ""
+
+msgctxt "#30127"
+msgid "Cells III"
+msgstr ""
+
+msgctxt "#30128"
+msgid "Ladybug"
+msgstr ""
+
+msgctxt "#30129"
+msgid "Mosquito"
+msgstr ""
+
+msgctxt "#30130"
+msgid "Photon"
+msgstr ""
+
+msgctxt "#30131"
+msgid "Pretty"
+msgstr ""
+
+msgctxt "#30132"
+msgid "Soap"
+msgstr ""
+
+msgctxt "#30133"
+msgid "Something"
+msgstr ""
+
+msgctxt "#30134"
+msgid "Teleport"
+msgstr ""
+
+msgctxt "#30135"
+msgid "Vacuum cleaner"
+msgstr ""
+
+msgctxt "#30136"
+msgid "Waves"
+msgstr ""
+
+msgctxt "#30137"
+msgid "Worm"
+msgstr ""
+
+msgctxt "#30138"
+msgid "Y"
+msgstr ""
+
+msgctxt "#30150"
+msgid "Classic"
+msgstr ""
+
+msgctxt "#30151"
+msgid "Neon"
+msgstr ""
+
+msgctxt "#30152"
+msgid "Pastel"
+msgstr ""
+
+msgctxt "#30153"
+msgid "Rainbow"
+msgstr ""
+
+msgctxt "#30154"
+msgid "Random hues (new with each rule set)"
+msgstr ""
+
+msgctxt "#30160"
+msgid "Round"
+msgstr ""
+
+msgctxt "#30161"
+msgid "Square"
+msgstr ""
+
+msgctxt "#30162"
+msgid "Glow"
+msgstr ""
+
+msgctxt "#30170"
+msgid "Off"
+msgstr ""
+
+msgctxt "#30171"
+msgid "Short"
+msgstr ""
+
+msgctxt "#30172"
+msgid "Medium"
+msgstr ""
+
+msgctxt "#30173"
+msgid "Long"
+msgstr ""
+
+msgctxt "#30210"
+msgid "Particles in each colour group. The total is this times the number of colours, and the cost grows with the square of it, so lower it when you use many colours or a small device."
+msgstr ""
+
+msgctxt "#30213"
+msgid "Every step there is a small chance that every rule is nudged a little, so the pattern slowly drifts (the original app's \"Evolve parameters\")."
+msgstr ""
+
+msgctxt "#30220"
+msgid "How much of its speed a particle loses each step. Presets bring their own viscosity."
+msgstr ""
+
+msgctxt "#30225"
+msgid "A constant pull down (positive) or up (negative)."
+msgstr ""
+
+msgctxt "#30233"
+msgid "Let particles leave fading trails instead of clearing the screen each frame (the original app's motion blur)."
+msgstr ""
+
+msgctxt "#30240"
+msgid "Where each new rule set comes from: freshly rolled random rules, or the saved models that ship with the original Particle Life app (always four colours: red, green, yellow, white)."
+msgstr ""
+
+msgctxt "#30241"
+msgid "With \"Presets, in order\" this is the first one shown; with \"One preset\" it is the only one, and the timer just respawns the particles."
+msgstr ""
+
+msgctxt "#30242"
+msgid "How many colour groups random rule sets use (1 to 8). The original had four."
+msgstr ""
+
+msgctxt "#30243"
+msgid "Pick between 2 and the number of colours above for each random rule set."
+msgstr ""
+
+msgctxt "#30244"
+msgid "Pick a viscosity between 30% and 75% for each random rule set instead of the fixed setting."
+msgstr ""
+
+msgctxt "#30245"
+msgid "Make each pair of colours attract or repel each other equally. Symmetric rules settle into calmer, crystal-like structures; asymmetric ones chase each other."
+msgstr ""
+
+msgctxt "#30246"
+msgid "Every couple of seconds, flip one attraction to the opposite sign or change one interaction radius, so new structures keep appearing (the JavaScript version's \"Random Exploration\")."
+msgstr ""
+
+msgctxt "#30247"
+msgid "Now and then a burst pushes the particles away from a random point, or pulls them in."
 msgstr ""

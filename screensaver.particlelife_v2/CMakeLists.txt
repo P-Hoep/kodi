@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(screensaver.particlelife_v2 CXX)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # A Kodi screensaver written for Kodi's binary add-on API. Build it against the
 # Kodi 21 "Omega" dev kit:
 #

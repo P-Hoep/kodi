@@ -1,6 +1,6 @@
 // Standalone check: grid-based Interaction() must match the original
 // brute-force loop (for distinct groups), and report step timing.
-//   g++ -O2 -std=c++17 test/sim_test.cpp -o sim_test && ./sim_test
+//   c++ -O2 -std=c++17 tests/sim_test.cpp -o sim_test && ./sim_test
 #include "../src/ParticleLife.h"
 #include <chrono>
 #include <cstdio>
@@ -57,21 +57,75 @@ int main()
     maxDiff = std::max({maxDiff, std::fabs(ref.x[i] - test.x[i]), std::fabs(ref.y[i] - test.y[i])});
   std::printf("max |grid - brute force| after one interaction: %g (radius %.1f, power %.1f)\n", maxDiff, R, G);
 
-  // timing + sanity (no NaNs, particles stay finite)
-  for (int n : {500, 1000, 2000})
-  {
-    sim.params.perColour = n;
-    sim.params.evolve = true;
-    sim.Randomize();
-    auto t0 = std::chrono::steady_clock::now();
-    for (int s = 0; s < 300; s++)
-      sim.Step();
-    auto ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count() / 300;
+  auto finite = [&]() {
     bool ok = true;
-    for (int c = 0; c < NUM_GROUPS; c++)
+    for (int c = 0; c < sim.numGroups(); c++)
       for (size_t i = 0; i < sim.group(c).size(); i++)
         ok = ok && std::isfinite(sim.group(c).x[i]) && std::isfinite(sim.group(c).y[i]);
-    std::printf("%4d per colour (%5d total): %.2f ms/step, finite=%d\n", n, n * 4, ms, ok);
+    return ok;
+  };
+  auto timeSteps = [&](int steps) {
+    auto t0 = std::chrono::steady_clock::now();
+    for (int s = 0; s < steps; s++)
+      sim.Step();
+    return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count() / steps;
+  };
+  int failures = maxDiff < 1e-3f ? 0 : 1;
+
+  // timing + sanity (no NaNs, particles stay finite) for 4 and 8 colours
+  sim.params.evolve = true;
+  sim.params.explore = true;
+  sim.params.explorePeriod = 20;
+  for (int colours : {4, 8})
+    for (int n : {500, 1000, 2000})
+    {
+      sim.SetNumGroups(colours);
+      sim.params.perColour = n;
+      sim.Randomize();
+      sim.Pulse(800, 450, 10);
+      const double ms = timeSteps(200);
+      const bool ok = finite();
+      failures += !ok;
+      std::printf("%d colours, %4d per colour (%5d total): %6.2f ms/step, finite=%d\n", colours, n,
+                  n * colours, ms, ok);
+    }
+  sim.params.evolve = false;
+  sim.params.explore = false;
+
+  // only the active groups have particles
+  sim.SetNumGroups(3);
+  sim.params.perColour = 100;
+  sim.Randomize();
+  failures += sim.group(3).size() != 0 || sim.group(2).size() != 100;
+
+  // symmetric rules
+  sim.SetNumGroups(6);
+  sim.params.symmetric = true;
+  sim.Randomize();
+  for (int a = 0; a < 6; a++)
+    for (int b = 0; b < 6; b++)
+      failures += sim.power(a, b) != sim.power(b, a);
+  sim.params.symmetric = false;
+
+  // presets: four colours, values copied, all of them run
+  sim.params.perColour = 1000;
+  double worst = 0;
+  for (int i = 0; i < kNumPresets; i++)
+  {
+    sim.SetNumGroups(7);
+    sim.LoadPreset(i);
+    failures += sim.numGroups() != 4 || sim.power(1, 0) != kPresets[i].power[1][0] ||
+                sim.params.viscosity != kPresets[i].viscosity;
+    const double ms = timeSteps(60);
+    worst = std::max(worst, ms);
+    failures += !finite();
   }
-  return 0;
+  std::printf("presets: %d loaded, slowest %.2f ms/step at 1000 per colour\n", kNumPresets, worst);
+  // "Worm": the original's file lists green first; check the reorder (red x green = file's RG)
+  sim.LoadPreset(17);
+  std::printf("preset 17 = %s, red<-green %.4g (file -16), green<-red %.4g (file 4.66666)\n",
+              kPresets[17].name, sim.power(RED, GREEN), sim.power(GREEN, RED));
+
+  std::printf(failures ? "FAILED (%d)\n" : "all checks passed\n", failures);
+  return failures ? 1 : 0;
 }

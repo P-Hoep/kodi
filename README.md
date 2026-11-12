@@ -55,8 +55,8 @@ installed version in **Add-ons → My add-ons**.
 | [Growing Plant (OpenGL, 32-bit Android)](#growing-plant-opengl) | `screensaver.plant.gl.armv7` | 1.0.1 | Android 32-bit |
 | [Particle Life (OpenGL)](#particle-life-opengl) | `screensaver.particlelife.gl` | 1.0.2 | macOS, Android 64-bit |
 | [Particle Life (OpenGL, 32-bit Android)](#particle-life-opengl) | `screensaver.particlelife.gl.armv7` | 1.0.2 | Android 32-bit |
-| [Particle Life v2 (OpenGL)](#particle-life-v2-opengl) | `screensaver.particlelife_v2` | 1.0.0 | macOS, Android 64-bit |
-| [Particle Life v2 (OpenGL, 32-bit Android)](#particle-life-v2-opengl) | `screensaver.particlelife_v2.armv7` | 1.0.0 | Android 32-bit |
+| [Particle Life v2 (OpenGL)](#particle-life-v2-opengl) | `screensaver.particlelife_v2` | 1.1.0 | macOS, Android 64-bit |
+| [Particle Life v2 (OpenGL, 32-bit Android)](#particle-life-v2-opengl) | `screensaver.particlelife_v2.armv7` | 1.1.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
 | [Sand Clock (OpenGL, 32-bit Android)](#sand-clock-opengl) | `screensaver.sandclock.gl.armv7` | 1.0.0 | Android 32-bit |
 | [Cellular Automata (32-bit Android)](#cellular-automata) | `screensaver.automata.armv7` | 1.1.0 | Android 32-bit |
@@ -915,24 +915,27 @@ cmake -S . -B build && cmake --build build && ctest --test-dir build
 ## Particle Life v2 (OpenGL)
 
 `screensaver.particlelife_v2` is a second, self-contained Particle Life port: the physics of the
-original openFrameworks app with the GUI panel replaced by Kodi settings. Four colours of particles
-attract or repel each other under a matrix of random pair forces, and out of those rules come cells,
-chains, membranes, orbiting clusters and drifting colonies. The matrix is re-rolled every 60 seconds
-by default, so a run keeps changing; "Slowly evolve the rules" drifts it instead of replacing it.
+original openFrameworks app with the GUI panel replaced by Kodi settings. Colours of particles
+attract or repel each other under a matrix of pair forces, and out of those rules come cells,
+chains, membranes, orbiting clusters and drifting colonies. The matrix is replaced every 60 seconds
+by default, so a run keeps changing.
 
 ![Particle Life v2: four colours of particles gathering into clusters and rings](screensaver.particlelife_v2/fanart.jpg)
 
-- **The original's physics:** sixteen group pairs are updated per step, with viscosity and wall
-  repulsion applied on each pair, which keeps the patterns moving instead of settling.
-- **A uniform neighbour grid:** a step costs the particles plus the pairs inside the interaction
-  radius, not every possible pair (4,000 particles take about 1.3 ms a step on a desktop), so the
-  screensaver also stays cheap on a TV box.
-- **Everything in the settings:** particles per colour, simulation steps per second, the rule
-  re-roll interval, rule evolution, viscosity, force strength, interaction range, wall repulsion,
-  hard bounds and particle size. There is no in-app panel to navigate with a remote.
-- **Built for screens:** a 900-pixel-high simulation space that widens with the display keeps the
-  force radii at the original's scale, point size follows the resolution, and the four colours are
-  drawn back to front in one pass with plain OpenGL 2 / OpenGL ES 2.
+- **Presets from the original:** the 19 models saved with the original app (Worm, Flower cell, DNA,
+  Ladybug, Soap, Teleport, Waves and more) can be shown in order, shuffled, mixed 50/50 with random
+  rules, or one of them on its own.
+- **One to eight colours:** random rule sets use 1–8 colour groups (the original had four; the extras
+  come from the JavaScript version), optionally a random count for each new set. Palettes: Classic,
+  Neon, Pastel, Rainbow, or random hues that change with each rule set.
+- **More randomness:** symmetric rules, "evolve" (every rule drifts a little, from the C++ app),
+  "random exploration" (one rule flips at a time, from the JavaScript app), a random viscosity per
+  rule set, and random pulses that blow the particles apart or pull them together.
+- **The original's physics:** every group pair is updated per step, with viscosity and wall
+  repulsion applied on each pair, plus the original's gravity slider. A uniform neighbour grid
+  keeps a step cheap: 4,000 particles take about 2 ms on a desktop.
+- **The look:** round, square or glowing (additive) particles, particle size, and motion trails
+  (the original's motion blur) drawn through an off-screen buffer that fades each frame.
 
 It ships as two Kodi add-ons, like the other native screensavers:
 
