@@ -1,0 +1,66 @@
+# Kodi Media Center language file
+# Addon Name: particlelife_v2
+# Addon id: screensaver.particlelife_v2
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi Addons\n"
+"Language: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "#30000"
+msgid "Simulation"
+msgstr ""
+
+msgctxt "#30001"
+msgid "General"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Physics"
+msgstr ""
+
+msgctxt "#30003"
+msgid "Display"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Particles per colour"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Simulation steps per second"
+msgstr ""
+
+msgctxt "#30012"
+msgid "New rules every (seconds, 0 = never)"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Slowly evolve the rules"
+msgstr ""
+
+msgctxt "#30020"
+msgid "Viscosity / friction"
+msgstr ""
+
+msgctxt "#30021"
+msgid "Force strength"
+msgstr ""
+
+msgctxt "#30022"
+msgid "Interaction range"
+msgstr ""
+
+msgctxt "#30023"
+msgid "Wall repel"
+msgstr ""
+
+msgctxt "#30024"
+msgid "Keep particles inside the screen (hard bounds)"
+msgstr ""
+
+msgctxt "#30030"
+msgid "Particle size (pixels at 900p)"
+msgstr ""

@@ -11,8 +11,29 @@
 #include <string>
 #include <vector>
 
+// GLES always honours gl_PointSize; desktop GL needs the capability enabled, and
+// some GL headers do not define the token.
+#if !defined(HAS_GLES) && !defined(GL_PROGRAM_POINT_SIZE)
+#define GL_PROGRAM_POINT_SIZE 0x8642
+#endif
+
 namespace
 {
+
+// Kodi uses a GL 3.2 core context on macOS, where `attribute` and `gl_FragColor`
+// are gone and a VAO is required; on Linux Kodi runs a GL 2.1 compatibility
+// context. GLES 2 takes the shader bodies as they are.
+#if defined(HAS_GLES)
+const std::string kVertexHeader;
+const std::string kFragmentHeader;
+#elif defined(TARGET_DARWIN)
+const std::string kVertexHeader = "#version 150\n#define attribute in\n";
+const std::string kFragmentHeader =
+    "#version 150\nout vec4 fragColor;\n#define gl_FragColor fragColor\n";
+#else
+const std::string kVertexHeader = "#version 120\n";
+const std::string kFragmentHeader = "#version 120\n";
+#endif
 
 const char* kVertexShader = R"(
 #ifdef GL_ES
@@ -65,13 +86,14 @@ private:
 
   void LoadSettings();
   bool BuildProgram();
-  GLuint Compile(GLenum type, const char* src);
+  GLuint Compile(GLenum type, const std::string& src);
   void Randomize();
 
   particlelife::Simulation m_sim;
 
   GLuint m_program = 0;
   GLuint m_vbo = 0;
+  GLuint m_vao = 0; // macOS core profile needs one bound for glVertexAttribPointer
   GLint m_aPos = -1;
   GLint m_uScale = -1;
   GLint m_uPointSize = -1;
@@ -106,10 +128,11 @@ void CScreensaverParticleLife::LoadSettings()
   m_randomizeSeconds = kodi::addon::GetSettingInt("randomize_interval", 60);
 }
 
-GLuint CScreensaverParticleLife::Compile(GLenum type, const char* src)
+GLuint CScreensaverParticleLife::Compile(GLenum type, const std::string& src)
 {
   GLuint shader = glCreateShader(type);
-  glShaderSource(shader, 1, &src, nullptr);
+  const char* text = src.c_str();
+  glShaderSource(shader, 1, &text, nullptr);
   glCompileShader(shader);
 
   GLint ok = 0;
@@ -127,8 +150,8 @@ GLuint CScreensaverParticleLife::Compile(GLenum type, const char* src)
 
 bool CScreensaverParticleLife::BuildProgram()
 {
-  GLuint vs = Compile(GL_VERTEX_SHADER, kVertexShader);
-  GLuint fs = Compile(GL_FRAGMENT_SHADER, kFragmentShader);
+  GLuint vs = Compile(GL_VERTEX_SHADER, kVertexHeader + kVertexShader);
+  GLuint fs = Compile(GL_FRAGMENT_SHADER, kFragmentHeader + kFragmentShader);
   if (!vs || !fs)
     return false;
 
@@ -170,6 +193,9 @@ bool CScreensaverParticleLife::Start()
 
   if (!BuildProgram())
     return false;
+#ifdef TARGET_DARWIN
+  glGenVertexArrays(1, &m_vao);
+#endif
   glGenBuffers(1, &m_vbo);
 
   const float aspect = static_cast<float>(Width()) / static_cast<float>(std::max(1, Height()));
@@ -188,6 +214,13 @@ void CScreensaverParticleLife::Stop()
     glDeleteBuffers(1, &m_vbo);
     m_vbo = 0;
   }
+#ifdef TARGET_DARWIN
+  if (m_vao)
+  {
+    glDeleteVertexArrays(1, &m_vao);
+    m_vao = 0;
+  }
+#endif
   if (m_program)
   {
     glDeleteProgram(m_program);
@@ -257,6 +290,9 @@ void CScreensaverParticleLife::Render()
   glClear(GL_COLOR_BUFFER_BIT);
 
   glUseProgram(m_program);
+#ifdef TARGET_DARWIN
+  glBindVertexArray(m_vao);
+#endif
   glUniform2f(m_uScale, 2.0f / vw, -2.0f / kVirtualHeight);
   glUniform1f(m_uPointSize, std::max(1.0f, m_pointSize * scalePx));
 
@@ -280,6 +316,9 @@ void CScreensaverParticleLife::Render()
 
   glDisableVertexAttribArray(static_cast<GLuint>(m_aPos));
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+#ifdef TARGET_DARWIN
+  glBindVertexArray(0);
+#endif
   glUseProgram(0);
 }
 

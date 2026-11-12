@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.particlelife_v2" name="Particle Life v2 (OpenGL)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.particlelife_v2.dylib"
+             library_android="screensaver.particlelife_v2.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Four colours of particles, random rules, and the patterns that follow</summary>
+    <description lang="en_GB">A Kodi screensaver port of the openFrameworks Particle Life app. Four colours of particles attract and repel each other under a randomly generated matrix of pair forces, and out of those rules come cells, chains, membranes, orbiting clusters and drifting colonies. The rules are re-rolled on a timer (60 seconds by default) so the pattern never settles into one look, and an optional "evolve" slowly drifts the matrix instead.
+
+Everything is configured in the add-on settings rather than an in-app panel: particles per colour, simulation steps per second, re-roll interval, rule evolution, viscosity and friction, force strength, interaction range, wall repulsion, hard bounds and particle size. The simulation is CPU-side with a uniform neighbour grid, so 4,000 particles cost about 1.3 ms a step on a desktop, and the particles are drawn as a single stream of point sprites with plain OpenGL 2 / OpenGL ES 2. The simulation runs in a 900-pixel-high space that widens with the screen, so the force radii keep the original's scale on any display.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Intel and Apple Silicon, and 64-bit Android). It needs OpenGL or OpenGL ES 2.0. Particle Life was created by Hunar Ahmad (https://github.com/hunar4321/life_code, MIT); this is an independent native port of the same idea with its own simulation, renderer and settings.</disclaimer>
+    <platform>osx android</platform>
+    <license>MIT</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

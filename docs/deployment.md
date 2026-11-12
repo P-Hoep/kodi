@@ -241,9 +241,9 @@ strings, so labels show blank or shift until it reloads them.
 
 The native add-ons draw with OpenGL / OpenGL ES (not WebGL). Their source lives in
 `screensaver.sandclock.gl` (Sand Clock, Liquid Clock, Cellular Automata, Physarum, Tetris AI,
-Particle Life), `screensaver.infworld.gl` (Endless World) and `screensaver.plant.gl` (Growing
-Plant). The Kodi-facing folders at the top level contain `addon.xml`, resources AND the built
-library.
+Particle Life), `screensaver.infworld.gl` (Endless World), `screensaver.plant.gl` (Growing
+Plant) and `screensaver.particlelife_v2` (Particle Life v2). The Kodi-facing folders at the top
+level contain `addon.xml`, resources AND the built library.
 
 ### What each add-on needs
 
@@ -254,6 +254,7 @@ library.
 | `screensaver.infworld.gl` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `screensaver.plant.gl` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `screensaver.particlelife.gl` | `.dylib` | `.so` | separate `.armv7` add-on |
+| `screensaver.particlelife_v2` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `visualization.physarum.lite` | `.dylib` | `.so` | separate `.armv7` add-on |
 
 Some GL add-ons exist **only** as 32-bit Android companions in this repository

@@ -55,6 +55,8 @@ installed version in **Add-ons → My add-ons**.
 | [Growing Plant (OpenGL, 32-bit Android)](#growing-plant-opengl) | `screensaver.plant.gl.armv7` | 1.0.1 | Android 32-bit |
 | [Particle Life (OpenGL)](#particle-life-opengl) | `screensaver.particlelife.gl` | 1.0.2 | macOS, Android 64-bit |
 | [Particle Life (OpenGL, 32-bit Android)](#particle-life-opengl) | `screensaver.particlelife.gl.armv7` | 1.0.2 | Android 32-bit |
+| [Particle Life v2 (OpenGL)](#particle-life-v2-opengl) | `screensaver.particlelife_v2` | 1.0.0 | macOS, Android 64-bit |
+| [Particle Life v2 (OpenGL, 32-bit Android)](#particle-life-v2-opengl) | `screensaver.particlelife_v2.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
 | [Sand Clock (OpenGL, 32-bit Android)](#sand-clock-opengl) | `screensaver.sandclock.gl.armv7` | 1.0.0 | Android 32-bit |
 | [Cellular Automata (32-bit Android)](#cellular-automata) | `screensaver.automata.armv7` | 1.1.0 | Android 32-bit |
@@ -908,6 +910,47 @@ cd screensaver.sandclock.gl
 cmake -S . -B build && cmake --build build && ctest --test-dir build
 ./build/particle_life_glfw --preset 1 --particles 5 --seed 42
 ./build/particle_life_glfw --random --species 8 --shot /tmp/pl.ppm --shot-after 6
+```
+
+## Particle Life v2 (OpenGL)
+
+`screensaver.particlelife_v2` is a second, self-contained Particle Life port: the physics of the
+original openFrameworks app with the GUI panel replaced by Kodi settings. Four colours of particles
+attract or repel each other under a matrix of random pair forces, and out of those rules come cells,
+chains, membranes, orbiting clusters and drifting colonies. The matrix is re-rolled every 60 seconds
+by default, so a run keeps changing; "Slowly evolve the rules" drifts it instead of replacing it.
+
+![Particle Life v2: four colours of particles gathering into clusters and rings](screensaver.particlelife_v2/fanart.jpg)
+
+- **The original's physics:** sixteen group pairs are updated per step, with viscosity and wall
+  repulsion applied on each pair, which keeps the patterns moving instead of settling.
+- **A uniform neighbour grid:** a step costs the particles plus the pairs inside the interaction
+  radius, not every possible pair (4,000 particles take about 1.3 ms a step on a desktop), so the
+  screensaver also stays cheap on a TV box.
+- **Everything in the settings:** particles per colour, simulation steps per second, the rule
+  re-roll interval, rule evolution, viscosity, force strength, interaction range, wall repulsion,
+  hard bounds and particle size. There is no in-app panel to navigate with a remote.
+- **Built for screens:** a 900-pixel-high simulation space that widens with the display keeps the
+  force radii at the original's scale, point size follows the resolution, and the four colours are
+  drawn back to front in one pass with plain OpenGL 2 / OpenGL ES 2.
+
+It ships as two Kodi add-ons, like the other native screensavers:
+
+- **Particle Life v2 (OpenGL)** — macOS (universal, Intel and Apple Silicon) and 64-bit Android.
+- **Particle Life v2 (OpenGL, 32-bit Android)** — for 32-bit Android Kodi, with lighter defaults
+  (500 particles per colour at 30 steps a second).
+
+The code and the build instructions are in
+[screensaver.particlelife_v2](screensaver.particlelife_v2/README.md). Particle Life was created by
+Hunar Ahmad ([life_code](https://github.com/hunar4321/life_code), MIT); this is an independent port
+of the same simulation.
+
+```bash
+cd screensaver.particlelife_v2
+cmake -S . -B build-uni -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+  -DKODI_DEVKIT_INCLUDE=<xbmc>/xbmc/addons/kodi-dev-kit/include
+cmake --build build-uni
 ```
 
 ## Sand Clock (OpenGL)
