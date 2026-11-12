@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.lichencoral.armv7" name="Lichen &amp; Coral (OpenGL, 32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_android="screensaver.lichencoral.armv7.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Lichen &amp; Coral for 32-bit Android Kodi</summary>
+    <description lang="en_GB">The same Lichen &amp; Coral screensaver as "Lichen &amp; Coral (OpenGL)", built for 32-bit Android (armeabi-v7a), as on many Fire TV sticks, Google TV boxes and the Chromecast with Google TV. Install this one if your Android or Google TV Kodi is a 32-bit app; install "Lichen &amp; Coral (OpenGL)" on 64-bit Android and macOS. Detail defaults to Low here.
+
+Living growth models from lichenology and coral-reef science, grown live on screen. Three scenes take turns, each with fresh random parameters.
+
+Lichen on rock: colonies of up to eight lichen species settle on a procedurally weathered rock face and grow by Open-DLA (Desbenoit et al. 2004): particles of biomass wander along each colony's margin and stick with a probability set by light, moisture and how crowded the spot is, giving smooth crusts, lobed rosettes or branching fans. Each colony's radius follows the Hill and Seminara growth law, dR/dt = v R / (R + r0): slow and exponential while young, then a steady margin speed. New colonies arrive at the rate from Jettestuen's nucleation-and-growth law, so the rock is covered in about the scene length, and neighbours meet along the dark boundary lines seen on real map lichens. Some species die back in the middle into rings, freeing rock for newcomers.
+
+Reef ridges: a reef and a dissolved nutrient on the seabed, after Mistr and Bercovici (2003). Reef growth feeds on the nutrient (autocatalytic calcification), the current carries the nutrient across, and each ridge starves the water just behind it. Out of that come spur-and-groove ridges at right angles to the current, labyrinths and spots, slowly creeping upstream. Storms break up a patch now and then and the reef regrows.
+
+Coral colony: a 3D colony grows by accretion from a diffusing nutrient, after Merks et al. (2003, 2004). Tips that reach further into the nutrient catch more of it and split into branches with no branching rule at all. The growth form (branching staghorn, bushy, massive boulder or radial) and the strength of the current are random. The newest polyps glow in the living-tissue colour. The camera circles the colony as it grows.
+
+Lichen and reef are seen from straight above or as a 3D surface under a slowly moving camera. Settings choose the scenes, scene length, view, natural or vivid colours, the lichen species and growth forms, the reef current and storms, the coral form, the number of colonies and the detail level.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega, 32-bit ARM Android). It needs OpenGL or OpenGL ES 2.0. The growth models are reimplemented from the published equations of Desbenoit, Galin and Akkouche (2004), Hill (1981), Seminara et al. (2018), Jettestuen et al. (2010), Mistr and Bercovici (2003) and Merks et al. (2003, 2004); they are simplified for real-time display and are not scientific simulations.</disclaimer>
+    <platform>android</platform>
+    <license>MIT</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

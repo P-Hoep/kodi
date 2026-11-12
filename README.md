@@ -2,7 +2,7 @@
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
 live-camera window, a bird-sighting mosaic, a ship tracker, a scheduler, a flashcard app, a trivia
-quiz, a news reader, a maze builder, a music visualisation and an audiobook player for Kodi,
+quiz, a news reader, a maze builder, lichen and coral growth models, a music visualisation and an audiobook player for Kodi,
 published as one Kodi repository so Kodi installs them and keeps them up to date.
 
 Most add-ons are pure Python and run on any Kodi 19 (Matrix) or later device. The OpenGL add-ons
@@ -57,6 +57,8 @@ installed version in **Add-ons → My add-ons**.
 | [Particle Life (OpenGL, 32-bit Android)](#particle-life-opengl) | `screensaver.particlelife.gl.armv7` | 1.0.2 | Android 32-bit |
 | [Particle Life v2 (OpenGL)](#particle-life-v2-opengl) | `screensaver.particlelife_v2` | 1.1.0 | macOS, Android 64-bit |
 | [Particle Life v2 (OpenGL, 32-bit Android)](#particle-life-v2-opengl) | `screensaver.particlelife_v2.armv7` | 1.1.0 | Android 32-bit |
+| [Lichen & Coral (OpenGL)](#lichen--coral-opengl) | `screensaver.lichencoral` | 1.0.0 | macOS, Android 64-bit |
+| [Lichen & Coral (OpenGL, 32-bit Android)](#lichen--coral-opengl) | `screensaver.lichencoral.armv7` | 1.0.0 | Android 32-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -956,6 +958,37 @@ cmake -S . -B build-uni -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
   -DKODI_DEVKIT_INCLUDE=<xbmc>/xbmc/addons/kodi-dev-kit/include
 cmake --build build-uni
+```
+
+## Lichen & Coral (OpenGL)
+
+`screensaver.lichencoral` grows lichen and coral live on screen from published growth models.
+Three scenes take turns, each with fresh random parameters:
+
+![Lichen & Coral: a lichen-covered rock, reef ridges and a sea fan](screensaver.lichencoral/fanart.jpg)
+
+- **Lichen on rock:** up to eight species grow by Open-DLA (Desbenoit et al. 2004). Biomass
+  particles stick with probability `P = E·A`, where `E = min(light, indirect light, moisture)`
+  and `A = α + (1−α)·exp(−σ(n−τ)²)`. Each colony's radius follows `dR/dt = v·R/(R+r0)` (Hill
+  1981; Seminara et al. 2018). New colonies arrive at a rate set by Jettestuen et al.'s 2D
+  coverage-time law, so the rock fills in about one scene length. Some species die back into rings.
+- **Reef ridges:** a Mistr & Bercovici (2003)-style reef and nutrient field, with autocatalytic
+  calcification, a current and erosion. Spur-and-groove ridges, labyrinths and spots form and creep
+  upstream, and storms break up patches now and then.
+- **Coral colony (3D):** staghorn, bushy, table and sea-fan forms use the polyp-oriented model of
+  Merks et al. (2004): nutrient uptake shaded by the skeleton above, a Michaelis–Menten growth
+  step, budding past a spacing limit and death when crowded. The massive boulder grows by Laplacian
+  DLA (Merks et al. 2003).
+
+Lichen and reef are shown from straight above or as a lit 3D surface under a drifting camera; the
+coral is drawn as shaded sphere sprites with a circling camera. Settings choose the scenes, scene
+length, view, natural or vivid colours, lichen species and form, reef current and storms, coral
+form and colonies, and detail (the 32-bit build defaults to Low).
+
+```bash
+cd screensaver.lichencoral
+c++ -O2 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/sim_test && /tmp/sim_test
+./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
 ```
 
 ## ScreenMazer (OpenGL)
