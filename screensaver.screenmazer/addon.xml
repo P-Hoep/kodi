@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.screenmazer" name="ScreenMazer (OpenGL)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.screenmazer.dylib"
+             library_android="screensaver.screenmazer.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Builds a maze around the current time, solves it, and starts again</summary>
+    <description lang="en_GB">A Kodi port of ScreenMazer, the macOS screensaver that draws a maze cell by cell and then solves it, over and over. Each maze is carved by a randomised depth-first search that you watch grow across the screen, with the time it was made left standing as a block of digits somewhere in the maze. Once the maze is complete the path from the entrance at the bottom left to the exit on the right is traced in a second colour, then the screen fades to black and a new maze begins.
+
+The settings are the original's: the size of a maze cell, how long a maze takes to build and to solve, whether to solve it at all, the path and solution colours, the clock size and the 12- or 24-hour clock. Added for Kodi: a wall colour, the option to centre the clock instead of placing it at random, and turning the clock off. Cell sizes are measured on a 1080p screen and scaled, so the maze looks the same at 720p, 1080p and 4K.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Intel and Apple Silicon, and 64-bit Android). It needs OpenGL or OpenGL ES 2.0. ScreenMazer was created by Alex Beals (https://github.com/dado3212/ScreenMazer); this is a C++ port of its maze generator and animation with a new renderer and Kodi settings.</disclaimer>
+    <platform>osx android</platform>
+    <license>MIT</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

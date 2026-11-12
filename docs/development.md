@@ -50,6 +50,7 @@ screensaver.sandclock.gl/           native project: Sand Clock, Liquid Clock,
 screensaver.plant.gl/               native project: Growing Plant
 screensaver.infworld.gl/            native project: Endless World
 screensaver.particlelife_v2/        native project: Particle Life v2
+screensaver.screenmazer/            native project: ScreenMazer
 ```
 
 Each native project is one CMake build producing the Kodi module(s) and GLFW test harnesses. Its

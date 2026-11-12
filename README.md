@@ -2,8 +2,8 @@
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
 live-camera window, a bird-sighting mosaic, a ship tracker, a scheduler, a flashcard app, a trivia
-quiz, a news reader, a music visualisation and an audiobook player for Kodi, published as one Kodi
-repository so Kodi installs them and keeps them up to date.
+quiz, a news reader, a maze builder, a music visualisation and an audiobook player for Kodi,
+published as one Kodi repository so Kodi installs them and keeps them up to date.
 
 Most add-ons are pure Python and run on any Kodi 19 (Matrix) or later device. The OpenGL add-ons
 are native, GPU-drawn add-ons built for macOS (Intel and Apple Silicon) and Android, with
@@ -57,6 +57,8 @@ installed version in **Add-ons → My add-ons**.
 | [Particle Life (OpenGL, 32-bit Android)](#particle-life-opengl) | `screensaver.particlelife.gl.armv7` | 1.0.2 | Android 32-bit |
 | [Particle Life v2 (OpenGL)](#particle-life-v2-opengl) | `screensaver.particlelife_v2` | 1.1.0 | macOS, Android 64-bit |
 | [Particle Life v2 (OpenGL, 32-bit Android)](#particle-life-v2-opengl) | `screensaver.particlelife_v2.armv7` | 1.1.0 | Android 32-bit |
+| [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
+| [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
 | [Sand Clock (OpenGL, 32-bit Android)](#sand-clock-opengl) | `screensaver.sandclock.gl.armv7` | 1.0.0 | Android 32-bit |
 | [Cellular Automata (32-bit Android)](#cellular-automata) | `screensaver.automata.armv7` | 1.1.0 | Android 32-bit |
@@ -954,6 +956,39 @@ cmake -S . -B build-uni -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
   -DKODI_DEVKIT_INCLUDE=<xbmc>/xbmc/addons/kodi-dev-kit/include
 cmake --build build-uni
+```
+
+## ScreenMazer (OpenGL)
+
+`screensaver.screenmazer` is a port of [ScreenMazer](https://github.com/dado3212/ScreenMazer), Alex
+Beals' macOS screensaver that builds a maze and then solves it, over and over. A randomised
+depth-first search carves the maze cell by cell across the screen, around a block that shows the
+time the maze was made. When the maze is complete, the path from the entrance (bottom left) to the
+exit (right edge) is traced in a second colour, then everything fades to black and a new maze
+starts.
+
+![ScreenMazer: a grey maze with the time carved into it and the white solution path](screensaver.screenmazer/fanart.jpg)
+
+- **The original's settings:** cell size (2–15), build time (30 s by default), solve time (10 s),
+  solve on or off, path and solution colours, clock size (1–3) and a 12- or 24-hour clock.
+- **Added for Kodi:** a wall colour, the clock centred instead of at a random spot, and the clock
+  turned off. Cell sizes are measured on a 1080p screen and scaled, so the maze looks the same at
+  720p, 1080p and 4K.
+- **Rendering:** one texel per maze cell, updated on the CPU (only cells that are fading are
+  touched) and drawn as a single nearest-filtered quad, so even the densest maze is cheap.
+
+It ships as two Kodi add-ons, like the other native screensavers:
+
+- **ScreenMazer (OpenGL)** — macOS (universal, Intel and Apple Silicon) and 64-bit Android.
+- **ScreenMazer (OpenGL, 32-bit Android)** — for 32-bit Android Kodi.
+
+The code and the build instructions are in
+[screensaver.screenmazer](screensaver.screenmazer/README.md); the original Swift source is kept in
+`ScreenMazer-master/` for reference.
+
+```bash
+cd screensaver.screenmazer
+c++ -O2 -std=c++17 -Isrc tests/maze_test.cpp -o /tmp/maze_test && /tmp/maze_test
 ```
 
 ## Sand Clock (OpenGL)

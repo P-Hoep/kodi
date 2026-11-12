@@ -1,0 +1,94 @@
+# Kodi Media Center language file
+# Addon Name: ScreenMazer
+# Addon id: screensaver.screenmazer.armv7
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi Addons\n"
+"Language: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "#30000"
+msgid "General"
+msgstr ""
+
+msgctxt "#30001"
+msgid "Maze"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Solution"
+msgstr ""
+
+msgctxt "#30003"
+msgid "Clock"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Cell size (pixels at 1080p)"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Build time (seconds)"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Path colour"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Wall colour"
+msgstr ""
+
+msgctxt "#30020"
+msgid "Solve the maze"
+msgstr ""
+
+msgctxt "#30021"
+msgid "Solve time (seconds)"
+msgstr ""
+
+msgctxt "#30022"
+msgid "Solution colour"
+msgstr ""
+
+msgctxt "#30030"
+msgid "Carve the time into the maze"
+msgstr ""
+
+msgctxt "#30031"
+msgid "Clock size"
+msgstr ""
+
+msgctxt "#30032"
+msgid "24-hour clock"
+msgstr ""
+
+msgctxt "#30033"
+msgid "Clock position"
+msgstr ""
+
+msgctxt "#30100"
+msgid "Random"
+msgstr ""
+
+msgctxt "#30101"
+msgid "Centred"
+msgstr ""
+
+msgctxt "#30210"
+msgid "Size of one maze cell, in pixels on a 1080p screen; scaled for other resolutions. Smaller cells make a larger, denser maze."
+msgstr ""
+
+msgctxt "#30211"
+msgid "How long it takes to draw each maze, from the clock to the exit."
+msgstr ""
+
+msgctxt "#30221"
+msgid "How long it takes to trace the path from the entrance to the exit."
+msgstr ""
+
+msgctxt "#30230"
+msgid "Leave a block in the maze showing the time the maze was made, as the original does."
+msgstr ""
