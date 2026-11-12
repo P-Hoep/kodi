@@ -2,7 +2,7 @@
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
 live-camera window, a bird-sighting mosaic, a ship tracker, a scheduler, a flashcard app, a trivia
-quiz, a news reader, a maze builder, lichen and coral growth models, a music visualisation and an audiobook player for Kodi,
+quiz, a news reader, a maze builder, lichen and coral growth models, a floating space crab, a music visualisation and an audiobook player for Kodi,
 published as one Kodi repository so Kodi installs them and keeps them up to date.
 
 Most add-ons are pure Python and run on any Kodi 19 (Matrix) or later device. The OpenGL add-ons
@@ -59,6 +59,8 @@ installed version in **Add-ons → My add-ons**.
 | [Particle Life v2 (OpenGL, 32-bit Android)](#particle-life-v2-opengl) | `screensaver.particlelife_v2.armv7` | 1.1.0 | Android 32-bit |
 | [Lichen & Coral (OpenGL)](#lichen--coral-opengl) | `screensaver.lichencoral` | 1.0.0 | macOS, Android 64-bit |
 | [Lichen & Coral (OpenGL, 32-bit Android)](#lichen--coral-opengl) | `screensaver.lichencoral.armv7` | 1.0.0 | Android 32-bit |
+| [Space Crab (OpenGL)](#space-crab-opengl) | `screensaver.spacecrab` | 1.0.0 | macOS, Android 64-bit |
+| [Space Crab (OpenGL, 32-bit Android)](#space-crab-opengl) | `screensaver.spacecrab.armv7` | 1.0.0 | Android 32-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -989,6 +991,30 @@ form and colonies, and detail (the 32-bit build defaults to Low).
 cd screensaver.lichencoral
 c++ -O2 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/sim_test && /tmp/sim_test
 ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
+```
+
+## Space Crab (OpenGL)
+
+`screensaver.spacecrab` floats an animated crab, or up to twelve, in empty space. The crab is a
+rigged, textured and normal-mapped model playing its walk cycle on a loop, legs scuttling through
+nothing, skinned on the graphics card.
+
+![Space Crab: a crab floating among the stars](screensaver.spacecrab/fanart.jpg)
+
+- **Crab:** number of crabs; animation speed; a steady walk, a walk that speeds up, rests and
+  sometimes reverses, or back and forth; floating in place, wandering around the screen or
+  scuttling sideways across space; gentle sway, slow turning or tumbling head over heels; bob.
+- **Camera:** zoom (25 to 400 %), a slow push in and out, orbit speed and direction, height,
+  lens (wide, normal, telephoto) and a gentle handheld drift.
+- **Space:** black, deep blue or nebula background; stars (density; still, drifting or rushing
+  past at warp speed); warm, cool, rim or colour-cycling light. Detail Low halves the textures
+  and drops the normal map (the 32-bit build defaults to Low).
+
+Crab model: "Animated Crab rigged FREE" by TwilightFox on Sketchfab, Sketchfab Standard licence.
+
+```bash
+python3 tools/make_crab_model.py crab.glb   # bake the glTF into resources/model/ (both add-ons)
+cd screensaver.spacecrab && ./build_all.sh  # macOS dylib + Android arm64/armv7 libraries
 ```
 
 ## ScreenMazer (OpenGL)

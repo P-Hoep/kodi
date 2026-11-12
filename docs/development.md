@@ -52,6 +52,7 @@ screensaver.infworld.gl/            native project: Endless World
 screensaver.particlelife_v2/        native project: Particle Life v2
 screensaver.screenmazer/            native project: ScreenMazer
 screensaver.lichencoral/            native project: Lichen & Coral
+screensaver.spacecrab/              native project: Space Crab
 ```
 
 Each native project is one CMake build producing the Kodi module(s) and GLFW test harnesses. Its

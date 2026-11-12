@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.spacecrab.armv7" name="Space Crab (OpenGL, 32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_android="screensaver.spacecrab.armv7.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Space Crab for 32-bit Android Kodi</summary>
+    <description lang="en_GB">The same Space Crab screensaver as "Space Crab (OpenGL)", built for 32-bit Android (armeabi-v7a), as on many Fire TV sticks, Google TV boxes and the Chromecast with Google TV. Install this one if your Android or Google TV Kodi is a 32-bit app; install "Space Crab (OpenGL)" on 64-bit Android and macOS. Detail defaults to Low here.
+
+A crab, or a small crowd of them, floats in empty space and plays its walk cycle on a loop: legs scuttling through nothing, claws up, slowly turning in the starlight. The model is a fully rigged, textured and normal-mapped crab; its skeleton is animated on the graphics card.
+
+The crabs can float in place, wander around the screen or scuttle sideways right across space. The walk can be steady, vary between scuttling, resting and the odd reverse, or go back and forth. They can sway gently, turn slowly or tumble head over heels.
+
+Settings choose the number of crabs (1 to 12), the animation speed, the zoom, a slow push in and out, the camera orbit speed and direction, the camera height, the lens (wide, normal or telephoto), the background (black, deep blue or a nebula), the stars (density; still, slowly drifting or rushing past at warp speed), the lighting (warm sunlight, cool starlight, dramatic rim light or colour cycling) and the detail level.
+
+Crab model: "Animated Crab rigged FREE" by TwilightFox on Sketchfab, used under the Sketchfab Standard licence.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega, 32-bit ARM Android). It needs OpenGL or OpenGL ES 2.0. The crab model is by TwilightFox (sketchfab.com/twilightfox), used under the Sketchfab Standard licence; the add-on code is MIT.</disclaimer>
+    <platform>android</platform>
+    <license>MIT (code); crab model: Sketchfab Standard</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>
