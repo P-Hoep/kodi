@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.emergence" name="Emergence (OpenGL)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.emergence.dylib"
+             library_android="screensaver.emergence.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Slime mould, flocking birds and Particle Life in one world, alone or feeding each other</summary>
+    <description lang="en_GB">Three living simulations from this repository share one screen: the Physarum slime mould, the Dancing Boids flock and Particle Life's colour cells. Emergence rotates through seven scenes. Three show each simulation on its own; four couple them through the slime's scent map:
+
+Slime highways - every bird lays scent as it flies. The slime grows along the flight paths and the birds steer up its veins, so flock and network pull each other into rivers.
+Cell garden - the Particle Life cells are food. The slime forages a transport network between them, like Physarum between oat flakes, except that this food walks.
+Reef - the flock swims around the particle cells as fish around coral, splitting and closing again.
+Ecosystem - all three: the cells feed the slime, the slime's veins guide the flock, and the flock's scent feeds the slime in turn.
+
+Every scene starts with a new slime behaviour, palette, flock temperament and set of particle rules, and fades into the next after a few minutes; or keep to one scene. Like its three parents it runs on the CPU, split over up to four cores on a thread of its own, so it stays smooth on a TV stick; the graphics chip draws one textured quad, the particles and the birds.
+
+Settings: which scenes and how long each lasts, how strongly the simulations feel each other, the slime's behaviour, colour and palette, the number of flocks and hawks and how the birds look, the particle rules, colours and size, motion trails, dim, and the detail level, speed and threads.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Intel and Apple Silicon, and 64-bit Android). It needs OpenGL or OpenGL ES 2.0. On 32-bit Android Kodi (most Fire TV sticks) install "Emergence (OpenGL, 32-bit Android)" instead.</disclaimer>
+    <platform>osx android</platform>
+    <license>MIT</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

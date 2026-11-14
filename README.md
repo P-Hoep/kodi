@@ -2,7 +2,7 @@
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
 live-camera window, a bird-sighting mosaic, a ship tracker, a scheduler, a flashcard app, a trivia
-quiz, a news reader, a maze builder, lichen and coral growth models, a floating space crab, a flock of dancing boids, a CPU slime mould, a music visualisation and an audiobook player for Kodi,
+quiz, a news reader, a maze builder, lichen and coral growth models, a floating space crab, a flock of dancing boids, a CPU slime mould, all three of those living together, a music visualisation and an audiobook player for Kodi,
 published as one Kodi repository so Kodi installs them and keeps them up to date.
 
 Most add-ons are pure Python and run on any Kodi 19 (Matrix) or later device. The OpenGL add-ons
@@ -65,6 +65,8 @@ installed version in **Add-ons → My add-ons**.
 | [Dancing Boids (OpenGL, 32-bit Android)](#dancing-boids-opengl) | `screensaver.dancingboids.armv7` | 1.0.0 | Android 32-bit |
 | [Physarum v2 (OpenGL)](#physarum-v2-opengl) | `screensaver.physarum_v2` | 1.0.0 | macOS, Android 64-bit |
 | [Physarum v2 (OpenGL, 32-bit Android)](#physarum-v2-opengl) | `screensaver.physarum_v2.armv7` | 1.0.0 | Android 32-bit |
+| [Emergence (OpenGL)](#emergence-opengl) | `screensaver.emergence` | 1.0.0 | macOS, Android 64-bit |
+| [Emergence (OpenGL, 32-bit Android)](#emergence-opengl) | `screensaver.emergence.armv7` | 1.0.0 | Android 32-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -1084,6 +1086,56 @@ line with the step time and frame rate 20 s after the screensaver starts.
 c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/physarum_test -pthread && /tmp/physarum_test
 python3 tools/make_settings_physarum_v2.py   # settings for both add-ons
 cd screensaver.physarum_v2 && ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
+```
+
+## Emergence (OpenGL)
+
+`screensaver.emergence` puts three of the CPU simulations above into one world: the Physarum v2
+slime mould, the Dancing Boids flock and Particle Life v2's colour cells. It rotates through seven
+scenes, fading to black between them. Three show each simulation alone; four couple them through
+the slime's trail map, which works as the shared chemistry:
+
+![Emergence: the Ecosystem scene, particle cells feeding a slime network that guides the flock](screensaver.emergence/fanart.jpg)
+
+| Scene | What happens |
+|---|---|
+| Slime mould | Physarum v2 alone: any of its eleven behaviours, sometimes two species, five starts |
+| Murmuration | Dancing Boids alone, with the wandering lead point and a hawk |
+| Particle life | Particle Life v2 alone: random rules (changing one rule at a time) or the original's saved models, with random pulses |
+| Slime highways | Every bird lays scent as it flies; the slime grows along the flight paths, and the birds steer up its veins, so flock and network pull each other into rivers |
+| Cell garden | The particle cells are food: every particle lays scent, and the slime forages a transport network between the cells (Physarum's food-source experiments, with food that walks) |
+| Reef | The flock swims round the particle cells: the particles are splatted into a small blurred density map, the birds steer down its gradient, and the map glows softly behind the cells |
+| Ecosystem | All three: the cells feed the slime, the slime's veins guide the flock, and the flock's scent feeds the slime |
+
+- **Scenes:** all seven at random (never the same twice in a row), only the combinations, only the
+  three alone, or one scene; a new scene every 1 to 30 minutes; how strongly the simulations feel
+  each other.
+- **Variety:** every scene draws a new slime behaviour and palette, flock temperament and particle
+  rules. The combinations pick from the slime behaviours with veins thick enough to follow and the
+  particle models that stay lively at a short reach; Reef uses the original's cell-forming models
+  (Flower cell, Cells I-III) at 60 % of their reach.
+- **Look:** slime palette, neon or fire, eight palettes or a different one each scene, colour
+  cycling and brightness; one to four flocks, hawks, bird colour (blue alone and pale over the
+  slime by default, or per flock, heading or silver), shape and size; particle rules, colour count,
+  palette, size and glow; motion trails for the scenes without slime; dim.
+- **Performance:** a detail level (Low for TV sticks, Medium, High) that sizes each simulation for
+  the scene (a combination gives each a smaller share), speed (30/60/120 steps a second), threads.
+
+It is built the way its parents are: the simulations run on the CPU on a driver thread of its own
+with a worker pool, one step ahead of the picture, so Kodi's render thread never waits; scene
+changes happen on that thread behind the fade. The GPU gets one 8-bit texture and one vertex
+stream per step and draws one quad, the particles as points and the birds as triangles. The
+couplings cost little: a deposit per particle or bird, and four byte reads per bird. The three
+cores are copies with one hook each (`Deposit()` on the slime, a steering `Field` on the flock,
+and a Particle Life step split over the pool, which the original runs on one thread). Measured in
+Kodi at the Medium detail level on an Apple Silicon Mac: Ecosystem 3.9 ms a step, Reef 2.2-3.1 ms,
+Slime mould 2.7 ms, Particle life 4.0 ms, Murmuration 1.2-1.4 ms. Kodi's log gets one line with
+the step time and frame rate 20 s after the screensaver starts, and one line per scene.
+
+```bash
+c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/emergence_test -pthread && /tmp/emergence_test
+python3 tools/make_settings_emergence.py   # settings for both add-ons
+cd screensaver.emergence && ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
 ```
 
 ## ScreenMazer (OpenGL)
