@@ -2,7 +2,7 @@
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
 live-camera window, a bird-sighting mosaic, a ship tracker, a scheduler, a flashcard app, a trivia
-quiz, a news reader, a maze builder, lichen and coral growth models, a floating space crab, a flock of dancing boids, a music visualisation and an audiobook player for Kodi,
+quiz, a news reader, a maze builder, lichen and coral growth models, a floating space crab, a flock of dancing boids, a CPU slime mould, a music visualisation and an audiobook player for Kodi,
 published as one Kodi repository so Kodi installs them and keeps them up to date.
 
 Most add-ons are pure Python and run on any Kodi 19 (Matrix) or later device. The OpenGL add-ons
@@ -63,6 +63,8 @@ installed version in **Add-ons → My add-ons**.
 | [Space Crab (OpenGL, 32-bit Android)](#space-crab-opengl) | `screensaver.spacecrab.armv7` | 1.0.0 | Android 32-bit |
 | [Dancing Boids (OpenGL)](#dancing-boids-opengl) | `screensaver.dancingboids` | 1.0.0 | macOS, Android 64-bit |
 | [Dancing Boids (OpenGL, 32-bit Android)](#dancing-boids-opengl) | `screensaver.dancingboids.armv7` | 1.0.0 | Android 32-bit |
+| [Physarum v2 (OpenGL)](#physarum-v2-opengl) | `screensaver.physarum_v2` | 1.0.0 | macOS, Android 64-bit |
+| [Physarum v2 (OpenGL, 32-bit Android)](#physarum-v2-opengl) | `screensaver.physarum_v2.armv7` | 1.0.0 | Android 32-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -1050,6 +1052,38 @@ after the screensaver starts.
 c++ -O2 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/boids_test -pthread && /tmp/boids_test
 python3 tools/make_settings_dancingboids.py   # settings for both add-ons
 cd screensaver.dancingboids && ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
+```
+
+## Physarum v2 (OpenGL)
+
+`screensaver.physarum_v2` is the Physarum slime mould (Jeff Jones's agent model) rebuilt to run on
+the CPU, so it stays smooth on 32-bit TV sticks whose GPUs struggle with the GPU Physarum add-ons
+(float render targets, vertex texture fetch, a dozen passes a step). The GPU only gets one small
+8-bit texture per step and draws one quad.
+
+![Physarum v2: the fine web preset](screensaver.physarum_v2/fanart.jpg)
+
+- **Behaviour:** the eleven Physarum presets, a different one at every restart, or Custom; up to
+  three species that avoid each other; pattern scale; six starting patterns; restart timer.
+- **Look:** palette, neon, fire or one colour; eight palettes, colour cycling, brightness,
+  background, dim.
+- **Performance:** 25 thousand to 1 million agents, trail map 320 x 180 to 1920 x 1080, speed
+  (30/60/120 steps a second), simulation threads.
+
+How it is made cheap (following Particle Life v2 and Dancing Boids): 16-bit fixed-point trail with
+species interleaved; 16.16 fixed-point positions and 32-bit angles; a ghost border around the
+trail so a sensor read is `trail[cell + delta[heading]]` with no wrapping; branch-free turning;
+agents processed in batches and counting-sorted by tile every 16 steps; an integer, NEON-vectorised
+diffuse/decay pass that also writes the 8-bit picture; a worker pool on a driver thread of its
+own, so Kodi's render thread never waits for a step. Measured in Kodi: 250,000 agents on 960 x 540
+take 1.6 ms a step on an Apple Silicon Mac; 150,000 agents on 640 x 360 (the 32-bit default) take
+6.1 ms a step on a Fire TV Stick 4K Max, at 60 steps and 60 frames a second. Kodi's log gets one
+line with the step time and frame rate 20 s after the screensaver starts.
+
+```bash
+c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/physarum_test -pthread && /tmp/physarum_test
+python3 tools/make_settings_physarum_v2.py   # settings for both add-ons
+cd screensaver.physarum_v2 && ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
 ```
 
 ## ScreenMazer (OpenGL)

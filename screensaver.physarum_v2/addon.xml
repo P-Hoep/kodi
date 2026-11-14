@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.physarum_v2" name="Physarum v2 (OpenGL)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.physarum_v2.dylib"
+             library_android="screensaver.physarum_v2.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">The Physarum slime mould rebuilt to run on the CPU, light enough for a TV stick</summary>
+    <description lang="en_GB">A living transport network: hundreds of thousands of agents each sense the trail ahead of them, turn towards the strongest scent, move on and leave their own trail, which spreads and fades. Together they weave networks that branch, merge and keep reorganising, like the slime mould Physarum polycephalum (Jeff Jones's model, as Sage Jenson draws it).
+
+This is a new build of the Physarum screensaver made to be light. The first Physarum add-ons run everything on the graphics chip, which needs float textures and a dozen drawing passes a step; the small GPUs in TV sticks struggle with that. Physarum v2 runs the slime on the CPU instead, the way Particle Life v2 and Dancing Boids do: 16-bit fixed-point trails, integer headings, no branches in the agent loop, and the work split over up to four cores on a thread of its own, so Kodi's drawing never waits for it. The graphics chip only gets one small 8-bit picture a step and draws it with a single quad.
+
+Eleven behaviours (transport network, fine web, double-veined cells, coarse veins, honeycomb, labyrinth, worms, spots and comets, foam, long threads, restless), a different one at every restart, or Custom with every parameter in the settings; up to three species that follow their own trail and avoid the others; six starting patterns; a restart timer; palette, neon, fire or one-colour looks with eight palettes, slow colour cycling, brightness, background and dim; and the agent count, trail resolution, speed and number of threads.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Intel and Apple Silicon, and 64-bit Android). It needs OpenGL or OpenGL ES 2.0. On 32-bit Android Kodi (most Fire TV sticks) install "Physarum v2 (OpenGL, 32-bit Android)" instead.</disclaimer>
+    <platform>osx android</platform>
+    <license>MIT</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

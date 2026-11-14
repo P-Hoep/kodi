@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.physarum_v2.armv7" name="Physarum v2 (OpenGL, 32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_android="screensaver.physarum_v2.armv7.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">The Physarum slime mould rebuilt to run on the CPU, for 32-bit Android Kodi</summary>
+    <description lang="en_GB">The same Physarum v2 screensaver as "Physarum v2 (OpenGL)", built for 32-bit Android (armeabi-v7a), as on many Fire TV sticks, Google TV boxes and the Chromecast with Google TV. Install this one if your Android or Google TV Kodi is a 32-bit app; install "Physarum v2 (OpenGL)" on 64-bit Android and macOS.
+
+A living transport network: agents each sense the trail ahead of them, turn towards the strongest scent, move on and leave their own trail, which spreads and fades, and together they weave networks that branch, merge and keep reorganising. Unlike the first Physarum add-ons, which run on the graphics chip, this one runs the slime on the CPU, split over the box's cores on a thread of its own, and hands the GPU one small picture a step, so it stays smooth on a TV stick.
+
+This build starts lighter for a small box: 150 thousand agents on a 640 x 360 trail. Eleven behaviours or Custom, up to three species, six starting patterns, a restart timer, palette, neon, fire or one-colour looks, and the agent count, trail resolution, speed and threads are all in the add-on settings.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega, 32-bit ARM Android). It needs OpenGL ES 2.0.</disclaimer>
+    <platform>android</platform>
+    <license>MIT</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>
