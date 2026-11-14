@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.dancingboids.armv7" name="Dancing Boids (OpenGL, 32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_android="screensaver.dancingboids.armv7.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Dancing Boids tuned for 32-bit Android Kodi</summary>
+    <description lang="en_GB">The same Dancing Boids screensaver as "Dancing Boids (OpenGL)", built for 32-bit Android (armeabi-v7a), as on many Fire TV sticks, Google TV boxes and the Chromecast with Google TV. Install this one if your Android or Google TV Kodi is a 32-bit app; install "Dancing Boids (OpenGL)" on 64-bit Android and macOS.
+
+Thousands of birds follow three simple rules, keep apart, fly the way your neighbours fly and stay with the group, and from them come flocks that pour, split, swirl and join again like starlings at dusk. A wandering point leads the flock in loops, a hawk dives through it, and every 90 seconds a new flock fades in. Colours, shapes, trails, a dusk-sky mode and every flocking rule are in the add-on settings.
+
+This build starts lighter for a small box: 1,500 boids, each listening to at most 24 neighbours, with the simulation spread over the box's CPU cores. Lower the number of boids if the motion stutters.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega, 32-bit ARM Android). It needs OpenGL ES 2.0. Dancing Boids was created by Netlight (https://github.com/netlight/dancing-boids, MIT) on top of the boids model by Craig Reynolds (1987); this is an independent native port with its own simulation, renderer and settings.</disclaimer>
+    <platform>android</platform>
+    <license>MIT</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

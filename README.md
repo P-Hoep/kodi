@@ -2,7 +2,7 @@
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
 live-camera window, a bird-sighting mosaic, a ship tracker, a scheduler, a flashcard app, a trivia
-quiz, a news reader, a maze builder, lichen and coral growth models, a floating space crab, a music visualisation and an audiobook player for Kodi,
+quiz, a news reader, a maze builder, lichen and coral growth models, a floating space crab, a flock of dancing boids, a music visualisation and an audiobook player for Kodi,
 published as one Kodi repository so Kodi installs them and keeps them up to date.
 
 Most add-ons are pure Python and run on any Kodi 19 (Matrix) or later device. The OpenGL add-ons
@@ -61,6 +61,8 @@ installed version in **Add-ons → My add-ons**.
 | [Lichen & Coral (OpenGL, 32-bit Android)](#lichen--coral-opengl) | `screensaver.lichencoral.armv7` | 1.0.0 | Android 32-bit |
 | [Space Crab (OpenGL)](#space-crab-opengl) | `screensaver.spacecrab` | 1.0.0 | macOS, Android 64-bit |
 | [Space Crab (OpenGL, 32-bit Android)](#space-crab-opengl) | `screensaver.spacecrab.armv7` | 1.0.0 | Android 32-bit |
+| [Dancing Boids (OpenGL)](#dancing-boids-opengl) | `screensaver.dancingboids` | 1.0.0 | macOS, Android 64-bit |
+| [Dancing Boids (OpenGL, 32-bit Android)](#dancing-boids-opengl) | `screensaver.dancingboids.armv7` | 1.0.0 | Android 32-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -1015,6 +1017,39 @@ Crab model: "Animated Crab rigged FREE" by TwilightFox on Sketchfab, Sketchfab S
 ```bash
 python3 tools/make_crab_model.py crab.glb   # bake the glTF into resources/model/ (both add-ons)
 cd screensaver.spacecrab && ./build_all.sh  # macOS dylib + Android arm64/armv7 libraries
+```
+
+## Dancing Boids (OpenGL)
+
+`screensaver.dancingboids` is a native take on [Dancing Boids](https://github.com/netlight/dancing-boids),
+Netlight's macOS screensaver: thousands of birds following Craig Reynolds' three rules (keep
+apart, fly the way your neighbours fly, stay with the group) pour, split, swirl and join again.
+A slowly wandering point leads the flock in loops, a hawk dives through it, and every 90 seconds
+the flock fades out and a new one, with a slightly different temperament, fades in.
+
+![Dancing Boids: flocks of glowing darts coloured by heading](screensaver.dancingboids/fanart.jpg)
+
+- **Flock:** 100 to 10,000 boids; up to four flocks that keep to their own kind; speed; vision;
+  separation, alignment and cohesion strength; turn at the edges or wrap around; the wandering
+  lead; up to four hawks; how often a new flock starts and whether its behaviour varies.
+- **Look:** the original's blue triangles, one colour per flock, rainbow by heading, colour by
+  speed or random colours; triangles, slim darts or dots; size, glow, motion trails, dim; or dark
+  starlings against a dusk sky.
+- **Performance:** steps per second, simulation threads (automatic: one per core, up to 4) and
+  how many neighbours each boid listens to.
+
+Built the same way as Particle Life v2: a uniform grid rebuilt every step by counting sort, with
+the boid data itself permuted into cell order; a synchronous update split over worker threads
+(bit-identical to one thread); no square root in the neighbour loop; a cap on neighbours per
+boid; the whole flock streamed as one vertex buffer and drawn with one call. Measured per step:
+3,000 boids 1.0 ms on an Apple Silicon Mac in Kodi; 1,500 boids (the 32-bit default) 2.1 ms in
+Kodi on a Fire TV Stick 4K Max. Kodi's log gets one line with the step time and frame rate 20 s
+after the screensaver starts.
+
+```bash
+c++ -O2 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/boids_test -pthread && /tmp/boids_test
+python3 tools/make_settings_dancingboids.py   # settings for both add-ons
+cd screensaver.dancingboids && ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
 ```
 
 ## ScreenMazer (OpenGL)

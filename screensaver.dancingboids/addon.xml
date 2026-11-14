@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.dancingboids" name="Dancing Boids (OpenGL)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.dancingboids.dylib"
+             library_android="screensaver.dancingboids.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Thousands of flocking birds that swirl, split and join again, chased by a hawk</summary>
+    <description lang="en_GB">A Kodi screensaver after the "Dancing Boids" macOS screensaver: thousands of birds that follow three simple rules, keep apart, fly the way your neighbours fly and stay with the group, and from them come flocks that pour, split, swirl and join again like starlings at dusk. A slowly wandering point leads the flock in loops and figure eights, and a hawk or two dives through it, scattering the birds. Every 90 seconds the flock fades out and a new one, with a slightly different temperament, fades in.
+
+The settings cover the flock (100 to 10,000 boids; up to four flocks that each keep to their own kind; speed; how far a boid sees; the strength of separation, alignment and cohesion; turning back at the screen edges or wrapping around; the wandering lead; up to four hawks; how often a new flock starts) and the look (the original's blue triangles, one colour per flock, rainbow by heading, colour by speed or random colours; triangles, slim darts or dots; size; a glow; motion trails; or dark starlings against a dusk sky).
+
+The simulation is built to be light: a uniform neighbour grid rebuilt every step with the birds sorted into it, a cap on how many neighbours each bird listens to, and the work split over up to four CPU cores. 4,000 boids cost about half a millisecond a step on a desktop, and the whole flock is drawn with a single OpenGL call.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Intel and Apple Silicon, and 64-bit Android). It needs OpenGL or OpenGL ES 2.0. Dancing Boids was created by Netlight (https://github.com/netlight/dancing-boids, MIT) on top of the boids model by Craig Reynolds (1987); this is an independent native port with its own simulation, renderer and settings.</disclaimer>
+    <platform>osx android</platform>
+    <license>MIT</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

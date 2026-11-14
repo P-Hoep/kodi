@@ -243,7 +243,8 @@ The native add-ons draw with OpenGL / OpenGL ES (not WebGL). Their source lives 
 `screensaver.sandclock.gl` (Sand Clock, Liquid Clock, Cellular Automata, Physarum, Tetris AI,
 Particle Life), `screensaver.infworld.gl` (Endless World), `screensaver.plant.gl` (Growing
 Plant), `screensaver.particlelife_v2` (Particle Life v2), `screensaver.screenmazer`
-(ScreenMazer), `screensaver.lichencoral` (Lichen & Coral) and `screensaver.spacecrab` (Space Crab). The Kodi-facing folders at the top
+(ScreenMazer), `screensaver.lichencoral` (Lichen & Coral), `screensaver.spacecrab` (Space Crab) and
+`screensaver.dancingboids` (Dancing Boids). The Kodi-facing folders at the top
 level contain `addon.xml`, resources AND the built library.
 
 ### What each add-on needs
@@ -259,6 +260,7 @@ level contain `addon.xml`, resources AND the built library.
 | `screensaver.screenmazer` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `screensaver.lichencoral` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `screensaver.spacecrab` | `.dylib` | `.so` | separate `.armv7` add-on |
+| `screensaver.dancingboids` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `visualization.physarum.lite` | `.dylib` | `.so` | separate `.armv7` add-on |
 
 Some GL add-ons exist **only** as 32-bit Android companions in this repository
