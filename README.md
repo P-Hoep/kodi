@@ -71,6 +71,8 @@ installed version in **Add-ons → My add-ons**.
 | [Sand Clock v2 (OpenGL, 32-bit Android)](#sand-clock-v2-opengl) | `screensaver.sandclock_v2.armv7` | 1.0.0 | Android 32-bit |
 | [Alien Life (OpenGL)](#alien-life-opengl) | `screensaver.alienlife` | 1.0.0 | macOS, Android 64-bit |
 | [Alien Life (OpenGL, 32-bit Android)](#alien-life-opengl) | `screensaver.alienlife.armv7` | 1.0.0 | Android 32-bit |
+| [EvolveLife (OpenGL)](#evolvelife-opengl) | `screensaver.evolvelife` | 1.0.0 | macOS, Android 64-bit |
+| [EvolveLife (OpenGL, 32-bit Android)](#evolvelife-opengl) | `screensaver.evolvelife.armv7` | 1.0.0 | Android 32-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -1244,6 +1246,65 @@ screensaver starts.
 c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/alien_test -pthread && /tmp/alien_test
 python3 tools/make_settings_alienlife.py   # settings for both add-ons
 cd screensaver.alienlife && ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
+```
+
+## EvolveLife (OpenGL)
+
+`screensaver.evolvelife` is an aquarium for evolution, built from the specification in
+[EvolveLife.md](EvolveLife.md). A population of soft, luminous creatures tries a goal; the first
+generations flail and topple, and within minutes the bodies and the way they move visibly improve.
+Every run starts from a new random seed with random creatures and random goals, and nothing is
+saved, so no two sessions end up in the same place.
+
+![EvolveLife: evolved creatures on their course, with the goal, the ticker and the champion's live brain](screensaver.evolvelife/fanart.jpg)
+
+- **Bodies** grow from a genome after Karl Sims: a graph of parts whose edges hang a child segment
+  off one end of its parent, with repeat counts (chains, tails), mirrored twins (front and back
+  legs) and bounded recursion. Mutation adds, removes, duplicates and reattaches parts, changes
+  symmetry and grows fins; every offspring is repaired, re-rolled if degenerate, and never
+  crashes or explodes (200,000 fuzzed offspring, 0 invalid).
+- **Brains** are evolved with NEAT (innovation numbers, crossover, speciation, recurrent links)
+  behind a fixed interface: 16 joint slots, 8 foot contacts, body sense, the direction to the goal
+  and two clocks for rhythm. Body and brain are inherited together. No gait is written anywhere.
+- **Goals:** travel far, reach a beacon, climb a hill to a beacon, cross a chasm, jump as high as
+  possible, glide from a cliff, run the hurdles, each on its own seeded terrain with its own
+  gravity, friction and wind. A goal lasts 8 to 40 generations (or until progress stalls) and the
+  population carries over. Anti-exploit rules: progress counts along the goal's axis only, glitch
+  speeds and solver blow-ups score zero, jittering joints are penalised, motors weaken when the
+  energy budget runs out.
+- **The stage** replays each finished generation live: the champion, the best of the rest and a
+  random sample run their exact evaluated trial in one world (they never collide), and a camera
+  Director eases between a reveal of the goal, wide shots and the leader; at the end the winners
+  brighten and the rest fade.
+- **The show:** goal and world, the event ticker (records, species born and extinct, fins
+  appearing, milestones, exploits caught), live best/mean sparklines, the champion's brain firing
+  as it moves, and a rotating card: champion profile, goal briefing, run totals, fitness history,
+  species over time, brain growth, family tree, then and now (with a ghost of an early champion on
+  the course), milestones, hall of fame, commentary, facts, species map. Off, Light, Rich (the
+  default) or Full; panels drift and swap sides every ten minutes against burn-in.
+- **Settings:** performance profile, population, evolution speed (generations per round), goal,
+  goal change, complexity, mutation, immigrants, gravity; quality, camera, information level,
+  brain view, ticker, names, palette (warm dusk, cool night, neon, mono), motes, brightness cap,
+  text size; each info card; Kodi log detail, threads and a fixed seed.
+
+The spec names Box2D and MultiNEAT; this build has neither, so it stays dependency-free and light
+enough for 32-bit TV sticks, the way Dancing Boids, Emergence and Alien Life are. A creature is at
+most 17 point masses and 16 rods stepped by a position-based solver whose joint motors conserve
+momentum (a creature only moves by pushing on the ground or the air): about 2 us a step. Each
+generation is evaluated headless over low-priority worker threads, handed out one creature at a
+time, bit-identical to one thread, and the stage's live replay matches the evaluation exactly.
+The evolver never runs more than a few generations ahead of the stage; the stage and HUD are
+built on a driver thread one step ahead of Render(), and the GPU gets three draw calls a frame
+(one shader for every shape, one for text) from a baked Inter atlas. An adaptive governor shows
+fewer creatures if a stage tick gets expensive. Measured on an Apple Silicon Mac: a generation
+takes 21 ms (Low, 32 creatures), 44 ms (Balanced, 60) and 190 ms (High, 120 creatures, 2 trials
+each) on 3 threads; the stage costs well under a millisecond a tick. Not yet measured on a Fire
+TV stick. Kodi's log gets a line per generation (Summary) and the stage cost 20 s after start.
+
+```bash
+c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/evolve_test -pthread && /tmp/evolve_test
+python3 tools/make_settings_evolvelife.py   # settings for both add-ons
+cd screensaver.evolvelife && ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
 ```
 
 ## ScreenMazer (OpenGL)

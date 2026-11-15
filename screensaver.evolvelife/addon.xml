@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.evolvelife" name="EvolveLife (OpenGL)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.evolvelife.dylib"
+             library_android="screensaver.evolvelife.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Glowing creatures evolve their bodies and brains from scratch to walk, climb, leap and glide, while the screen tells the story of the run</summary>
+    <description lang="en_GB">An aquarium for evolution. A population of soft, luminous creatures tries a goal: travel far, reach a beacon, climb a hill, cross a chasm, jump as high as it can, glide from a cliff or run the hurdles. The first generations flail and topple; within minutes the bodies and the way they move visibly improve, and because every run starts from a new random seed with random creatures and random goals, no two sessions end up in the same place.
+
+Nothing moving here was designed. Each creature is a body grown from a genome (a graph of parts with repeated segments, mirrored limbs and recursion, after Karl Sims) and a brain evolved with NEAT, the two inherited together. Each one is tested alone in its own copy of the world, many times faster than real time; the stage then replays the champion, the best of the rest and a random sample of each finished generation, live, while the next ones are being bred. Species keep different body plans alive, fresh random creatures arrive every generation, and the goal changes every so often, so the population has to adapt.
+
+The screen is also a show about the run: the goal and the world, the champion's brain firing as it moves, live fitness charts, an event ticker (new records, species born and gone extinct, fins appearing, exploits caught) and a rotating info card: the champion's profile, the goal briefing, run totals, fitness and species history, brain growth, the family tree, then and now (with a ghost of an early champion on the course), milestones, the hall of fame, commentary and short facts about evolution. Choose how much of it to show, or none.
+
+Built to be light, like Dancing Boids, Emergence and Alien Life: each creature is at most 17 point masses and 16 rods stepped by a small position-based solver in a few microseconds, generations are evaluated on low-priority worker threads, and the whole picture is three draw calls.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Intel and Apple Silicon, and 64-bit Android). It needs OpenGL or OpenGL ES 2.0. The on-screen text uses the Inter typeface (SIL Open Font License 1.1). Nothing is saved between runs.</disclaimer>
+    <platform>osx android</platform>
+    <license>MIT</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.evolvelife.armv7" name="EvolveLife (OpenGL, 32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_android="screensaver.evolvelife.armv7.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">EvolveLife tuned for 32-bit Android Kodi</summary>
+    <description lang="en_GB">The same EvolveLife screensaver as "EvolveLife (OpenGL)", built for 32-bit Android (armeabi-v7a), as on many Fire TV sticks, Google TV boxes and the Chromecast with Google TV. Install this one if your Android or Google TV Kodi is a 32-bit app; install "EvolveLife (OpenGL)" on 64-bit Android and macOS.
+
+Glowing creatures evolve their bodies and brains from scratch to travel, reach beacons, climb, cross chasms, leap and glide, while the screen shows the champion's brain firing, live fitness charts, an event ticker and rotating cards about the run. Every run starts from a new random seed with random creatures and random goals.
+
+This build starts with the Low profile (32 creatures a generation, up to 8 segments each, 12 on stage), sized for a TV stick, with evolution on low-priority threads.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega, 32-bit ARM Android). It needs OpenGL ES 2.0. The on-screen text uses the Inter typeface (SIL Open Font License 1.1). Nothing is saved between runs.</disclaimer>
+    <platform>android</platform>
+    <license>MIT</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>
