@@ -69,6 +69,8 @@ installed version in **Add-ons → My add-ons**.
 | [Emergence (OpenGL, 32-bit Android)](#emergence-opengl) | `screensaver.emergence.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock v2 (OpenGL)](#sand-clock-v2-opengl) | `screensaver.sandclock_v2` | 1.0.0 | macOS, Android 64-bit |
 | [Sand Clock v2 (OpenGL, 32-bit Android)](#sand-clock-v2-opengl) | `screensaver.sandclock_v2.armv7` | 1.0.0 | Android 32-bit |
+| [Alien Life (OpenGL)](#alien-life-opengl) | `screensaver.alienlife` | 1.0.0 | macOS, Android 64-bit |
+| [Alien Life (OpenGL, 32-bit Android)](#alien-life-opengl) | `screensaver.alienlife.armv7` | 1.0.0 | Android 32-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -1189,6 +1191,59 @@ c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/sandclock2_test -pthread && 
 python3 tools/make_sandclock_v2_fonts.py   # glyph masks (src/Glyphs.h) from the Sand Clock fonts
 python3 tools/make_settings_sandclock_v2.py   # settings for both add-ons
 cd screensaver.sandclock_v2 && ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
+```
+
+## Alien Life (OpenGL)
+
+`screensaver.alienlife` is a small CPU take on [ALIEN](https://github.com/chrxh/alien), Christian
+Heinemann's GPU artificial life simulator. Every creature is a body of glowing cells held together
+by elastic connections and built cell by cell from its genome. Each cell has a type and a tiny
+neural network, and signals travel from the last node of the genome towards node 0, one cell per
+cycle, so a sensor at the tail steers the muscles in front of it. Energy never appears out of
+nothing: a fixed budget circulates between an external pool, the energy particles that radiation
+sources emit, and the creatures.
+
+![Alien Life: grazers of every colour crowd a radiation source while red hunters roam](screensaver.alienlife/fanart.jpg)
+
+- **Cells:** sensors (look for food, prey or kin on a coarse density map and report how strong and
+  in which direction), muscles (push the body, turned by the signal), generators (a heartbeat),
+  digestors (raw energy needs them, as in ALIEN: a creature without one keeps a tenth of what it
+  eats), attackers (steal energy from touching cells of other lineages), defenders (blunt attacks)
+  and base cells. Bodies are worms, stiff ribbons of triangles, rings, or flowers of six petals
+  with a tail.
+- **Life:** a creature pays upkeep for every cell (muscles and attackers twice) and dies when its
+  energy runs out or it grows old; its cells grey, fall apart and release their energy as
+  particles. A well-fed creature builds an offspring at its tail, cell by cell, and cuts it free
+  with half its surplus and a copy of its genome that may have mutated: a network weight, a bend, a
+  cell type, a node more or less, the body shape, now and then a new colour. Ten mutations found a
+  new lineage.
+- **Worlds:** Grazers (worms, ribbons, rings and flowers), Grazers and hunters (red predators among
+  them) and a Primordial soup of random genomes; a different one each time or one of them; a new
+  world every 20 minutes or never. World size (Small for TV sticks, Medium, Large), energy,
+  mutation rate, number of radiation sources and muscle strength.
+- **Look:** colour by genome as ALIEN does, by cell type, by lineage or by energy; cell size; glow;
+  connections; energy particles; the sources' nebula glow; motion trails; dim. Eating, attacking
+  and being built light a cell up.
+- **Performance:** speed (30/60/120 steps a second) and simulation threads.
+
+Built the way Dancing Boids and Emergence are: cells live in fixed structure-of-arrays slots with a
+free list; a contact grid is rebuilt every step by counting sort with the positions gathered into
+cell order; the contact, connection, muscle and integration pass and the energy particle pass each
+write only their own element, so they are split over a worker pool with results bit-identical to
+one thread; everything else (eating, attacks, building, death, emission) is a short serial pass;
+creature logic runs once per 6-step cycle, staggered over the creatures; no square root in the
+contact loop unless two cells touch. The world steps on a driver thread one step ahead of the
+picture, and the GPU gets one vertex stream a step: connections as lines, particles and cells as
+point sprites. Measured in Kodi: 0.9-1.0 ms a step at the Medium size on an Apple Silicon Mac
+(118 frames a second); 2.2 ms a step at the Small size on a Fire TV Stick 4K Max (32-bit, 3
+threads, 60 steps and 60 frames a second), where the benchmark alone takes 1.0-1.1 ms a step with
+1,500-1,750 cells. Kodi's log gets one line with the step time and frame rate 20 s after the
+screensaver starts.
+
+```bash
+c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/alien_test -pthread && /tmp/alien_test
+python3 tools/make_settings_alienlife.py   # settings for both add-ons
+cd screensaver.alienlife && ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
 ```
 
 ## ScreenMazer (OpenGL)

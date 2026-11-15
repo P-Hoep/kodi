@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.alienlife" name="Alien Life (OpenGL)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.alienlife.dylib"
+             library_android="screensaver.alienlife.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">An evolving world of digital creatures: glowing cell bodies that graze, hunt, bud offspring and mutate</summary>
+    <description lang="en_GB">A screensaver after ALIEN, the artificial life simulator: a world of digital creatures, each a small body of glowing cells held together by elastic connections and built cell by cell from its genome. Sensors look for food or prey, muscles swim the body towards it, digestors turn the energy particles that radiation sources emit into life, attackers steal energy from creatures of other lineages and defenders blunt their attacks. A well-fed creature builds an offspring at its tail, cell by cell, and sets it free with a copy of its genome that may have mutated: a new cell type, a different bend, a rewired neural network, now and then a new colour. Nobody tells them what to become; the energy is limited, so the ones that gather it best spread and the others die out, and what you see after half an hour is not what the world started with.
+
+Three worlds: Grazers (worms, ribbons, rings and flowers that live off the radiation), Grazers and hunters (with red predators among them) and a Primordial soup of random genomes left to sort themselves out. A new world fades in every 20 minutes, or never.
+
+The settings cover the world (which one, size, energy, mutation rate, number of radiation sources, muscle strength, how often a new world starts) and the look (colour by genome as ALIEN does, by cell type, by lineage or by energy; cell size; glow; connections; energy particles; the sources' glow; motion trails; dim).
+
+The simulation runs on the CPU and is built to be light, like Dancing Boids and Emergence: cells in fixed slots, a contact grid rebuilt every step by counting sort, a contact, bond and movement pass split over up to four cores with results identical to one, creature logic once per 6-step cycle, and the whole world drawn from one vertex buffer.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Intel and Apple Silicon, and 64-bit Android). It needs OpenGL or OpenGL ES 2.0. Inspired by ALIEN by Christian Heinemann (https://github.com/chrxh/alien, BSD 3-Clause); this is an independent, much smaller CPU simulation with its own renderer and settings, and contains no ALIEN code.</disclaimer>
+    <platform>osx android</platform>
+    <license>MIT</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>
