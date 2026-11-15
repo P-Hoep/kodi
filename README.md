@@ -71,8 +71,8 @@ installed version in **Add-ons → My add-ons**.
 | [Sand Clock v2 (OpenGL, 32-bit Android)](#sand-clock-v2-opengl) | `screensaver.sandclock_v2.armv7` | 1.0.0 | Android 32-bit |
 | [Alien Life (OpenGL)](#alien-life-opengl) | `screensaver.alienlife` | 1.0.0 | macOS, Android 64-bit |
 | [Alien Life (OpenGL, 32-bit Android)](#alien-life-opengl) | `screensaver.alienlife.armv7` | 1.0.0 | Android 32-bit |
-| [EvolveLife (OpenGL)](#evolvelife-opengl) | `screensaver.evolvelife` | 1.1.0 | macOS, Android 64-bit |
-| [EvolveLife (OpenGL, 32-bit Android)](#evolvelife-opengl) | `screensaver.evolvelife.armv7` | 1.1.0 | Android 32-bit |
+| [EvolveLife (OpenGL)](#evolvelife-opengl) | `screensaver.evolvelife` | 1.2.0 | macOS, Android 64-bit |
+| [EvolveLife (OpenGL, 32-bit Android)](#evolvelife-opengl) | `screensaver.evolvelife.armv7` | 1.2.0 | Android 32-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -1267,7 +1267,9 @@ saved, so no two sessions end up in the same place.
   behind a fixed interface: 16 joint slots, 8 foot contacts, body sense, the direction to the goal
   and two clocks for rhythm. Body and brain are inherited together. No gait is written anywhere.
 - **Goals:** travel far, reach a beacon, climb a hill to a beacon, cross a chasm, jump as high as
-  possible, glide from a cliff, run the hurdles, each on its own seeded terrain with its own
+  possible (with no air, so only the push off the ground counts), glide from a cliff, run the
+  hurdles, fly as high as possible (thick air: flapping fins lift; scored on height held over
+  time, so a hop scores little), each on its own seeded terrain with its own
   gravity, friction and wind. A goal lasts 8 to 40 generations (or until progress stalls) and the
   population carries over. Anti-exploit rules: progress counts along the goal's axis only, glitch
   speeds and solver blow-ups score zero, jittering joints are penalised, motors weaken when the

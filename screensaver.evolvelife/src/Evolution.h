@@ -196,6 +196,9 @@ inline void ScoreText(int goal, const TrialResult& r, char* out, size_t n)
     case G_GLIDE:
       std::snprintf(out, n, "%.1f m flight", r.glide);
       break;
+    case G_FLY:
+      std::snprintf(out, n, "%.2f m high, %.1f s aloft", r.maxClear, r.airtime);
+      break;
     default:
       std::snprintf(out, n, "%.1f m", std::max(r.progress, 0.0f));
       break;

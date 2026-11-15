@@ -19,6 +19,7 @@ enum Goal
   G_LEAP,    // jump as high as possible (all of the body off the ground)
   G_GLIDE,   // leave a cliff and travel as far as possible before landing
   G_HURDLES, // travel far over a field of bumps
+  G_FLY,     // get off the ground and stay up as high as possible, in thick air
   GOAL_COUNT
 };
 
@@ -36,7 +37,8 @@ enum Terrain
 inline const char* GoalName(int g)
 {
   static const char* k[GOAL_COUNT] = {"Travel far",         "Reach the beacon", "Climb to the beacon", "Cross the chasm",
-                                      "Jump as high as possible", "Glide from the cliff", "Run the hurdles"};
+                                      "Jump as high as possible", "Glide from the cliff", "Run the hurdles",
+                                      "Fly as high as possible"};
   return k[g < 0 || g >= GOAL_COUNT ? 0 : g];
 }
 
@@ -104,7 +106,7 @@ inline WorldSpec MakeWorld(int goal, uint64_t seed, bool gentle, bool varyGravit
   if (goal < 0 || goal >= GOAL_COUNT)
   {
     // the pool of goal templates; walking and beacons come up most
-    static const int kPool[] = {G_WALK, G_WALK, G_BEACON, G_BEACON, G_CLIMB, G_CHASM, G_LEAP, G_GLIDE, G_HURDLES};
+    static const int kPool[] = {G_WALK, G_WALK, G_BEACON, G_BEACON, G_CLIMB, G_CHASM, G_LEAP, G_GLIDE, G_HURDLES, G_FLY};
     goal = kPool[r.Int(static_cast<int>(sizeof(kPool) / sizeof(kPool[0])))];
   }
   w.goal = goal;
@@ -154,9 +156,18 @@ inline WorldSpec MakeWorld(int goal, uint64_t seed, bool gentle, bool varyGravit
       w.duration = 14.0f;
       break;
     case G_LEAP:
+      // no air: fins give no lift, so height only comes from the push off
+      // the ground (with air, flapping fins won the jump contest by flying)
       w.terrain = T_FLAT;
       w.duration = 8.0f;
       w.dir = 1;
+      w.air = 0.0f;
+      break;
+    case G_FLY:
+      w.terrain = T_FLAT;
+      w.duration = 12.0f;
+      w.dir = 1;
+      w.air = r.Range(2.2f, 3.2f);
       break;
     case G_GLIDE:
       w.terrain = T_CLIFF;

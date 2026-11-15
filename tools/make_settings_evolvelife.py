@@ -31,7 +31,8 @@ POPULATION = ['Automatic (by profile)', '24', '40', '60', '100', '150', '250']
 SPEED = ['Watch every generation', 'Normal (up to 3 generations a round)', 'Fast (up to 8 a round)',
          'Fastest (up to 20 a round)']
 GOALS = ['Random (a new goal every epoch)', 'Travel far', 'Reach the beacon', 'Climb to the beacon',
-         'Cross the chasm', 'Jump as high as possible', 'Glide from the cliff', 'Run the hurdles']
+         'Cross the chasm', 'Jump as high as possible', 'Glide from the cliff', 'Run the hurdles',
+         'Fly as high as possible']
 GOAL_CHANGE = ['Random (8 to 40 generations, or when progress stalls)', 'Every 10 generations',
                'Every 20 generations', 'Every 40 generations', 'Never']
 COMPLEXITY = ['Automatic (by profile)', 'Simple (up to 6 segments)', 'Medium (up to 10 segments)',

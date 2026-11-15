@@ -2,7 +2,7 @@
 //
 //   c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/evolve_test -pthread && /tmp/evolve_test
 //   /tmp/evolve_test quick       # skip the long evolution runs
-//   /tmp/evolve_test evolve GOAL GENS [SEED]  # print one run's progress (GOAL 0-6)
+//   /tmp/evolve_test evolve GOAL GENS [SEED]  # print one run's progress (GOAL 0-7)
 //
 // - fuzz: 200,000 mutated offspring, every one repairs into a buildable body;
 // - property: random bodies with random brains stay finite and stable for

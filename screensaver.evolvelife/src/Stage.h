@@ -499,7 +499,7 @@ private:
         maxx = std::max(maxx, w.startX + 2.0f);
         const float ahead = w.hasTarget ? w.targetX : (w.goal == G_CHASM ? (w.dir > 0 ? w.pitR + 2.0f : w.pitL - 2.0f)
                                                        : (w.goal == G_GLIDE ? w.cliffEdge + w.dir * 8.0f
-                                                       : (w.goal == G_LEAP ? w.startX : w.startX + w.dir * 8.0f)));
+                                                       : (w.goal == G_LEAP || w.goal == G_FLY ? w.startX : w.startX + w.dir * 8.0f)));
         minx = std::min(minx, ahead - 1.5f);
         maxx = std::max(maxx, ahead + 1.5f);
         if (w.hasTarget)
@@ -518,7 +518,7 @@ private:
     // keep the ground in the lower third and the subject in frame
     const float gy = std::min(w.Height(tx), ty - 0.2f);
     ty = std::max(ty, gy + 0.18f * th);
-    if (w.goal == G_LEAP && shot != 2)
+    if ((w.goal == G_LEAP || w.goal == G_FLY) && shot != 2)
       th = std::max(th, (lead->trial.cy - gy) * 2.0f + 3.0f);
     // a slow drift against burn-in
     tx += 0.12f * std::sin(m_time * 0.071f);
@@ -810,15 +810,16 @@ private:
         DrawText(text, Px(x), gy - 0.5f / m_pw - 26.0f * m_H / 1080.0f, 20.0f * m_H / 1080.0f, m_palette.edge, 0.55f * k, buf, 1);
       }
     }
-    if (w.goal == G_LEAP && m_o.insight > INS_OFF)
+    if ((w.goal == G_LEAP || w.goal == G_FLY) && m_o.insight > INS_OFF)
     {
       const float gy = w.Height(w.startX);
+      const float stepH = w.goal == G_FLY ? 1.0f : 0.5f;
       for (int i = 1; i <= 4; i++)
       {
-        const float y = Py(gy + 0.5f * static_cast<float>(i));
+        const float y = Py(gy + stepH * static_cast<float>(i));
         LinePx(world, Px(w.startX - 3.0f), y, Px(w.startX + 3.0f), y, 1.5f, m_palette.edge, 0.18f * k);
         char buf[16];
-        std::snprintf(buf, sizeof(buf), "%.1f m", 0.5f * static_cast<float>(i));
+        std::snprintf(buf, sizeof(buf), "%.1f m", stepH * static_cast<float>(i));
         DrawText(text, Px(w.startX + 3.0f) + 8.0f, y - 12.0f * m_H / 1080.0f, 20.0f * m_H / 1080.0f, m_palette.edge, 0.5f * k, buf);
       }
     }
@@ -1469,16 +1470,17 @@ private:
             "Score: how much closer they get; reaching it, and reaching it fast, earn a bonus.",
             "Score: progress up the hill towards the beacon on top.",
             "Score: distance before the edge; getting across earns a bonus. Falling in ends the run.",
-            "Score: the highest the whole body gets off the ground.",
+            "Score: the highest the whole body gets off the ground. No air to fly on: only the push counts.",
             "Score: how far past the cliff edge they land, plus time in the air.",
-            "Score: distance travelled over the bumps."};
+            "Score: distance travelled over the bumps.",
+            "Score: height in the air and how long they stay up. The air is thick: fins can lift."};
         char lines[3][128];
         const int n = WrapText(kHow[wd.goal], 21 * S, w - 40 * S, lines, 2);
         for (int i = 0; i < n; i++)
           CardLine(lx, ly + static_cast<float>(i) * 26 * S, lines[i], a, body, 21);
         ly += static_cast<float>(n) * 26 * S + 8 * S;
         std::snprintf(buf, sizeof(buf), "%s, gravity %.2f g, friction %.2f%s", TerrainName(wd.terrain), wd.gravity / 9.8f,
-                      wd.friction, wd.goal == G_GLIDE ? ", thick air" : "");
+                      wd.friction, wd.goal == G_GLIDE || wd.goal == G_FLY ? ", thick air" : wd.goal == G_LEAP ? ", no air" : "");
         CardLine(lx, ly, buf, a, dim, 20);
         const GenStats& g = s.history.back();
         ScoreText(wd.goal, champ.res, score, sizeof(score));

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.evolvelife" name="EvolveLife (OpenGL)" version="1.1.0" provider-name="P-Hoep">
+<addon id="screensaver.evolvelife" name="EvolveLife (OpenGL)" version="1.2.0" provider-name="P-Hoep">
   <requires>
     <c-pluff version="1.0"/>
     <import addon="kodi.binary.global.main" version="2.0.2"/>
@@ -19,7 +19,7 @@ Built to be light, like Dancing Boids, Emergence and Alien Life: each creature i
     <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Intel and Apple Silicon, and 64-bit Android). It needs OpenGL or OpenGL ES 2.0. The on-screen text uses the Inter typeface (SIL Open Font License 1.1). Nothing is saved between runs.</disclaimer>
     <platform>osx android</platform>
     <license>MIT</license>
-    <news>1.1.0 - Smooth setting for weak devices (Performance profile or Visual quality): 4 creatures, half-resolution scene, one evaluation thread[CR]1.0.0 - initial release</news>
+    <news>1.2.0 - New goal: Fly as high as possible (thick air, fins lift). Jump as high as possible is now a pure jump with no air, so flapping no longer wins it[CR]1.1.0 - Smooth setting for weak devices (Performance profile or Visual quality): 4 creatures, half-resolution scene, one evaluation thread[CR]1.0.0 - initial release</news>
     <assets>
       <icon>icon.png</icon>
       <fanart>fanart.jpg</fanart>

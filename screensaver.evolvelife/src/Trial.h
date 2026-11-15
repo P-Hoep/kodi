@@ -105,6 +105,7 @@ public:
     m_left = false;
     m_maxProg = 0.0f;
     m_maxRise = 0.0f;
+    m_aloft = 0.0f;
     if (world->hasTarget)
     {
       const float dx = world->targetX - cx, dy = world->targetY - cy;
@@ -393,6 +394,16 @@ public:
         res.progress = res.maxClear;
         res.fitness = 5.0f * res.maxClear + 0.5f * m_maxRise;
         break;
+      case G_FLY:
+        // height held in the air: metre-seconds of clearance while airborne,
+        // so a hop scores little and staying up high scores a lot
+        if (air && clear > 0.0f)
+          m_aloft += clear * kDt;
+        if (air && clear > res.maxClear)
+          res.maxClear = clear;
+        res.progress = res.maxClear;
+        res.fitness = res.maxClear + 0.6f * m_aloft;
+        break;
       case G_GLIDE:
       {
         const float past = dir * (cx - w.cliffEdge);
@@ -537,7 +548,7 @@ private:
       ty = d > 1e-4f ? dy / d : 0.0f;
       td = d / (d + 5.0f);
     }
-    else if (w.goal == G_LEAP)
+    else if (w.goal == G_LEAP || w.goal == G_FLY)
     {
       tx = 0.0f;
       ty = 1.0f;
@@ -601,7 +612,7 @@ private:
   float m_comX30 = 0.0f;
   float m_angle0 = 0.0f, m_anglePrev = 0.0f, m_thinkAngle = 0.0f, m_thinkX = 0.0f, m_thinkY = 0.0f;
   bool m_flipped = false, m_airborne = false, m_fellIn = false, m_left = false;
-  float m_maxProg = 0.0f, m_maxRise = 0.0f;
+  float m_maxProg = 0.0f, m_maxRise = 0.0f, m_aloft = 0.0f;
   float m_d0 = 0.0f, m_dmin = 0.0f, m_edge0 = 1.0f;
 };
 

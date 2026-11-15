@@ -128,309 +128,313 @@ msgid "Run the hurdles"
 msgstr ""
 
 msgctxt "#30130"
-msgid "Change the goal"
+msgid "Fly as high as possible"
 msgstr ""
 
 msgctxt "#30131"
-msgid "Random (8 to 40 generations, or when progress stalls)"
+msgid "Change the goal"
 msgstr ""
 
 msgctxt "#30132"
-msgid "Every 10 generations"
+msgid "Random (8 to 40 generations, or when progress stalls)"
 msgstr ""
 
 msgctxt "#30133"
-msgid "Every 20 generations"
+msgid "Every 10 generations"
 msgstr ""
 
 msgctxt "#30134"
-msgid "Every 40 generations"
+msgid "Every 20 generations"
 msgstr ""
 
 msgctxt "#30135"
-msgid "Never"
+msgid "Every 40 generations"
 msgstr ""
 
 msgctxt "#30136"
-msgid "Creature complexity"
+msgid "Never"
 msgstr ""
 
 msgctxt "#30137"
-msgid "Simple (up to 6 segments)"
+msgid "Creature complexity"
 msgstr ""
 
 msgctxt "#30138"
-msgid "Medium (up to 10 segments)"
+msgid "Simple (up to 6 segments)"
 msgstr ""
 
 msgctxt "#30139"
-msgid "Complex (up to 16 segments)"
+msgid "Medium (up to 10 segments)"
 msgstr ""
 
 msgctxt "#30140"
-msgid "Mutation rate"
+msgid "Complex (up to 16 segments)"
 msgstr ""
 
 msgctxt "#30141"
-msgid "Low"
+msgid "Mutation rate"
 msgstr ""
 
 msgctxt "#30142"
-msgid "Normal"
+msgid "Low"
 msgstr ""
 
 msgctxt "#30143"
-msgid "High"
+msgid "Normal"
 msgstr ""
 
 msgctxt "#30144"
-msgid "Fresh random creatures each generation"
+msgid "High"
 msgstr ""
 
 msgctxt "#30145"
-msgid "None"
+msgid "Fresh random creatures each generation"
 msgstr ""
 
 msgctxt "#30146"
-msgid "5%"
+msgid "None"
 msgstr ""
 
 msgctxt "#30147"
-msgid "8%"
+msgid "5%"
 msgstr ""
 
 msgctxt "#30148"
-msgid "12%"
+msgid "8%"
 msgstr ""
 
 msgctxt "#30149"
-msgid "Vary gravity between goals"
+msgid "12%"
 msgstr ""
 
 msgctxt "#30150"
-msgid "Visuals"
+msgid "Vary gravity between goals"
 msgstr ""
 
 msgctxt "#30151"
-msgid "Visual quality"
+msgid "Visuals"
 msgstr ""
 
 msgctxt "#30152"
-msgid "Low (12 creatures on stage)"
+msgid "Visual quality"
 msgstr ""
 
 msgctxt "#30153"
-msgid "Balanced (24 on stage)"
+msgid "Low (12 creatures on stage)"
 msgstr ""
 
 msgctxt "#30154"
-msgid "High (48 on stage)"
+msgid "Balanced (24 on stage)"
 msgstr ""
 
 msgctxt "#30155"
-msgid "Smooth (4 on stage, half-resolution scene, for weak GPUs)"
+msgid "High (48 on stage)"
 msgstr ""
 
 msgctxt "#30156"
-msgid "Camera"
+msgid "Smooth (4 on stage, half-resolution scene, for weak GPUs)"
 msgstr ""
 
 msgctxt "#30157"
-msgid "Cinematic"
+msgid "Camera"
 msgstr ""
 
 msgctxt "#30158"
-msgid "Follow the leader"
+msgid "Cinematic"
 msgstr ""
 
 msgctxt "#30159"
-msgid "Overview"
+msgid "Follow the leader"
 msgstr ""
 
 msgctxt "#30160"
-msgid "Information on screen"
+msgid "Overview"
 msgstr ""
 
 msgctxt "#30161"
-msgid "Off (just the creatures)"
+msgid "Information on screen"
 msgstr ""
 
 msgctxt "#30162"
-msgid "Light (goal, ticker and titles)"
+msgid "Off (just the creatures)"
 msgstr ""
 
 msgctxt "#30163"
-msgid "Rich (live brain, charts and info cards)"
+msgid "Light (goal, ticker and titles)"
 msgstr ""
 
 msgctxt "#30164"
-msgid "Full (everything, plus system figures)"
+msgid "Rich (live brain, charts and info cards)"
 msgstr ""
 
 msgctxt "#30165"
-msgid "Show the champion's brain"
+msgid "Full (everything, plus system figures)"
 msgstr ""
 
 msgctxt "#30166"
-msgid "Show the event ticker"
+msgid "Show the champion's brain"
 msgstr ""
 
 msgctxt "#30167"
-msgid "Show names over the creatures"
+msgid "Show the event ticker"
 msgstr ""
 
 msgctxt "#30168"
-msgid "Colours"
+msgid "Show names over the creatures"
 msgstr ""
 
 msgctxt "#30169"
-msgid "Automatic (a different one each run)"
+msgid "Colours"
 msgstr ""
 
 msgctxt "#30170"
-msgid "Warm dusk"
+msgid "Automatic (a different one each run)"
 msgstr ""
 
 msgctxt "#30171"
-msgid "Cool night"
+msgid "Warm dusk"
 msgstr ""
 
 msgctxt "#30172"
-msgid "Neon"
+msgid "Cool night"
 msgstr ""
 
 msgctxt "#30173"
-msgid "Mono"
+msgid "Neon"
 msgstr ""
 
 msgctxt "#30174"
-msgid "Drifting motes in the sky"
+msgid "Mono"
 msgstr ""
 
 msgctxt "#30175"
-msgid "Brightness cap (%)"
+msgid "Drifting motes in the sky"
 msgstr ""
 
 msgctxt "#30176"
-msgid "Text size (%)"
+msgid "Brightness cap (%)"
 msgstr ""
 
 msgctxt "#30177"
-msgid "Info cards"
+msgid "Text size (%)"
 msgstr ""
 
 msgctxt "#30178"
-msgid "Change the card every"
+msgid "Info cards"
 msgstr ""
 
 msgctxt "#30179"
-msgid "15 seconds"
+msgid "Change the card every"
 msgstr ""
 
 msgctxt "#30180"
-msgid "25 seconds"
+msgid "15 seconds"
 msgstr ""
 
 msgctxt "#30181"
-msgid "40 seconds"
+msgid "25 seconds"
 msgstr ""
 
 msgctxt "#30182"
-msgid "Champion profile"
+msgid "40 seconds"
 msgstr ""
 
 msgctxt "#30183"
-msgid "Goal briefing"
+msgid "Champion profile"
 msgstr ""
 
 msgctxt "#30184"
-msgid "Run totals"
+msgid "Goal briefing"
 msgstr ""
 
 msgctxt "#30185"
-msgid "Fitness history"
+msgid "Run totals"
 msgstr ""
 
 msgctxt "#30186"
-msgid "Species over time"
+msgid "Fitness history"
 msgstr ""
 
 msgctxt "#30187"
-msgid "Brain growth"
+msgid "Species over time"
 msgstr ""
 
 msgctxt "#30188"
-msgid "Family tree"
+msgid "Brain growth"
 msgstr ""
 
 msgctxt "#30189"
-msgid "Then and now (with a ghost of an early champion)"
+msgid "Family tree"
 msgstr ""
 
 msgctxt "#30190"
-msgid "Milestones"
+msgid "Then and now (with a ghost of an early champion)"
 msgstr ""
 
 msgctxt "#30191"
-msgid "Hall of fame"
+msgid "Milestones"
 msgstr ""
 
 msgctxt "#30192"
-msgid "Commentary"
+msgid "Hall of fame"
 msgstr ""
 
 msgctxt "#30193"
-msgid "Did you know"
+msgid "Commentary"
 msgstr ""
 
 msgctxt "#30194"
-msgid "Species map"
+msgid "Did you know"
 msgstr ""
 
 msgctxt "#30195"
-msgid "Advanced"
+msgid "Species map"
 msgstr ""
 
 msgctxt "#30196"
-msgid "Kodi log"
+msgid "Advanced"
 msgstr ""
 
 msgctxt "#30197"
-msgid "Off"
+msgid "Kodi log"
 msgstr ""
 
 msgctxt "#30198"
-msgid "Summary (a line per generation)"
+msgid "Off"
 msgstr ""
 
 msgctxt "#30199"
-msgid "Verbose (every event too)"
+msgid "Summary (a line per generation)"
 msgstr ""
 
 msgctxt "#30200"
-msgid "Evolution threads"
+msgid "Verbose (every event too)"
 msgstr ""
 
 msgctxt "#30201"
-msgid "Automatic (cores minus two, up to 4)"
+msgid "Evolution threads"
 msgstr ""
 
 msgctxt "#30202"
-msgid "1"
+msgid "Automatic (cores minus two, up to 4)"
 msgstr ""
 
 msgctxt "#30203"
-msgid "2"
+msgid "1"
 msgstr ""
 
 msgctxt "#30204"
-msgid "3"
+msgid "2"
 msgstr ""
 
 msgctxt "#30205"
-msgid "4"
+msgid "3"
 msgstr ""
 
 msgctxt "#30206"
+msgid "4"
+msgstr ""
+
+msgctxt "#30207"
 msgid "Fixed seed (blank = a new random run every time)"
 msgstr ""
