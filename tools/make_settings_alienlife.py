@@ -22,9 +22,14 @@ O = lambda sid, label, default, options, **kw: dict(
     id=sid, type='options', label=label, default=default, options=options, **kw)
 
 # Index order is read by LoadSettings() in ScreensaverAlienLife.cpp: WORLDS is 0 = random, then
-# alien::WorldKind + 1; COLOURS is ColourMode; PACE is Pace.
+# alien::WorldKind + 1; COLOURS is ColourMode; PACE is Pace; STYLES is Style; VIEWS is ViewMode;
+# QUALITY is Quality.
 WORLDS = ['A different world each time', 'Grazers', 'Grazers and hunters',
-          'Primordial soup (random genomes)']
+          'Primordial soup (random genomes)', 'Ecosystem (every design: hunters, puffers, viruses)']
+ROCKS = ['None', 'A few', 'Many']
+STYLES = ['Organic (soft shaded bodies and bloom, as in ALIEN)', 'Classic (glowing cells and lines)']
+VIEWS = ['The whole world', 'Closer, touring the busiest places', 'Close-up, following one creature after another']
+QUALITY = ['Automatic (half resolution on Android)', 'Full resolution', 'Half resolution (weak GPUs)']
 DETAIL = ['Small (up to 3,500 cells, for TV sticks)', 'Medium (up to 7,000 cells)',
           'Large (up to 14,000 cells)']
 MUTATION = ['Off', 'Low', 'Normal', 'High']
@@ -42,20 +47,25 @@ def categories(low_power):
             I('energy', 'Energy in the world (%)', 100, 50, 200, 10),
             O('mutation', 'Mutation rate', 2, MUTATION),
             I('sources', 'Radiation sources', 3, 1, 5),
+            O('rocks', 'Rocks', 1, ROCKS),
             I('muscle', 'Muscle strength (%)', 100, 50, 200, 10),
             I('world_minutes', 'New world every (minutes, 0 = never)', 20, 0, 120, 5),
         ]),
         ('Look', [
+            O('style', 'Look', 0, STYLES),
+            O('view', 'Camera', 1, VIEWS),
             O('colour', 'Colour the cells by', 0, COLOURS),
             I('cell_size', 'Cell size (%)', 100, 50, 200, 10),
-            B('glow', 'Glow (additive light)', True),
+            B('glow', 'Glow (bloom)', True),
             B('connections', 'Show the connections between cells', True),
             B('particles', 'Show the energy particles', True),
             B('source_glow', 'Show the radiation sources', True),
+            B('events', 'Show attacks, injections, grabs, detonations and births', True),
             O('trails', 'Motion trails', 0, TRAILS),
             I('dim', 'Dim the picture (%)', 0, 0, 80, 10),
         ]),
         ('Performance', [
+            O('quality', 'Picture resolution (organic look)', 0, QUALITY),
             O('pace', 'Speed', 0, PACE),
             O('threads', 'Simulation threads', 0, THREADS),
         ]),

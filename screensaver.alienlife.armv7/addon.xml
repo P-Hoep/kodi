@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.alienlife.armv7" name="Alien Life (OpenGL, 32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+<addon id="screensaver.alienlife.armv7" name="Alien Life (OpenGL, 32-bit Android)" version="2.0.0" provider-name="P-Hoep">
   <requires>
     <c-pluff version="1.0"/>
     <import addon="kodi.binary.global.main" version="2.0.2"/>
@@ -10,13 +10,13 @@
     <summary lang="en_GB">Alien Life tuned for 32-bit Android Kodi</summary>
     <description lang="en_GB">The same Alien Life screensaver as "Alien Life (OpenGL)", built for 32-bit Android (armeabi-v7a), as on many Fire TV sticks, Google TV boxes and the Chromecast with Google TV. Install this one if your Android or Google TV Kodi is a 32-bit app; install "Alien Life (OpenGL)" on 64-bit Android and macOS.
 
-A world of digital creatures after ALIEN, the artificial life simulator: bodies of glowing cells built from genomes, with sensors, muscles, digestors, attackers and defenders, that graze the energy of radiation sources, hunt each other, bud offspring and mutate. Three worlds (grazers, grazers and hunters, a primordial soup of random genomes); colours, sizes, glow, trails and every rule of the world are in the add-on settings.
+A world of digital creatures after ALIEN, the artificial life simulator: bodies of glowing cells built from genomes, with thirteen cell types (sensors, muscles, digestors, attackers, defenders, reconnectors, injectors, detonators, depots and more), that graze the energy of radiation sources, hunt, grab and infect each other, bud offspring and mutate. Drawn as soft, fused, shaded bodies with bloom as in ALIEN, with a camera that tours the world or follows creatures. Four worlds (grazers, grazers and hunters, a primordial soup of random genomes, an ecosystem of every design) with rocks; looks, colours, camera and every rule of the world are in the add-on settings.
 
-This build starts with the small world (up to 3,500 cells), sized for a TV stick, with the simulation spread over the box's CPU cores.</description>
+This build starts with the small world (up to 3,500 cells), sized for a TV stick, with the simulation spread over the box's CPU cores and the organic look drawn at half resolution.</description>
     <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega, 32-bit ARM Android). It needs OpenGL ES 2.0. Inspired by ALIEN by Christian Heinemann (https://github.com/chrxh/alien, BSD 3-Clause); this is an independent, much smaller CPU simulation with its own renderer and settings, and contains no ALIEN code.</disclaimer>
     <platform>android</platform>
     <license>MIT</license>
-    <news>1.0.0 - initial release</news>
+    <news>2.0.0 - an organic look after ALIEN's renderer (soft shaded, fused bodies, bloom, nebulae, attack beams, detonation shock waves), a camera that tours or follows creatures, six new cell types (depot, injector, reconnector, detonator, memory, communicator), muscles that bend and crawl, hexagonal jellies and tadpoles, rocks, and an Ecosystem world&#10;1.0.0 - initial release</news>
     <assets>
       <icon>icon.png</icon>
       <fanart>fanart.jpg</fanart>

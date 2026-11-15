@@ -6,18 +6,23 @@ that graze, hunt, bud offspring and mutate. See the "Alien Life (OpenGL)" sectio
 repository README for the worlds, settings and measurements.
 
 - `src/Alien.h` - the world (no Kodi / GL): cells in fixed SoA slots with a free list and up to 8
-  connections each; genomes of up to 14 nodes (cell type, bend, a 2x4 neural network) in four
-  body shapes; energy particles, radiation sources and a conserved energy budget; a counting-sort
-  contact grid; a contact/bond/muscle/integration pass and an energy particle pass split over the
-  pool, each writing only its own element; serial eating, attacks, creature cycles (every 6 steps,
-  staggered), building, budding, death and emission; sensors read a coarse density map.
+  connections each; genomes of up to 20 nodes (cell type and mode, own colour, bend, a 2x4 neural
+  network) in six body shapes, including hexagonal jellies and tadpoles on a hex lattice; thirteen
+  cell types; static rocks; energy particles, radiation sources and a conserved energy budget; a
+  counting-sort contact grid; a contact/bond/muscle/integration pass and an energy particle pass
+  split over the pool, each writing only its own element; serial eating, attacks, injections,
+  grabs, creature cycles (every 6 steps, staggered), detonations, building, budding, death and
+  emission; sensors read a coarse density map; events (beams, blasts, births) for the renderer.
 - `src/WorkerPool.h` - the fork-join pool from Dancing Boids.
 - `src/ScreensaverAlienLife.cpp` - the Kodi wrapper: settings, a driver thread that steps the world
-  (and starts a new one behind a fade) while Kodi draws, step credit at 30/60/120 steps a second,
-  one vertex stream per step (connections as lines, particles and cells as glowing point sprites),
-  soft quads for the radiation sources, optional motion trails.
+  (and starts a new one behind a fade), moves the camera and builds the vertex streams for its
+  view while Kodi draws; step credit at 30/60/120 steps a second. The organic look renders the
+  bodies off screen, blurs them, shades them as fused tissue, adds glows and effects, blooms and
+  composites over a nebula (optionally at half resolution); the classic look draws lines and glowing
+  point sprites; both have optional motion trails.
 - `tests/sim_test.cpp` - energy conservation, 1 vs 4 threads bit-identical, every world stays
-  alive and evolves at every detail level, hunters persist, benchmark; `DIR` writes previews.
+  alive and evolves at every detail level, hunters persist, the ecosystem attacks, grabs, injects and
+  detonates, rocks exist, benchmark; `DIR` writes previews.
 
     c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/alien_test -pthread && /tmp/alien_test
     ./build_all.sh    # macOS universal dylib, arm64 .so, and ../screensaver.alienlife.armv7 .so

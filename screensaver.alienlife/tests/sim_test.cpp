@@ -47,7 +47,7 @@ static Params Detail(int d, int world)
   return p;
 }
 
-static const char* kWorldNames[] = {"grazers", "hunt", "soup"};
+static const char* kWorldNames[] = {"grazers", "hunt", "soup", "eco"};
 
 static bool Finite(const World& w)
 {
@@ -86,6 +86,11 @@ static void WritePreview(const World& w, const std::string& path, int W = 960)
   {
     if (w.state()[i] == CS_FREE)
       continue;
+    if (w.state()[i] == CS_SOLID)
+    {
+      splat(w.x()[i], w.y()[i], 0.6f, 0.2f, 0.19f, 0.2f);
+      continue;
+    }
     const float* c = kCol[w.colour()[i]];
     const float k = w.state()[i] == CS_DYING ? 0.25f : 0.55f + 0.45f * w.Vigour(static_cast<int>(i));
     splat(w.x()[i], w.y()[i], 0.6f, c[0] * k, c[1] * k, c[2] * k);
@@ -159,6 +164,11 @@ static void RunWorld(int detail, int world, int steps, const char* dir)
                   "gen %d, lineages %d\n",
                   kWorldNames[world], detail, s, w.numCreatures(), w.liveCells(), w.numParticles(),
                   100.0 * w.pool() / budget, w.births(), w.deaths(), w.maxGeneration(), w.lineages());
+    if (s % 3000 == 0)
+      std::printf("          hunters %d, attacks %ld grabs %ld injections %ld blasts %ld; rock %d cells; shapes w%d r%d o%d f%d h%d l%d\n",
+                  w.countType(CT_ATTACKER), w.attacks(), w.grabs(), w.injections(), w.blasts(), w.solidCells(), w.countShape(SHAPE_WORM),
+                  w.countShape(SHAPE_RIBBON), w.countShape(SHAPE_RING), w.countShape(SHAPE_FLOWER),
+                  w.countShape(SHAPE_HEX), w.countShape(SHAPE_LOLLI));
   }
   const double err = std::fabs(w.TotalEnergy() - budget) / budget;
   CHECK(err < 1e-4, "%s d%d: energy drifted by %.2e", kWorldNames[world], detail, err);
@@ -168,6 +178,14 @@ static void RunWorld(int detail, int world, int steps, const char* dir)
   CHECK(w.maxGeneration() >= 2, "%s d%d: no generations (%d)", kWorldNames[world], detail, w.maxGeneration());
   if (world == WORLD_HUNT)
     CHECK(hunterSteps * 2 >= hunterChecks, "hunt d%d: hunters gone for most of the run", detail);
+  if (world == WORLD_ECOSYSTEM)
+  {
+    CHECK(w.attacks() > 0, "eco d%d: no attacks", detail);
+    CHECK(w.blasts() > 0, "eco d%d: no detonations", detail);
+    CHECK(w.injections() > 0, "eco d%d: no injections", detail);
+    CHECK(w.grabs() > 0, "eco d%d: no grabs", detail);
+  }
+  CHECK(w.solidCells() > 0, "%s d%d: no rocks", kWorldNames[world], detail);
   if (world != WORLD_GRAZERS || detail == 1)
     CHECK(w.lineages() >= 2, "%s d%d: only %d lineage(s)", kWorldNames[world], detail, w.lineages());
   std::printf("%-7s detail %d: %.3f ms per step (4 threads), energy error %.1e\n", kWorldNames[world], detail,

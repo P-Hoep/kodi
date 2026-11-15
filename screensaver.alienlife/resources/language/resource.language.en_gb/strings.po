@@ -28,161 +28,225 @@ msgid "Primordial soup (random genomes)"
 msgstr ""
 
 msgctxt "#30105"
-msgid "World size"
+msgid "Ecosystem (every design: hunters, puffers, viruses)"
 msgstr ""
 
 msgctxt "#30106"
-msgid "Small (up to 3,500 cells, for TV sticks)"
+msgid "World size"
 msgstr ""
 
 msgctxt "#30107"
-msgid "Medium (up to 7,000 cells)"
+msgid "Small (up to 3,500 cells, for TV sticks)"
 msgstr ""
 
 msgctxt "#30108"
-msgid "Large (up to 14,000 cells)"
+msgid "Medium (up to 7,000 cells)"
 msgstr ""
 
 msgctxt "#30109"
-msgid "Energy in the world (%)"
+msgid "Large (up to 14,000 cells)"
 msgstr ""
 
 msgctxt "#30110"
-msgid "Mutation rate"
+msgid "Energy in the world (%)"
 msgstr ""
 
 msgctxt "#30111"
-msgid "Off"
+msgid "Mutation rate"
 msgstr ""
 
 msgctxt "#30112"
-msgid "Low"
+msgid "Off"
 msgstr ""
 
 msgctxt "#30113"
-msgid "Normal"
+msgid "Low"
 msgstr ""
 
 msgctxt "#30114"
-msgid "High"
+msgid "Normal"
 msgstr ""
 
 msgctxt "#30115"
-msgid "Radiation sources"
+msgid "High"
 msgstr ""
 
 msgctxt "#30116"
-msgid "Muscle strength (%)"
+msgid "Radiation sources"
 msgstr ""
 
 msgctxt "#30117"
-msgid "New world every (minutes, 0 = never)"
+msgid "Rocks"
 msgstr ""
 
 msgctxt "#30118"
-msgid "Look"
+msgid "None"
 msgstr ""
 
 msgctxt "#30119"
-msgid "Colour the cells by"
+msgid "A few"
 msgstr ""
 
 msgctxt "#30120"
-msgid "Genome colour (as in ALIEN)"
+msgid "Many"
 msgstr ""
 
 msgctxt "#30121"
-msgid "Cell type"
+msgid "Muscle strength (%)"
 msgstr ""
 
 msgctxt "#30122"
-msgid "Lineage"
+msgid "New world every (minutes, 0 = never)"
 msgstr ""
 
 msgctxt "#30123"
-msgid "Energy"
+msgid "Look"
 msgstr ""
 
 msgctxt "#30124"
-msgid "Cell size (%)"
+msgid "Organic (soft shaded bodies and bloom, as in ALIEN)"
 msgstr ""
 
 msgctxt "#30125"
-msgid "Glow (additive light)"
+msgid "Classic (glowing cells and lines)"
 msgstr ""
 
 msgctxt "#30126"
-msgid "Show the connections between cells"
+msgid "Camera"
 msgstr ""
 
 msgctxt "#30127"
-msgid "Show the energy particles"
+msgid "The whole world"
 msgstr ""
 
 msgctxt "#30128"
-msgid "Show the radiation sources"
+msgid "Closer, touring the busiest places"
 msgstr ""
 
 msgctxt "#30129"
-msgid "Motion trails"
+msgid "Close-up, following one creature after another"
 msgstr ""
 
 msgctxt "#30130"
-msgid "Short"
+msgid "Colour the cells by"
 msgstr ""
 
 msgctxt "#30131"
-msgid "Medium"
+msgid "Genome colour (as in ALIEN)"
 msgstr ""
 
 msgctxt "#30132"
-msgid "Long"
+msgid "Cell type"
 msgstr ""
 
 msgctxt "#30133"
-msgid "Dim the picture (%)"
+msgid "Lineage"
 msgstr ""
 
 msgctxt "#30134"
-msgid "Performance"
+msgid "Energy"
 msgstr ""
 
 msgctxt "#30135"
-msgid "Speed"
+msgid "Cell size (%)"
 msgstr ""
 
 msgctxt "#30136"
-msgid "Normal (60 steps a second)"
+msgid "Glow (bloom)"
 msgstr ""
 
 msgctxt "#30137"
-msgid "Fast (120 steps a second)"
+msgid "Show the connections between cells"
 msgstr ""
 
 msgctxt "#30138"
-msgid "Slow (30 steps a second)"
+msgid "Show the energy particles"
 msgstr ""
 
 msgctxt "#30139"
-msgid "Simulation threads"
+msgid "Show the radiation sources"
 msgstr ""
 
 msgctxt "#30140"
-msgid "Automatic (one per core, up to 4)"
+msgid "Show attacks, injections, grabs, detonations and births"
 msgstr ""
 
 msgctxt "#30141"
-msgid "1"
+msgid "Motion trails"
 msgstr ""
 
 msgctxt "#30142"
-msgid "2"
+msgid "Short"
 msgstr ""
 
 msgctxt "#30143"
-msgid "3"
+msgid "Medium"
 msgstr ""
 
 msgctxt "#30144"
+msgid "Long"
+msgstr ""
+
+msgctxt "#30145"
+msgid "Dim the picture (%)"
+msgstr ""
+
+msgctxt "#30146"
+msgid "Performance"
+msgstr ""
+
+msgctxt "#30147"
+msgid "Picture resolution (organic look)"
+msgstr ""
+
+msgctxt "#30148"
+msgid "Automatic (half resolution on Android)"
+msgstr ""
+
+msgctxt "#30149"
+msgid "Full resolution"
+msgstr ""
+
+msgctxt "#30150"
+msgid "Half resolution (weak GPUs)"
+msgstr ""
+
+msgctxt "#30151"
+msgid "Speed"
+msgstr ""
+
+msgctxt "#30152"
+msgid "Normal (60 steps a second)"
+msgstr ""
+
+msgctxt "#30153"
+msgid "Fast (120 steps a second)"
+msgstr ""
+
+msgctxt "#30154"
+msgid "Slow (30 steps a second)"
+msgstr ""
+
+msgctxt "#30155"
+msgid "Simulation threads"
+msgstr ""
+
+msgctxt "#30156"
+msgid "Automatic (one per core, up to 4)"
+msgstr ""
+
+msgctxt "#30157"
+msgid "1"
+msgstr ""
+
+msgctxt "#30158"
+msgid "2"
+msgstr ""
+
+msgctxt "#30159"
+msgid "3"
+msgstr ""
+
+msgctxt "#30160"
 msgid "4"
 msgstr ""
