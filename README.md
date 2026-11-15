@@ -2,7 +2,7 @@
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
 live-camera window, a bird-sighting mosaic, a ship tracker, a scheduler, a flashcard app, a trivia
-quiz, a news reader, a maze builder, lichen and coral growth models, a floating space crab, a flock of dancing boids, a CPU slime mould, all three of those living together, a music visualisation and an audiobook player for Kodi,
+quiz, a news reader, a maze builder, lichen and coral growth models, a floating space crab, a flock of dancing boids, a CPU slime mould, all three of those living together, a clock of falling sand or melting liquid, a music visualisation and an audiobook player for Kodi,
 published as one Kodi repository so Kodi installs them and keeps them up to date.
 
 Most add-ons are pure Python and run on any Kodi 19 (Matrix) or later device. The OpenGL add-ons
@@ -67,6 +67,8 @@ installed version in **Add-ons → My add-ons**.
 | [Physarum v2 (OpenGL, 32-bit Android)](#physarum-v2-opengl) | `screensaver.physarum_v2.armv7` | 1.0.0 | Android 32-bit |
 | [Emergence (OpenGL)](#emergence-opengl) | `screensaver.emergence` | 1.0.0 | macOS, Android 64-bit |
 | [Emergence (OpenGL, 32-bit Android)](#emergence-opengl) | `screensaver.emergence.armv7` | 1.0.0 | Android 32-bit |
+| [Sand Clock v2 (OpenGL)](#sand-clock-v2-opengl) | `screensaver.sandclock_v2` | 1.0.0 | macOS, Android 64-bit |
+| [Sand Clock v2 (OpenGL, 32-bit Android)](#sand-clock-v2-opengl) | `screensaver.sandclock_v2.armv7` | 1.0.0 | Android 32-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -1136,6 +1138,57 @@ the step time and frame rate 20 s after the screensaver starts, and one line per
 c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/emergence_test -pthread && /tmp/emergence_test
 python3 tools/make_settings_emergence.py   # settings for both add-ons
 cd screensaver.emergence && ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
+```
+
+## Sand Clock v2 (OpenGL)
+
+`screensaver.sandclock_v2` is the Sand Clock rebuilt around real particle physics, and with a
+second clock in the same add-on whose digits melt. Both run on the CPU, built the way Dancing
+Boids and Particle Life v2 are, so they stay smooth on 32-bit TV sticks.
+
+![Sand Clock v2: the seconds crumble into the pile while new sand pours in](screensaver.sandclock_v2/fanart.jpg)
+
+- **Sand:** every grain carries a velocity and a sub-cell position (fixed point), so it
+  accelerates as it falls, scatters part of its fall sideways when it lands, rolls down slopes
+  gaining speed, steps over 2:1 lips while it is still flowing and slides to a stop under
+  friction. A poured heap settles at about 33 degrees and a collapsing block at about 42, as dry
+  sand does (`tests/sim_test.cpp` measures both). A changed digit crumbles (from the bottom up, all
+  at once, or grain by grain) and falls as a body; the new digit is poured in from the top of the
+  screen, filling each column from the bottom, or builds up in place. A funnel under each
+  character drains the pile back to the amount of sand it started with, draining where the sand
+  over a hole stands highest, so heaps never reach the clock.
+- **Liquid:** a FLIP fluid (particles on a MAC grid, after Matthias Muller's "Ten Minute
+  Physics"). The digits are frozen particles and solid to the fluid; a changed digit thaws
+  (dripping from the bottom, slumping, or running down from the top), clings and stretches as
+  fresh melt sticks to what is left, and splashes into a pool that rocks gently; the new digit
+  condenses once the old one has run out of its cells. Water, oil, syrup or honey; the standing
+  digits can drip now and then.
+- **Clock:** the nine Sand Clock fonts in regular or bold, seconds, 12-hour clock, size and
+  position.
+- **Colours:** a new palette colour for every change, a colour per digit, one colour or a slow
+  rainbow; eight palettes, background, dim.
+- **Performance:** grain size (180 to 360 rows), liquid detail (54 to 108 rows), threads.
+
+How it is made cheap: the sand grid is one byte per cell (the palette index, which is the texture
+the GPU gets, uploading only the rows that changed) plus an 8-byte motion record; 16 x 16 chunks
+with an activity flag, so a settled pile costs nothing; 32-column strips updated in two passes on
+worker threads (a grain moves at most 7 columns a step); hashed randomness, so four threads give
+exactly the same grains as one. The liquid sorts its particles by cell every step, splats them to
+the grid in bands of rows on the worker threads, solves pressure over a list of the fluid cells,
+and draws its picture with a table-driven kernel in SIMD (NEON on the sticks), keeping the standing
+digits in a picture of their own. The GPU draws one quad: the sand shader lights the top of the
+pile and rounds the grains, the liquid shader cuts the surface out of the density and lights it
+like a glossy liquid. Measured in Kodi on a Fire TV Stick 4K Max (32-bit, 3 threads): sand 2.0 ms
+a step on 384 x 216, liquid 8.6 ms a step on 128 x 72, both at 60 steps and 60 frames a second;
+on an Apple Silicon Mac the sand takes 0.3-0.4 ms a step in Kodi and the liquid about 2 ms in the
+benchmark. Kodi's log gets one line with the step time and
+frame rate 20 s after the screensaver starts.
+
+```bash
+c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/sandclock2_test -pthread && /tmp/sandclock2_test
+python3 tools/make_sandclock_v2_fonts.py   # glyph masks (src/Glyphs.h) from the Sand Clock fonts
+python3 tools/make_settings_sandclock_v2.py   # settings for both add-ons
+cd screensaver.sandclock_v2 && ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
 ```
 
 ## ScreenMazer (OpenGL)

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.sandclock_v2" name="Sand Clock v2 (OpenGL)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.sandclock_v2.dylib"
+             library_android="screensaver.sandclock_v2.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">A clock of falling sand with real grain physics, or of liquid digits that melt, light enough for a TV stick</summary>
+    <description lang="en_GB">The time, made of sand. Every grain has its own speed: it accelerates as it falls, lands with a little sideways scatter, rolls down slopes and slides to a stop, so heaps settle at the angle real dry sand does, avalanches run out and streams splash. When a digit changes, its grains let go (from the bottom up, all at once or grain by grain) and fall into the pile below, while sand pours in from the top of the screen and fills the new digit from the bottom of each column, or the new digit builds up in place. A funnel under each character drains the pile so it never fills the screen.
+
+Or the time, made of liquid. Switch the clock to liquid and the digits melt: they drip and sag from the bottom, slump all at once or run down from the top, cling and stretch as they let go, and splash into a pool that rocks gently; the new digit condenses where the old one ran out. The liquid is a FLIP fluid (particles on a grid, as in Matthias Muller's "Ten Minute Physics"), drawn as a glossy surface with highlights; choose water, oil, syrup or honey.
+
+Both run on the CPU on a thread of their own, the way Particle Life v2, Dancing Boids and Physarum v2 do, so Kodi's drawing never waits: the sand updates only the parts of the screen where something moves (a settled pile costs nothing), and the liquid sorts its particles by cell every step and splats its picture with SIMD. The graphics chip gets one small picture a step and draws it with a single quad.
+
+The nine Sand Clock fonts in two weights, seconds and a 12-hour clock, size and position, eight palettes with a new colour per change, a colour per digit, one colour or a slow rainbow, background and dim, and the grain size, gravity, pile height, liquid, melting style, pool and detail are all in the settings.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega on macOS, Intel and Apple Silicon, and 64-bit Android). It needs OpenGL or OpenGL ES 2.0. On 32-bit Android Kodi (most Fire TV sticks) install "Sand Clock v2 (OpenGL, 32-bit Android)" instead.</disclaimer>
+    <platform>osx android</platform>
+    <license>MIT</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

@@ -56,6 +56,7 @@ screensaver.spacecrab/              native project: Space Crab
 screensaver.dancingboids/          native project: Dancing Boids
 screensaver.physarum_v2/           native project: Physarum v2
 screensaver.emergence/             native project: Emergence (Physarum v2 + Dancing Boids + Particle Life v2)
+screensaver.sandclock_v2/          native project: Sand Clock v2 (grain-physics sand and FLIP liquid clocks)
 ```
 
 Each native project is one CMake build producing the Kodi module(s) and GLFW test harnesses. Its

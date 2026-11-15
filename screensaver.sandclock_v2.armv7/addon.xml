@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.sandclock_v2.armv7" name="Sand Clock v2 (OpenGL, 32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_android="screensaver.sandclock_v2.armv7.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">A clock of falling sand with real grain physics, or of melting liquid digits, for 32-bit Android Kodi</summary>
+    <description lang="en_GB">The same Sand Clock v2 screensaver as "Sand Clock v2 (OpenGL)", built for 32-bit Android (armeabi-v7a), as on many Fire TV sticks, Google TV boxes and the Chromecast with Google TV. Install this one if your Android or Google TV Kodi is a 32-bit app; install "Sand Clock v2 (OpenGL)" on 64-bit Android and macOS.
+
+The time, made of sand: every grain accelerates as it falls, scatters as it lands, rolls and slides to a stop, so heaps settle at the angle of real dry sand. Changed digits crumble into the pile and new ones are poured in from the top of the screen. Or the time made of liquid: the digits melt, drip and splash into a rocking pool, and the new ones condense in their place.
+
+Both simulations run on the CPU, split over the box's cores on a thread of their own, and hand the GPU one small picture a step, so they stay smooth on a TV stick. This build starts with slightly bigger grains for a small box. Fonts, colours, the grain size, gravity, pile, liquid, melting style and detail are all in the add-on settings.</description>
+    <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega, 32-bit ARM Android). It needs OpenGL ES 2.0.</disclaimer>
+    <platform>android</platform>
+    <license>MIT</license>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>
