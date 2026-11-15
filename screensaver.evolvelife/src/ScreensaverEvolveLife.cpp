@@ -83,9 +83,13 @@ void main()
   vec4 c = v_col;
   if (look < 0.5)
   {
+#ifdef NO_DITHER
+    gl_FragColor = c;
+#else
     // a little noise against banding on the dark gradients
     float n = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
     gl_FragColor = vec4(c.rgb + vec3((n - 0.5) / 255.0), c.a);
+#endif
   }
   else if (look < 1.5)
   {
@@ -154,6 +158,21 @@ void main()
 }
 )";
 
+// Smooth quality: the half-resolution scene, scaled up to the screen.
+const char* kBlitFragmentShader = R"(
+#ifdef GL_ES
+precision mediump float;
+#endif
+uniform sampler2D u_tex;
+varying vec2 v_uv;
+varying vec4 v_col;
+varying vec4 v_par;
+void main()
+{
+  gl_FragColor = vec4(texture2D(u_tex, v_uv).rgb, 1.0);
+}
+)";
+
 constexpr int kMaxQuads = 16000; // per draw (16-bit indices)
 
 enum Profile
@@ -161,7 +180,8 @@ enum Profile
   PROF_AUTO,
   PROF_LOW,
   PROF_BALANCED,
-  PROF_HIGH
+  PROF_HIGH,
+  PROF_SMOOTH // Low evolution, Smooth quality, one evaluation thread
 };
 
 enum LogLevel
@@ -188,7 +208,9 @@ private:
 
   void LoadSettings();
   GLuint Compile(GLenum type, const std::string& src);
-  GLuint Link(const char* vs, const char* fs);
+  GLuint Link(const char* vs, const char* fs, const char* defines = "");
+  bool BuildScene();
+  void DeleteScene();
   bool BuildGL();
   void DriverLoop();
   void EvolverLoop();
@@ -228,13 +250,17 @@ private:
 
   // GL
   GLuint m_shapeProgram = 0, m_textProgram = 0;
-  GLint m_aPos[2] = {-1, -1}, m_aUv[2] = {-1, -1}, m_aCol[2] = {-1, -1}, m_aPar[2] = {-1, -1};
-  GLint m_uTex = -1, m_uShadow = -1;
+  GLint m_aPos[3] = {-1, -1, -1}, m_aUv[3] = {-1, -1, -1}, m_aCol[3] = {-1, -1, -1}, m_aPar[3] = {-1, -1, -1};
+  GLint m_uTex = -1, m_uShadow = -1, m_uBlitTex = -1;
+  // Smooth quality: the world batch goes to a half-resolution target first
+  GLuint m_blitProgram = 0, m_sceneFbo = 0, m_sceneTex = 0, m_blitVbo = 0;
+  int m_sceneW = 0, m_sceneH = 0;
   GLuint m_vbo[3] = {0, 0, 0}, m_ibo = 0, m_vao = 0, m_fontTex = 0;
   size_t m_drawQuads[3] = {0, 0, 0};
 
   // settings that stay in the shell
   int m_threads = 0;
+  bool m_smooth = false;
   float m_aspect = 16.0f / 9.0f;
 
   Clock::time_point m_start, m_lastFrame, m_statsStart;
@@ -253,7 +279,10 @@ void CScreensaverEvolveLife::LoadSettings()
   auto opt = [](const char* id, int def, int lo, int hi) { return std::min(std::max(GetSettingInt(id, def), lo), hi); };
 
   // performance profile: Low (TV sticks), Balanced, High; Auto by platform
-  int profile = opt("profile", PROF_AUTO, 0, 3);
+  int profile = opt("profile", PROF_AUTO, 0, 4);
+  const bool smoothProfile = profile == PROF_SMOOTH;
+  if (smoothProfile)
+    profile = PROF_LOW;
   if (profile == PROF_AUTO)
   {
     const unsigned hw = std::thread::hardware_concurrency();
@@ -292,11 +321,16 @@ void CScreensaverEvolveLife::LoadSettings()
   m_ahead = kAhead[opt("speed", 1, 0, 3)];
 
   m_opts = evo::StageOptions();
-  const int quality = opt("quality", 0, 0, 3);
-  const int q = quality == 0 ? p : quality - 1;
-  m_opts.visible = kVisible[q];
-  m_opts.parallax = kParallax[q];
-  m_opts.motes = GetSettingBoolean("motes", true);
+  const int quality = opt("quality", 0, 0, 4);
+  // Smooth: for boxes whose GPU cannot fill 1080p several times a frame. Four
+  // creatures, one background layer, no motes or fog, the scene drawn at half
+  // resolution and scaled up (HUD and text stay sharp), no dithering.
+  m_smooth = quality == 4 || (quality == 0 && smoothProfile);
+  const int q = m_smooth ? 0 : quality == 0 ? p : quality - 1;
+  m_opts.visible = m_smooth ? 4 : kVisible[q];
+  m_opts.parallax = m_smooth ? 1 : kParallax[q];
+  m_opts.motes = !m_smooth && GetSettingBoolean("motes", true);
+  m_opts.lite = m_smooth;
   m_opts.camera = opt("camera", evo::CAM_CINEMATIC, 0, 2);
   m_opts.insight = opt("insight", evo::INS_RICH, 0, 3);
   m_opts.neural = GetSettingBoolean("neural", true);
@@ -320,6 +354,8 @@ void CScreensaverEvolveLife::LoadSettings()
 
   m_logLevel = opt("log", LOG_SUMMARY, 0, 2);
   m_threads = opt("threads", 0, 0, 4);
+  if (m_threads == 0 && m_smooth)
+    m_threads = 1; // leave the cores to Kodi and the stage
   const std::string seed = kodi::addon::GetSettingString("seed", "");
   m_seed = seed.empty() ? 0 : std::strtoull(seed.c_str(), nullptr, 10);
   if (m_seed == 0)
@@ -346,10 +382,10 @@ GLuint CScreensaverEvolveLife::Compile(GLenum type, const std::string& src)
   return shader;
 }
 
-GLuint CScreensaverEvolveLife::Link(const char* vsSrc, const char* fsSrc)
+GLuint CScreensaverEvolveLife::Link(const char* vsSrc, const char* fsSrc, const char* defines)
 {
   GLuint vs = Compile(GL_VERTEX_SHADER, kVertexHeader + vsSrc);
-  GLuint fs = Compile(GL_FRAGMENT_SHADER, kFragmentHeader + fsSrc);
+  GLuint fs = Compile(GL_FRAGMENT_SHADER, kFragmentHeader + defines + fsSrc);
   if (!vs || !fs)
   {
     if (vs)
@@ -379,13 +415,17 @@ GLuint CScreensaverEvolveLife::Link(const char* vsSrc, const char* fsSrc)
 
 bool CScreensaverEvolveLife::BuildGL()
 {
-  m_shapeProgram = Link(kVertexShader, kShapeFragmentShader);
+  m_shapeProgram = Link(kVertexShader, kShapeFragmentShader, m_smooth ? "#define NO_DITHER\n" : "");
   m_textProgram = Link(kVertexShader, kTextFragmentShader);
   if (!m_shapeProgram || !m_textProgram)
     return false;
-  const GLuint progs[2] = {m_shapeProgram, m_textProgram};
-  for (int i = 0; i < 2; i++)
+  if (m_smooth)
+    m_blitProgram = Link(kVertexShader, kBlitFragmentShader);
+  const GLuint progs[3] = {m_shapeProgram, m_textProgram, m_blitProgram};
+  for (int i = 0; i < 3; i++)
   {
+    if (!progs[i])
+      continue;
     m_aPos[i] = glGetAttribLocation(progs[i], "a_pos");
     m_aUv[i] = glGetAttribLocation(progs[i], "a_uv");
     m_aCol[i] = glGetAttribLocation(progs[i], "a_col");
@@ -393,6 +433,8 @@ bool CScreensaverEvolveLife::BuildGL()
   }
   m_uTex = glGetUniformLocation(m_textProgram, "u_tex");
   m_uShadow = glGetUniformLocation(m_textProgram, "u_shadow");
+  if (m_blitProgram)
+    m_uBlitTex = glGetUniformLocation(m_blitProgram, "u_tex");
 
 #ifdef TARGET_DARWIN
   glGenVertexArrays(1, &m_vao);
@@ -446,6 +488,55 @@ bool CScreensaverEvolveLife::BuildGL()
   glBindVertexArray(0);
 #endif
   return true;
+}
+
+// Smooth quality: a half-resolution colour target for the world batch, and
+// the full-screen quad that scales it up.
+bool CScreensaverEvolveLife::BuildScene()
+{
+  if (!m_blitProgram)
+    return false;
+  m_sceneW = std::max(Width() / 2, 1);
+  m_sceneH = std::max(Height() / 2, 1);
+  GLint prevFbo = 0;
+  glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFbo);
+  glGenTextures(1, &m_sceneTex);
+  glBindTexture(GL_TEXTURE_2D, m_sceneTex);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_sceneW, m_sceneH, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glGenFramebuffers(1, &m_sceneFbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, m_sceneFbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_sceneTex, 0);
+  const bool ok = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+  glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(prevFbo));
+  if (!ok)
+  {
+    DeleteScene();
+    return false;
+  }
+  // corners as the index buffer expects them: top-left, top-right, bottom-left, bottom-right
+  const evo::Vertex quad[4] = {{-1, 1, 0, 1, 0xFFFFFFFFu, 0}, {1, 1, 1, 1, 0xFFFFFFFFu, 0},
+                               {-1, -1, 0, 0, 0xFFFFFFFFu, 0}, {1, -1, 1, 0, 0xFFFFFFFFu, 0}};
+  glGenBuffers(1, &m_blitVbo);
+  glBindBuffer(GL_ARRAY_BUFFER, m_blitVbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  return true;
+}
+
+void CScreensaverEvolveLife::DeleteScene()
+{
+  if (m_sceneFbo)
+    glDeleteFramebuffers(1, &m_sceneFbo);
+  if (m_sceneTex)
+    glDeleteTextures(1, &m_sceneTex);
+  if (m_blitVbo)
+    glDeleteBuffers(1, &m_blitVbo);
+  m_sceneFbo = m_sceneTex = m_blitVbo = 0;
 }
 
 // The driver: m_kick stage ticks, then the batches for the newest one.
@@ -580,6 +671,8 @@ bool CScreensaverEvolveLife::Start()
   if (!BuildGL())
     return false;
   m_aspect = static_cast<float>(Width()) / static_cast<float>(std::max(1, Height()));
+  if (m_smooth && !BuildScene())
+    kodi::Log(ADDON_LOG_WARNING, "EvolveLife: no half-resolution target; drawing the scene at full size");
 
   int threads = m_threads;
   if (threads == 0)
@@ -612,9 +705,9 @@ bool CScreensaverEvolveLife::Start()
   m_loggedStats = false;
   kodi::Log(ADDON_LOG_INFO,
             "EvolveLife: seed %llu, %d creatures, up to %d segments, %d trial(s), %d eval thread(s), %d on stage, "
-            "%d generation(s) a round",
+            "%d generation(s) a round%s",
             static_cast<unsigned long long>(m_seed), m_cfg.population, m_cfg.maxSegs, m_cfg.trials, m_pool.threads(),
-            m_opts.visible, m_ahead);
+            m_opts.visible, m_ahead, m_sceneFbo ? ", smooth (half-resolution scene)" : "");
   return true;
 }
 
@@ -639,7 +732,8 @@ void CScreensaverEvolveLife::Stop()
     glDeleteVertexArrays(1, &m_vao);
   m_vao = 0;
 #endif
-  for (GLuint* p : {&m_shapeProgram, &m_textProgram})
+  DeleteScene();
+  for (GLuint* p : {&m_shapeProgram, &m_textProgram, &m_blitProgram})
   {
     if (*p)
       glDeleteProgram(*p);
@@ -668,7 +762,7 @@ void CScreensaverEvolveLife::DrawBatch(GLuint program, GLuint vbo, size_t quads)
 {
   if (quads == 0)
     return;
-  const int pi = program == m_shapeProgram ? 0 : 1;
+  const int pi = program == m_shapeProgram ? 0 : program == m_textProgram ? 1 : 2;
   glUseProgram(program);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
@@ -749,17 +843,41 @@ void CScreensaverEvolveLife::Render()
   }
 
   // draw
-  glViewport(X(), Y(), Width(), Height());
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
 #ifdef TARGET_DARWIN
   glBindVertexArray(m_vao);
 #endif
-  glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  DrawBatch(m_shapeProgram, m_vbo[0], m_drawQuads[0]);
+  if (m_sceneFbo)
+  {
+    // Smooth: the world at half resolution, then scaled up without blending
+    GLint screenFbo = 0;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &screenFbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_sceneFbo);
+    glViewport(0, 0, m_sceneW, m_sceneH);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glEnable(GL_BLEND);
+    DrawBatch(m_shapeProgram, m_vbo[0], m_drawQuads[0]);
+    glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(screenFbo));
+    glViewport(X(), Y(), Width(), Height());
+    glDisable(GL_BLEND);
+    glUseProgram(m_blitProgram);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_sceneTex);
+    glUniform1i(m_uBlitTex, 0);
+    DrawBatch(m_blitProgram, m_blitVbo, 1);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glEnable(GL_BLEND);
+  }
+  else
+  {
+    glViewport(X(), Y(), Width(), Height());
+    glClear(GL_COLOR_BUFFER_BIT);
+    glEnable(GL_BLEND);
+    DrawBatch(m_shapeProgram, m_vbo[0], m_drawQuads[0]);
+  }
   DrawBatch(m_shapeProgram, m_vbo[1], m_drawQuads[1]);
   glUseProgram(m_textProgram);
   glActiveTexture(GL_TEXTURE0);

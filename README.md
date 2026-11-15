@@ -71,8 +71,8 @@ installed version in **Add-ons → My add-ons**.
 | [Sand Clock v2 (OpenGL, 32-bit Android)](#sand-clock-v2-opengl) | `screensaver.sandclock_v2.armv7` | 1.0.0 | Android 32-bit |
 | [Alien Life (OpenGL)](#alien-life-opengl) | `screensaver.alienlife` | 1.0.0 | macOS, Android 64-bit |
 | [Alien Life (OpenGL, 32-bit Android)](#alien-life-opengl) | `screensaver.alienlife.armv7` | 1.0.0 | Android 32-bit |
-| [EvolveLife (OpenGL)](#evolvelife-opengl) | `screensaver.evolvelife` | 1.0.0 | macOS, Android 64-bit |
-| [EvolveLife (OpenGL, 32-bit Android)](#evolvelife-opengl) | `screensaver.evolvelife.armv7` | 1.0.0 | Android 32-bit |
+| [EvolveLife (OpenGL)](#evolvelife-opengl) | `screensaver.evolvelife` | 1.1.0 | macOS, Android 64-bit |
+| [EvolveLife (OpenGL, 32-bit Android)](#evolvelife-opengl) | `screensaver.evolvelife.armv7` | 1.1.0 | Android 32-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -1282,6 +1282,9 @@ saved, so no two sessions end up in the same place.
   species over time, brain growth, family tree, then and now (with a ghost of an early champion on
   the course), milestones, hall of fame, commentary, facts, species map. Off, Light, Rich (the
   default) or Full; panels drift and swap sides every ten minutes against burn-in.
+- **Smooth** (Performance profile or Visual quality) is for the weakest boxes: four creatures on
+  stage, one background layer, no motes or fog, the scene drawn at half resolution and scaled up
+  (the HUD and text stay sharp), no dithering, and one evaluation thread.
 - **Settings:** performance profile, population, evolution speed (generations per round), goal,
   goal change, complexity, mutation, immigrants, gravity; quality, camera, information level,
   brain view, ticker, names, palette (warm dusk, cool night, neon, mono), motes, brightness cap,

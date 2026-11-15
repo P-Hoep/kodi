@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.evolvelife.armv7" name="EvolveLife (OpenGL, 32-bit Android)" version="1.0.0" provider-name="P-Hoep">
+<addon id="screensaver.evolvelife.armv7" name="EvolveLife (OpenGL, 32-bit Android)" version="1.1.0" provider-name="P-Hoep">
   <requires>
     <c-pluff version="1.0"/>
     <import addon="kodi.binary.global.main" version="2.0.2"/>
@@ -16,7 +16,7 @@ This build starts with the Low profile (32 creatures a generation, up to 8 segme
     <disclaimer lang="en_GB">This is a native add-on: it is built per platform and Kodi version (this one: Kodi 21 Omega, 32-bit ARM Android). It needs OpenGL ES 2.0. The on-screen text uses the Inter typeface (SIL Open Font License 1.1). Nothing is saved between runs.</disclaimer>
     <platform>android</platform>
     <license>MIT</license>
-    <news>1.0.0 - initial release</news>
+    <news>1.1.0 - Smooth setting for weak devices (Performance profile or Visual quality): 4 creatures, half-resolution scene, one evaluation thread[CR]1.0.0 - initial release</news>
     <assets>
       <icon>icon.png</icon>
       <fanart>fanart.jpg</fanart>

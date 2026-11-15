@@ -21,11 +21,12 @@ I = lambda sid, label, default, lo, hi, step=1, **kw: dict(
 O = lambda sid, label, default, options, **kw: dict(
     id=sid, type='options', label=label, default=default, options=options, **kw)
 
-# Index order is read by LoadSettings() in ScreensaverEvolveLife.cpp: PROFILE is Profile, GOALS is
+# Index order is read by LoadSettings() in ScreensaverEvolveLife.cpp: PROFILE is Profile (Smooth = Low evolution with
+# the Smooth quality), QUALITY 4 is Smooth, GOALS is
 # 0 = random then evo::Goal + 1, CAMERA is evo::CameraMode, INSIGHT is evo::InsightLevel, PALETTE is
 # evo::PaletteId, LOG is LogLevel; the other lists index the tables next to them in LoadSettings().
 PROFILE = ['Automatic (by device)', 'Low (TV sticks, Raspberry Pi 4)', 'Balanced (typical HTPC, Shield)',
-           'High (desktop)']
+           'High (desktop)', 'Smooth (weakest devices: 4 creatures, lighter drawing)']
 POPULATION = ['Automatic (by profile)', '24', '40', '60', '100', '150', '250']
 SPEED = ['Watch every generation', 'Normal (up to 3 generations a round)', 'Fast (up to 8 a round)',
          'Fastest (up to 20 a round)']
@@ -38,7 +39,7 @@ COMPLEXITY = ['Automatic (by profile)', 'Simple (up to 6 segments)', 'Medium (up
 MUTATION = ['Low', 'Normal', 'High']
 IMMIGRANTS = ['None', '5%', '8%', '12%']
 QUALITY = ['Automatic (by profile)', 'Low (12 creatures on stage)', 'Balanced (24 on stage)',
-           'High (48 on stage)']
+           'High (48 on stage)', 'Smooth (4 on stage, half-resolution scene, for weak GPUs)']
 CAMERA = ['Cinematic', 'Follow the leader', 'Overview']
 INSIGHT = ['Off (just the creatures)', 'Light (goal, ticker and titles)',
            'Rich (live brain, charts and info cards)', 'Full (everything, plus system figures)']

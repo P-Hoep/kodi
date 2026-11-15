@@ -78,6 +78,7 @@ struct StageOptions
   int parallax = 3;         // background silhouette layers
   float textScale = 1.0f;
   bool labels = true;       // names over the creatures
+  bool lite = false;        // Smooth quality: skip the full-width fog band
 };
 
 class Stage
@@ -708,6 +709,8 @@ private:
       }
     }
     // a fog band over the far silhouettes
+    if (m_o.lite)
+      return;
     const RGB fog = Scale(p.fog, k * 0.5f);
     GradPx(world, 0, groundPy - 0.35f * m_H, m_W, groundPy + 0.05f * m_H, PackPre(fog, 0.0f), PackPre(fog, 0.35f));
   }
