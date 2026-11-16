@@ -3,7 +3,9 @@
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
 live-camera window, a bird-sighting mosaic, a street-view guessing game, an old radar scope, a ship
 tracker, a scheduler, a flashcard app, a trivia quiz, a news reader, audiobooks and GPU-drawn
-visuals for Kodi, published as one Kodi repository so Kodi installs them and keeps them up to date.
+visuals for Kodi — Particle Life, flocking boids, a slime mould, lichen and coral, a space crab,
+evolving creatures, a maze builder and an AI that teaches itself to play NES games among them —
+published as one Kodi repository so Kodi installs them and keeps them up to date.
 
 ### Python screensavers
 
@@ -15,7 +17,7 @@ visuals for Kodi, published as one Kodi repository so Kodi installs them and kee
 | [Couchstronomy](#couchstronomy) | 0.1.3 | Your TV as a window onto the real night sky |
 | [SkyWatch](#skywatch) | 1.0.0 | A live weather station: radar, forecasts, warnings and conditions |
 | [Live Cams](#live-cams) | 1.0.0 | A window onto public live cameras around the world |
-| [GeoGuess](#geoguess) | 0.4.0 | A random street-view panorama, answered after a few sweeps |
+| [GeoGuess](#geoguess) | 0.4.1 | A random street-view panorama, answered after a few sweeps |
 | [Vintage Radar](#vintage-radar) | 1.0.1 | An old radar scope showing the aircraft flying over you right now |
 | [Word Clock](#word-clock) | 1.0.0 | The time in words on a grid of letters, with your own fonts and colours |
 | [Sand Clock](#sand-clock) | 1.0.1 | A clock whose digits crumble into falling sand every second |
@@ -41,6 +43,30 @@ visuals for Kodi, published as one Kodi repository so Kodi installs them and kee
 | Growing Plant (OpenGL, 32-bit Android) | 1.0.1 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | 1.0.0 | macOS, Android 64-bit |
 | Sand Clock (OpenGL, 32-bit Android) | 1.0.0 | Android 32-bit |
+| [Particle Life (OpenGL)](#particle-life-opengl) | 1.0.2 | macOS, Android 64-bit |
+| Particle Life (OpenGL, 32-bit Android) | 1.0.2 | Android 32-bit |
+| [Particle Life v2 (OpenGL)](#particle-life-v2-opengl) | 1.1.0 | macOS, Android 64-bit |
+| Particle Life v2 (OpenGL, 32-bit Android) | 1.1.0 | Android 32-bit |
+| [Lichen & Coral (OpenGL)](#lichen--coral-opengl) | 1.0.0 | macOS, Android 64-bit |
+| Lichen & Coral (OpenGL, 32-bit Android) | 1.0.0 | Android 32-bit |
+| [Space Crab (OpenGL)](#space-crab-opengl) | 1.0.0 | macOS, Android 64-bit |
+| Space Crab (OpenGL, 32-bit Android) | 1.0.0 | Android 32-bit |
+| [Dancing Boids (OpenGL)](#dancing-boids-opengl) | 1.0.0 | macOS, Android 64-bit |
+| Dancing Boids (OpenGL, 32-bit Android) | 1.0.0 | Android 32-bit |
+| [Physarum v2 (OpenGL)](#physarum-v2-opengl) | 1.0.0 | macOS, Android 64-bit |
+| Physarum v2 (OpenGL, 32-bit Android) | 1.0.0 | Android 32-bit |
+| [Emergence (OpenGL)](#emergence-opengl) | 1.0.0 | macOS, Android 64-bit |
+| Emergence (OpenGL, 32-bit Android) | 1.0.0 | Android 32-bit |
+| [Sand Clock v2 (OpenGL)](#sand-clock-v2-opengl) | 1.0.0 | macOS, Android 64-bit |
+| Sand Clock v2 (OpenGL, 32-bit Android) | 1.0.0 | Android 32-bit |
+| [Alien Life (OpenGL)](#alien-life-opengl) | 2.0.0 | macOS, Android 64-bit |
+| Alien Life (OpenGL, 32-bit Android) | 2.0.0 | Android 32-bit |
+| [EvolveLife (OpenGL)](#evolvelife-opengl) | 1.2.0 | macOS, Android 64-bit |
+| EvolveLife (OpenGL, 32-bit Android) | 1.2.0 | Android 32-bit |
+| [ScreenMazer (OpenGL)](#screenmazer-opengl) | 1.0.0 | macOS, Android 64-bit |
+| ScreenMazer (OpenGL, 32-bit Android) | 1.0.0 | Android 32-bit |
+| [AI Arcade](#ai-arcade-opengl) | 1.0.3 | macOS, Android 64-bit |
+| AI Arcade (32-bit Android) | 1.0.2 | Android 32-bit |
 | [Cellular Automata (32-bit Android)](#cellular-automata) | 1.1.0 | Android 32-bit |
 | [Cellular Automata Lite (32-bit Android)](#cellular-automata) | 1.1.0 | Android 32-bit |
 | [Cellular Automata 3D (32-bit Android)](#cellular-automata-3d) | 1.0.0 | Android 32-bit |
@@ -54,7 +80,7 @@ visuals for Kodi, published as one Kodi repository so Kodi installs them and kee
 
 | Add-on | Version | What it is |
 |---|---|---|
-| [Screensaver Switcher](#screensaver-switcher) | 0.1.0 | Different screensavers at different times of day |
+| [Screensaver Switcher](#screensaver-switcher) | 0.2.0 | Different screensavers at different times of day |
 | [Audioshelf](#audioshelf) | 1.1.0 | Audiobooks from an Audiobookshelf server |
 | [Sheetcards](#sheetcards) | 1.0.0 | The flashcard study app |
 | [OpenTrivia](#opentrivia) | 1.0.0 | The trivia quiz you play with the remote |
@@ -87,7 +113,7 @@ The add-ons are in a Kodi repository hosted on GitHub Pages:
 1. **Settings → System → Add-ons → Unknown sources → On.**
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/`
    and name it `phoep`.
-3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.16.zip`.
+3. **Settings → Add-ons → Install from zip file → phoep →** `repository.phoep-1.0.18.zip`.
    Kodi shows "P-Hoep Add-ons — Add-on installed".
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.** Screensavers are under
    **Look and feel → Screensaver**; the Switcher is under **Services**; Sheetcards, RSS Live
@@ -288,7 +314,7 @@ without it; after a while the next panorama crossfades in.
 - **Clock:** an optional fixed clock in the top right corner, as plain white text.
 - **Labels:** the country's English name is appended unless the address already ends with a known
   spelling of it; label size small, medium or large.
-- **Images:** wide panoramas pan with a sine ease, narrow ones are centred; the next image is
+- **Images:** wide panoramas pan at a constant speed, narrow ones are centred; the next image is
   prefetched, and at most eight files are kept in Kodi's temp folder and deleted on exit.
 - **Offline:** black screen with a retry message, backing off to once a minute and resuming when
   the connection returns. Any input exits immediately.
@@ -334,11 +360,13 @@ the app under **Program add-ons**.
 A service that picks a different screensaver for different times of day. For example: Math
 Clock in the morning, God's World Map during the day, and Black at night.
 
-- **Time windows:** set up to six, each with a start time, an end time and a screensaver
+- **Time windows:** set up to twelve, each with a start time, an end time and a screensaver
   chosen from the ones you have installed. A default covers the rest of the day.
-- **Alternating:** a window can switch between two screensavers every 5–240 minutes.
-- **Flexible windows:** a window can cross midnight (22:00–06:00). If two windows
-  overlap, the lower-numbered one wins.
+- **Alternating:** a window can switch between two screensavers every 1–1440 minutes. Each
+  window has its own interval (0 uses the general one, 30 minutes by default), so a fast
+  lunchtime rotation and a slow evening one can coexist.
+- **Flexible windows:** a window can cross midnight (22:00–06:00), and start = end means all
+  day. If two windows overlap, the lower-numbered one wins.
 - **Instant switching:** at each window boundary it changes Kodi's screensaver, and
   restarts one that is already running so the change shows within a second or two.
 - **Manual choices stick:** a screensaver you pick by hand stays until the next window
@@ -760,6 +788,236 @@ add-ons, one for macOS and 64-bit Android and one for 32-bit Android.
 
 ---
 
+## Particle Life (OpenGL)
+
+![Particle Life: thousands of glowing particles gathering into multi-coloured clusters and threads](../screensaver.particlelife.gl/fanart.jpg)
+
+Particles of two to eight species attract or repel each other according to a small table of pair
+forces, and out of those simple rules come cells, worms, membranes, orbiting rings and drifting
+colonies. Nothing is scripted; the patterns are what the rules do.
+
+- **Rules:** ten presets from the original Particle Life demo (DNA, Worm, Waves, Soap, Photon,
+  Ladybug, Flower, Cells, Vacuum, Y), a matrix of your own, or a completely random one. When it
+  starts over it can keep the rules, pick new ones, or change the colours and layout too; a seed
+  makes a run repeatable.
+- **The original's physics:** the same constant pull or push and the same species-by-species
+  update, which is why it keeps churning for minutes instead of settling into a still cluster.
+- **An automatic camera:** optionally pan slowly across the field, pan and zoom, or zoom around
+  the middle.
+- **Look:** eight palettes, colour by species, speed or a shimmer, particle size, glow, trails,
+  background and dimming, plus six starting arrangements.
+- **From weak boxes to big screens:** 256 particles up to 32,768; the 32-bit build starts lighter.
+
+Particle Life was created by Hunar Ahmad (life_code, MIT); this is an independent native port.
+
+---
+
+## Particle Life v2 (OpenGL)
+
+![Particle Life v2: four colours of particles gathering into clusters and rings](../screensaver.particlelife_v2/fanart.jpg)
+
+A second Particle Life port: the physics of the original desktop app, with its control panel
+turned into Kodi settings. The rules change every 60 seconds by default, so a run keeps changing.
+
+- **Presets from the original:** its 19 saved models (Worm, Flower cell, DNA, Ladybug, Soap,
+  Teleport, Waves and more), in order, shuffled, mixed with random rules, or one on its own.
+- **One to eight colours** of particles, in Classic, Neon, Pastel, Rainbow or random palettes.
+- **More randomness:** symmetric rules, rules that slowly evolve or flip one at a time, a random
+  viscosity per rule set, and pulses that blow the particles apart or pull them together.
+- **The look:** round, square or glowing particles, their size, and motion trails.
+
+---
+
+## Lichen & Coral (OpenGL)
+
+![Lichen & Coral: a lichen-covered rock, reef ridges and a sea fan](../screensaver.lichencoral/fanart.jpg)
+
+Lichen and coral grow live on screen from published scientific growth models. Three scenes take
+turns, each with fresh random parameters:
+
+- **Lichen on rock:** up to eight species spread across a stone, filling it in about one scene
+  length; some die back into rings.
+- **Reef ridges:** a reef and its nutrients form spur-and-groove ridges, labyrinths and spots that
+  creep upstream, and storms break up patches now and then.
+- **Coral colony (3D):** staghorn, bushy, table, sea-fan and massive boulder corals.
+
+Lichen and reef are shown from above or as a lit 3D surface under a drifting camera; the coral
+grows under a circling camera. Settings choose the scenes, scene length, view, natural or vivid
+colours, lichen species and form, reef current and storms, coral form and colonies, and detail
+(the 32-bit build defaults to Low).
+
+---
+
+## Space Crab (OpenGL)
+
+![Space Crab: a crab floating among the stars](../screensaver.spacecrab/fanart.jpg)
+
+An animated crab — or up to twelve — floats in empty space, legs scuttling through nothing.
+
+- **Crab:** how many; animation speed; a steady walk, a walk that speeds up, rests and sometimes
+  reverses, or back and forth; floating in place, wandering around the screen or scuttling across
+  space; gentle sway, slow turning or tumbling head over heels.
+- **Camera:** zoom, a slow push in and out, orbit speed and direction, height, wide, normal or
+  telephoto lens, and a gentle handheld drift.
+- **Space:** black, deep blue or nebula; stars that stay still, drift or rush past at warp speed;
+  warm, cool, rim or colour-cycling light. Detail Low suits weak boxes (the 32-bit default).
+
+Crab model: "Animated Crab rigged FREE" by TwilightFox on Sketchfab, Sketchfab Standard licence.
+
+---
+
+## Dancing Boids (OpenGL)
+
+![Dancing Boids: flocks of glowing darts coloured by heading](../screensaver.dancingboids/fanart.jpg)
+
+A native take on Netlight's Dancing Boids macOS screensaver: thousands of birds following three
+rules (keep apart, fly the way your neighbours fly, stay with the group) pour, split, swirl and
+join again. A wandering point leads the flock in loops, a hawk dives through it, and every 90
+seconds a new flock with a slightly different temperament fades in.
+
+- **Flock:** 100 to 10,000 birds, up to four flocks that keep to their own kind, speed, vision,
+  how strongly they keep apart, align and stay together, the wandering lead and up to four hawks.
+- **Look:** the original's blue triangles, a colour per flock, rainbow by heading, colour by speed
+  or random; triangles, slim darts or dots; glow and motion trails; or dark starlings against a
+  dusk sky.
+- **Light enough for a Fire TV Stick:** 1,500 birds (the 32-bit default) take about 2 ms a step.
+
+---
+
+## Physarum v2 (OpenGL)
+
+![Physarum v2: the fine web preset](../screensaver.physarum_v2/fanart.jpg)
+
+The Physarum slime mould rebuilt to run on the CPU, so it stays smooth on 32-bit TV sticks whose
+graphics chips struggle with the GPU Physarum add-ons.
+
+- **Behaviour:** the eleven Physarum presets, a different one at every restart, or your own; up to
+  three species that avoid each other; pattern scale; six starting patterns; a restart timer.
+- **Look:** palette, neon, fire or one colour; eight palettes, colour cycling, brightness,
+  background and dimming.
+- **Size:** 25 thousand to 1 million agents; 150,000 run at 60 frames a second on a Fire TV Stick
+  4K Max.
+
+---
+
+## Emergence (OpenGL)
+
+![Emergence: the Ecosystem scene, particle cells feeding a slime network that guides the flock](../screensaver.emergence/fanart.jpg)
+
+The slime mould, the flock and Particle Life's colour cells in one world. Seven scenes take turns,
+fading through black: three show each simulation alone, and four let them feel each other.
+
+- **Slime highways:** the birds lay scent as they fly, the slime grows along their paths, and the
+  birds steer up its veins.
+- **Cell garden:** the particle cells are food, and the slime forages a network between them.
+- **Reef:** the flock swims around the particle cells.
+- **Ecosystem:** all three — the cells feed the slime, the slime guides the flock, and the flock
+  feeds the slime.
+
+Settings choose all scenes, only the combinations, only the three alone, or one scene; a new scene
+every 1 to 30 minutes; how strongly the simulations interact; the colours, flocks, hawks and
+particle rules; and a detail level (Low for TV sticks).
+
+---
+
+## Sand Clock v2 (OpenGL)
+
+![Sand Clock v2: the seconds crumble into the pile while new sand pours in](../screensaver.sandclock_v2/fanart.jpg)
+
+Sand Clock rebuilt around real particle physics, with a second clock in the same add-on whose
+digits melt. Both are light enough for 32-bit TV sticks.
+
+- **Sand:** every grain accelerates as it falls, scatters when it lands, rolls down slopes and
+  slides to a stop, so heaps settle at the angle real dry sand does. A changed digit crumbles and
+  falls; the new one pours in from the top or builds up in place, and the pile drains away so it
+  never reaches the clock.
+- **Liquid:** the digits thaw, drip, slump and run down into a pool that rocks gently, and the new
+  digit condenses in their place. Water, oil, syrup or honey.
+- **Clock and colours:** the nine Sand Clock fonts, seconds, 12-hour clock, size and position; a
+  new colour for every change, per digit, one colour or a slow rainbow, eight palettes.
+
+---
+
+## Alien Life (OpenGL)
+
+![Alien Life: grazers of every colour crowd a radiation source while red hunters roam](../screensaver.alienlife/fanart.jpg)
+
+A small take on ALIEN, Christian Heinemann's artificial life simulator. Every creature is a body
+of glowing cells built from its genome; each cell has a type and a tiny neural network. Sensors
+look for food, prey or kin, muscles push and bend the body, attackers steal energy, injectors
+hijack other creatures, detonators blow up. A fixed budget of energy circulates between the world
+and the creatures, so they must eat, and a well-fed creature builds an offspring whose genome may
+have mutated.
+
+- **Worlds:** Grazers, Grazers and hunters, a Primordial soup of random genomes, or an Ecosystem
+  with hunters, puffers and viruses; a new world every 20 minutes or never.
+- **Look:** *Organic*, after ALIEN's own renderer — fused, translucent tissue with glowing energy,
+  attack beams, flashes and birth rings — or *Classic* glowing cells and lines. The camera shows
+  the whole world, tours the busiest places or follows one creature after another.
+- **Settings:** world size (Small for TV sticks), energy, mutation rate, radiation sources, rocks,
+  muscle strength, colouring, bloom, trails and dimming.
+
+---
+
+## EvolveLife (OpenGL)
+
+![EvolveLife: evolved creatures on their course, with the goal, the ticker and the champion's live brain](../screensaver.evolvelife/fanart.jpg)
+
+An aquarium for evolution. Soft, luminous creatures evolve their bodies and brains from scratch to
+reach a goal; the first generations flail and topple, and within minutes they visibly improve. No
+gait is written anywhere, and every run starts from a new random seed, so no two sessions end up
+in the same place.
+
+- **Goals:** travel far, reach a beacon, climb a hill, cross a chasm, jump high, glide from a
+  cliff, run the hurdles or fly, each on its own terrain, gravity and wind. A goal lasts 8 to 40
+  generations and the population carries over.
+- **The stage** replays each finished generation: the champion, the best of the rest and a sample
+  run their real trial together while the camera follows the leader.
+- **The show:** the goal, an event ticker (records, species born and extinct, fins appearing),
+  fitness sparklines, the champion's brain firing as it moves, and rotating cards — family tree,
+  hall of fame, species map and more. Off, Light, Rich or Full.
+- **Smooth** mode is made for the weakest boxes.
+
+---
+
+## AI Arcade (OpenGL)
+
+![AI Arcade](../screensaver.aiarcade/fanart.jpg)
+
+Picks a NES game, teaches itself to play it with no human input, and shows the result. It finds
+where the game starts, explores it, works out from the game's memory what "progress" means, and
+evolves neural-network players against that. The best player so far plays on screen with a small
+HUD: the game, the phase, the generation, the best score and a graph of progress.
+
+- **Games:** a library of 98 NES games comes with the add-on, and you can add your own `.nes`
+  files or point it at a folder (a network source works too). Each time it starts it picks a game
+  it hasn't played lately, favouring the least trained, and can switch every few minutes.
+- **It remembers:** what it has learned is saved for every game, so it picks up where it left off.
+- **Patience:** expect hours before a game shows clear progress. Side-scrollers learn best; puzzle,
+  RPG and menu-heavy games mostly look like exploration.
+- **Settings:** an extra ROM folder, switching, the HUD, training threads, a CPU cap (60% of one
+  core by default) and population size, and a switch to reset everything it has learned.
+
+The emulator is Nestopia, so this add-on is GPL-2.0-or-later. Tested in Kodi on macOS; the
+Android builds have not yet been run on a device.
+
+---
+
+## ScreenMazer (OpenGL)
+
+![ScreenMazer: a grey maze with the time carved into it and the white solution path](../screensaver.screenmazer/fanart.jpg)
+
+A port of Alex Beals' ScreenMazer macOS screensaver. A maze is carved cell by cell across the
+screen around the time it was made; when it is complete, the path from the entrance to the exit is
+traced in a second colour, then it all fades and a new maze starts.
+
+- **The original's settings:** cell size, build and solve time, solving on or off, path and
+  solution colours, clock size and a 12- or 24-hour clock.
+- **Added for Kodi:** a wall colour, a centred clock, or no clock at all. The maze looks the same at
+  720p, 1080p and 4K, and even the densest one is cheap to draw.
+
+---
+
 ## Cellular Automata
 
 Conway's Life and other cellular automata computed entirely on the GPU: the whole grid lives in
@@ -848,8 +1106,11 @@ plays. There are two Kodi add-ons, one for macOS and 64-bit Android and one for 
 
 ## Licence
 
-The add-on code is MIT-licensed. Bundled data and imagery keep their own licences, listed
-above and in each add-on's `LICENSE.txt` or `addon.xml`. The OpenTrivia questions and answers
+The add-on code is MIT-licensed, except AI Arcade, which compiles in the Nestopia emulator and
+is therefore GPL-2.0-or-later. Bundled data and imagery keep their own licences, listed above and
+in each add-on's `LICENSE.txt` or `addon.xml`. Particle Life's preset rules come from Hunar
+Ahmad's life_code (MIT); Endless World is a port of infworld (MIT, textures CC-BY-SA 3.0); the
+Space Crab model is used under the Sketchfab Standard licence. The OpenTrivia questions and answers
 are © the OpenTriviaQA contributors and licensed CC BY-SA 4.0.
 
 Ship positions come from aisstream.io (a free API key is required); the map is the EOX

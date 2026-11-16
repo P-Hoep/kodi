@@ -1,9 +1,23 @@
 # P-Hoep Kodi Add-ons
 
-Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
-live-camera window, a bird-sighting mosaic, a ship tracker, a scheduler, a flashcard app, a trivia
-quiz, a news reader, a maze builder, lichen and coral growth models, a floating space crab, a flock of dancing boids, a CPU slime mould, all three of those living together, a clock of falling sand or melting liquid, an AI that teaches itself to play your NES games, a music visualisation and an audiobook player for Kodi,
-published as one Kodi repository so Kodi installs them and keeps them up to date.
+Screensavers, apps and a music visualisation for Kodi, published as one Kodi repository so Kodi
+installs them and keeps them up to date:
+
+- **Maps and live data:** a live local map of flights, satellites, weather and transit; the whole
+  Earth in thirteen projections; the real night sky outside your window; a weather station;
+  public live cameras; a street-view guessing game; a green-phosphor radar scope of the aircraft
+  overhead; a ship tracker; a bird-sighting photo mosaic.
+- **Clocks:** a maths-puzzle clock, a word clock, and clocks of crumbling sand or melting liquid.
+- **Words and quizzes:** a Jeopardy! slideshow, a trivia quiz, Google Sheets flashcards, RSS
+  live tiles and Hacker News at reading speed.
+- **Games and generative art:** the bouncing DVD logo, an AI playing Tetris, an endless
+  landscape, a growing plant, a maze builder, Particle Life, cellular automata in 2D and 3D, a
+  slime mould on the GPU or the CPU, a flock of dancing boids, the slime, the flock and Particle
+  Life living together in one world,
+  lichen and coral growth models, a floating space crab, artificial-life cell creatures, creatures
+  that evolve bodies and brains, and an AI that teaches itself to play NES games.
+- **Apps and services:** a screensaver scheduler, an Audiobookshelf audiobook player, and a slime
+  mould music visualisation.
 
 Most add-ons are pure Python and run on any Kodi 19 (Matrix) or later device. The OpenGL add-ons
 are native, GPU-drawn add-ons built for macOS (Intel and Apple Silicon) and Android, with
@@ -73,8 +87,8 @@ installed version in **Add-ons → My add-ons**.
 | [Alien Life (OpenGL, 32-bit Android)](#alien-life-opengl) | `screensaver.alienlife.armv7` | 2.0.0 | Android 32-bit |
 | [EvolveLife (OpenGL)](#evolvelife-opengl) | `screensaver.evolvelife` | 1.2.0 | macOS, Android 64-bit |
 | [EvolveLife (OpenGL, 32-bit Android)](#evolvelife-opengl) | `screensaver.evolvelife.armv7` | 1.2.0 | Android 32-bit |
-| [AI Arcade](#ai-arcade-opengl) | `screensaver.aiarcade` | 1.0.2 | macOS, Android 64-bit |
-| [AI Arcade (32-bit Android)](#ai-arcade-opengl) | `screensaver.aiarcade.armv7` | 1.0.1 | Android 32-bit |
+| [AI Arcade](#ai-arcade-opengl) | `screensaver.aiarcade` | 1.0.3 | macOS, Android 64-bit |
+| [AI Arcade (32-bit Android)](#ai-arcade-opengl) | `screensaver.aiarcade.armv7` | 1.0.2 | Android 32-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -97,7 +111,7 @@ installed version in **Add-ons → My add-ons**.
 | [OpenTrivia](#opentrivia) | `script.opentrivia` | 1.0.0 | The trivia quiz you play with the remote (Kodi 20+) |
 | [Vintage Radar](#vintage-radar) | `script.vintageradar` | 1.0.2 | The Vintage Radar scope in a driveable window (Kodi 20+) |
 | [Physarum Visualisation (macOS and 64-bit Android)](#physarum-visualisation) | `visualization.physarum.lite` | 1.0.0 | Physarum driven by Kodi's audio (Kodi 21) |
-| Physarum Visualisation (32-bit Android) | `visualization.physarum.lite.armv7` | 1.0.0 | The same visualisation for 32-bit Android Kodi |
+| [Physarum Visualisation (32-bit Android)](#physarum-visualisation) | `visualization.physarum.lite.armv7` | 1.0.0 | The same visualisation for 32-bit Android Kodi |
 
 ### Library modules and repository
 
@@ -107,7 +121,7 @@ installed version in **Add-ons → My add-ons**.
 | RSS Live Tiles library | `script.module.rsslivetiles` | 1.0.0 | Shared code for the RSS Live Tiles app and screensaver |
 | OpenTrivia library | `script.module.opentrivia` | 1.0.0 | The questions database, shared window and skin for the OpenTrivia add-ons |
 | Vintage Radar library | `script.module.vintageradar` | 1.0.1 | The scope's model, feeds, window, text renderer and textures, shared by the Vintage Radar app and screensaver |
-| P-Hoep Add-ons | `repository.phoep` | 1.0.16 | The Kodi repository that installs and updates everything |
+| P-Hoep Add-ons | `repository.phoep` | 1.0.18 | The Kodi repository that installs and updates everything |
 
 The library modules are installed automatically as dependencies; there is nothing to configure.
 
@@ -143,7 +157,7 @@ installs them and updates them itself.
 2. **Settings → File manager → Add source →** enter `https://p-hoep.github.io/kodi/` and name it
    `phoep`.
 3. **Settings → Add-ons → Install from zip file → phoep →**
-   `repository.phoep-1.0.16.zip`.
+   `repository.phoep-1.0.18.zip`.
 4. **Settings → Add-ons → Install from repository → P-Hoep Add-ons.**
    - Screensavers are under **Look and feel → Screensaver**.
    - The Switcher is under **Services**.
@@ -215,6 +229,8 @@ Data from adsb.lol, OpenSky Network, CelesTrak, USGS, NOAA, NASA GIBS, OpenRailw
 agencies and TomTom. Map tiles © OpenStreetMap contributors, CARTO and Esri.
 
 ```bash
+python3 tools/make_media.py                  # marker icons, icon and fanart (Pillow)
+python3 tools/make_settings.py               # settings.xml + strings.po from resources/lib/config.py
 python3 tools/build_zip.py screensaver.godseye.map
 KODI_ADDON=screensaver.godseye.map python3 tools/kodi.py install   # then select / run / shot
 python3 -m unittest tests.test_core
@@ -247,6 +263,7 @@ tiles. Map tiles © OpenStreetMap contributors, © CARTO.
 
 ```bash
 python3 tools/make_world_data.py              # bundled world data (needs Pillow, numpy)
+python3 tools/derive_dymaxion.py tools/.world-cache/OSM_Land_Water_Map_2048.png   # re-derive the Dymaxion net
 python3 tools/make_settings_godsworld.py      # settings.xml + strings.po from resources/lib/config.py
 python3 tools/build_zip.py screensaver.godsworld.map
 KODI_ADDON=screensaver.godsworld.map python3 tools/kodi.py install   # then select / run / shot
@@ -258,6 +275,14 @@ mesh rasterised once into a cached lookup table (`projections.py`, `reproject.py
 is one C-level table lookup plus a PNG write, in pure Python. Kodi animates panning, cross-fades
 and the wind particles at display rate. Spinning views (the globe) are re-rendered frames, about
 3–10 a second on a Mac.
+
+The Dymaxion layout is not hand-copied: `tools/derive_dymaxion.py` scores each of the
+icosahedron's 30 edges by how much land its arc crosses, tries random spanning trees of the faces
+biased towards land, rejects nets whose triangles overlap, and keeps the one that cuts the least
+land and has the most TV-friendly shape — what Fuller did by hand. It prints the `DYMAXION_TREE`
+and `DYMAXION_TURN` constants used by `projections.py`. The source imagery `make_world_data.py`
+downloads (Blue Marble, city lights, land/water and land-class maps, Natural Earth countries) is
+kept in `tools/.world-cache/`.
 
 Full documentation: **[docs/godsworld-screensaver.md](docs/godsworld-screensaver.md)**.
 
@@ -336,7 +361,7 @@ device is online. Data: HYG database (CC BY-SA 4.0), d3-celestial (BSD), VSOP87 
 in `tools/couch-src/messier`.
 
 ```bash
-python3 tools/make_couch_data.py       # bundled catalogues and textures (needs Pillow, numpy)
+python3 tools/make_couch_data.py       # bundled catalogues and textures (needs Pillow, numpy; sources in tools/.couch-cache)
 python3 tools/make_couch_media.py      # icon, fanart, sprites
 python3 tools/make_settings_couch.py   # settings.xml + strings.po from resources/lib/config.py
 python3 tools/preview_couch.py out.png time=2026-10-12T04:00 tilt=25 labels=2   # draw without Kodi
@@ -837,6 +862,7 @@ cd screensaver.infworld.gl
 cmake -S . -B build && cmake --build build      # infworld_glfw test window (macOS also infworld_glfw_core)
 ./build/infworld_glfw_core --assets resources/textures --seed 2 --shot out.ppm --shot-after 8
 ctest --test-dir build                          # noise, chunks, LOD rings, tree placement
+python3 ../tools/make_infworld_media.py /tmp/iw-fanart.ppm /tmp/iw-icon.ppm   # icon + fanart from two harness shots
 ```
 
 The add-on is MIT licensed for the code and CC-BY-SA 3.0 for the textures; the credits are in
@@ -874,6 +900,7 @@ cmake -S . -B build -DPLANT_HARNESS=OFF && cmake --build build && ctest --test-d
 cmake -S . -B build && cmake --build build      # harness: plant_glfw (macOS also plant_glfw_core)
 ./build/plant_glfw --preset 1 --background 1 --motion 1 --seed 42
 ./build/plant_glfw_core --preset 1 --background 1 --motion 1 --seed 42   # what Kodi uses on macOS
+python3 ../tools/make_settings_plant_gl.py      # settings (add the .armv7 id, name and `low` for the 32-bit build)
 ```
 
 ## Particle Life (OpenGL)
@@ -930,7 +957,12 @@ cd screensaver.sandclock.gl
 cmake -S . -B build && cmake --build build && ctest --test-dir build
 ./build/particle_life_glfw --preset 1 --particles 5 --seed 42
 ./build/particle_life_glfw --random --species 8 --shot /tmp/pl.ppm --shot-after 6
+python3 ../tools/make_settings_particle_life.py   # settings; `screensaver.particlelife.gl.armv7 '…' low` for the lighter 32-bit defaults
+python3 ../tools/make_particle_life_media.py /tmp/pl-fanart.ppm /tmp/pl-icon.ppm   # icon + fanart from harness shots
 ```
+
+A copy of the original project, Hunar Ahmad's `life_code` (MIT: the openFrameworks app, the 2D and
+3D JavaScript demos and the Python version), is kept in `particle-life-main/` for reference.
 
 ## Particle Life v2 (OpenGL)
 
@@ -943,7 +975,8 @@ by default, so a run keeps changing.
 ![Particle Life v2: four colours of particles gathering into clusters and rings](screensaver.particlelife_v2/fanart.jpg)
 
 - **Presets from the original:** the 19 models saved with the original app (Worm, Flower cell, DNA,
-  Ladybug, Soap, Teleport, Waves and more) can be shown in order, shuffled, mixed 50/50 with random
+  Ladybug, Soap, Teleport, Waves and more; generated into `src/Presets.h` from
+  `particle-life-main/particle_life/bin/interesting_models`) can be shown in order, shuffled, mixed 50/50 with random
   rules, or one of them on its own.
 - **One to eight colours:** random rule sets use 1–8 colour groups (the original had four; the extras
   come from the JavaScript version), optionally a random count for each new set. Palettes: Classic,
@@ -1001,7 +1034,11 @@ coral is drawn as shaded sphere sprites with a circling camera. Settings choose 
 length, view, natural or vivid colours, lichen species and form, reef current and storms, coral
 form and colonies, and detail (the 32-bit build defaults to Low).
 
+The code, the models' parameters and the build notes are in
+[screensaver.lichencoral/README.md](screensaver.lichencoral/README.md).
+
 ```bash
+python3 tools/make_settings_lichencoral.py   # settings; add `screensaver.lichencoral.armv7 '…' low` for the 32-bit build
 cd screensaver.lichencoral
 c++ -O2 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/sim_test && /tmp/sim_test
 ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
@@ -1026,7 +1063,10 @@ nothing, skinned on the graphics card.
 
 Crab model: "Animated Crab rigged FREE" by TwilightFox on Sketchfab, Sketchfab Standard licence.
 
+The code and build notes are in [screensaver.spacecrab/README.md](screensaver.spacecrab/README.md).
+
 ```bash
+python3 tools/make_settings_spacecrab.py    # settings; add `screensaver.spacecrab.armv7 '…' low` for the 32-bit build
 python3 tools/make_crab_model.py crab.glb   # bake the glTF into resources/model/ (both add-ons)
 cd screensaver.spacecrab && ./build_all.sh  # macOS dylib + Android arm64/armv7 libraries
 ```
@@ -1056,7 +1096,8 @@ the boid data itself permuted into cell order; a synchronous update split over w
 boid; the whole flock streamed as one vertex buffer and drawn with one call. Measured per step:
 3,000 boids 1.0 ms on an Apple Silicon Mac in Kodi; 1,500 boids (the 32-bit default) 2.1 ms in
 Kodi on a Fire TV Stick 4K Max. Kodi's log gets one line with the step time and frame rate 20 s
-after the screensaver starts.
+after the screensaver starts. The code and build notes are in
+[screensaver.dancingboids/README.md](screensaver.dancingboids/README.md).
 
 ```bash
 c++ -O2 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/boids_test -pthread && /tmp/boids_test
@@ -1088,7 +1129,8 @@ diffuse/decay pass that also writes the 8-bit picture; a worker pool on a driver
 own, so Kodi's render thread never waits for a step. Measured in Kodi: 250,000 agents on 960 x 540
 take 1.6 ms a step on an Apple Silicon Mac; 150,000 agents on 640 x 360 (the 32-bit default) take
 6.1 ms a step on a Fire TV Stick 4K Max, at 60 steps and 60 frames a second. Kodi's log gets one
-line with the step time and frame rate 20 s after the screensaver starts.
+line with the step time and frame rate 20 s after the screensaver starts. The code and build notes
+are in [screensaver.physarum_v2/README.md](screensaver.physarum_v2/README.md).
 
 ```bash
 c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/physarum_test -pthread && /tmp/physarum_test
@@ -1138,7 +1180,8 @@ cores are copies with one hook each (`Deposit()` on the slime, a steering `Field
 and a Particle Life step split over the pool, which the original runs on one thread). Measured in
 Kodi at the Medium detail level on an Apple Silicon Mac: Ecosystem 3.9 ms a step, Reef 2.2-3.1 ms,
 Slime mould 2.7 ms, Particle life 4.0 ms, Murmuration 1.2-1.4 ms. Kodi's log gets one line with
-the step time and frame rate 20 s after the screensaver starts, and one line per scene.
+the step time and frame rate 20 s after the screensaver starts, and one line per scene. The code
+and build notes are in [screensaver.emergence/README.md](screensaver.emergence/README.md).
 
 ```bash
 c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/emergence_test -pthread && /tmp/emergence_test
@@ -1187,8 +1230,9 @@ pile and rounds the grains, the liquid shader cuts the surface out of the densit
 like a glossy liquid. Measured in Kodi on a Fire TV Stick 4K Max (32-bit, 3 threads): sand 2.0 ms
 a step on 384 x 216, liquid 8.6 ms a step on 128 x 72, both at 60 steps and 60 frames a second;
 on an Apple Silicon Mac the sand takes 0.3-0.4 ms a step in Kodi and the liquid about 2 ms in the
-benchmark. Kodi's log gets one line with the step time and
-frame rate 20 s after the screensaver starts.
+benchmark. Kodi's log gets one line with the step time and frame rate 20 s after the screensaver
+starts. The code and build notes are in
+[screensaver.sandclock_v2/README.md](screensaver.sandclock_v2/README.md).
 
 ```bash
 c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/sandclock2_test -pthread && /tmp/sandclock2_test
@@ -1261,7 +1305,8 @@ Kodi 1.0: 0.9-1.0 ms a step at the Medium size on an Apple Silicon Mac (118 fram
 stick (it draws the organic look at half resolution there; Classic is the fallback); 2.2 ms a step at the Small size on a Fire TV Stick 4K Max (32-bit, 3
 threads, 60 steps and 60 frames a second), where the benchmark alone takes 1.0-1.1 ms a step with
 1,500-1,750 cells. Kodi's log gets one line with the step time and frame rate 20 s after the
-screensaver starts.
+screensaver starts. The code and build notes are in
+[screensaver.alienlife/README.md](screensaver.alienlife/README.md).
 
 ```bash
 c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/alien_test -pthread && /tmp/alien_test
@@ -1271,8 +1316,9 @@ cd screensaver.alienlife && ./build_all.sh   # macOS dylib + Android arm64/armv7
 
 ## EvolveLife (OpenGL)
 
-`screensaver.evolvelife` is an aquarium for evolution, built from the specification in
-[EvolveLife.md](EvolveLife.md). A population of soft, luminous creatures tries a goal; the first
+`screensaver.evolvelife` is an aquarium for evolution, built from a written specification
+(`EvolveLife.md`, since removed from the repository; it is in the git history). The code and build
+notes are in [screensaver.evolvelife/README.md](screensaver.evolvelife/README.md). A population of soft, luminous creatures tries a goal; the first
 generations flail and topple, and within minutes the bodies and the way they move visibly improve.
 Every run starts from a new random seed with random creatures and random goals, and nothing is
 saved, so no two sessions end up in the same place.
@@ -1330,6 +1376,7 @@ TV stick. Kodi's log gets a line per generation (Summary) and the stage cost 20 
 ```bash
 c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/evolve_test -pthread && /tmp/evolve_test
 python3 tools/make_settings_evolvelife.py   # settings for both add-ons
+python3 tools/make_evolvelife_font.py       # bake Inter SemiBold into src/Font.h (run-length-coded atlas, no font files at run time)
 cd screensaver.evolvelife && ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
 ```
 
@@ -1343,7 +1390,7 @@ input, and shows the result. Give it ROMs, watch it. Built from the specificatio
 
 - **ROMs:** `.nes` (iNES) files in the add-on's own `roms/` folder (packaged with it; sub-folders
   too), plus an optional folder from the settings, which may be a Kodi network source. A library
-  of NES games ships in `roms/` in both builds (macOS/64-bit and 32-bit Android), so installing
+  of 98 NES games ships in `roms/` in both builds (macOS/64-bit and 32-bit Android), so installing
   from the repository brings the games with it; add more of your own there. A ROM's id is the SHA-1 of its PRG and CHR
   data, so header edits do not lose its progress. A ROM Nestopia cannot run is marked bad and
   skipped. Each activation picks one ROM, never one of the last three played, weighted toward
@@ -1386,11 +1433,17 @@ side-scrollers learn best, and puzzle, RPG and menu-heavy games will mostly look
 Stopping saves in about 0.1 s. Checked in the local Kodi on macOS; the Android builds (64-bit, and
 `screensaver.aiarcade.armv7` for 32-bit Fire TV sticks) are not yet run on a device. Kodi's log gets the objectives, one line per generation and the save time.
 
+The code and build notes are in [screensaver.aiarcade/README.md](screensaver.aiarcade/README.md).
+The top-level `roms/` folder holds the source of the game library (`roms/nes/`, the same 98 games
+as a folder and as `nes.zip`) and the original simplified spec, *Kodi AI Arcade Simplified Spec*,
+of which `docs/aiarcade-spec.md` is the working copy.
+
 ```bash
 cd screensaver.aiarcade
 cmake -S . -B build-tools -DARCADE_KODI=OFF -DARCADE_TOOLS=ON && cmake --build build-tools -j8
 build-tools/arcade_test game.nes /tmp/arcade-data 300 4 1.0   # the pipeline without Kodi
-python3 ../tools/make_settings_aiarcade.py                    # settings
+python3 ../tools/make_settings_aiarcade.py                    # settings for both add-ons
+python3 ../tools/make_aiarcade_media.py                       # icon + fanart: pixel lettering, a network wired to a pad, CRT glow
 ./build_all.sh                                                # macOS dylib + Android arm64/armv7 libraries
 ```
 
@@ -1419,8 +1472,9 @@ It ships as two Kodi add-ons, like the other native screensavers:
 - **ScreenMazer (OpenGL, 32-bit Android)** — for 32-bit Android Kodi.
 
 The code and the build instructions are in
-[screensaver.screenmazer](screensaver.screenmazer/README.md); the original Swift source is kept in
-`ScreenMazer-master/` for reference.
+[screensaver.screenmazer](screensaver.screenmazer/README.md). The original Swift source was
+kept in `ScreenMazer-master/` while porting and has since been removed (it is in the git history
+and at the upstream repository).
 
 ```bash
 cd screensaver.screenmazer
@@ -1442,7 +1496,16 @@ It is a native add-on (C++ / OpenGL 2.1, 3.2 core and OpenGL ES 2.0), with two K
 - **Sand Clock (OpenGL, 32-bit Android)** — for 32-bit Android Kodi.
 
 The code lives in [screensaver.sandclock.gl](screensaver.sandclock.gl/README.md), which also
-holds Liquid Clock, the Cellular Automata family, Physarum and Tetris AI (OpenGL).
+holds Liquid Clock, the Cellular Automata family, Physarum, Particle Life and Tetris AI (OpenGL).
+Its settings are generated from the Python Sand Clock's own table by
+`tools/make_settings_sandclock_gl.py`, so the two versions cannot drift apart.
+
+```bash
+python3 tools/make_settings_sandclock_gl.py   # add `screensaver.sandclock.gl.armv7 'Sand Clock (OpenGL, 32-bit Android)'` for the 32-bit build
+cd screensaver.sandclock.gl
+cmake -S . -B build && cmake --build build && ctest --test-dir build -R sand
+./build/sandclock_glfw --fonts ../screensaver.sandclock/resources/media/fonts/fonts.json
+```
 
 ## Vintage Radar
 
@@ -1464,7 +1527,8 @@ window you can drive: click a blip, a label or a list row (or press Select) for 
 contact sheet with every field the transponder reports; Left and Right step the spotlight, Page Up
 and Page Down turn the list, Menu opens the settings and Back leaves the scope. Both front-ends
 run the same session from the shared library `script.module.vintageradar`, which Kodi installs
-with them, and they share one settings table and one set of textures.
+with them, and they share one settings table and one set of textures. The app's own notes are in
+[script.vintageradar/README.md](script.vintageradar/README.md).
 
 | Category | Settings |
 |---|---|
@@ -1535,8 +1599,12 @@ a 2D RGBA8 atlas laid out as slices with a one-cell border, so the update shader
 offsets with no wrap arithmetic. 32-bit Android only.
 
 All three live in the shared native project
-[screensaver.sandclock.gl](screensaver.sandclock.gl/README.md#cellular-automata); their settings
-come from `tools/make_settings_automata*.py` and `tools/make_settings_voxel.py`.
+[screensaver.sandclock.gl](screensaver.sandclock.gl/README.md#cellular-automata), with GLFW test
+windows (`automata_glfw`, `automata_lite_glfw`, `voxel_glfw`) whose `--selftest` compares the GPU
+generations with a CPU reference. Their settings come from `tools/make_settings_automata.py`
+(which also writes the C++ option tables, `src/automata_tables.hpp`, so the settings and the code
+agree on what each option index means), `tools/make_settings_automata_lite.py` and
+`tools/make_settings_voxel.py`.
 
 ## Liquid Clock
 
@@ -1930,7 +1998,7 @@ over the screen with a large photograph, the species' common and scientific name
 seen, how far away, who observed it and when.
 
 - **A place and a window.** Set the latitude and longitude, or use **Find coordinates by place
-  name…** to fill them in; the location name shown on screen is yours to edit. **Search radius**
+  name…** (a settings button that runs the add-on's `lookup.py`) to fill them in; the location name shown on screen is yours to edit. **Search radius**
   (1–200 km) and **Days to look back** (1–30) decide how far and how recent the sightings are.
   The header shows the sighting and species counts, the radius, the window and the clock.
 - **Only birds, only photos.** Observations come from iNaturalist's Aves taxon and must have a
@@ -1980,11 +2048,27 @@ MIT-licensed and bundles no photographs.
   [Word Clock](docs/wordclock.md), [Sand Clock](docs/sandclock.md),
   [Screensaver Switcher](docs/screensaver-switcher.md), [Audioshelf](docs/audioshelf.md),
   [Vintage Radar](docs/vintageradar.md), [GeoGuess](docs/geoguess.md),
-  [Hacker News](docs/hackernews.md), [Ship Tracker](docs/shiptracker.md).
+  [Hacker News](docs/hackernews.md), [Ship Tracker](docs/shiptracker.md),
+  [AI Arcade spec](docs/aiarcade-spec.md).
+- App notes: [Vintage Radar app](script.vintageradar/README.md).
 - Native projects: [sandclock.gl](screensaver.sandclock.gl/README.md) (Sand Clock, Liquid Clock,
-  Cellular Automata, Physarum, Tetris AI),
+  Cellular Automata, Cellular Automata 3D, Physarum, Physarum Lite, Physarum Visualisation,
+  Particle Life, Tetris AI),
   [infworld.gl](screensaver.infworld.gl/README.md),
-  [plant.gl](screensaver.plant.gl/README.md).
+  [plant.gl](screensaver.plant.gl/README.md),
+  [particlelife_v2](screensaver.particlelife_v2/README.md),
+  [lichencoral](screensaver.lichencoral/README.md),
+  [spacecrab](screensaver.spacecrab/README.md),
+  [dancingboids](screensaver.dancingboids/README.md),
+  [physarum_v2](screensaver.physarum_v2/README.md),
+  [emergence](screensaver.emergence/README.md),
+  [sandclock_v2](screensaver.sandclock_v2/README.md),
+  [alienlife](screensaver.alienlife/README.md),
+  [evolvelife](screensaver.evolvelife/README.md),
+  [aiarcade](screensaver.aiarcade/README.md),
+  [screenmazer](screensaver.screenmazer/README.md).
+- **[release/README.md](release/README.md)**: a shorter overview of the add-ons for release
+  notes, with the demo GIFs and stills in `release/gifs/` that this README also uses.
 
 ## Develop
 
@@ -1996,12 +2080,26 @@ screensaver.godseye.map/        a Python add-on (see any add-on folder)
   resources/language/…/strings.po  GENERATED
   resources/skins/…             window XML
   resources/media/, data/       bundled, generated artwork and data
+screensaver.dancingboids/       a native add-on (most native folders look like this)
+  addon.xml, icon.png, fanart.jpg, LICENSE.txt, README.md
+  CMakeLists.txt, src/, tests/  the C++ code and its tests
+  build_all.sh                  macOS universal dylib + Android arm64-v8a / armeabi-v7a libraries
+  resources/settings.xml        GENERATED by tools/make_settings_<name>.py
+screensaver.dancingboids.armv7/ the 32-bit Android twin: same settings, the armeabi-v7a .so
 tools/make_settings*.py         generate settings.xml + strings.po from one table
+                                (make_settings.py is God's Eye Map's and holds the shared writer)
 tools/make_*_media.py           generate icons, fanart, textures and glyphs (Pillow)
+tools/make_*_skin.py            generate the WindowXML of the Sheetcards, RSS Live Tiles, OpenTrivia windows
+tools/make_*_db.py, make_*_data.py  build bundled databases and catalogues
+tools/preview_*.py              draw a screensaver's face with Pillow, without Kodi
+tools/make_*_gif.py             render demo GIFs from the add-on's own engine
+tools/make_splash.py            the loading splash (SVG sources in tools/splash/)
 tools/build_zip.py              build one installable zip
 tools/make_repo.py              build the Kodi repository
 tools/kodi.py                   drive a local Kodi over JSON-RPC for testing
+tools/kodi_set.py               runs inside Kodi (via RunScript) for `kodi.py set`
 tests/test_*.py                 offline unit tests (LIVE=1 also hits real feeds)
+tests/fixtures/                 saved feed responses (Hacker News, RSS, Google Sheets)
 ```
 
 ```bash
@@ -2012,12 +2110,44 @@ python3 tools/kodi.py select              # make it Kodi's screensaver
 python3 tools/kodi.py set zoom=12 basemap=0
 python3 tools/kodi.py run                 # start it now
 python3 tools/kodi.py shot out.png        # screenshot via Kodi
+python3 tools/make_splash.py godseye      # redraw one loading splash (needs Chrome)
 ```
+
+`tools/kodi.py set key=value …` writes settings by running `tools/kodi_set.py` inside Kodi:
+numbers and `true`/`false` are typed automatically, and a list setting takes `;` between items
+(`projection_list=0;3;11`). `KODI_ADDON=<id>` picks the add-on for every `kodi.py` command.
+
+God's Eye Map, God's World Map, Math Clock, Couchstronomy, SkyWatch and Live Cams share a loading
+splash: `tools/make_splash.py` draws each one as SVG (kept in `tools/splash/`), renders it with
+headless Chrome to `resources/media/splash.png` plus the pulsing `splash_dots.png`, and each
+add-on's `resources/lib/splash.py` shows it on black until the first frame is ready.
+`tests/test_splash.py` checks it against a stand-in for Kodi's `xbmcgui`.
 
 After renaming an add-on or changing `strings.po`, restart Kodi: it caches an add-on's strings, and
 the settings labels show up blank until it reloads them. The full conventions, the settings-table
 workflow, the native build matrix and the Kodi API gotchas are in the
 **[development guide](docs/development.md)**.
+
+## Repository layout
+
+Besides one folder per add-on, the repository holds:
+
+| Path | What it is |
+|---|---|
+| `docs/` | The deployment, development and Fire TV guides and the per-add-on documentation |
+| `tools/` | Generators, build, packaging and Kodi test scripts (see [Develop](#develop)) |
+| `tools/splash/` | SVG sources of the loading splashes |
+| `tools/couch-src/messier/` | Fred Espenak's original Messier photographs for Couchstronomy (used with permission, not MIT) |
+| `tools/.world-cache/`, `tools/.couch-cache/` | The source data `make_world_data.py` and `make_couch_data.py` download (NASA imagery, Natural Earth, HYG and d3-celestial catalogues, Moon textures), kept so the bundled data can be rebuilt offline |
+| `tests/` | The Python unit tests and their saved fixtures |
+| `.github/workflows/kodi-repo.yml` | Builds the repository with `tools/make_repo.py --out _site` on every push to `main` and deploys it to GitHub Pages |
+| `release/` | A shorter release overview (`README.md`) and the demo GIFs and stills in `gifs/` |
+| `OpenTrivia/` | The [OpenTriviaQA](https://github.com/uberspot/OpenTriviaQA) source (CC BY-SA 4.0): the 22 category files and its converter scripts, which `tools/make_opentrivia_db.py` turns into the OpenTrivia database |
+| `particle-life-main/` | Hunar Ahmad's original [Particle Life](https://github.com/hunar4321/life_code) (MIT), the reference for both Particle Life ports and the source of Particle Life v2's presets |
+| `mathclock-old/` | The original themathclock.com web page that Math Clock is based on |
+| `dvd-asset/` | The DVD logo picture that `tools/make_dvd_media.py` turns into the add-on's media |
+| `roms/` | The NES game library shipped in AI Arcade (`nes/` and `nes.zip`) and the original AI Arcade spec |
+| `dist/`, `_site/` | Local build output of `build_zip.py` and `make_repo.py` (git-ignored) |
 
 ## Data and terms
 
