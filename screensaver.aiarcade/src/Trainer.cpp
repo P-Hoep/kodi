@@ -269,8 +269,16 @@ struct Arcade::Impl
     std::vector<std::string> paths;
     if (!cfg.onlyRom.empty())
       paths.push_back(cfg.onlyRom);
-    else if (!cfg.romDir.empty())
-      paths = cfg.listRoms ? cfg.listRoms(cfg.romDir, cfg.recursive) : ListNesFiles(cfg.romDir, cfg.recursive);
+    else
+    {
+      if (!cfg.bundledDir.empty())
+        paths = ListNesFiles(cfg.bundledDir, true);
+      if (!cfg.romDir.empty())
+      {
+        auto more = cfg.listRoms ? cfg.listRoms(cfg.romDir, cfg.recursive) : ListNesFiles(cfg.romDir, cfg.recursive);
+        paths.insert(paths.end(), more.begin(), more.end());
+      }
+    }
     std::vector<uint8_t> data;
     for (const std::string& p : paths)
     {
@@ -1254,14 +1262,14 @@ struct Arcade::Impl
       for (const Rom& r : roms)
         stats.roms += r.bad ? 0 : 1;
     }
-    Log(1, "%zu ROMs found in %s (%d playable)", roms.size(), cfg.romDir.c_str(), stats.roms);
+    Log(1, "%zu ROMs found in %s%s%s (%d playable)", roms.size(), cfg.bundledDir.c_str(), cfg.romDir.empty() ? "" : " and ",
+        cfg.romDir.c_str(), stats.roms);
     while (!stop)
     {
       const int i = PickRom(roms);
       if (i < 0)
       {
-        SetStatus(cfg.romDir.empty() && cfg.onlyRom.empty() ? "Choose a ROM folder in the add-on settings"
-                                                          : "No playable .nes ROMs in " + cfg.romDir);
+        SetStatus("No playable .nes ROMs: add some to the add-on's roms folder or choose a ROM folder");
         while (!stop)
           std::this_thread::sleep_for(std::chrono::milliseconds(50));
         return;

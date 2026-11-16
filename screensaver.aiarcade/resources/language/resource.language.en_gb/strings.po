@@ -12,7 +12,7 @@ msgid "General"
 msgstr ""
 
 msgctxt "#30101"
-msgid "ROM folder (.nes files)"
+msgid "Extra ROM folder (the add-on's own roms folder is always used)"
 msgstr ""
 
 msgctxt "#30102"

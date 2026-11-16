@@ -32,7 +32,8 @@ const char* PhaseName(Phase p); // "finding gameplay", "exploring", ...
 
 struct Config
 {
-  std::string romDir;
+  std::string bundledDir; // the add-on's own roms/ folder, always scanned
+  std::string romDir;     // an extra folder from the settings (may be empty)
   bool recursive = true;
   int threads = 1;      // training threads
   double cpuCap = 0.6;  // of one core, per training thread

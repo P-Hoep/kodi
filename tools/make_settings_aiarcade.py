@@ -19,7 +19,7 @@ I = lambda sid, label, default, lo, hi, step=1, **kw: dict(
 
 CATEGORIES = [
     ('General', [
-        dict(id='rom_folder', type='path', label='ROM folder (.nes files)', default=''),
+        dict(id='rom_folder', type='path', label='Extra ROM folder (the add-on\'s own roms folder is always used)', default=''),
         B('recursive', 'Include sub-folders', True),
         I('switch_minutes', 'Switch to another ROM every N minutes (0 = never)', 0, 0, 120, 5),
         B('hud', 'Show the HUD and fitness graph', True),

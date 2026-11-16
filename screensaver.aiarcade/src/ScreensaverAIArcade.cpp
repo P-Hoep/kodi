@@ -329,12 +329,8 @@ bool CScreensaverAIArcade::Start()
     SetSettingBoolean("reset_all", false);
   m_hud = GetSettingBoolean("hud", true);
   cfg.dataDir = kodi::vfs::TranslateSpecialProtocol("special://profile/addon_data/screensaver.aiarcade/");
-  // no folder chosen: the "roms" folder in the add-on's data folder
-  if (cfg.romDir.empty())
-  {
-    cfg.romDir = cfg.dataDir + "roms/";
-    kodi::vfs::CreateDirectory(cfg.romDir);
-  }
+  // ROMs packaged with the add-on, in its own roms/ folder; the setting adds another folder
+  cfg.bundledDir = kodi::addon::GetAddonPath("roms/");
   cfg.log = [](int level, const std::string& s) {
     static const ADDON_LOG lv[] = {ADDON_LOG_DEBUG, ADDON_LOG_INFO, ADDON_LOG_WARNING, ADDON_LOG_ERROR};
     kodi::Log(lv[level & 3], "AI Arcade: %s", s.c_str());
@@ -363,8 +359,8 @@ bool CScreensaverAIArcade::Start()
   m_serial = 0;
   m_haveFrame = false;
   m_arcade.Start(cfg);
-  kodi::Log(ADDON_LOG_INFO, "AI Arcade: started (ROM folder \"%s\", %d training thread(s) at %d%%, population %d)",
-            cfg.romDir.c_str(), cfg.threads, static_cast<int>(cfg.cpuCap * 100 + 0.5), cfg.population);
+  kodi::Log(ADDON_LOG_INFO, "AI Arcade: started (ROMs in \"%s\" and \"%s\", %d training thread(s) at %d%%, population %d)",
+            cfg.bundledDir.c_str(), cfg.romDir.c_str(), cfg.threads, static_cast<int>(cfg.cpuCap * 100 + 0.5), cfg.population);
   return true;
 }
 

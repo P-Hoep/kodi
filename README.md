@@ -73,7 +73,7 @@ installed version in **Add-ons → My add-ons**.
 | [Alien Life (OpenGL, 32-bit Android)](#alien-life-opengl) | `screensaver.alienlife.armv7` | 2.0.0 | Android 32-bit |
 | [EvolveLife (OpenGL)](#evolvelife-opengl) | `screensaver.evolvelife` | 1.2.0 | macOS, Android 64-bit |
 | [EvolveLife (OpenGL, 32-bit Android)](#evolvelife-opengl) | `screensaver.evolvelife.armv7` | 1.2.0 | Android 32-bit |
-| [AI Arcade](#ai-arcade-opengl) | `screensaver.aiarcade` | 1.0.0 | macOS, Android 64-bit |
+| [AI Arcade](#ai-arcade-opengl) | `screensaver.aiarcade` | 1.0.1 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -1340,9 +1340,10 @@ input, and shows the result. Give it ROMs, watch it. Built from the specificatio
 
 ![AI Arcade](screensaver.aiarcade/fanart.jpg)
 
-- **ROMs:** `.nes` (iNES) files from the folder in the settings (sub-folders too), or, when none is
-  set, the `roms` folder in the add-on's data folder
-  (`userdata/addon_data/screensaver.aiarcade/roms/`). A ROM's id is the SHA-1 of its PRG and CHR
+- **ROMs:** `.nes` (iNES) files in the add-on's own `roms/` folder (packaged with it; sub-folders
+  too), plus an optional folder from the settings, which may be a Kodi network source. The
+  repository never contains ROMs: `roms/*.nes` is git-ignored, so ROMs packaged locally stay on
+  the machine (and in zips built there). A ROM's id is the SHA-1 of its PRG and CHR
   data, so header edits do not lose its progress. A ROM Nestopia cannot run is marked bad and
   skipped. Each activation picks one ROM, never one of the last three played, weighted toward
   the least trained; optionally it switches every N minutes. No ROMs are included.
