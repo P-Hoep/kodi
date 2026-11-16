@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.aiarcade" name="AI Arcade" version="1.0.1" provider-name="P-Hoep">
+<addon id="screensaver.aiarcade" name="AI Arcade" version="1.0.2" provider-name="P-Hoep">
   <requires>
     <c-pluff version="1.0"/>
     <import addon="kodi.binary.global.main" version="2.0.2"/>
-    <import addon="kodi.binary.global.filesystem" version="1.1.9"/>
+    <import addon="kodi.binary.global.filesystem" version="1.1.7"/>
     <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
   </requires>
   <extension point="xbmc.ui.screensaver" library_osx="screensaver.aiarcade.dylib"
@@ -21,7 +21,7 @@ You need your own .nes files (iNES format): put them in the add-on's roms folder
     <platform>osx android</platform>
     <license>GPL-2.0-or-later</license>
     <source>https://github.com/P-Hoep/kodi</source>
-    <news>1.0.1 - ROMs load from the add-on's own roms folder (plus an optional folder from the settings)[CR]1.0.0 - initial release</news>
+    <news>1.0.2 - works with every Kodi 21 build (filesystem API 1.1.7); a 32-bit Android version is published as "AI Arcade (32-bit Android)"[CR]1.0.1 - ROMs load from the add-on's own roms folder (plus an optional folder from the settings)[CR]1.0.0 - initial release</news>
     <assets>
       <icon>icon.png</icon>
       <fanart>fanart.jpg</fanart>

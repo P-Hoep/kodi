@@ -1,7 +1,7 @@
 """Generate the AI Arcade screensaver's settings.xml and strings.po from one table, so the Kodi
 settings and screensaver.aiarcade/src/ScreensaverAIArcade.cpp agree on ids and ranges.
 
-Run:
+Run (writes both add-ons):
   python3 tools/make_settings_aiarcade.py
 """
 
@@ -35,6 +35,8 @@ CATEGORIES = [
 ]
 
 if __name__ == '__main__':
-    root = os.path.normpath(os.path.join(HERE, '..', 'screensaver.aiarcade'))
-    os.makedirs(os.path.join(root, 'resources'), exist_ok=True)
-    write(root, 'screensaver.aiarcade', 'AI Arcade', CATEGORIES, 'tools/make_settings_aiarcade.py')
+    for addon_id, name in (('screensaver.aiarcade', 'AI Arcade'),
+                           ('screensaver.aiarcade.armv7', 'AI Arcade (32-bit Android)')):
+        root = os.path.normpath(os.path.join(HERE, '..', addon_id))
+        os.makedirs(os.path.join(root, 'resources'), exist_ok=True)
+        write(root, addon_id, name, CATEGORIES, 'tools/make_settings_aiarcade.py')

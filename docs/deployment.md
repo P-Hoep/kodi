@@ -267,7 +267,7 @@ level contain `addon.xml`, resources AND the built library.
 | `screensaver.sandclock_v2` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `screensaver.alienlife` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `screensaver.evolvelife` | `.dylib` | `.so` | separate `.armv7` add-on |
-| `screensaver.aiarcade` | `.dylib` | `.so` | none (64-bit only) |
+| `screensaver.aiarcade` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `visualization.physarum.lite` | `.dylib` | `.so` | separate `.armv7` add-on |
 
 Some GL add-ons exist **only** as 32-bit Android companions in this repository

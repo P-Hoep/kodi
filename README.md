@@ -73,7 +73,8 @@ installed version in **Add-ons → My add-ons**.
 | [Alien Life (OpenGL, 32-bit Android)](#alien-life-opengl) | `screensaver.alienlife.armv7` | 2.0.0 | Android 32-bit |
 | [EvolveLife (OpenGL)](#evolvelife-opengl) | `screensaver.evolvelife` | 1.2.0 | macOS, Android 64-bit |
 | [EvolveLife (OpenGL, 32-bit Android)](#evolvelife-opengl) | `screensaver.evolvelife.armv7` | 1.2.0 | Android 32-bit |
-| [AI Arcade](#ai-arcade-opengl) | `screensaver.aiarcade` | 1.0.1 | macOS, Android 64-bit |
+| [AI Arcade](#ai-arcade-opengl) | `screensaver.aiarcade` | 1.0.2 | macOS, Android 64-bit |
+| [AI Arcade (32-bit Android)](#ai-arcade-opengl) | `screensaver.aiarcade.armv7` | 1.0.1 | Android 32-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -1382,15 +1383,15 @@ That makes this add-on GPL-2.0-or-later. On an Apple Silicon Mac one emulator ru
 frames a second; a generation of 100 genomes takes 10 to 50 s on 4 uncapped threads, or several
 minutes at the default 1 thread at 60%. Expect hours before a game shows clear progress;
 side-scrollers learn best, and puzzle, RPG and menu-heavy games will mostly look like exploration.
-Stopping saves in about 0.1 s. Checked in the local Kodi on macOS; the Android build is not yet
-run on a device. Kodi's log gets the objectives, one line per generation and the save time.
+Stopping saves in about 0.1 s. Checked in the local Kodi on macOS; the Android builds (64-bit, and
+`screensaver.aiarcade.armv7` for 32-bit Fire TV sticks) are not yet run on a device. Kodi's log gets the objectives, one line per generation and the save time.
 
 ```bash
 cd screensaver.aiarcade
 cmake -S . -B build-tools -DARCADE_KODI=OFF -DARCADE_TOOLS=ON && cmake --build build-tools -j8
 build-tools/arcade_test game.nes /tmp/arcade-data 300 4 1.0   # the pipeline without Kodi
 python3 ../tools/make_settings_aiarcade.py                    # settings
-./build_all.sh                                                # macOS dylib + Android arm64 .so
+./build_all.sh                                                # macOS dylib + Android arm64/armv7 libraries
 ```
 
 ## ScreenMazer (OpenGL)

@@ -1,6 +1,6 @@
 #!/bin/sh
-# Rebuild the macOS universal dylib and the 64-bit Android library, and copy them into the add-on
-# folder. Needs the Kodi 21 dev-kit headers and the Android NDK (see docs/development.md).
+# Rebuild the macOS universal dylib and both Android libraries, and copy them into the add-on
+# folders. Needs the Kodi 21 dev-kit headers and the Android NDK (see docs/development.md).
 set -e
 cd "$(dirname "$0")"
 DEVKIT=${KODI_DEVKIT_INCLUDE:-/tmp/kodi-src/xbmc/addons/kodi-dev-kit/include}
@@ -17,8 +17,12 @@ codesign --force --sign - build-uni/screensaver.aiarcade.dylib
 cp build-uni/screensaver.aiarcade.dylib screensaver.aiarcade.dylib.new
 mv -f screensaver.aiarcade.dylib.new screensaver.aiarcade.dylib
 
-cmake -S . -B build-android-arm64-v8a -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" -DANDROID_ABI=arm64-v8a \
-  -DANDROID_PLATFORM=android-21 -DANDROID_STL=c++_static -DKODI_DEVKIT_INCLUDE="$DEVKIT" >/dev/null
-cmake --build build-android-arm64-v8a -j8
+for abi in arm64-v8a armeabi-v7a; do
+  cmake -S . -B build-android-$abi -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" -DANDROID_ABI=$abi \
+    -DANDROID_PLATFORM=android-21 -DANDROID_STL=c++_static -DKODI_DEVKIT_INCLUDE="$DEVKIT" >/dev/null
+  cmake --build build-android-$abi -j8
+done
 "$STRIP" --strip-unneeded -o screensaver.aiarcade.so build-android-arm64-v8a/screensaver.aiarcade.so
+"$STRIP" --strip-unneeded -o ../screensaver.aiarcade.armv7/screensaver.aiarcade.armv7.so \
+  build-android-armeabi-v7a/screensaver.aiarcade.so
