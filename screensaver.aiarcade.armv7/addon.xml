@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.aiarcade.armv7" name="AI Arcade (32-bit Android)" version="1.0.1" provider-name="P-Hoep">
+<addon id="screensaver.aiarcade.armv7" name="AI Arcade (32-bit Android)" version="1.0.2" provider-name="P-Hoep">
   <requires>
     <c-pluff version="1.0"/>
     <import addon="kodi.binary.global.main" version="2.0.2"/>
@@ -13,12 +13,12 @@
 
 It picks a NES game from your ROMs, teaches itself to play it with no human input (finding gameplay, exploring, learning what progress means from the game's memory, then evolving NEAT neural networks) and shows the best player live with its progress. Everything learned is saved per ROM. Training on a TV stick is slow; expect many hours before a game shows clear progress.
 
-You need your own .nes files (iNES format): put them in the add-on's roms folder, or choose another folder in the settings.</description>
-    <disclaimer lang="en_GB">This is a native add-on built for Kodi 21 Omega on 32-bit Android. It includes the Nestopia emulator core (GPL-2.0-or-later), so the add-on is GPL-2.0-or-later. No ROMs are included. Training uses one CPU core at 60% by default (see Training in the settings).</disclaimer>
+A library of NES games ships in the add-on's roms folder. Add your own .nes files (iNES format) there, or choose another folder in the settings.</description>
+    <disclaimer lang="en_GB">This is a native add-on built for Kodi 21 Omega on 32-bit Android. It includes the Nestopia emulator core (GPL-2.0-or-later), so the add-on is GPL-2.0-or-later. It ships with a library of NES game ROMs; add your own .nes files to the roms folder. Training uses one CPU core at 60% by default (see Training in the settings).</disclaimer>
     <platform>android</platform>
     <license>GPL-2.0-or-later</license>
     <source>https://github.com/P-Hoep/kodi</source>
-    <news>1.0.1 - initial 32-bit Android release</news>
+    <news>1.0.2 - ships with the same library of NES games in its roms folder[CR]1.0.1 - initial 32-bit Android release</news>
     <assets>
       <icon>icon.png</icon>
       <fanart>fanart.jpg</fanart>

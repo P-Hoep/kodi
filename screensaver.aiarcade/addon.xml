@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="screensaver.aiarcade" name="AI Arcade" version="1.0.2" provider-name="P-Hoep">
+<addon id="screensaver.aiarcade" name="AI Arcade" version="1.0.3" provider-name="P-Hoep">
   <requires>
     <c-pluff version="1.0"/>
     <import addon="kodi.binary.global.main" version="2.0.2"/>
@@ -16,12 +16,12 @@ It knows nothing about any game. First it presses buttons until the game reacts 
 
 Everything learned is saved per ROM, so each time a game comes back it carries on where it left off. Expect hours of idle time before a game shows clear progress; side-scrollers and shooters learn best, and puzzle, RPG and menu-heavy games will mostly look like exploration.
 
-You need your own .nes files (iNES format): put them in the add-on's roms folder, or choose another folder in the settings.</description>
-    <disclaimer lang="en_GB">This is a native add-on built for Kodi 21 Omega on macOS (Intel and Apple Silicon) and 64-bit Android. It includes the Nestopia emulator core (GPL-2.0-or-later), so the add-on is GPL-2.0-or-later. No ROMs are included. Training uses one CPU core at 60% by default (see Training in the settings).</disclaimer>
+A library of NES games ships in the add-on's roms folder. Add your own .nes files (iNES format) there, or choose another folder in the settings.</description>
+    <disclaimer lang="en_GB">This is a native add-on built for Kodi 21 Omega on macOS (Intel and Apple Silicon) and 64-bit Android. It includes the Nestopia emulator core (GPL-2.0-or-later), so the add-on is GPL-2.0-or-later. It ships with a library of NES game ROMs; add your own .nes files to the roms folder. Training uses one CPU core at 60% by default (see Training in the settings).</disclaimer>
     <platform>osx android</platform>
     <license>GPL-2.0-or-later</license>
     <source>https://github.com/P-Hoep/kodi</source>
-    <news>1.0.2 - works with every Kodi 21 build (filesystem API 1.1.7); a 32-bit Android version is published as "AI Arcade (32-bit Android)"[CR]1.0.1 - ROMs load from the add-on's own roms folder (plus an optional folder from the settings)[CR]1.0.0 - initial release</news>
+    <news>1.0.3 - ships with a library of NES games in its roms folder[CR]1.0.2 - works with every Kodi 21 build (filesystem API 1.1.7); a 32-bit Android version is published as "AI Arcade (32-bit Android)"[CR]1.0.1 - ROMs load from the add-on's own roms folder (plus an optional folder from the settings)[CR]1.0.0 - initial release</news>
     <assets>
       <icon>icon.png</icon>
       <fanart>fanart.jpg</fanart>

@@ -1,3 +1,0 @@
-# ROMs packaged locally are never committed (the repository is public)
-roms/*
-!roms/README.txt

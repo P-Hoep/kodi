@@ -1342,12 +1342,12 @@ input, and shows the result. Give it ROMs, watch it. Built from the specificatio
 ![AI Arcade](screensaver.aiarcade/fanart.jpg)
 
 - **ROMs:** `.nes` (iNES) files in the add-on's own `roms/` folder (packaged with it; sub-folders
-  too), plus an optional folder from the settings, which may be a Kodi network source. The
-  repository never contains ROMs: `roms/*.nes` is git-ignored, so ROMs packaged locally stay on
-  the machine (and in zips built there). A ROM's id is the SHA-1 of its PRG and CHR
+  too), plus an optional folder from the settings, which may be a Kodi network source. A library
+  of NES games ships in `roms/` in both builds (macOS/64-bit and 32-bit Android), so installing
+  from the repository brings the games with it; add more of your own there. A ROM's id is the SHA-1 of its PRG and CHR
   data, so header edits do not lose its progress. A ROM Nestopia cannot run is marked bad and
   skipped. Each activation picks one ROM, never one of the last three played, weighted toward
-  the least trained; optionally it switches every N minutes. No ROMs are included.
+  the least trained; optionally it switches every N minutes.
 - **Finding gameplay:** from power-on it presses Start and buttons, and every 2 seconds probes
   whether the game reacts: 60 frames of nothing against 60 frames of Right+A, from the same
   savestate. Three reacting probes in a row mean gameplay; that state is `start.state`. (Start is
