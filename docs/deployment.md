@@ -245,7 +245,7 @@ Particle Life), `screensaver.infworld.gl` (Endless World), `screensaver.plant.gl
 Plant), `screensaver.particlelife_v2` (Particle Life v2), `screensaver.screenmazer`
 (ScreenMazer), `screensaver.lichencoral` (Lichen & Coral), `screensaver.spacecrab` (Space Crab) and
 `screensaver.dancingboids` (Dancing Boids), `screensaver.physarum_v2` (Physarum v2),
-`screensaver.emergence` (Emergence), `screensaver.sandclock_v2` (Sand Clock v2), `screensaver.alienlife` (Alien Life) and `screensaver.evolvelife` (EvolveLife). The Kodi-facing folders at the top
+`screensaver.emergence` (Emergence), `screensaver.sandclock_v2` (Sand Clock v2), `screensaver.alienlife` (Alien Life), `screensaver.evolvelife` (EvolveLife) and `screensaver.aiarcade` (AI Arcade). The Kodi-facing folders at the top
 level contain `addon.xml`, resources AND the built library.
 
 ### What each add-on needs
@@ -267,6 +267,7 @@ level contain `addon.xml`, resources AND the built library.
 | `screensaver.sandclock_v2` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `screensaver.alienlife` | `.dylib` | `.so` | separate `.armv7` add-on |
 | `screensaver.evolvelife` | `.dylib` | `.so` | separate `.armv7` add-on |
+| `screensaver.aiarcade` | `.dylib` | `.so` | none (64-bit only) |
 | `visualization.physarum.lite` | `.dylib` | `.so` | separate `.armv7` add-on |
 
 Some GL add-ons exist **only** as 32-bit Android companions in this repository

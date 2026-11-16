@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="screensaver.aiarcade" name="AI Arcade" version="1.0.0" provider-name="P-Hoep">
+  <requires>
+    <c-pluff version="1.0"/>
+    <import addon="kodi.binary.global.main" version="2.0.2"/>
+    <import addon="kodi.binary.global.filesystem" version="1.1.9"/>
+    <import addon="kodi.binary.instance.screensaver" version="2.2.0"/>
+  </requires>
+  <extension point="xbmc.ui.screensaver" library_osx="screensaver.aiarcade.dylib"
+             library_android="screensaver.aiarcade.so"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Give it NES ROMs and watch: it teaches itself to play them, with no human input</summary>
+    <description lang="en_GB">A screensaver that picks a NES game from your ROM folder, teaches itself to play it and shows you how far it has got.
+
+It knows nothing about any game. First it presses buttons until the game reacts to them, which gets it past title screens and menus. Then it explores, saving a snapshot every time the screen looks new, and from those snapshots it works out which numbers in the game's memory go up the further it gets: usually the level position or the score. Finally it evolves small neural networks (NEAT) that look at the screen and press buttons, and keeps the one that gets furthest. The screen shows that champion playing in real time, with the generation, best score, species, training time and a graph of progress.
+
+Everything learned is saved per ROM, so each time a game comes back it carries on where it left off. Expect hours of idle time before a game shows clear progress; side-scrollers and shooters learn best, and puzzle, RPG and menu-heavy games will mostly look like exploration.
+
+You need your own .nes files (iNES format). Choose their folder in the settings.</description>
+    <disclaimer lang="en_GB">This is a native add-on built for Kodi 21 Omega on macOS (Intel and Apple Silicon) and 64-bit Android. It includes the Nestopia emulator core (GPL-2.0-or-later), so the add-on is GPL-2.0-or-later. No ROMs are included. Training uses one CPU core at 60% by default (see Training in the settings).</disclaimer>
+    <platform>osx android</platform>
+    <license>GPL-2.0-or-later</license>
+    <source>https://github.com/P-Hoep/kodi</source>
+    <news>1.0.0 - initial release</news>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

@@ -1,0 +1,178 @@
+Nestopia JG
+-----------
+Nestopia JG is an emulator for the Nintendo Entertainment System/Famicom,
+including support for the Famicom Disk System and VS. System. Though originally
+a fork, Nestopia JG has become the de facto upstream branch of the Nestopia
+emulator.
+
+Famicom Disk System emulation requires the FDS BIOS:
+ - disksys.rom
+
+This repository lives at https://gitlab.com/jgemu/nestopia
+
+Compiling
+---------
+Make sure you have The Jolly Good API's header files installed. If you did
+not install them, you will be required to include their path in CXXFLAGS.
+
+GNU Make's default behaviour for compiling C++ sources is to use g++. If your
+platform of choice uses an unpatched GNU Make, you will need to override the
+CXX implicit variable if you wish to use a different compiler.
+
+Options:
+  DISABLE_MODULE - Set to a non-zero value to disable building the module.
+  ENABLE_STATIC_JG - Set to a non-zero value to build a static JG archive.
+
+Linux:
+  make
+
+macOS:
+  make
+
+BSD:
+  gmake
+
+Windows (MSYS2):
+  make
+
+Cross Compile:
+(For example compiling on Linux for MinGW)
+  AR=x86_64-w64-mingw32-ar \
+  CXX=x86_64-w64-mingw32-c++ \
+  PKG_CONFIG=x86_64-w64-mingw32-pkg-config \
+  STRIP=x86_64-w64-mingw32-strip \
+  make
+
+The build will be output to "nestopia/". This directory may be used as is
+locally by copying it to your local "cores" directory, or may be installed
+system-wide using the "install" target specified in the Makefile.
+
+Input Devices
+-------------
+Nestopia JG uses a game database to determine which input devices must be
+plugged in. The following input devices are currently supported:
+
+NES Controller (4 Players)
+NES Zapper
+Arkanoid Paddle
+Power Pad/Family Trainer
+Power Glove
+R.O.B. - Robotic Operating Buddy
+Pachinko
+Oeka Kids Tablet
+Konami Hypershot
+Bandai Hypershot
+Crazy Climber
+Mahjong
+Exciting Boxing
+Top Rider
+Pokkun Moguraa
+PartyTap
+VS. System
+Karaoke Studio
+
+Input Notes
+-----------
+ - R.O.B. works automatically, and is not actually configurable
+ - Famicom Controller 2 and Karaoke Studio microphone emulation requires
+   a real microphone
+
+ADPCM Samples
+-------------
+Some games have ADPCM audio samples on the cartridge, which are not included in
+the ROM data. In order to use such samples with Nestopia, you must extract the
+samples into the correct location under the User Assets directory. They are
+required to be in a subdirectory named after the .zip file in MAME format:
+  moepro.zip        moepro
+  moepro88.zip      moepro88
+  mptennis.zip      mptennis
+  terao.zip         terao
+  ftaerobi.zip      ftaerobi
+
+The location of the User Assets directory depends on the frontend and platform
+in use. Refer to the frontend documentation.
+
+Settings
+--------
+port1 = 0
+0 = Auto, 1 = Controller, 2 = Zapper, 3 = Arkanoid Paddle, 4 = Power Pad,
+5 = Power Glove
+
+port2 = 0
+0 = Auto, 1 = Controller, 2 = Zapper, 3 = Arkanoid Paddle, 4 = Power Pad,
+5 = Power Glove
+
+port3 = 0
+0 = Auto, 1 = Controller
+
+port4 = 0
+0 = Auto, 1 = Controller
+
+portexp = 0
+0 = Auto, 1 = Family Trainer, 2 = Pachinko, 3 = Oeka Kids Tablet,
+4 = Konami Hypershot, 5 = Bandai Hypershot, 6 = Crazy Climber,
+7 = Mahjong, 8 = Exciting Boxing, 9 = Top Rider, 10 = Pokkun Moguraa,
+11 = PartyTap
+
+turbo_rate = 3
+N = Pulse every N frames
+
+palette = 5
+0 = Canonical, 1 = Consumer, 2 = Alternative, 3 = RGB, 4 = CXA2025AS,
+5 = Royaltea, 6 = Nobilitea, 7 = Digital Prime (FBX), 8 = Magnum (FBX),
+9 = PVM Style D93 (FBX), 10 = Smooth V2 (FBX) 11 = Custom
+
+aspect = 0
+0 = Auto, 1 = 1:1, 2 = 4:3, 3 = 5:4
+
+ntsc_filter = 0
+0 = Disable, 1 = Enable
+
+ntsc_mode = 0
+0 = Composite, 1 = S-Video, 2 = RGB, 3 = Monochrome
+
+overscan_t = 8
+N = Hide N pixels of Overscan (Top)
+
+overscan_b = 8
+N = Hide N pixels of Overscan (Bottom)
+
+overscan_l = 0
+N = Hide N pixels of Overscan (Left)
+
+overscan_r = 0
+N = Hide N pixels of Overscan (Right)
+
+audio_filter = 1
+0 = Disable, 1 = Enable
+
+dmc_pop_reducer = 0
+0 = Disable, 1 = Enable
+
+ram_power_state = 2
+0 = 0x00, 1 = 0xff, 2 = Random
+
+unlimited_sprites = 0
+0 = Disable, 1 = Enable
+
+genie_distortion = 0
+0 = Disable, 1 = Enable
+
+favored_system = 0
+0 = NES (NTSC), 1 = NES (PAL), 2 = Famicom, 3 = Dendy
+
+force_system = 0
+0 = Auto, 1 = NES (NTSC), 2 = NES (PAL), 3 = Famicom, 4 = Dendy
+
+softpatch = 0
+0 = Disable, 1 = Enable
+
+Copyright
+---------
+Nestopia JG (GPL-2.0-or-later)
+  Copyright (c) 2003-2008 Martin Freij
+  Copyright (c) 2008-2018 Nestopia UE Contributors
+  Copyright (c) 2020-2026 Rupert Carmichael
+
+nes_ntsc (LGPL-2.1-or-later)
+  Copyright (c) 2006-2007 Shay Green

@@ -2,7 +2,7 @@
 
 Ambient screensavers, a word clock, a sand clock, a Jeopardy! slideshow, a weather station, a
 live-camera window, a bird-sighting mosaic, a ship tracker, a scheduler, a flashcard app, a trivia
-quiz, a news reader, a maze builder, lichen and coral growth models, a floating space crab, a flock of dancing boids, a CPU slime mould, all three of those living together, a clock of falling sand or melting liquid, a music visualisation and an audiobook player for Kodi,
+quiz, a news reader, a maze builder, lichen and coral growth models, a floating space crab, a flock of dancing boids, a CPU slime mould, all three of those living together, a clock of falling sand or melting liquid, an AI that teaches itself to play your NES games, a music visualisation and an audiobook player for Kodi,
 published as one Kodi repository so Kodi installs them and keeps them up to date.
 
 Most add-ons are pure Python and run on any Kodi 19 (Matrix) or later device. The OpenGL add-ons
@@ -73,6 +73,7 @@ installed version in **Add-ons → My add-ons**.
 | [Alien Life (OpenGL, 32-bit Android)](#alien-life-opengl) | `screensaver.alienlife.armv7` | 2.0.0 | Android 32-bit |
 | [EvolveLife (OpenGL)](#evolvelife-opengl) | `screensaver.evolvelife` | 1.2.0 | macOS, Android 64-bit |
 | [EvolveLife (OpenGL, 32-bit Android)](#evolvelife-opengl) | `screensaver.evolvelife.armv7` | 1.2.0 | Android 32-bit |
+| [AI Arcade](#ai-arcade-opengl) | `screensaver.aiarcade` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL)](#screenmazer-opengl) | `screensaver.screenmazer` | 1.0.0 | macOS, Android 64-bit |
 | [ScreenMazer (OpenGL, 32-bit Android)](#screenmazer-opengl) | `screensaver.screenmazer.armv7` | 1.0.0 | Android 32-bit |
 | [Sand Clock (OpenGL)](#sand-clock-opengl) | `screensaver.sandclock.gl` | 1.0.0 | macOS, Android 64-bit |
@@ -1329,6 +1330,66 @@ TV stick. Kodi's log gets a line per generation (Summary) and the stage cost 20 
 c++ -O3 -std=c++17 -Isrc tests/sim_test.cpp -o /tmp/evolve_test -pthread && /tmp/evolve_test
 python3 tools/make_settings_evolvelife.py   # settings for both add-ons
 cd screensaver.evolvelife && ./build_all.sh   # macOS dylib + Android arm64/armv7 libraries
+```
+
+## AI Arcade (OpenGL)
+
+`screensaver.aiarcade` picks a NES ROM from a folder, teaches itself to play it with no human
+input, and shows the result. Give it ROMs, watch it. Built from the specification in
+[docs/aiarcade-spec.md](docs/aiarcade-spec.md).
+
+![AI Arcade](screensaver.aiarcade/fanart.jpg)
+
+- **ROMs:** `.nes` (iNES) files from the folder in the settings (sub-folders too), or, when none is
+  set, the `roms` folder in the add-on's data folder
+  (`userdata/addon_data/screensaver.aiarcade/roms/`). A ROM's id is the SHA-1 of its PRG and CHR
+  data, so header edits do not lose its progress. A ROM Nestopia cannot run is marked bad and
+  skipped. Each activation picks one ROM, never one of the last three played, weighted toward
+  the least trained; optionally it switches every N minutes. No ROMs are included.
+- **Finding gameplay:** from power-on it presses Start and buttons, and every 2 seconds probes
+  whether the game reacts: 60 frames of nothing against 60 frames of Right+A, from the same
+  savestate. Three reacting probes in a row mean gameplay; that state is `start.state`. (Start is
+  not pressed while probes look live, since it would pause the game.)
+- **Exploring (Go-Explore):** an archive of up to 1500 savestates, one per screen "cell" (the frame
+  shrunk to 11 x 8 grey, 8 levels). It restores a cell, plays random button motifs, and keeps every
+  new cell it reaches, with its RAM and its depth (motifs from the start).
+- **Learning objectives:** with no game knowledge it finds what "progress" is: RAM bytes (and
+  16-bit pairs) that react to input in a counterfactual test, are not clocks or constants, and rise
+  with archive depth (Spearman rho >= 0.30). The top 8 make a Value from 0 to 1. On Contra the top
+  one is the 16-bit pair at $0064/$0065; on Castlevania $0076 and $002F/$002E. If nothing
+  qualifies, it falls back to novelty and the HUD says so. A death is a sudden jump of RAM back
+  toward the start while Value falls.
+- **Evolving (NEAT):** networks see a 16 x 15 grey screen, the objective bytes and their last
+  action, decide every 4th frame, and press A, B, Select, Start and the d-pad. Fitness rewards the
+  best and final Value and new cells. Half the generations start deeper in the game. Objectives
+  are re-learned every 20 generations, or sooner as the archive gets deeper.
+- **On screen:** the champion plays from the start in real time (exactly the run it was scored
+  on), looping on death; before there is a champion it shows exploration. The HUD shows the ROM,
+  phase, generation, best fitness, species, archive size and training time, and a graph of best
+  and average fitness over the last 100 generations.
+- **Saved per ROM** in `userdata/addon_data/screensaver.aiarcade/<rom id>/` (`meta.json`,
+  `start.state`, `archive.bin`, `objectives.json`, `neat.bin`, `champion.bin`), written to a
+  temporary file and renamed, every 5 minutes, on a new champion and on stop. A missing or corrupt
+  file only restarts that stage.
+- **Settings:** ROM folder, sub-folders, switch ROM every N minutes, HUD; training threads (default
+  1), CPU cap per thread (default 60% of a core), population (default 100); and a switch that
+  resets the learning of every ROM at the next start.
+
+Nestopia (GPL-2.0-or-later) is compiled in through its class-based API, so the display and each
+training thread run their own emulator; two instances on two threads are bit-identical to one.
+That makes this add-on GPL-2.0-or-later. On an Apple Silicon Mac one emulator runs 1,100 to 2,500
+frames a second; a generation of 100 genomes takes 10 to 50 s on 4 uncapped threads, or several
+minutes at the default 1 thread at 60%. Expect hours before a game shows clear progress;
+side-scrollers learn best, and puzzle, RPG and menu-heavy games will mostly look like exploration.
+Stopping saves in about 0.1 s. Checked in the local Kodi on macOS; the Android build is not yet
+run on a device. Kodi's log gets the objectives, one line per generation and the save time.
+
+```bash
+cd screensaver.aiarcade
+cmake -S . -B build-tools -DARCADE_KODI=OFF -DARCADE_TOOLS=ON && cmake --build build-tools -j8
+build-tools/arcade_test game.nes /tmp/arcade-data 300 4 1.0   # the pipeline without Kodi
+python3 ../tools/make_settings_aiarcade.py                    # settings
+./build_all.sh                                                # macOS dylib + Android arm64 .so
 ```
 
 ## ScreenMazer (OpenGL)

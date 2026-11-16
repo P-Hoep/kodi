@@ -141,6 +141,10 @@ def write(root, addon, addon_name, categories, generator='tools/make_settings.py
                            % s['addontype'])
                 out.append('          <control type="button" format="addon"><show more="true" details="true">installed</show>'
                            '</control>')
+            elif kind == 'path':  # a folder picker
+                out.append('          <default>%s</default>' % escape(s.get('default', '')))
+                out.append('          <constraints><writable>false</writable><allowempty>true</allowempty></constraints>')
+                out.append('          <control type="button" format="path"><heading>%d</heading></control>' % label)
             elif kind == 'number':
                 out.append('          <default>%s</default>' % s['default'])
                 out.append('          <control type="edit" format="number"><heading>%d</heading></control>' % label)

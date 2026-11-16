@@ -59,6 +59,7 @@ screensaver.emergence/             native project: Emergence (Physarum v2 + Danc
 screensaver.sandclock_v2/          native project: Sand Clock v2 (grain-physics sand and FLIP liquid clocks)
 screensaver.alienlife/            native project: Alien Life (evolving cell creatures after ALIEN)
 screensaver.evolvelife/           native project: EvolveLife (evolving bodies and brains, after EvolveLife.md)
+screensaver.aiarcade/             native project: AI Arcade (NEAT learns NES games in Nestopia, after docs/aiarcade-spec.md)
 ```
 
 Each native project is one CMake build producing the Kodi module(s) and GLFW test harnesses. Its
